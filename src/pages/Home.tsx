@@ -5,6 +5,7 @@ import { questions } from '../data/questions'
 import { getAllProgress, getStudySessions } from '../lib/storage'
 import CategoryCard from '../components/CategoryCard'
 import type { StudySession } from '../types'
+import { VERSION_LABEL } from '../version'
 
 // ----------------------------------------------------------------
 // Helper functions
@@ -218,13 +219,13 @@ export default function Home() {
         {/* ===== Welcome Banner ===== */}
         <section aria-label="ようこそバナー">
           <div className="rounded-2xl bg-green-600 text-white px-6 py-5 shadow-md">
-            <p className="text-xs font-semibold uppercase tracking-wider text-green-100 mb-1">Welcome!</p>
             <h1 className="text-xl font-black leading-snug">
               ようこそ、NWスペシャリスト学習へ！
             </h1>
             <p className="text-sm text-green-100 mt-1">
               19分野 · {totalQuestions}問 · 重要問題{importantCount}問
             </p>
+            <p className="text-xs text-green-200 mt-2 font-mono">{VERSION_LABEL}</p>
           </div>
         </section>
 

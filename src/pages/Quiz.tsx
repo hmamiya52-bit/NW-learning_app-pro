@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { questions as allQuestions } from '../data/questions'
 import { categories } from '../data/categories'
-import { addAnswerRecord, getAllProgress, saveStudySession } from '../lib/storage'
+import { addAnswerRecord, getAllProgress, saveStudySession, updateProgress } from '../lib/storage'
 import type { Question, StudySession } from '../types'
 import ModeSelect from '../components/quiz/ModeSelect'
 import QuizQuestion from '../components/quiz/QuizQuestion'
@@ -126,6 +126,7 @@ export default function Quiz() {
         userAnswer: selected,
         answeredAt: new Date().toISOString(),
       })
+      updateProgress(currentQuestion.topicId, isCorrect)
       setPhase('result-mc')
     },
     [currentQuestion]
@@ -185,6 +186,7 @@ export default function Quiz() {
         userAnswer: lastWritten,
         answeredAt: new Date().toISOString(),
       })
+      updateProgress(currentQuestion.topicId, isCorrect)
       setLastIsCorrect(isCorrect)
       advanceOrFinish(isCorrect)
     },

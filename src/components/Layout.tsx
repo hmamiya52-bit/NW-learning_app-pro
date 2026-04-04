@@ -211,8 +211,9 @@ export default function Layout() {
         <Link
           to="/"
           className="flex items-center gap-2 flex-1 min-w-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded"
+          aria-label="NW 試験学習 ホームへ"
         >
-          <span className="text-lg font-black tracking-tight leading-none">NW</span>
+          <img src="/pwa-192x192.png" alt="" className="w-8 h-8 rounded-md flex-shrink-0" />
           <span className="text-sm font-medium text-blue-200 leading-none truncate">試験学習</span>
         </Link>
 
@@ -306,7 +307,10 @@ export default function Layout() {
           {/* Sidebar footer */}
           {isOpen && (
             <div className="px-4 py-3 border-t border-white/10">
-              <p className="text-[10px] text-white/30 whitespace-nowrap">NW試験学習 v1.0</p>
+              <div className="flex items-center gap-2">
+                <img src="/pwa-192x192.png" alt="" className="w-6 h-6 rounded" />
+                <p className="text-[10px] text-white/40 whitespace-nowrap">NW試験学習</p>
+              </div>
             </div>
           )}
         </nav>

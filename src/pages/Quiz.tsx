@@ -89,6 +89,7 @@ export default function Quiz() {
   const [lastSelected, setLastSelected] = useState('')
   const [lastWritten, setLastWritten] = useState('')
   const [lastIsCorrect, setLastIsCorrect] = useState(false)
+  const [autoCorrect, setAutoCorrect] = useState(false)
 
   // セッション開始（sessionIdが変わるたびにリセット）
   const startedSessionId = useRef('')
@@ -136,9 +137,26 @@ export default function Quiz() {
   const handleAnswerWritten = useCallback(
     (written: string) => {
       setLastWritten(written)
+      const isExactMatch = written.trim() === currentQuestion.correctAnswer.trim()
+      if (isExactMatch) {
+        // 完全一致 → 自動正解判定（保存まで即座に行う）
+        addAnswerRecord({
+          id: crypto.randomUUID(),
+          questionId: currentQuestion.id,
+          mode: 'written',
+          isCorrect: true,
+          userAnswer: written,
+          answeredAt: new Date().toISOString(),
+        })
+        updateProgress(currentQuestion.topicId, true)
+        setLastIsCorrect(true)
+        setAutoCorrect(true)
+      } else {
+        setAutoCorrect(false)
+      }
       setPhase('result-wr')
     },
-    []
+    [currentQuestion]
   )
 
   // ---------- 次の問題へ / 終了 ----------
@@ -197,6 +215,11 @@ export default function Quiz() {
   const handleNextMC = useCallback(() => {
     advanceOrFinish(lastIsCorrect)
   }, [advanceOrFinish, lastIsCorrect])
+
+  // 自動正解時の「次へ」（addAnswerRecord/updateProgress は handleAnswerWritten で実施済み）
+  const handleNextAutoCorrect = useCallback(() => {
+    advanceOrFinish(true)
+  }, [advanceOrFinish])
 
   // ---------- 間違えた問題を再挑戦 ----------
   const handleRetryWrong = useCallback(() => {
@@ -314,6 +337,8 @@ export default function Quiz() {
             question={currentQuestion}
             written={lastWritten}
             onJudge={handleJudge}
+            onNext={handleNextAutoCorrect}
+            isAutoCorrect={autoCorrect}
             isLast={isLast}
           />
         )}

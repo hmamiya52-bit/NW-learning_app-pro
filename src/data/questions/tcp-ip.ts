@@ -3,7 +3,7 @@ import type { Question } from '../../types'
 export const tcpIpQuestions: Question[] = [
   {
     id: 'q-110',
-    topicId: 'tcp-ip',
+    topicId: 'layer4-7',
     questionText: 'TCPの3ウェイハンドシェイクにおいて最初に送信されるパケットは{{blank}}である。',
     correctAnswer: 'SYN',
     choices: ['SYN', 'SYN-ACK', 'ACK', 'FIN'],
@@ -13,7 +13,7 @@ export const tcpIpQuestions: Question[] = [
   },
   {
     id: 'q-111',
-    topicId: 'tcp-ip',
+    topicId: 'layer4-7',
     questionText: 'TCPの輻輳制御において、ウィンドウサイズを指数的に増加させる段階を{{blank}}という。',
     correctAnswer: 'スロースタート',
     choices: ['スロースタート', '輻輳回避', '高速再転送', '高速回復'],
@@ -23,7 +23,7 @@ export const tcpIpQuestions: Question[] = [
   },
   {
     id: 'q-112',
-    topicId: 'tcp-ip',
+    topicId: 'layer4-7',
     questionText: 'ICMPのタイプ8は{{blank}}、タイプ0は{{blank}}に使われる。',
     correctAnswer: 'エコー要求（Echo Request）・エコー応答（Echo Reply）',
     choices: ['エコー要求（Echo Request）・エコー応答（Echo Reply）', 'タイムエクシーデッド・ポート到達不能', 'リダイレクト・宛先到達不能', 'エコー応答・エコー要求'],
@@ -33,7 +33,7 @@ export const tcpIpQuestions: Question[] = [
   },
   {
     id: 'q-113',
-    topicId: 'tcp-ip',
+    topicId: 'layer4-7',
     questionText: 'IPフラグメンテーションを制御するIPヘッダのフィールドで、フラグメント禁止を示すビットを{{blank}}という。',
     correctAnswer: 'DFビット（Don\'t Fragment）',
     choices: ['DFビット（Don\'t Fragment）', 'MFビット（More Fragments）', 'TTL', 'TOS'],
@@ -43,7 +43,7 @@ export const tcpIpQuestions: Question[] = [
   },
   {
     id: 'q-114',
-    topicId: 'tcp-ip',
+    topicId: 'layer4-7',
     questionText: 'UDPはTCPと異なり{{blank}}を提供しない。',
     correctAnswer: '信頼性のある通信（順序保証・再送・コネクション管理）',
     choices: ['信頼性のある通信（順序保証・再送・コネクション管理）', 'チェックサム', 'ポート番号', 'マルチキャスト配信'],

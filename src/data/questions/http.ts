@@ -3,7 +3,7 @@ import type { Question } from '../../types'
 export const httpQuestions: Question[] = [
   {
     id: 'q-040',
-    topicId: 'http',
+    topicId: 'layer4-7',
     questionText: 'HTTP/2が採用した、複数のリクエスト/レスポンスを1つのTCP接続で並行処理する仕組みを{{blank}}という。',
     correctAnswer: 'マルチプレキシング',
     choices: ['マルチプレキシング', 'パイプライン', 'ヘッダ圧縮', 'サーバプッシュ'],
@@ -13,7 +13,7 @@ export const httpQuestions: Question[] = [
   },
   {
     id: 'q-041',
-    topicId: 'http',
+    topicId: 'layer4-7',
     questionText: 'HTTP/3が採用する、UDPベースの転送プロトコルを{{blank}}という。',
     correctAnswer: 'QUIC',
     choices: ['QUIC', 'SCTP', 'DTLS', 'UDP-Lite'],
@@ -23,7 +23,7 @@ export const httpQuestions: Question[] = [
   },
   {
     id: 'q-042',
-    topicId: 'http',
+    topicId: 'layer4-7',
     questionText: 'HTTP/2で採用された、HTTPヘッダを効率的に圧縮する仕組みを{{blank}}という。',
     correctAnswer: 'HPACK',
     choices: ['HPACK', 'gzip', 'deflate', 'Brotli'],
@@ -33,7 +33,7 @@ export const httpQuestions: Question[] = [
   },
   {
     id: 'q-043',
-    topicId: 'http',
+    topicId: 'layer4-7',
     questionText: 'Webサーバがリクエスト前にリソースをクライアントに送信するHTTP/2の機能を{{blank}}という。',
     correctAnswer: 'サーバプッシュ',
     choices: ['サーバプッシュ', 'ロングポーリング', 'WebSocket', 'SSE（Server-Sent Events）'],
@@ -43,7 +43,7 @@ export const httpQuestions: Question[] = [
   },
   {
     id: 'q-044',
-    topicId: 'http',
+    topicId: 'layer4-7',
     questionText: 'Webプロキシのうち、クライアントの代わりにWebサーバに接続するものを{{blank}}という。',
     correctAnswer: 'フォワードプロキシ',
     choices: ['フォワードプロキシ', 'リバースプロキシ', 'トランスペアレントプロキシ', 'SOCKSプロキシ'],
@@ -53,7 +53,7 @@ export const httpQuestions: Question[] = [
   },
   {
     id: 'q-045',
-    topicId: 'http',
+    topicId: 'layer4-7',
     questionText: 'HTTPSにおいてサーバ証明書の有効性をリアルタイムで確認するプロトコルを{{blank}}という。',
     correctAnswer: 'OCSP（Online Certificate Status Protocol）',
     choices: ['OCSP（Online Certificate Status Protocol）', 'CRL', 'HSTS', 'CAA'],
@@ -63,7 +63,7 @@ export const httpQuestions: Question[] = [
   },
   {
     id: 'q-r7-003',
-    topicId: 'http',
+    topicId: 'layer4-7',
     questionText: 'HTTP/3でTCPのパケットロス時に全ストリームが停止してしまう{{blank}}問題を解決する。',
     correctAnswer: 'HoL（Head-of-Line）ブロッキング',
     choices: ['HoL（Head-of-Line）ブロッキング', 'パイプラインストール', 'スロースタート', 'RTOタイムアウト'],
@@ -73,7 +73,7 @@ export const httpQuestions: Question[] = [
   },
   {
     id: 'q-r7-004',
-    topicId: 'http',
+    topicId: 'layer4-7',
     questionText: 'ルータでHTTP/3（QUIC）通信を大量に中継する際、リソース節約のために保持時間を短縮することが推奨される設定を{{blank}}という。',
     correctAnswer: 'NAPT変換エントリーのエージングタイム（タイムアウト）',
     choices: ['NAPT変換エントリーのエージングタイム（タイムアウト）', 'TCPセッションテーブルのタイムアウト', 'ARPキャッシュの保持時間', 'ルーティングテーブルの保持時間'],

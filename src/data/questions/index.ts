@@ -34,6 +34,7 @@ import { securityAttackQuestions } from './security-attack'
 import { ldapAuthQuestions } from './ldap-auth'
 import { ipv6Questions } from './ipv6'
 import { iotQuestions } from './iot'
+import { vrrpQuestions } from './vrrp'
 
 export type { Question }
 
@@ -43,13 +44,14 @@ export const questions: Question[] = [
   ...dnsQuestions,
   ...dhcpQuestions,
   ...httpQuestions,
+  ...tcpIpQuestions,
   ...mailQuestions,
   ...sslTlsQuestions,
   ...ipsecQuestions,
   ...firewallQuestions,
   ...idsIpsQuestions,
   ...wirelessQuestions,
-  ...tcpIpQuestions,
+  ...vrrpQuestions,
   ...voipQuestions,
   ...wanQuestions,
   ...monitoringQuestions,

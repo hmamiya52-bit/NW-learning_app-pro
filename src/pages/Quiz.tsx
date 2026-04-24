@@ -9,6 +9,9 @@ import QuizQuestion from '../components/quiz/QuizQuestion'
 import ResultMultipleChoice from '../components/quiz/ResultMultipleChoice'
 import ResultWritten from '../components/quiz/ResultWritten'
 import QuizSummary from './QuizSummary'
+import { recordGamificationAnswer } from '../lib/gamification'
+import BadgeUnlockToast from '../components/gamification/BadgeUnlockToast'
+import type { BadgeDefinition } from '../data/badges'
 
 type Phase = 'mode-select' | 'question' | 'result-mc' | 'result-wr' | 'summary'
 type AnswerMode = 'multiple-choice' | 'written'
@@ -90,6 +93,8 @@ export default function Quiz() {
   const [lastWritten, setLastWritten] = useState('')
   const [lastIsCorrect, setLastIsCorrect] = useState(false)
   const [autoCorrect, setAutoCorrect] = useState(false)
+  const [lastXpGained, setLastXpGained] = useState(0)
+  const [pendingBadges, setPendingBadges] = useState<BadgeDefinition[]>([])
 
   // セッション開始（sessionIdが変わるたびにリセット）
   const startedSessionId = useRef('')
@@ -128,6 +133,16 @@ export default function Quiz() {
         answeredAt: new Date().toISOString(),
       })
       updateProgress(currentQuestion.topicId, isCorrect)
+      const gr = recordGamificationAnswer({
+        questionId: currentQuestion.id,
+        topicId: currentQuestion.topicId,
+        isCorrect,
+        mode: 'multiple-choice',
+        isImportant: currentQuestion.isImportant,
+        difficulty: currentQuestion.difficulty,
+      })
+      setLastXpGained(gr.xpGained)
+      if (gr.newBadges.length > 0) setPendingBadges((prev) => [...prev, ...gr.newBadges])
       setPhase('result-mc')
     },
     [currentQuestion]
@@ -149,6 +164,16 @@ export default function Quiz() {
           answeredAt: new Date().toISOString(),
         })
         updateProgress(currentQuestion.topicId, true)
+        const gr = recordGamificationAnswer({
+          questionId: currentQuestion.id,
+          topicId: currentQuestion.topicId,
+          isCorrect: true,
+          mode: 'written',
+          isImportant: currentQuestion.isImportant,
+          difficulty: currentQuestion.difficulty,
+        })
+        setLastXpGained(gr.xpGained)
+        if (gr.newBadges.length > 0) setPendingBadges((prev) => [...prev, ...gr.newBadges])
         setLastIsCorrect(true)
         setAutoCorrect(true)
       } else {
@@ -205,6 +230,16 @@ export default function Quiz() {
         answeredAt: new Date().toISOString(),
       })
       updateProgress(currentQuestion.topicId, isCorrect)
+      const gr = recordGamificationAnswer({
+        questionId: currentQuestion.id,
+        topicId: currentQuestion.topicId,
+        isCorrect,
+        mode: 'written',
+        isImportant: currentQuestion.isImportant,
+        difficulty: currentQuestion.difficulty,
+      })
+      setLastXpGained(gr.xpGained)
+      if (gr.newBadges.length > 0) setPendingBadges((prev) => [...prev, ...gr.newBadges])
       setLastIsCorrect(isCorrect)
       advanceOrFinish(isCorrect)
     },
@@ -308,6 +343,7 @@ export default function Quiz() {
         )}
 
         {/* ── 問題 ── */}
+        {/* key={currentQuestion.id}: 問題切替時に再マウントし writtenValue・入力状態をリセットする。この key を除去しないこと */}
         {phase === 'question' && currentQuestion && (
           <QuizQuestion
             key={currentQuestion.id}
@@ -328,6 +364,7 @@ export default function Quiz() {
             isCorrect={lastIsCorrect}
             onNext={handleNextMC}
             isLast={isLast}
+            xpGained={lastXpGained}
           />
         )}
 
@@ -340,6 +377,7 @@ export default function Quiz() {
             onNext={handleNextAutoCorrect}
             isAutoCorrect={autoCorrect}
             isLast={isLast}
+            xpGained={lastXpGained}
           />
         )}
 
@@ -352,6 +390,12 @@ export default function Quiz() {
           />
         )}
       </main>
+      {pendingBadges.length > 0 && (
+        <BadgeUnlockToast
+          badges={pendingBadges}
+          onDone={() => setPendingBadges([])}
+        />
+      )}
     </div>
   )
 }

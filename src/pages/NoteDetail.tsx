@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { categories } from '../data/categories'
 
-// NOTE_DB に存在するカテゴリIDの順序リスト（前後ナビ用）
-const NOTE_CATEGORY_IDS = [
+// NOTE_DB に存在するカテゴリIDの順序リスト（前後ナビ用 / Notes 一覧フィルタ用）
+export const NOTE_CATEGORY_IDS = [
   'layer1-3', 'layer4-7', 'firewall', 'wireless', 'routing',
   'vrrp', 'wan', 'load-balancer', 'dhcp', 'dns',
   'mail', 'voip', 'ipsec', 'sdn', 'security',
@@ -13,9 +13,16 @@ const NOTE_CATEGORY_IDS = [
 // ─────────────────────────────────────────────
 // Types
 // ─────────────────────────────────────────────
+interface ProtocolEntry {
+  name: string
+  transport: string
+  ports: string
+}
+
 interface NoteSection {
   heading: string
-  items: string[]
+  items?: string[]
+  protocols?: ProtocolEntry[]
 }
 
 interface NoteData {
@@ -88,6 +95,106 @@ function renderText(text: string, hideRed: boolean, version: number): React.Reac
 }
 
 // ─────────────────────────────────────────────
+// プロトコルテーブル用：名前/ポートを個別トグル
+// ─────────────────────────────────────────────
+interface ProtoCellProps {
+  text: string
+  isRed: boolean    // この列が「赤字対象」か
+  isHidden: boolean // 赤字を隠す状態か（= isRed && hideRed）
+  isPort?: boolean  // ポート列：数字のみ赤字・マスク、記号は残す
+  version: number
+}
+
+function ProtoCell({ text, isRed, isHidden, isPort, version }: ProtoCellProps) {
+  const [revealed, setRevealed] = useState(false)
+
+  useEffect(() => {
+    setRevealed(false)
+  }, [isRed, isHidden, version])
+
+  // 赤字対象でない → 通常表示
+  if (!isRed) {
+    return <span className="font-semibold text-slate-800">{text}</span>
+  }
+
+  // ── ポート列：数字のみ対象 ──
+  if (isPort) {
+    const parts = text.split(/(\d+)/g)
+    const renderParts = (numClass: string) =>
+      parts.map((part, i) =>
+        /^\d+$/.test(part) ? (
+          <span key={i} className={numClass}>{part}</span>
+        ) : (
+          <span key={i} className="text-slate-600">{part}</span>
+        )
+      )
+
+    if (!isHidden) {
+      // 赤字表示（非マスク）：数字だけ赤
+      return <span>{renderParts('text-red-600 font-bold')}</span>
+    }
+    // マスク状態
+    return (
+      <span
+        role="button" tabIndex={0}
+        className="cursor-pointer"
+        title={revealed ? 'タップで再び隠す' : 'タップで表示'}
+        onClick={() => setRevealed((v) => !v)}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setRevealed((v) => !v) } }}
+      >
+        {parts.map((part, i) =>
+          /^\d+$/.test(part) ? (
+            revealed ? (
+              <span key={i} className="text-red-600 font-bold underline decoration-dotted">{part}</span>
+            ) : (
+              <span
+                key={i}
+                className="rounded select-none"
+                style={{ backgroundColor: '#c0392b', color: 'transparent', padding: '0 2px' }}
+              >{part}</span>
+            )
+          ) : (
+            <span key={i} className="text-slate-500">{part}</span>
+          )
+        )}
+      </span>
+    )
+  }
+
+  // ── 名前列：全体を対象 ──
+  if (!isHidden) {
+    // 赤字表示（非マスク）
+    return <span className="text-red-600 font-bold">{text}</span>
+  }
+  // マスク状態
+  if (revealed) {
+    return (
+      <span
+        role="button" tabIndex={0}
+        className="text-red-600 font-bold cursor-pointer underline decoration-dotted"
+        title="タップで再び隠す"
+        onClick={() => setRevealed(false)}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setRevealed(false) } }}
+      >
+        {text}
+      </span>
+    )
+  }
+  return (
+    <span
+      role="button" tabIndex={0}
+      className="rounded px-0.5 cursor-pointer select-none"
+      style={{ backgroundColor: '#c0392b', color: 'transparent' }}
+      title="タップで表示"
+      onClick={() => setRevealed(true)}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setRevealed(true) } }}
+    >
+      {text}
+    </span>
+  )
+}
+
+// ─────────────────────────────────────────────
 // Note content database (all 19 categories)
 // ==重要語== で赤字マーク
 // ─────────────────────────────────────────────
@@ -109,7 +216,7 @@ const NOTE_DB: Record<string, NoteData> = {
         items: [
           '目的：L2ループによる==ブロードキャストストーム==を防止',
           'BPDUフレームでループを検出し、一部ポートを==ブロッキング==状態に',
-          '==RSTP==（IEEE 802.1w）：コンバージェンス時間を約==30秒→数秒==に短縮',
+          '==RSTP==（IEEE 802.1w）：コンバージェンス時間を約==30==秒→==数秒==に短縮',
           'ルートブリッジ：最小==Bridge ID==を持つSWが選出される',
         ],
       },
@@ -117,7 +224,7 @@ const NOTE_DB: Record<string, NoteData> = {
         heading: 'VLAN',
         items: [
           '論理的にL2ネットワークを分割する技術',
-          '==IEEE 802.1Q==：トランクポートでVLAN IDタグ（==4バイト==、==12ビット==ID）を付加',
+          '==IEEE 802.1Q==：トランクポートでVLAN IDタグ（==4==バイト、==12==ビットID）を付加',
           '最大==4094==のVLANを識別可能',
           '==アクセスポート==：タグなし（端末向け）、==トランクポート==：タグあり（SW間）',
         ],
@@ -125,7 +232,7 @@ const NOTE_DB: Record<string, NoteData> = {
       {
         heading: 'ARP / GARP',
         items: [
-          'ARP：==IPアドレス → MACアドレス==の解決（同一L2セグメント内）',
+          'ARP：==IPアドレス== → ==MACアドレス==の解決（同一L2セグメント内）',
           '==Gratuitous ARP（GARP）==：自身のIPをブロードキャストし、近隣のARPキャッシュを更新。HA切替時に使用',
           'ARPスプーフィング：偽のGARPで==中間者攻撃==を実行する脅威',
         ],
@@ -176,10 +283,10 @@ const NOTE_DB: Record<string, NoteData> = {
     ],
     exam_tips: [
       'STPとRSTPの違い（収束時間）は頻出',
-      '802.1Qのタグ構造（==4バイト==：TPID 2B + TCI 2B）',
+      '802.1Qのタグ構造（==4==バイト：TPID 2B + TCI 2B）',
       'ブロードキャストドメインは==ルータ（L3）==で分割、コリジョンドメインは==SW（L2）==で分割',
       '==fe80::/10==（リンクローカル）は令和7年本試験に出題',
-      'DADの手順（==NS送信→応答なし→アドレス採用==）とSLAACの流れを整理',
+      'DADの手順（==NS送信==→==応答なし==→==アドレス採用==）とSLAACの流れを整理',
       'NDPの4メッセージ（==NS/NA/RS/RA==）の役割を区別',
     ],
   },
@@ -219,7 +326,7 @@ const NOTE_DB: Record<string, NoteData> = {
         heading: 'UDPとの比較',
         items: [
           '==UDP==：コネクションレス・再送なし・低遅延。DNS・DHCP・NTP・VoIP・動画配信に向く',
-          'TCPのオーバーヘッド：ヘッダが最低==20バイト==。UDPは==8バイト==',
+          'TCPのオーバーヘッド：ヘッダが最低==20==バイト。UDPは==8==バイト',
         ],
       },
       {
@@ -248,7 +355,7 @@ const NOTE_DB: Record<string, NoteData> = {
       },
     ],
     exam_tips: [
-      '3ウェイハンドシェイクの手順（==SYN→SYN-ACK→ACK==）は絶対暗記',
+      '3ウェイハンドシェイクの手順（==SYN==→==SYN-ACK==→==ACK==）は絶対暗記',
       'スロースタートとssthreshの関係を数値で説明できるように',
       'ICMPのタイプ番号（==0/8/3/11==）はpingとtracerouteの理解に必須',
       'HTTP/2と3の違い（==TCP vs QUIC==）は令和7年本試験に出題',
@@ -281,7 +388,7 @@ const NOTE_DB: Record<string, NoteData> = {
         heading: 'DMZ（非武装地帯）',
         items: [
           '外部公開サーバ（Web・Mail・DNS）を内部LANとも外部とも==分離したゾーン==',
-          'ファイアウォールで「外部→DMZ」と「==DMZ→内部==」のアクセスを個別に制御',
+          'ファイアウォールで「外部→DMZ」と「==DMZ==→==内部==」のアクセスを個別に制御',
           '典型的な==3ゾーン==構成：外部（Internet）/ DMZ / 内部（Internal）',
         ],
       },
@@ -310,7 +417,7 @@ const NOTE_DB: Record<string, NoteData> = {
     ],
     exam_tips: [
       'ステートフルとパケットフィルタリングの違いは必出',
-      'NAPTで同時セッション数に上限がある理由（ポート番号が==16ビット==＝約65000）',
+      'NAPTで同時セッション数に上限がある理由（ポート番号が==16==ビット＝約65000）',
       'DMZの概念と3ゾーン構成は毎年出題レベル',
       'シグネチャ型 vs アノマリ型の長所・短所を対比で覚える',
       'WAFの防御範囲（==L7アプリ層==）とIPSの防御範囲（L3-L7）の違い',
@@ -325,11 +432,11 @@ const NOTE_DB: Record<string, NoteData> = {
         heading: 'IEEE 802.11 規格の変遷',
         items: [
           '802.11a/b/g：初期規格（54Mbps以下）',
-          '==802.11n==（Wi-Fi 4）：MIMO・2.4/5GHz両対応。最大==600Mbps==',
-          '==802.11ac==（Wi-Fi 5）：5GHzのみ。MU-MIMO・==256-QAM==。最大==6.9Gbps==',
-          '==802.11ax==（Wi-Fi 6）：2.4/5GHz。==OFDMA==・==1024-QAM==・==TWT==（省電力）。最大==9.6Gbps==',
+          '==802.11n==（Wi-Fi 4）：MIMO・2.4/5GHz両対応。最大==600==Mbps',
+          '==802.11ac==（Wi-Fi 5）：5GHzのみ。MU-MIMO・==256-QAM==。最大==6.9==Gbps',
+          '==802.11ax==（Wi-Fi 6）：2.4/5GHz。==OFDMA==・==1024-QAM==・==TWT==（省電力）。最大==9.6==Gbps',
           '802.11ax 6E（Wi-Fi 6E）：==6GHz帯==追加',
-          '==802.11be==（Wi-Fi 7）：==320MHz==・==4096-QAM==・==MLO==・プリアンブルパンクチャリング。最大==46Gbps==',
+          '==802.11be==（Wi-Fi 7）：==320==MHz・==4096-QAM==・==MLO==・プリアンブルパンクチャリング。最大==46==Gbps',
         ],
       },
       {
@@ -354,17 +461,17 @@ const NOTE_DB: Record<string, NoteData> = {
         heading: 'Wi-Fi 7（令和8年度予想）',
         items: [
           '==MLO==（Multi-Link Operation）：複数バンドを同時使用。超低遅延・高スループット',
-          '==4096-QAM==：Wi-Fi 6の1024-QAMより約==20%==効率向上',
-          '最大帯域幅：==320MHz==（Wi-Fi 6の2倍）',
+          '==4096-QAM==：Wi-Fi 6の1024-QAMより約==20==%効率向上',
+          '最大帯域幅：==320==MHz（Wi-Fi 6の2倍）',
           '==プリアンブルパンクチャリング==：干渉部分を除外して広帯域通信',
-          '空間ストリーム：最大==16本==（Wi-Fi 6の2倍）',
+          '空間ストリーム：最大==16==本（Wi-Fi 6の2倍）',
         ],
       },
     ],
     exam_tips: [
       'CCMP（==WPA2==）・TKIP（==WPA==）・RC4（==WEP==）の対応を整理',
       '802.1Xの3者構成（サプリカント・Authenticator・RADIUS）は図で覚える',
-      'Wi-Fi 7の==MLO==・==4096-QAM==・==320MHz==は令和8年度最重要予想',
+      'Wi-Fi 7の==MLO==・==4096-QAM==・==320==MHzは令和8年度最重要予想',
     ],
   },
 
@@ -387,7 +494,7 @@ const NOTE_DB: Record<string, NoteData> = {
           'LSAを交換 → ==LSDB==（Link State Database）構築 → SPFで最短経路算出',
           '==DR/BDR==の選出：マルチアクセスネットワークでLSAフラッディングを効率化',
           'DRへの送信：==224.0.0.6== / 全OSPFルータへの送信：==224.0.0.5==',
-          'コスト = リファレンス帯域幅（デフォルト==100Mbps==）÷ インタフェース帯域幅',
+          'コスト = リファレンス帯域幅（デフォルト==100==Mbps）÷ インタフェース帯域幅',
         ],
       },
       {
@@ -551,7 +658,7 @@ const NOTE_DB: Record<string, NoteData> = {
           '==スタブリゾルバ==（クライアント）：フルリゾルバに==再帰問い合わせ==',
           '==フルサービスリゾルバ==（キャッシュDNS）：ルート→TLD→権威と==反復問い合わせ==',
           '==権威DNSサーバ==：ゾーン情報の正式な回答者',
-          'ルートDNSサーバ：世界==13系統==。TLDのDNSへ委任（リファーラル）',
+          'ルートDNSサーバ：世界==13==系統。TLDのDNSへ委任（リファーラル）',
         ],
       },
       {
@@ -643,8 +750,8 @@ const NOTE_DB: Record<string, NoteData> = {
         heading: 'QoS',
         items: [
           '==ジッタ==：パケット到着間隔のばらつき。ジッタバッファで吸収するが遅延が増加',
-          '==DSCP==（Differentiated Services Code Point）：IPヘッダのTOSフィールド上位==6ビット==。==EF==（Expedited Forwarding）が音声に最適',
-          '推奨遅延：片方向==#====150ms==以内。ジッタ：==30ms==以内。パケットロス：==1%==以下',
+          '==DSCP==（Differentiated Services Code Point）：IPヘッダのTOSフィールド上位==6==ビット。==EF==（Expedited Forwarding）が音声に最適',
+          '推奨遅延：片方向==150==ms以内。ジッタ：==30==ms以内。パケットロス：==1==%以下',
         ],
       },
     ],
@@ -897,43 +1004,105 @@ const NOTE_DB: Record<string, NoteData> = {
   },
 
   'protocol-review': {
-    summary: '主要プロトコルのレイヤ・ポート番号・用途の一覧。試験直前の総まとめに最適。',
+    summary: 'L1〜L7の全レイヤを体系的に整理。ポート番号・プロトコル番号・Ethertype・イーサネット規格を一覧化。試験直前の総まとめに最適。',
     sections: [
       {
-        heading: 'アプリケーション層（L7）',
-        items: [
-          '==HTTP/HTTPS==：TCP 80/443',
-          '==DNS==：UDP/TCP 53',
-          '==SMTP==：TCP 25（送信）/ ==587==（サブミッション）',
-          '==POP3==：TCP 110（平文）/ ==995==（SSL）',
-          '==IMAP4==：TCP 143（平文）/ ==993==（SSL）',
-          '==FTP==：TCP 21（制御）/ 20（データ）',
-          '==TFTP==：UDP 69',
-          '==SNMP==：UDP 161（エージェント）/ 162（トラップ）',
-          '==NTP==：UDP 123',
-          '==LDAP==：TCP 389（平文）/ 636（LDAPS）',
-          '==RADIUS==：UDP 1812（認証）/ 1813（アカウンティング）',
-          '==SIP==：UDP/TCP 5060 / 5061（TLS）',
-          '==BGP==：TCP 179',
-          '==MQTT==：TCP 1883 / 8883（TLS）',
-          '==CoAP==：UDP 5683',
+        heading: 'アプリケーション層（L5〜L7）— プロトコルとポート番号',
+        protocols: [
+          { name: 'HTTP',         transport: 'TCP',     ports: '80' },
+          { name: 'HTTPS',        transport: 'TCP',     ports: '443' },
+          { name: 'DNS',          transport: 'UDP/TCP', ports: '53' },
+          { name: 'SMTP',         transport: 'TCP',     ports: '25（送信）/ 587（サブミッション）' },
+          { name: 'POP3',         transport: 'TCP',     ports: '110（平文）/ 995（SSL）' },
+          { name: 'IMAP4',        transport: 'TCP',     ports: '143（平文）/ 993（SSL）' },
+          { name: 'SSH',          transport: 'TCP',     ports: '22' },
+          { name: 'Telnet',       transport: 'TCP',     ports: '23' },
+          { name: 'FTP',          transport: 'TCP',     ports: '21（制御）/ 20（データ・アクティブ）' },
+          { name: 'TFTP',         transport: 'UDP',     ports: '69' },
+          { name: 'DHCP',         transport: 'UDP',     ports: '67（サーバ）/ 68（クライアント）' },
+          { name: 'SNMP',         transport: 'UDP',     ports: '161（Get/Set）/ 162（Trap）' },
+          { name: 'NTP',          transport: 'UDP',     ports: '123' },
+          { name: 'Syslog',       transport: 'UDP',     ports: '514' },
+          { name: 'LDAP',         transport: 'TCP',     ports: '389（平文）/ 636（LDAPS）' },
+          { name: 'LDAPS',        transport: 'TCP',     ports: '636' },
+          { name: 'RADIUS',       transport: 'UDP',     ports: '1812（認証）/ 1813（課金）' },
+          { name: 'SIP',          transport: 'UDP/TCP', ports: '5060（平文）/ 5061（TLS）' },
+          { name: 'BGP',          transport: 'TCP',     ports: '179' },
+          { name: 'MQTT',         transport: 'TCP',     ports: '1883（平文）/ 8883（TLS）' },
+          { name: 'CoAP',         transport: 'UDP',     ports: '5683' },
+          { name: 'QUIC / HTTP/3',transport: 'UDP',     ports: '443' },
+          { name: 'OpenFlow',     transport: 'TCP',     ports: '6653' },
+          { name: 'IKEv2',        transport: 'UDP',     ports: '500（通常）/ 4500（NAT-T）' },
         ],
       },
       {
-        heading: '主要プロトコルのレイヤ',
+        heading: 'トランスポート層（L4）',
         items: [
-          'L2：イーサネット・VLAN（802.1Q）・STP（802.1D）・LACP（802.3ad）',
-          'L2/L3：ARP・VRRP・MPLS',
-          'L3：IP・ICMP・OSPF・BGP・IPsec（ESP/AH）',
-          'L4：TCP・UDP・SCTP',
-          'L5〜L7：TLS・HTTP・DNS・FTP・SMTP',
+          '==TCP==（IPプロトコル番号：==6==）：コネクション型・信頼性転送・フロー制御・輻輳制御・3ウェイハンドシェイク',
+          '==UDP==（IPプロトコル番号：==17==）：コネクションレス・低遅延・再送なし。VoIP・DNS・DHCP・QUIC に使用',
+          '==SCTP==（IPプロトコル番号：==132==）：マルチホーミング・マルチストリーム対応。信頼性はTCP相当',
+          'ウェルノウンポート：==0〜1023==（システムサービス用・root権限が必要）',
+          '登録ポート：==1024〜49151==（アプリケーションが登録して使用）',
+          'エフェメラルポート：==49152〜65535==（クライアントが一時的に使用する動的ポート）',
+        ],
+      },
+      {
+        heading: 'ネットワーク層（L3）— IPプロトコル番号',
+        items: [
+          'ICMP：プロトコル番号 ==1==',
+          'TCP：プロトコル番号 ==6==',
+          'UDP：プロトコル番号 ==17==',
+          'GRE：プロトコル番号 ==47==',
+          'ESP（IPsec）：プロトコル番号 ==50==',
+          'AH（IPsec）：プロトコル番号 ==51==',
+          'OSPF：プロトコル番号 ==89==',
+          'SCTP：プロトコル番号 ==132==',
+        ],
+      },
+      {
+        heading: 'ICMPタイプ番号（L3）',
+        items: [
+          'Type ==0==：Echo Reply（ping 応答）',
+          'Type ==3==：Destination Unreachable（到達不能）。Code ==3== = Port Unreachable',
+          'Type ==5==：Redirect（より良い経路をホストに通知）',
+          'Type ==8==：Echo Request（ping 要求）',
+          'Type ==11==：Time Exceeded（TTL=0。==traceroute== に使用）',
+        ],
+      },
+      {
+        heading: 'マルチキャストアドレス（L3）',
+        items: [
+          '==224.0.0.5==：全 OSPF ルータ宛',
+          '==224.0.0.6==：OSPF の DR/BDR 宛',
+          '==224.0.0.9==：RIPv2 ルータ宛',
+          '==224.0.0.18==：VRRP 宛',
+          '==ff02::1==：リンクローカル全ノード（IPv6）',
+          '==ff02::2==：リンクローカル全ルータ（IPv6）',
+          '==ff02::5==：OSPFv3 全ルータ（IPv6）',
+        ],
+      },
+      {
+        heading: '物理層（L1）— 主要イーサネット規格',
+        items: [
+          '==100BASE-TX==：Fast Ethernet。UTP Cat5。最大 ==100==m',
+          '==1000BASE-T==：GbE。UTP Cat5e。最大 ==100==m',
+          '==1000BASE-SX==：GbE。マルチモードファイバ（MMF）。最大 ==550==m',
+          '==1000BASE-LX==：GbE。シングルモードファイバ（SMF）。最大 ==5==km',
+          '==10GBASE-T==：10GbE。UTP Cat6a。最大 ==100==m',
+          '==10GBASE-SR==：10GbE。マルチモードファイバ（MMF）。最大 ==300==m',
+          '==10GBASE-LR==：10GbE。シングルモードファイバ（SMF）。最大 ==10==km',
+          '==40GBASE-SR4==：40GbE。MMF×4 レーン（QSFP+）。最大 ==150==m',
+          '==100GBASE-SR4==：100GbE。MMF×4 レーン（QSFP28）。最大 ==100==m',
         ],
       },
     ],
     exam_tips: [
-      'ポート番号は==平文 vs 暗号化版==をセットで暗記',
-      '==UDP使用プロトコル==：DNS・SNMP・NTP・TFTP・DHCP・QUIC',
-      '==BGPはTCP==（他のルーティングプロトコルと異なる）',
+      'ポート番号は==平文 vs 暗号化版==をセットで暗記（HTTP:80/HTTPS:443、SMTP:25/587、POP3:110/995、IMAP4:143/993、LDAP:389/636）',
+      '==UDP 使用プロトコル==：DNS・SNMP・NTP・TFTP・DHCP・Syslog・RADIUS・CoAP・QUIC（HTTP/3）',
+      '==BGP は TCP 179==（OSPF・RIP・VRRP は IP を直接使用）',
+      'IP プロトコル番号：==ICMP=1==・==TCP=6==・==UDP=17==・==GRE=47==・==ESP=50==・==AH=51==・==OSPF=89==',
+      'ICMP タイプ：==0/8==（ping 応答/要求）・==11==（TTL 超過・traceroute）・==3==（到達不能）',
+      'Ethertype：==0x0800==（IPv4）・==0x0806==（ARP）・==0x86DD==（IPv6）・==0x8100==（VLAN）',
     ],
   },
 
@@ -952,7 +1121,7 @@ const NOTE_DB: Record<string, NoteData> = {
         heading: 'LPWA（Low Power Wide Area）',
         items: [
           '==LoRaWAN==：==チャープ変調（CSS）==。==920MHz帯==。数km〜数十kmの長距離通信',
-          '==Sigfox==：Ultra-Narrow Band変調。月単位の電池駆動。最大==12バイト/メッセージ==',
+          '==Sigfox==：Ultra-Narrow Band変調。月単位の電池駆動。最大==12==バイト/メッセージ',
           '==NB-IoT / LTE-M==：3GPP標準。既存LTE基地局活用。キャリアサービス',
           '==Wi-SUN==：スマートメーター向けメッシュネットワーク（日本標準）',
         ],
@@ -993,11 +1162,28 @@ export default function NoteDetail() {
   const [hideRed, setHideRed] = useState(false)
   // マスクモードを ON にするたびにインクリメントして RedWord をリセット
   const [maskVersion, setMaskVersion] = useState(0)
+  // プロトコルテーブル専用マスクモード（protocol-review ページのみ）
+  const [protoMask, setProtoMask] = useState<'none' | 'name' | 'port'>('none')
+  const [protoVersion, setProtoVersion] = useState(0)
+
+  const setProtoMaskMode = (mode: 'none' | 'name' | 'port') => {
+    setProtoMask(mode)
+    setProtoVersion((v) => v + 1)
+  }
+
+  const [toastVisible, setToastVisible] = useState(false)
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const toggleHide = () => {
     setHideRed((v) => {
-      if (!v) setMaskVersion((k) => k + 1) // ONにするとき全リセット
-      return !v
+      const next = !v
+      if (next) {
+        setMaskVersion((k) => k + 1) // ONにするとき全リセット
+        if (toastTimerRef.current) clearTimeout(toastTimerRef.current)
+        setToastVisible(true)
+        toastTimerRef.current = setTimeout(() => setToastVisible(false), 3000)
+      }
+      return next
     })
   }
 
@@ -1019,7 +1205,7 @@ export default function NoteDetail() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#f8fafc' }}>
-      <div className="max-w-3xl mx-auto px-4 pb-16 pt-6">
+      <div className="max-w-3xl mx-auto px-4 pb-32 pt-6">
 
         {/* Breadcrumb */}
         <nav className="flex items-center gap-2 text-xs text-slate-400 mb-4">
@@ -1041,33 +1227,20 @@ export default function NoteDetail() {
               <h1 className="text-2xl font-black text-slate-800">{category.name} ノート</h1>
             </div>
 
-            {/* 暗記モードトグル */}
-            <button
-              onClick={toggleHide}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold border-2 transition-all shadow-sm ${
-                hideRed
-                  ? 'bg-red-600 border-red-600 text-white shadow-red-200'
-                  : 'bg-white border-red-400 text-red-600 hover:bg-red-50'
-              }`}
-              aria-pressed={hideRed}
-            >
-              <span className="text-base">{hideRed ? '👁' : '📕'}</span>
-              {hideRed ? '赤字を表示する' : '赤字を隠す'}
-            </button>
           </div>
 
           {/* 凡例 */}
-          <div className="flex items-center gap-3 text-xs text-slate-500 bg-white border border-slate-200 rounded-lg px-3 py-2">
+          <div className="flex items-center gap-3 text-xs text-slate-500 bg-white border border-slate-200 rounded-lg px-3 py-2 flex-wrap">
             <span className="text-red-600 font-bold">赤字</span>
             <span>= 重要暗記ワード</span>
             <span className="mx-1 text-slate-300">|</span>
-            {hideRed ? (
+            {hideRed || (categoryId === 'protocol-review' && protoMask !== 'none') ? (
               <span className="flex items-center gap-1 flex-wrap">
                 <span className="inline-block w-10 rounded text-center text-xs" style={{ backgroundColor: '#c0392b', color: 'transparent' }}>隠れ</span>
                 <span>をタップで表示 / もう一度タップで再び隠す</span>
               </span>
             ) : (
-              <span>「赤字を隠す」ボタンで暗記テストができます</span>
+              <span>画面下の「赤字を隠す」で暗記テストができます</span>
             )}
           </div>
         </div>
@@ -1076,17 +1249,82 @@ export default function NoteDetail() {
         <div className="space-y-5">
           {note.sections.map((section, i) => (
             <div key={i} className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-              <div className="px-5 py-3 border-b border-slate-100" style={{ backgroundColor: '#1a3a5c' }}>
-                <h2 className="text-sm font-bold text-white">{section.heading}</h2>
+              <div
+                className={`px-5 py-3 border-b border-slate-100 ${section.protocols ? 'flex items-center justify-between gap-2' : ''}`}
+                style={{ backgroundColor: '#1a3a5c' }}
+              >
+                <h2 className="text-sm font-bold text-white leading-snug">{section.heading}</h2>
+                {section.protocols && (
+                  <div className="flex items-center gap-1 flex-shrink-0">
+                    <button
+                      onClick={() => setProtoMaskMode(protoMask === 'name' ? 'none' : 'name')}
+                      className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-colors ${
+                        protoMask === 'name'
+                          ? 'bg-red-500 text-white'
+                          : 'bg-blue-800 text-blue-200 hover:bg-blue-700'
+                      }`}
+                    >
+                      {protoMask === 'name' ? '名前が赤字 ✓' : '名前を赤字に'}
+                    </button>
+                    <button
+                      onClick={() => setProtoMaskMode(protoMask === 'port' ? 'none' : 'port')}
+                      className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-colors ${
+                        protoMask === 'port'
+                          ? 'bg-red-500 text-white'
+                          : 'bg-blue-800 text-blue-200 hover:bg-blue-700'
+                      }`}
+                    >
+                      {protoMask === 'port' ? 'ポートが赤字 ✓' : 'ポートを赤字に'}
+                    </button>
+                  </div>
+                )}
               </div>
-              <ul className="px-5 py-4 space-y-2">
-                {section.items.map((item, j) => (
-                  <li key={j} className="flex items-start gap-2 text-sm text-slate-700 leading-relaxed">
-                    <span className="flex-shrink-0 mt-1.5 w-1.5 h-1.5 rounded-full bg-blue-400" />
-                    <span>{renderText(item, hideRed, maskVersion)}</span>
-                  </li>
-                ))}
-              </ul>
+              {section.protocols ? (
+                <div className="px-5 py-3 overflow-x-auto">
+                  <table className="w-full text-sm border-collapse">
+                    <thead>
+                      <tr className="text-xs text-slate-400 border-b border-slate-100">
+                        <th className="text-left pb-2 pr-4 font-semibold">プロトコル</th>
+                        <th className="text-left pb-2 pr-4 font-semibold w-20">種別</th>
+                        <th className="text-left pb-2 font-semibold">ポート / 番号</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {section.protocols.map((entry, j) => (
+                        <tr key={j} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
+                          <td className="py-1.5 pr-4">
+                            <ProtoCell
+                              text={entry.name}
+                              isRed={protoMask === 'name'}
+                              isHidden={protoMask === 'name' && hideRed}
+                              version={protoVersion + maskVersion}
+                            />
+                          </td>
+                          <td className="py-1.5 pr-4 text-slate-400 text-xs font-mono">{entry.transport}</td>
+                          <td className="py-1.5 font-mono text-xs">
+                            <ProtoCell
+                              text={entry.ports}
+                              isRed={protoMask === 'port'}
+                              isHidden={protoMask === 'port' && hideRed}
+                              isPort
+                              version={protoVersion + maskVersion}
+                            />
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <ul className="px-5 py-4 space-y-2">
+                  {(section.items ?? []).map((item, j) => (
+                    <li key={j} className="flex items-start gap-2 text-sm text-slate-700 leading-relaxed">
+                      <span className="flex-shrink-0 mt-1.5 w-1.5 h-1.5 rounded-full bg-blue-400" />
+                      <span>{renderText(item, hideRed, maskVersion)}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           ))}
         </div>
@@ -1145,6 +1383,34 @@ export default function NoteDetail() {
           >
             問題を解く →
           </Link>
+        </div>
+      </div>
+      {/* ─── トースト通知 ─── */}
+      {toastVisible && (
+        <div
+          className="fixed bottom-16 left-1/2 -translate-x-1/2 z-40 bg-slate-800 text-white text-sm rounded-xl px-4 py-2.5 shadow-lg flex items-center gap-2 whitespace-nowrap"
+          role="status"
+          aria-live="polite"
+        >
+          <span>👆</span>
+          <span>赤字をタップすると答えが表示されます</span>
+        </div>
+      )}
+      {/* ─── スティッキーフッター：赤字を隠す ─── */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur border-t border-slate-200 shadow-lg z-30">
+        <div className="max-w-3xl mx-auto px-4 py-2.5 flex justify-center sm:justify-end">
+          <button
+            onClick={toggleHide}
+            className={`flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-bold border-2 transition-all shadow-sm ${
+              hideRed
+                ? 'bg-red-600 border-red-600 text-white shadow-red-200'
+                : 'bg-white border-red-400 text-red-600 hover:bg-red-50'
+            }`}
+            aria-pressed={hideRed}
+          >
+            <span className="text-base">{hideRed ? '👁' : '📕'}</span>
+            {hideRed ? '赤字を表示する' : '赤字を隠す'}
+          </button>
         </div>
       </div>
     </div>

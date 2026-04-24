@@ -1,5 +1,8 @@
 import { Link } from 'react-router-dom'
 import { categories } from '../data/categories'
+import { NOTE_CATEGORY_IDS } from './NoteDetail'
+
+const NOTE_AVAILABLE = new Set(NOTE_CATEGORY_IDS)
 
 // Category icon colors for visual variety
 const CARD_COLORS: string[] = [
@@ -44,9 +47,9 @@ export default function Notes() {
           <p className="text-sm text-slate-500">各分野の重要知識を1ページで確認</p>
         </div>
 
-        {/* Category grid */}
+        {/* Category grid（ノート未収録カテゴリは非表示） */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {categories.map((cat, idx) => {
+          {categories.filter((cat) => NOTE_AVAILABLE.has(cat.id)).map((cat, idx) => {
             const colorClass = CARD_COLORS[idx % CARD_COLORS.length]
             return (
               <Link

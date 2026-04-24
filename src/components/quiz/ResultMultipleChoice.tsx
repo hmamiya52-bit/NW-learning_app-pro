@@ -1,4 +1,5 @@
 import type { Question } from '../../types'
+import XpGain from './XpGain'
 
 interface Props {
   question: Question
@@ -6,9 +7,10 @@ interface Props {
   isCorrect: boolean
   onNext: () => void
   isLast: boolean
+  xpGained?: number
 }
 
-export default function ResultMultipleChoice({ question, selected, isCorrect, onNext, isLast }: Props) {
+export default function ResultMultipleChoice({ question, selected, isCorrect, onNext, isLast, xpGained = 0 }: Props) {
   return (
     <div className="flex flex-col gap-5">
       {/* 判定バナー */}
@@ -22,6 +24,7 @@ export default function ResultMultipleChoice({ question, selected, isCorrect, on
           <p className={`text-lg font-black ${isCorrect ? 'text-emerald-700' : 'text-red-600'}`}>
             {isCorrect ? '正解！' : '不正解'}
           </p>
+          <XpGain xpGained={xpGained} isCorrect={isCorrect} />
           {!isCorrect && (
             <p className="text-sm text-slate-600 mt-0.5">
               あなたの解答: <span className="font-semibold text-red-600">{selected}</span>

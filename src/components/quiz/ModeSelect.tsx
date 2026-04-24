@@ -20,11 +20,14 @@ export default function ModeSelect({ questionCount, onSelect, onBack }: Props) {
           onClick={() => onSelect('multiple-choice')}
           className="w-full bg-blue-900 hover:bg-blue-800 active:bg-blue-950 text-white rounded-2xl p-5 text-left transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
         >
-          <div className="flex items-center gap-3">
-            <span className="text-2xl" aria-hidden="true">🔘</span>
-            <div>
-              <p className="font-bold text-base">4択モード</p>
-              <p className="text-blue-200 text-sm mt-0.5">選択肢から選ぶ・自動判定</p>
+          <div className="flex items-start gap-3">
+            <span className="text-2xl mt-0.5" aria-hidden="true">🔘</span>
+            <div className="flex-1">
+              <div className="flex items-center gap-2">
+                <p className="font-bold text-base">4択モード</p>
+                <span className="text-[10px] font-bold bg-amber-400 text-amber-900 rounded-full px-2 py-0.5 leading-none">おすすめ</span>
+              </div>
+              <p className="text-blue-200 text-sm mt-1 leading-snug">選択肢を選ぶだけ。すぐに正誤がわかります。<br />まずはこちらから始めましょう。</p>
             </div>
           </div>
         </button>
@@ -34,11 +37,11 @@ export default function ModeSelect({ questionCount, onSelect, onBack }: Props) {
           onClick={() => onSelect('written')}
           className="w-full bg-white hover:bg-slate-50 active:bg-slate-100 text-slate-800 border-2 border-slate-200 rounded-2xl p-5 text-left transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
         >
-          <div className="flex items-center gap-3">
-            <span className="text-2xl" aria-hidden="true">✍️</span>
+          <div className="flex items-start gap-3">
+            <span className="text-2xl mt-0.5" aria-hidden="true">✍️</span>
             <div>
               <p className="font-bold text-base">記述モード</p>
-              <p className="text-slate-500 text-sm mt-0.5">自由記述→正解確認→自己判定</p>
+              <p className="text-slate-500 text-sm mt-1 leading-snug">自分で答えを書いて、正解を見て自分でマルバツをつけます。<br />4択に慣れたら挑戦してみましょう。</p>
             </div>
           </div>
         </button>

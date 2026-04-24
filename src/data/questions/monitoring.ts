@@ -3,7 +3,7 @@ import type { Question } from '../../types'
 export const monitoringQuestions: Question[] = [
   {
     id: 'q-140',
-    topicId: 'monitoring',
+    topicId: 'network-mgmt',
     questionText: 'ネットワーク機器の状態監視に使われるプロトコルで、MIBからOIDで情報を取得する仕組みを{{blank}}という。',
     correctAnswer: 'SNMP（Simple Network Management Protocol）',
     choices: ['SNMP（Simple Network Management Protocol）', 'syslog', 'NetFlow', 'ICMP'],
@@ -13,7 +13,7 @@ export const monitoringQuestions: Question[] = [
   },
   {
     id: 'q-141',
-    topicId: 'monitoring',
+    topicId: 'network-mgmt',
     questionText: 'ルータやスイッチがフロー情報（送受信IPアドレス・ポート・プロトコル・バイト数）を収集してコレクタに送る技術を{{blank}}という。',
     correctAnswer: 'NetFlow（sFlow/IPFIX）',
     choices: ['NetFlow（sFlow/IPFIX）', 'SNMP', 'syslog', 'RMON'],
@@ -23,7 +23,7 @@ export const monitoringQuestions: Question[] = [
   },
   {
     id: 'q-142',
-    topicId: 'monitoring',
+    topicId: 'network-mgmt',
     questionText: 'SNMPv3で追加されたセキュリティ機能として、認証（HMAC）と暗号化（DES/AES）を組み合わせたモデルを{{blank}}という。',
     correctAnswer: 'USM（User-based Security Model）',
     choices: ['USM（User-based Security Model）', 'VACM', 'Community String', 'RMON2'],
@@ -33,7 +33,7 @@ export const monitoringQuestions: Question[] = [
   },
   {
     id: 'q-143',
-    topicId: 'monitoring',
+    topicId: 'network-mgmt',
     questionText: 'システムログをUDPポート514で収集・転送するプロトコルを{{blank}}という。',
     correctAnswer: 'syslog',
     choices: ['syslog', 'SNMP Trap', 'NetFlow', 'NTP'],
@@ -44,7 +44,7 @@ export const monitoringQuestions: Question[] = [
   // R7-8年 AIOps・テレメトリ
   {
     id: 'q-r8-007',
-    topicId: 'monitoring',
+    topicId: 'network-mgmt',
     questionText: 'AIを活用してネットワークの異常検知・根本原因分析・自己修復を自動化する運用手法を{{blank}}という。',
     correctAnswer: 'AIOps',
     choices: ['AIOps', 'インテントベースネットワーキング', 'SDN', 'ネットワーク自動化'],
@@ -54,7 +54,7 @@ export const monitoringQuestions: Question[] = [
   },
   {
     id: 'q-r8-008',
-    topicId: 'monitoring',
+    topicId: 'network-mgmt',
     questionText: '従来のSNMP（プル型ポーリング）に代わり、ネットワーク機器側からリアルタイムにデータをプッシュ送信する監視手法を{{blank}}という。',
     correctAnswer: 'ストリーミングテレメトリ',
     choices: ['ストリーミングテレメトリ', 'NetFlow', 'SNMP Trap', 'syslog'],
@@ -64,12 +64,43 @@ export const monitoringQuestions: Question[] = [
   },
   {
     id: 'q-r8-009',
-    topicId: 'monitoring',
+    topicId: 'network-mgmt',
     questionText: '管理者がネットワークの「意図（What）」を入力すると、システムが最適な設定を解釈して自動適用するネットワーク運用手法を{{blank}}ベースネットワーキングという。',
     correctAnswer: 'インテント（Intent）',
     choices: ['インテント（Intent）', 'ポリシー', 'SDN', 'コンフィグ'],
     isImportant: false,
     explanation: 'インテントベースネットワーキング（IBN）は「どのように設定するか（How）」でなく「何を達成したいか（What）」を管理者が指定し、AIが翻訳・自動設定を行う。CiscoのDNA CenterやJuniperのMistがその例。',
     difficulty: 3,
+  },
+  // ── BFD・NTP・ネットワーク管理 ───────────────────────────────────
+  {
+    id: 'q-144',
+    topicId: 'network-mgmt',
+    questionText: 'ルーティングプロトコルのデッドタイムを待たずにリンク障害を秒以下のオーダーで検出するプロトコルを{{blank}}という。',
+    correctAnswer: 'BFD（Bidirectional Forwarding Detection）',
+    choices: ['BFD（Bidirectional Forwarding Detection）', 'SNMP Trap', 'VRRP', 'Link State Advertisement'],
+    isImportant: true,
+    explanation: 'BFD（RFC 5880）は軽量なHelloパケット（デフォルト300ms以下）でリンクやパスの障害を迅速に検出する。OSPF/BGP/ISISなどのルーティングプロトコルと連携してフェイルオーバー時間を短縮する。NW試験では「OSPFのデッドタイム短縮よりBFDで高速検出」という設計が頻出。',
+    difficulty: 2,
+  },
+  {
+    id: 'q-145',
+    topicId: 'network-mgmt',
+    questionText: 'ネットワーク機器間の時刻同期に使われるプロトコルを{{blank}}といい、階層を{{blank}}という。',
+    correctAnswer: 'NTP（Network Time Protocol）・ストラタム（Stratum）',
+    choices: ['NTP（Network Time Protocol）・ストラタム（Stratum）', 'SNMP・バージョン', 'PTP・ドメイン', 'syslog・ファシリティ'],
+    isImportant: false,
+    explanation: 'NTPはネットワーク機器・サーバの時刻をUTCに同期する。原子時計などの基準時計（Stratum 0）から段階的にStratum 1→2…と同期が伝播する。ログのタイムスタンプ整合性やKerberos認証（時刻差5分以内）のために重要。',
+    difficulty: 1,
+  },
+  {
+    id: 'q-146',
+    topicId: 'network-mgmt',
+    questionText: 'SNMPにおいて管理対象機器が閾値超過や障害を検知した際に自発的にマネージャへ通知するメッセージを{{blank}}という。',
+    correctAnswer: 'SNMPトラップ',
+    choices: ['SNMPトラップ', 'SNMPポーリング', 'SNMPセット', 'SNMPウォーク'],
+    isImportant: true,
+    explanation: 'SNMPトラップ（Trap）はエージェントが異常を検知したときマネージャへ能動的に送るUDPメッセージ（ポート162）。マネージャから定期的に問い合わせるポーリングと組み合わせて使う。SNMPv2c以降はInformRequest（確認応答あり）も使用できる。',
+    difficulty: 2,
   },
 ]

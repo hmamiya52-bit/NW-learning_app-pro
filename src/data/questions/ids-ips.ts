@@ -3,7 +3,7 @@ import type { Question } from '../../types'
 export const idsIpsQuestions: Question[] = [
   {
     id: 'q-090',
-    topicId: 'ids-ips',
+    topicId: 'firewall',
     questionText: 'IDS/IPSの検知方式のうち、既知の攻撃パターンと照合する方式を{{blank}}という。',
     correctAnswer: 'シグネチャ型（パターンマッチング型）',
     choices: ['シグネチャ型（パターンマッチング型）', 'アノマリ型（異常検知型）', '統計的解析型', 'ヒューリスティック型'],
@@ -13,7 +13,7 @@ export const idsIpsQuestions: Question[] = [
   },
   {
     id: 'q-091',
-    topicId: 'ids-ips',
+    topicId: 'firewall',
     questionText: 'IPSがネットワーク上でインライン配置される場合、通信を{{blank}}できるが、障害時には通信が遮断されるリスクがある。',
     correctAnswer: 'ブロック（遮断）',
     choices: ['ブロック（遮断）', '記録（ログ）のみ', '迂回（バイパス）', 'キャプチャ（取得）'],
@@ -23,7 +23,7 @@ export const idsIpsQuestions: Question[] = [
   },
   {
     id: 'q-092',
-    topicId: 'ids-ips',
+    topicId: 'firewall',
     questionText: 'WAF（Web Application Firewall）が防御対象とする攻撃に該当しないものは{{blank}}である。',
     correctAnswer: 'DDoS攻撃（帯域消費型）',
     choices: ['DDoS攻撃（帯域消費型）', 'SQLインジェクション', 'XSS（クロスサイトスクリプティング）', 'パスワードブルートフォース'],

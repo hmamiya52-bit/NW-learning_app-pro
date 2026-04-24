@@ -1,4 +1,5 @@
 import type { Question } from '../../types'
+import XpGain from './XpGain'
 
 interface Props {
   question: Question
@@ -7,9 +8,10 @@ interface Props {
   onNext: () => void
   isAutoCorrect: boolean
   isLast: boolean
+  xpGained?: number
 }
 
-export default function ResultWritten({ question, written, onJudge, onNext, isAutoCorrect, isLast }: Props) {
+export default function ResultWritten({ question, written, onJudge, onNext, isAutoCorrect, isLast, xpGained = 0 }: Props) {
   return (
     <div className="flex flex-col gap-5">
       {/* あなたの解答 */}
@@ -40,9 +42,12 @@ export default function ResultWritten({ question, written, onJudge, onNext, isAu
       {/* 自動正解 or 自己判定 */}
       {isAutoCorrect ? (
         <div>
-          <p className="text-sm text-emerald-600 font-semibold text-center mb-3">
-            解答が完全一致したため、自動で正解と判定されました
-          </p>
+          <div className="flex items-center justify-center gap-2 mb-3">
+            <p className="text-sm text-emerald-600 font-semibold text-center">
+              解答が完全一致したため、自動で正解と判定されました
+            </p>
+            <XpGain xpGained={xpGained} isCorrect={true} />
+          </div>
           <button
             onClick={onNext}
             className="w-full bg-blue-900 hover:bg-blue-800 active:bg-blue-950 text-white font-bold rounded-xl py-4 text-base transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"

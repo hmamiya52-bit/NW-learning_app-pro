@@ -90,6 +90,22 @@ function IconGear() {
   )
 }
 
+function IconAfternoon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+    </svg>
+  )
+}
+
+function IconMedal() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+    </svg>
+  )
+}
+
 function IconMenu() {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
@@ -119,6 +135,8 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'プロトコル一覧', to: '/protocols', icon: <IconList /> },
   { label: '問題検索', to: '/search', icon: <IconSearch /> },
   { label: 'ノートモード', to: '/notes', icon: <IconBook /> },
+  { label: '午後問題演習', to: '/afternoon', icon: <IconAfternoon /> },
+  { label: '勲章コレクション', to: '/badges', icon: <IconMedal /> },
   { label: '設定', to: '/settings', icon: <IconGear /> },
 ]
 
@@ -193,7 +211,7 @@ export default function Layout() {
     <div className="min-h-screen bg-slate-50 flex flex-col">
       {/* ===== Header ===== */}
       <header
-        className="fixed top-0 left-0 right-0 z-30 flex items-center h-14 px-3 gap-3 text-white shadow-md"
+        className="fixed top-0 left-0 right-0 z-30 flex items-center h-12 px-3 gap-3 text-white shadow-md"
         style={{ backgroundColor: '#1a3a5c' }}
       >
         {/* Hamburger toggle */}
@@ -227,12 +245,12 @@ export default function Layout() {
         </Link>
       </header>
 
-      <div className="flex flex-1 pt-14">
+      <div className="flex flex-1 pt-12">
         {/* ===== Mobile backdrop ===== */}
         {isMobile && isOpen && (
           <div
             className="fixed inset-0 z-20 bg-black/40"
-            style={{ top: 56 }}
+            style={{ top: 48 }}
             onClick={close}
             aria-hidden="true"
           />
@@ -242,7 +260,7 @@ export default function Layout() {
         <nav
           id="sidebar"
           aria-label="メインナビゲーション"
-          className="fixed top-14 bottom-0 z-20 flex flex-col overflow-hidden transition-[width] duration-200 ease-in-out"
+          className="fixed top-12 bottom-0 z-20 flex flex-col overflow-hidden transition-[width] duration-200 ease-in-out"
           style={{
             width: isMobile ? (isOpen ? 240 : 0) : sidebarWidth,
             backgroundColor: '#1a3a5c',

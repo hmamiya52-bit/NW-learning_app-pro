@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { resetAllData, getAllProgress, getAnswerRecords, getStudySessions } from '../lib/storage'
 import { questions } from '../data/questions'
+import { categories } from '../data/categories'
+import { VERSION_LABEL } from '../version'
 
 export default function Settings() {
   const navigate = useNavigate()
@@ -17,6 +19,12 @@ export default function Settings() {
   const totalCorrect = records.filter((r) => r.isCorrect).length
   const overallRate = totalAttempts > 0 ? Math.round((totalCorrect / totalAttempts) * 100) : 0
   const completedCategories = progress.filter((p) => p.totalAttempts > 0).length
+
+  // 重要問題の正解数
+  const importantQuestionIds = new Set(questions.filter((q) => q.isImportant).map((q) => q.id))
+  const importantCorrectCount = records.filter(
+    (r) => r.isCorrect && importantQuestionIds.has(r.questionId),
+  ).length
 
   const handleReset = () => {
     resetAllData()
@@ -52,9 +60,9 @@ export default function Settings() {
               <StatCell label="総回答数" value={`${totalAttempts} 問`} />
               <StatCell label="総正解数" value={`${totalCorrect} 問`} />
               <StatCell label="総合正答率" value={`${overallRate}%`} highlight />
-              <StatCell label="学習済みカテゴリ" value={`${completedCategories} / 19`} />
+              <StatCell label="学習済みカテゴリ" value={`${completedCategories} / ${categories.length}`} />
               <StatCell label="セッション数" value={`${sessions.length} 回`} />
-              <StatCell label="重要問題" value={`${records.filter((r) => r.isCorrect).length} 正解`} />
+              <StatCell label="重要問題正解" value={`${importantCorrectCount} 問`} />
             </div>
           </div>
         </section>
@@ -63,7 +71,7 @@ export default function Settings() {
         <section>
           <h2 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">アプリ情報</h2>
           <div className="bg-white rounded-2xl border border-slate-200 shadow-sm divide-y divide-slate-100">
-            <InfoRow label="バージョン" value="1.0.0" />
+            <InfoRow label="バージョン" value={VERSION_LABEL} />
             <InfoRow label="問題数" value={`${questions.length} 問`} />
             <InfoRow label="データ保存" value="ブラウザ（LocalStorage）" />
             <InfoRow label="オフライン" value="対応（PWA）" />

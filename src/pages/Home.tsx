@@ -6,6 +6,7 @@ import { getAllProgress, getStudySessions } from '../lib/storage'
 import CategoryCard from '../components/CategoryCard'
 import type { StudySession } from '../types'
 import { VERSION_LABEL } from '../version'
+import LevelWidget from '../components/gamification/LevelWidget'
 
 // ----------------------------------------------------------------
 // Helper functions
@@ -105,6 +106,22 @@ function IconBook({ className }: { className?: string }) {
   )
 }
 
+function IconClipboard({ className }: { className?: string }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className ?? 'w-6 h-6'} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+    </svg>
+  )
+}
+
+function IconPen({ className }: { className?: string }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className ?? 'w-6 h-6'} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+    </svg>
+  )
+}
+
 function IconArrowRight() {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
@@ -155,6 +172,20 @@ const MENU_CARDS: MenuCard[] = [
     description: '分野別の重要知識まとめ',
     iconBg: 'bg-teal-50',
     icon: <IconBook className="w-6 h-6 text-teal-600" />,
+  },
+  {
+    to: '/afternoon',
+    title: '午後問題演習補助',
+    description: '問題一覧・過去問トラッカー',
+    iconBg: 'bg-indigo-50',
+    icon: <IconClipboard className="w-6 h-6 text-indigo-600" />,
+  },
+  {
+    to: '/column',
+    title: 'コラム：間宮塾勉強論',
+    description: 'ネスペ合格への道筋と心構え',
+    iconBg: 'bg-amber-50',
+    icon: <IconPen className="w-6 h-6 text-amber-600" />,
   },
 ]
 
@@ -214,20 +245,20 @@ export default function Home() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#f8fafc' }}>
-      <div className="max-w-4xl mx-auto px-4 pb-16 space-y-8 pt-6">
+      <div className="max-w-4xl mx-auto px-4 pb-16 space-y-4 pt-4">
 
         {/* ===== Welcome Banner ===== */}
         <section aria-label="ようこそバナー">
-          <div className="rounded-2xl bg-green-600 text-white px-6 py-5 shadow-md">
-            <h1 className="text-xl font-black leading-snug">
-              ようこそ、NWスペシャリスト学習へ！
-            </h1>
-            <p className="text-sm text-green-100 mt-1">
-              19分野 · {totalQuestions}問 · 重要問題{importantCount}問
-            </p>
-            <p className="text-xs text-green-200 mt-2 font-mono">{VERSION_LABEL}</p>
+          <div className="rounded-xl bg-green-600 text-white px-4 py-3 shadow-md flex items-center justify-between gap-4">
+            <div>
+              <h1 className="text-base font-black leading-snug">NWスペシャリスト学習</h1>
+              <p className="text-xs text-green-100 mt-0.5">{totalQuestions}問 · 重要{importantCount}問</p>
+            </div>
+            <p className="text-[10px] text-green-300 font-mono flex-shrink-0">{VERSION_LABEL}</p>
           </div>
         </section>
+
+        <LevelWidget />
 
         {/* ===== 学習メニュー ===== */}
         <section aria-labelledby="menu-heading">
@@ -237,30 +268,46 @@ export default function Home() {
           >
             学習メニュー
           </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            {MENU_CARDS.map((card) => (
-              <Link
-                key={card.to}
-                to={card.to}
-                className="group flex flex-col gap-3 bg-white rounded-xl border border-slate-200 p-4 hover:border-blue-400 hover:shadow-md transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-              >
-                {/* Icon area */}
-                <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${card.iconBg}`}>
-                  {card.icon}
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            {MENU_CARDS.map((card) => {
+              const isWeakness = card.to === '/quiz?mode=weakness'
+              const weaknessDisabled = isWeakness && studiedCount === 0
+              return weaknessDisabled ? (
+                <div
+                  key={card.to}
+                  className="flex items-center gap-3 bg-slate-50 rounded-xl border border-slate-200 px-3 py-2.5 opacity-60 cursor-not-allowed"
+                >
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${card.iconBg}`}>
+                    {card.icon}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold text-slate-500 leading-tight truncate">{card.title}</p>
+                    <p className="text-[11px] text-slate-400 leading-tight">問題を解くと使えます</p>
+                  </div>
                 </div>
-                {/* Text */}
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-bold text-slate-800 leading-snug group-hover:text-blue-700 transition-colors">
-                    {card.title}
-                  </p>
-                  <p className="text-xs text-slate-400 mt-0.5 leading-snug">{card.description}</p>
-                </div>
-                {/* Arrow */}
-                <div className="text-slate-300 group-hover:text-blue-400 transition-colors self-end">
-                  <IconArrowRight />
-                </div>
-              </Link>
-            ))}
+              ) : (
+                <Link
+                  key={card.to}
+                  to={card.to}
+                  className="group relative flex items-center gap-3 bg-white rounded-xl border border-slate-200 px-3 py-2.5 hover:border-blue-400 hover:shadow-md transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                >
+                  {card.to === '/quiz?mode=important' && (
+                    <span className="absolute top-1.5 right-1.5 text-[9px] font-bold bg-amber-400 text-amber-900 rounded-full px-1.5 py-0.5 leading-none">
+                      おすすめ
+                    </span>
+                  )}
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${card.iconBg}`}>
+                    {card.icon}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold text-slate-800 leading-tight group-hover:text-blue-700 transition-colors truncate">
+                      {card.title}
+                    </p>
+                    <p className="text-[11px] text-slate-400 leading-tight truncate">{card.description}</p>
+                  </div>
+                </Link>
+              )
+            })}
           </div>
         </section>
 
@@ -272,41 +319,36 @@ export default function Home() {
           >
             全体の学習進捗
           </h2>
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
-            <div className="grid grid-cols-3 divide-x divide-slate-100">
-              {/* 正答率 */}
-              <div className="flex flex-col items-center gap-1 pr-4">
-                <span className="text-3xl font-black tabular-nums leading-none" style={{ color: '#1a3a5c' }}>
-                  {globalRate !== null ? `${globalRate}` : '—'}
-                  {globalRate !== null && <span className="text-lg font-semibold text-blue-400">%</span>}
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 px-4 py-3">
+            {/* Stats row */}
+            <div className="flex items-center gap-0 divide-x divide-slate-100 mb-2.5">
+              <div className="flex items-baseline gap-1 pr-4">
+                <span className="text-xl font-black tabular-nums leading-none" style={{ color: '#1a3a5c' }}>
+                  {globalRate !== null ? globalRate : '—'}
                 </span>
-                <span className="text-[11px] text-slate-500">正答率</span>
+                {globalRate !== null && <span className="text-xs font-semibold text-blue-400">%</span>}
+                <span className="text-[11px] text-slate-400 ml-1">正答率</span>
               </div>
-              {/* 学習済み問題数 */}
-              <div className="flex flex-col items-center gap-1 px-4">
-                <span className="text-3xl font-black tabular-nums leading-none" style={{ color: '#1a3a5c' }}>
+              <div className="flex items-baseline gap-1 px-4">
+                <span className="text-xl font-black tabular-nums leading-none" style={{ color: '#1a3a5c' }}>
                   {studiedCount}
-                  <span className="text-base font-normal text-slate-400">/{totalQuestions}</span>
                 </span>
-                <span className="text-[11px] text-slate-500">学習済み問題</span>
+                <span className="text-xs font-normal text-slate-400">/{totalQuestions}</span>
+                <span className="text-[11px] text-slate-400 ml-1">学習済み</span>
               </div>
-              {/* 重要問題数 */}
-              <div className="flex flex-col items-center gap-1 pl-4">
-                <span className="text-3xl font-black tabular-nums text-amber-500 leading-none">
-                  {importantCount}
-                </span>
-                <span className="text-[11px] text-slate-500">重要問題数</span>
+              <div className="flex items-baseline gap-1 pl-4">
+                <span className="text-xl font-black tabular-nums text-amber-500 leading-none">{importantCount}</span>
+                <span className="text-[11px] text-slate-400 ml-1">重要問題</span>
               </div>
             </div>
-
             {/* Progress bar */}
-            <div className="mt-5">
-              <div className="flex justify-between text-[11px] text-slate-400 mb-1.5">
+            <div>
+              <div className="flex justify-between text-[11px] text-slate-400 mb-1">
                 <span>学習進捗</span>
                 <span>{progressPct}%</span>
               </div>
               <div
-                className="h-2 bg-slate-100 rounded-full overflow-hidden"
+                className="h-1.5 bg-slate-100 rounded-full overflow-hidden"
                 role="progressbar"
                 aria-valuenow={studiedCount}
                 aria-valuemin={0}
@@ -330,7 +372,7 @@ export default function Home() {
           >
             カテゴリ一覧（{categories.length}分野）
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2">
             {categoryStats.map(({ category, questionCount, correctRate, lastStudiedAt }) => (
               <CategoryCard
                 key={category.id}

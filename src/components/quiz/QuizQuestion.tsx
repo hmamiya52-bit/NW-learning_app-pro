@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import type { Question } from '../../types'
 
 interface Props {
@@ -38,8 +38,12 @@ export default function QuizQuestion({
   onAnswerWritten,
 }: Props) {
   const [writtenValue, setWrittenValue] = useState('')
+  const shuffledChoices = useMemo(
+    () => [...question.choices].sort(() => Math.random() - 0.5),
+    [question.id]
+  )
 
-  const progress = ((index) / total) * 100
+  const progress = ((index + 1) / total) * 100
 
   return (
     <div className="flex flex-col gap-6">
@@ -71,7 +75,7 @@ export default function QuizQuestion({
       {answerMode === 'multiple-choice' ? (
         /* ── 4択 ── */
         <div className="flex flex-col gap-3" role="group" aria-label="選択肢">
-          {question.choices.map((choice) => (
+          {shuffledChoices.map((choice) => (
             <button
               key={choice}
               onClick={() => onAnswerMultipleChoice(choice)}
@@ -99,6 +103,7 @@ export default function QuizQuestion({
             }}
             placeholder="解答を入力…"
             className="w-full border-2 border-slate-200 focus:border-blue-500 rounded-xl px-4 py-3 text-slate-800 text-base outline-none transition-colors"
+            autoComplete="off"
             autoFocus
           />
           <button

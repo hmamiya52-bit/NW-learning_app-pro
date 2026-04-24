@@ -34,65 +34,62 @@ export default function CategoryCard({
   const cardContent = (
     <>
       {/* バッジ */}
-      <span className="absolute top-3 right-3">
-        {isEmpty ? (
-          <span className="rounded-full bg-slate-100 text-slate-400 text-[10px] font-bold px-2 py-0.5 leading-tight">
-            準備中
-          </span>
-        ) : isIot ? (
-          <span className="rounded-full bg-purple-100 text-purple-700 text-[10px] font-bold px-2 py-0.5 leading-tight">
-            R7補足
-          </span>
-        ) : null}
-      </span>
-
-      {/* カテゴリ名 */}
-      <p className={`font-semibold text-sm leading-snug pr-14 ${isEmpty ? 'text-slate-400' : 'text-slate-800 group-hover:text-blue-700'} transition-colors`}>
-        {category.name}
-      </p>
-
-      {/* 問題数 & 学習日 */}
-      <div className="flex items-center justify-between text-xs text-slate-500">
-        <span className={isEmpty ? 'text-slate-300' : ''}>{questionCount}問</span>
-        {lastStudiedAt && !isEmpty && (
-          <span className="text-slate-400">{formatDate(lastStudiedAt)}</span>
-        )}
-      </div>
-
-      {/* 正答率バー */}
-      <div className="mt-auto">
-        {isEmpty ? (
-          <span className="text-[11px] text-slate-300">問題準備中</span>
-        ) : correctRate !== null ? (
-          <div className="flex items-center gap-2">
-            <div
-              className="flex-1 h-1.5 rounded-full bg-slate-100 overflow-hidden"
-              role="progressbar"
-              aria-valuenow={correctRate}
-              aria-valuemin={0}
-              aria-valuemax={100}
-              aria-label={`正答率 ${correctRate}%`}
-            >
-              <div
-                className={`h-full rounded-full transition-all ${rateColor(correctRate)}`}
-                style={{ width: `${correctRate}%` }}
-              />
-            </div>
-            <span className="text-[11px] font-medium text-slate-600 tabular-nums w-8 text-right">
-              {correctRate}%
+      {(isEmpty || isIot) && (
+        <span className="absolute top-2 right-2">
+          {isEmpty ? (
+            <span className="rounded-full bg-slate-100 text-slate-400 text-[10px] font-bold px-1.5 py-0.5 leading-tight">
+              準備中
             </span>
-          </div>
-        ) : (
-          <span className="text-[11px] text-slate-400">未学習</span>
-        )}
+          ) : (
+            <span className="rounded-full bg-purple-100 text-purple-700 text-[10px] font-bold px-1.5 py-0.5 leading-tight">
+              R7
+            </span>
+          )}
+        </span>
+      )}
+
+      {/* 1行目：カテゴリ名 + 問題数 */}
+      <div className="flex items-baseline justify-between gap-2 pr-8">
+        <p className={`font-semibold text-sm leading-tight truncate ${isEmpty ? 'text-slate-400' : 'text-slate-800 group-hover:text-blue-700'} transition-colors`}>
+          {category.name}
+        </p>
+        <span className={`text-[11px] flex-shrink-0 ${isEmpty ? 'text-slate-300' : 'text-slate-400'}`}>
+          {questionCount}問
+        </span>
       </div>
+
+      {/* 2行目：正答率バー or 未学習 */}
+      {isEmpty ? (
+        <span className="text-[11px] text-slate-300">準備中</span>
+      ) : correctRate !== null ? (
+        <div className="flex items-center gap-2">
+          <div
+            className="flex-1 h-1 rounded-full bg-slate-100 overflow-hidden"
+            role="progressbar"
+            aria-valuenow={correctRate}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-label={`正答率 ${correctRate}%`}
+          >
+            <div
+              className={`h-full rounded-full transition-all ${rateColor(correctRate)}`}
+              style={{ width: `${correctRate}%` }}
+            />
+          </div>
+          <span className="text-[11px] font-medium text-slate-500 tabular-nums w-7 text-right flex-shrink-0">
+            {correctRate}%
+          </span>
+        </div>
+      ) : (
+        <span className="text-[11px] text-slate-400">未学習</span>
+      )}
     </>
   )
 
   if (isEmpty) {
     return (
       <div
-        className="group relative flex flex-col gap-2 rounded-xl border p-4 bg-slate-50 border-slate-200 cursor-not-allowed opacity-60"
+        className="group relative flex flex-col gap-1.5 rounded-xl border px-3 py-2.5 bg-slate-50 border-slate-200 cursor-not-allowed opacity-60"
         aria-label={`${category.name}（準備中）`}
       >
         {cardContent}
@@ -104,7 +101,7 @@ export default function CategoryCard({
     <Link
       to={`/quiz?mode=topic&category=${category.id}`}
       className={[
-        'group relative flex flex-col gap-2 rounded-xl border p-4',
+        'group relative flex flex-col gap-1.5 rounded-xl border px-3 py-2.5',
         'bg-white border-slate-200 hover:border-blue-400 hover:shadow-md',
         'transition-all duration-150',
         'focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2',

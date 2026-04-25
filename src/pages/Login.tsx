@@ -108,7 +108,16 @@ export default function Login() {
         {/* 注記 */}
         <div className="mt-5 space-y-2 text-center">
           <p className="text-[11px] text-slate-500 leading-relaxed">
-            ID/パスワードは管理者から個別に通知されます。
+            アカウント未登録の方は、
+            <a
+              href="https://forms.gle/9w5ofDFeYDx3y4aq9"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:text-blue-700 underline font-semibold"
+            >
+              申請フォーム
+            </a>
+            から登録してください。
           </p>
           <p className="text-[11px] text-slate-400 leading-relaxed">
             パスワードを忘れた・変更したい場合は<br />

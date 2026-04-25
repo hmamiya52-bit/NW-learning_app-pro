@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, useLocation, Link } from 'react-router-dom'
 import { categories } from '../data/categories'
 
 // NOTE_DB に存在するカテゴリIDの順序リスト（前後ナビ用 / Notes 一覧フィルタ用）
@@ -4697,13 +4697,37 @@ const NOTE_DB: Record<string, NoteData> = {
 }
 
 // ─────────────────────────────────────────────
+// セクション見出しインデックス（Notes 一覧の検索機能で使用）
+// ─────────────────────────────────────────────
+export interface NoteSectionIndexEntry {
+  categoryId: string
+  sectionIndex: number
+  heading: string
+}
+
+export const NOTE_SECTION_INDEX: NoteSectionIndexEntry[] = NOTE_CATEGORY_IDS.flatMap(
+  (categoryId) => {
+    const note = NOTE_DB[categoryId]
+    if (!note) return []
+    return note.sections.map((section, sectionIndex) => ({
+      categoryId,
+      sectionIndex,
+      heading: section.heading,
+    }))
+  },
+)
+
+// ─────────────────────────────────────────────
 // Component
 // ─────────────────────────────────────────────
 export default function NoteDetail() {
   const { categoryId } = useParams<{ categoryId: string }>()
+  const location = useLocation()
   const category = categories.find((c) => c.id === categoryId)
   const note = categoryId ? NOTE_DB[categoryId] : undefined
   const [hideRed, setHideRed] = useState(false)
+  // 検索ジャンプ時のハイライト対象セクション
+  const [highlightedSection, setHighlightedSection] = useState<number | null>(null)
   // マスクモードを ON にするたびにインクリメントして RedWord をリセット
   const [maskVersion, setMaskVersion] = useState(0)
   // プロトコルテーブル専用マスクモード（protocol-review ページのみ）
@@ -4730,6 +4754,29 @@ export default function NoteDetail() {
       return next
     })
   }
+
+  // 検索ジャンプ：URLのハッシュ #note-section-N に対応するセクションへスクロール＆ハイライト
+  useEffect(() => {
+    const m = location.hash.match(/^#note-section-(\d+)$/)
+    if (!m) {
+      setHighlightedSection(null)
+      return
+    }
+    const idx = parseInt(m[1], 10)
+    if (!note || idx < 0 || idx >= note.sections.length) return
+    setHighlightedSection(idx)
+    // 描画後にスクロール
+    const timer = setTimeout(() => {
+      const el = document.getElementById(`note-section-${idx}`)
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 50)
+    // 2秒後にハイライトを解除
+    const fadeTimer = setTimeout(() => setHighlightedSection(null), 2200)
+    return () => {
+      clearTimeout(timer)
+      clearTimeout(fadeTimer)
+    }
+  }, [location.hash, note, categoryId])
 
   // 前後のノートカテゴリ
   const currentIdx = categoryId ? NOTE_CATEGORY_IDS.indexOf(categoryId) : -1
@@ -4792,7 +4839,13 @@ export default function NoteDetail() {
         {/* Sections */}
         <div className="space-y-5">
           {note.sections.map((section, i) => (
-            <div key={i} className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div
+              key={i}
+              id={`note-section-${i}`}
+              className={`bg-white rounded-2xl border shadow-sm overflow-hidden scroll-mt-20 transition-all ${
+                highlightedSection === i ? 'border-blue-500 ring-2 ring-blue-300' : 'border-slate-200'
+              }`}
+            >
               <div
                 className={`px-5 py-3 border-b border-slate-100 ${section.protocols ? 'flex items-center justify-between gap-2' : ''}`}
                 style={{ backgroundColor: '#1a3a5c' }}

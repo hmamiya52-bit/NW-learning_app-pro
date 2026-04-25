@@ -4,11 +4,19 @@ import { resetAllData, getAllProgress, getAnswerRecords, getStudySessions } from
 import { questions } from '../data/questions'
 import { categories } from '../data/categories'
 import { VERSION_LABEL } from '../version'
+import { useAuth } from '../auth/useAuth'
 
 export default function Settings() {
   const navigate = useNavigate()
+  const { userId, logout } = useAuth()
   const [showConfirm, setShowConfirm] = useState(false)
   const [resetDone, setResetDone] = useState(false)
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
+
+  const handleLogout = () => {
+    logout()
+    navigate('/login', { replace: true })
+  }
 
   // 統計サマリー
   const progress = getAllProgress()
@@ -75,6 +83,44 @@ export default function Settings() {
             <InfoRow label="問題数" value={`${questions.length} 問`} />
             <InfoRow label="データ保存" value="ブラウザ（LocalStorage）" />
             <InfoRow label="オフライン" value="対応（PWA）" />
+          </div>
+        </section>
+
+        {/* アカウント */}
+        <section>
+          <h2 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">アカウント</h2>
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-slate-600">ログイン中のID</span>
+              <span className="text-sm font-bold text-slate-800 font-mono">{userId ?? '—'}</span>
+            </div>
+
+            {showLogoutConfirm ? (
+              <div className="space-y-3 pt-1">
+                <p className="text-sm font-bold text-slate-700">ログアウトしますか？</p>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setShowLogoutConfirm(false)}
+                    className="flex-1 py-2.5 rounded-xl border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors"
+                  >
+                    キャンセル
+                  </button>
+                  <button
+                    onClick={handleLogout}
+                    className="flex-1 py-2.5 rounded-xl bg-slate-700 text-white text-sm font-bold hover:bg-slate-800 transition-colors"
+                  >
+                    ログアウト
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button
+                onClick={() => setShowLogoutConfirm(true)}
+                className="w-full py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold text-sm hover:bg-slate-50 transition-colors"
+              >
+                ログアウト
+              </button>
+            )}
           </div>
         </section>
 

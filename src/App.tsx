@@ -12,16 +12,34 @@ import AfternoonProblems from './pages/AfternoonProblems'
 import AfternoonAnswerDetail from './pages/AfternoonAnswerDetail'
 import AfternoonMyAnswer from './pages/AfternoonMyAnswer'
 import Column from './pages/Column'
+import Login from './pages/Login'
+import AuthGuard from './auth/AuthGuard'
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Quiz はサイドバーなし（没入型） */}
-        <Route path="/quiz" element={<Quiz />} />
+        {/* ログイン画面（認証不要） */}
+        <Route path="/login" element={<Login />} />
 
-        {/* その他すべてのページはサイドバー付きLayout */}
-        <Route element={<Layout />}>
+        {/* Quiz はサイドバーなし（没入型）— 要認証 */}
+        <Route
+          path="/quiz"
+          element={
+            <AuthGuard>
+              <Quiz />
+            </AuthGuard>
+          }
+        />
+
+        {/* その他すべてのページはサイドバー付きLayout — 要認証 */}
+        <Route
+          element={
+            <AuthGuard>
+              <Layout />
+            </AuthGuard>
+          }
+        >
           <Route path="/" element={<Home />} />
           <Route path="/protocols" element={<Protocols />} />
           <Route path="/search" element={<Search />} />

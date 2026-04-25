@@ -48,6 +48,7 @@ interface HeaderDiagramCell {
   span?: number          // colspan（既定 1）
   bg?: string            // 背景色（CSS color string）
   isRed?: boolean        // ラベルを赤字＋マスク対象にする
+  maskDigits?: boolean   // ラベル内の数字だけ赤字＋マスク対象（記号や単位は残す）
   small?: boolean        // 小さめのフォント
 }
 interface HeaderDiagramRow {
@@ -169,7 +170,17 @@ function HeaderDiagramView({
                       fontSize: cell.small ? '10px' : undefined,
                     }}
                   >
-                    {cell.isRed ? (
+                    {cell.maskDigits ? (
+                      <span className="text-slate-800 font-medium">
+                        {cell.label.split(/(\d+)/g).map((part, pi) =>
+                          /^\d+$/.test(part) ? (
+                            <RedWord key={pi} text={part} masked={hideRed} version={version} />
+                          ) : (
+                            <span key={pi}>{part}</span>
+                          ),
+                        )}
+                      </span>
+                    ) : cell.isRed ? (
                       <RedWord text={cell.label} masked={hideRed} version={version} />
                     ) : (
                       <span className="text-slate-800 font-medium">{cell.label}</span>
@@ -450,7 +461,7 @@ const NOTE_DB: Record<string, NoteData> = {
                 cells: [
                   { label: '宛先MAC',  bg: '#dbeafe' },
                   { label: '送信元MAC', bg: '#dbeafe' },
-                  { label: 'VLANタグ\n(32bit)', bg: '#fde68a', isRed: true },
+                  { label: 'VLANタグ\n(32bit)', bg: '#fde68a', maskDigits: true },
                   { label: 'タイプ',    bg: '#e0e7ff' },
                   { label: 'データ\n(L3)', bg: '#dcfce7' },
                   { label: 'FCS',       bg: '#e2e8f0' },
@@ -495,7 +506,7 @@ const NOTE_DB: Record<string, NoteData> = {
                 cells: [
                   { label: '新IPv4ヘッダ', bg: '#fce7f3' },
                   { label: 'UDPヘッダ',     bg: '#fef3c7', isRed: true },
-                  { label: 'VXLANヘッダ\n(VNI 24bit)', bg: '#f3e8ff', isRed: true },
+                  { label: 'VXLANヘッダ\n(VNI 24bit)', bg: '#f3e8ff', maskDigits: true },
                   { label: 'イーサネット\nフレーム（オリジナル）', bg: '#dbeafe', span: 2 },
                 ],
               },
@@ -865,7 +876,17 @@ const NOTE_DB: Record<string, NoteData> = {
           ],
           [
             { text: 'UDPを使うアプリケーション例：', style: 'plain' },
-            { text: 'SIP, ARP, SNMP, NTP, DNS, DHCP', style: 'red' },
+            { text: 'SIP', style: 'red' },
+            { text: ', ', style: 'plain' },
+            { text: 'ARP', style: 'red' },
+            { text: ', ', style: 'plain' },
+            { text: 'SNMP', style: 'red' },
+            { text: ', ', style: 'plain' },
+            { text: 'NTP', style: 'red' },
+            { text: ', ', style: 'plain' },
+            { text: 'DNS', style: 'red' },
+            { text: ', ', style: 'plain' },
+            { text: 'DHCP', style: 'red' },
             { text: ' 等', style: 'plain' },
           ],
           [
@@ -1218,13 +1239,13 @@ const NOTE_DB: Record<string, NoteData> = {
         ],
       },
       {
-        heading: '動的フィルタリング（フルステートインスペクション）',
+        heading: '動的フィルタリング（ステートフルインスペクション）',
         richItems: [
           [
             { text: '動的フィルタリング：', style: 'plain' },
             { text: '戻り', style: 'red' },
             { text: ' のパケットを自動で許可する。', style: 'plain' },
-            { text: 'フルステートインスペクション', style: 'red' },
+            { text: 'ステートフルインスペクション', style: 'red' },
             { text: ' といわれることもある', style: 'plain' },
           ],
           [
@@ -1241,7 +1262,7 @@ const NOTE_DB: Record<string, NoteData> = {
         heading: 'FWの冗長化',
         richItems: [
           [
-            { text: 'FWの冗長化：VRRPを用いず、独自のプロトコルで行うことが一般的（フルステートインスペクションで動的にセッションを管理しており、', style: 'plain' },
+            { text: 'FWの冗長化：VRRPを用いず、独自のプロトコルで行うことが一般的（ステートフルインスペクションで動的にセッションを管理しており、', style: 'plain' },
             { text: 'セッション維持', style: 'red' },
             { text: ' のため）', style: 'plain' },
           ],
@@ -1250,7 +1271,7 @@ const NOTE_DB: Record<string, NoteData> = {
           ],
           [
             { text: 'ActiveのFW故障時にセッション情報を引き継ぐ機能 ⇒ ', style: 'plain' },
-            { text: 'フルステートフェールオーバ', style: 'red' },
+            { text: 'ステートフルフェールオーバ', style: 'red' },
             { text: '（PCからインターネットへの通信を維持）', style: 'plain' },
           ],
         ],
@@ -1431,8 +1452,8 @@ const NOTE_DB: Record<string, NoteData> = {
     ],
     exam_tips: [
       'FWは==許可==するものだけ書けばよい（拒否は暗黙のdeny）',
-      '動的フィルタリング＝==フルステートインスペクション==。L3SW ACLは静的なので戻りが自動許可されない',
-      'FWの冗長化は==独自プロトコル==＋フェールオーバリンクで==フルステートフェールオーバ==',
+      '動的フィルタリング＝==ステートフルインスペクション==。L3SW ACLは静的なので戻りが自動許可されない',
+      'FWの冗長化は==独自プロトコル==＋フェールオーバリンクで==ステートフルフェールオーバ==',
       'IPSは==インライン==で防御／IDSは==ミラーポート==で検知のみ',
       'IDSはL4が==TCP==のとき==RST==送付で切断、UDPは ICMP unreachable',
       'WAFは==SQLインジェクション==／==XSS==を防御、L3/L4の帯域消費型DDoSは対象外',
@@ -1538,21 +1559,26 @@ const NOTE_DB: Record<string, NoteData> = {
             { text: ' するスイッチングハブのような役割になる。認証機能などはほぼ全てWLCに任せる', style: 'plain' },
           ],
           [
-            { text: 'WLCの2つのモード — モードA：管理機能だけをWLCが行い、実際の通信はWLCを経由しない', style: 'plain' },
+            { text: 'WLCの2つのモード', style: 'plain' },
           ],
           [
-            { text: '【モードA利点①】WLCへの ', style: 'plain' },
+            { text: '　モードA：', style: 'plain' },
+            { text: '管理機能だけ', style: 'red' },
+            { text: ' をWLCが行い、実際の通信はWLCを経由しない', style: 'plain' },
+          ],
+          [
+            { text: '　　【モードA利点①】WLCへの ', style: 'plain' },
             { text: '通信負荷集中', style: 'red' },
             { text: ' を抑制可能', style: 'plain' },
           ],
           [
-            { text: '【モードA利点②】認証後にWLCに障害が発生しても、', style: 'plain' },
-            { text: 'その', style: 'red' },
-            { text: ' ', style: 'plain' },
+            { text: '　　【モードA利点②】認証後にWLCに障害が発生しても、その ', style: 'plain' },
             { text: '無線LAN端末は通信が継続可能', style: 'red' },
           ],
           [
-            { text: 'モードB：実際の通信もWLCを経由させる', style: 'plain' },
+            { text: '　モードB：', style: 'plain' },
+            { text: '実際の通信もWLCを経由', style: 'red' },
+            { text: ' させる', style: 'plain' },
           ],
           [
             { text: 'モバイルWi-Fiルータには、利用者ID・パスワード・', style: 'plain' },
@@ -2059,7 +2085,7 @@ const NOTE_DB: Record<string, NoteData> = {
       '仮想IPアドレスと仮想MACアドレスは ==自動付与== される',
       '昇格時には==GARP==でL2SWのMACアドレステーブルを書き換える',
       'マスタ／バックアップは==優先度==で決まる',
-      'FW自体の冗長化はVRRPではなく独自プロトコル（フルステートフェールオーバ）',
+      'FW自体の冗長化はVRRPではなく独自プロトコル（ステートフルフェールオーバ）',
     ],
   },
 
@@ -2349,7 +2375,9 @@ const NOTE_DB: Record<string, NoteData> = {
           [
             { text: '①', style: 'plain' },
             { text: 'DHCPディスカバー', style: 'red' },
-            { text: '（DISCOVER）：ブロードキャスト', style: 'plain' },
+            { text: '（DISCOVER）：', style: 'plain' },
+            { text: 'ブロード', style: 'red' },
+            { text: 'キャスト', style: 'plain' },
           ],
           [
             { text: '②', style: 'plain' },
@@ -2359,7 +2387,9 @@ const NOTE_DB: Record<string, NoteData> = {
           [
             { text: '③', style: 'plain' },
             { text: 'DHCPリクエスト', style: 'red' },
-            { text: '（REQUEST）：ブロードキャスト', style: 'plain' },
+            { text: '（REQUEST）：', style: 'plain' },
+            { text: 'ブロード', style: 'red' },
+            { text: 'キャスト', style: 'plain' },
           ],
           [
             { text: '④', style: 'plain' },
@@ -2424,7 +2454,7 @@ const NOTE_DB: Record<string, NoteData> = {
       },
     ],
     exam_tips: [
-      '==DORA==の順序は必ず暗記',
+      '==DHCPメッセージ4種==の順序は必ず暗記（ディスカバー→オファー→リクエスト→アック）',
       'リレーエージェントはどの層の機器がどう動作するかを整理',
       'DHCPスヌーピングはDHCP/ARP攻撃両方への対策になる',
     ],
@@ -2535,7 +2565,8 @@ const NOTE_DB: Record<string, NoteData> = {
             { text: 'DNSラウンドロビン', style: 'red' },
           ],
           [
-            { text: 'MXレコード：メールサーバの ', style: 'plain' },
+            { text: 'MX', style: 'red' },
+            { text: ' レコード：メールサーバの ', style: 'plain' },
             { text: 'FQDN', style: 'red' },
             { text: '、プライオリティ（例：(ドメイン名) IN MX 10 mx1.mamiya.com）。MXレコードの ', style: 'plain' },
             { text: 'プリファレンス', style: 'red' },
@@ -2549,7 +2580,8 @@ const NOTE_DB: Record<string, NoteData> = {
             { text: ' に別名をつける（例：web.name.com. IN CNAME www.betumei.com）', style: 'plain' },
           ],
           [
-            { text: 'NSレコード：そのゾーン自身や下位ドメインに関するDNSサーバのホスト名を指定する', style: 'plain' },
+            { text: 'NS', style: 'red' },
+            { text: ' レコード：そのゾーン自身や下位ドメインに関するDNSサーバのホスト名を指定する', style: 'plain' },
           ],
         ],
       },
@@ -2963,24 +2995,44 @@ const NOTE_DB: Record<string, NoteData> = {
         heading: 'インターネットVPN／IPsec基礎',
         richItems: [
           [
-            { text: '暗号化によって盗聴は防げるが、暗号化だけでは改ざんやなりすましの脅威は防げない。これらは適切にVPNを用いることで対処が可能', style: 'plain' },
+            { text: '暗号化によって ', style: 'plain' },
+            { text: '盗聴', style: 'red' },
+            { text: ' は防げるが、暗号化だけでは ', style: 'plain' },
+            { text: '改ざん', style: 'red' },
+            { text: ' や ', style: 'plain' },
+            { text: 'なりすまし', style: 'red' },
+            { text: ' の脅威は防げない。これらは適切にVPNを用いることで対処が可能', style: 'plain' },
           ],
           [
-            { text: 'インターネットVPN：インターネット上に構築する仮想的なネットワーク。専用線や広域イーサに比べて安価・広帯域なWANを構築可能', style: 'plain' },
+            { text: 'インターネットVPN：インターネット上に構築する仮想的なネットワーク。専用線や広域イーサに比べて ', style: 'plain' },
+            { text: '安価', style: 'red' },
+            { text: '・広帯域なWANを構築可能', style: 'plain' },
           ],
           [
-            { text: 'IP-VPNとの違い：IP-VPNは通信事業者の閉域IP網／インターネットVPNはインターネット回線を用いる。インターネットVPNはIP-VPNより安価だがセキュリティリスクは高い', style: 'plain' },
+            { text: 'IP-VPNとの違い：IP-VPNは通信事業者の ', style: 'plain' },
+            { text: '閉域IP網', style: 'red' },
+            { text: '／インターネットVPNはインターネット回線を用いる。インターネットVPNはIP-VPNより安価だが ', style: 'plain' },
+            { text: 'セキュリティリスク', style: 'red' },
+            { text: ' は高い', style: 'plain' },
           ],
           [
-            { text: 'IPsec：認証と暗号化の機能を持った規格', style: 'plain' },
+            { text: 'IPsec：', style: 'plain' },
+            { text: '認証', style: 'red' },
+            { text: ' と ', style: 'plain' },
+            { text: '暗号化', style: 'red' },
+            { text: ' の機能を持った規格', style: 'plain' },
           ],
           [
             { text: 'ESP', style: 'red' },
-            { text: '：暗号化と認証の両方の機能をもつ', style: 'plain' },
+            { text: '：', style: 'plain' },
+            { text: '暗号化と認証', style: 'red' },
+            { text: ' の両方の機能をもつ', style: 'plain' },
           ],
           [
             { text: 'AH', style: 'red' },
-            { text: '：認証の機能のみをもつ', style: 'plain' },
+            { text: '：', style: 'plain' },
+            { text: '認証の機能のみ', style: 'red' },
+            { text: ' をもつ', style: 'plain' },
           ],
           [
             { text: 'ESPヘッダには、TCPとUDPと違って ', style: 'plain' },
@@ -3001,7 +3053,11 @@ const NOTE_DB: Record<string, NoteData> = {
             { text: ' モード：VPN装置間でIPsec通信を行う（VPNルータにIPsec設定をすればPCに個別のIPsec設定が不要のため、一般的な企業間でよく利用）', style: 'plain' },
           ],
           [
-            { text: 'トンネルモードにする目的：プライベートIPアドレスのままだと通信できないから。両端がグローバルアドレスならトランスポートモードでOK', style: 'plain' },
+            { text: 'トンネルモードにする目的：', style: 'plain' },
+            { text: 'プライベートIPアドレス', style: 'red' },
+            { text: ' のままだと通信できないから。両端が ', style: 'plain' },
+            { text: 'グローバルアドレス', style: 'red' },
+            { text: ' ならトランスポートモードでOK', style: 'plain' },
           ],
         ],
       },
@@ -3023,7 +3079,9 @@ const NOTE_DB: Record<string, NoteData> = {
           ],
           [
             { text: 'アグレッシブ', style: 'red' },
-            { text: ' モード（接続相手が動的IPアドレス。接続先のIPアドレスを認証情報として利用しない。利点：固定IP取得費用がかからずコスト面で有利）', style: 'plain' },
+            { text: ' モード（接続相手が ', style: 'plain' },
+            { text: '動的IPアドレス', style: 'red' },
+            { text: '。接続先のIPアドレスを認証情報として利用しない。利点：固定IP取得費用がかからずコスト面で有利）', style: 'plain' },
           ],
           [
             { text: 'IKEフェーズ1：', style: 'plain' },
@@ -3036,7 +3094,8 @@ const NOTE_DB: Record<string, NoteData> = {
             { text: ' と呼ばれる通信用のSAを生成。暗号化方式などの決定と暗号鍵の生成。このSAをIPsec通信で使用', style: 'plain' },
           ],
           [
-            { text: 'IPsec通信：セキュアな通信', style: 'plain' },
+            { text: 'IPsec通信：', style: 'plain' },
+            { text: 'セキュアな通信', style: 'red' },
           ],
           [
             { text: 'SAの生存時間：', style: 'plain' },
@@ -3054,7 +3113,11 @@ const NOTE_DB: Record<string, NoteData> = {
             { text: 'ESPパケットの構造（下図）。暗号化範囲はピンク〜紫の部分', style: 'plain' },
           ],
           [
-            { text: 'IPsecではTCP（UDP）ヘッダが暗号化される ⇒ NATがあるとポート番号がないため通信に失敗することがある', style: 'plain' },
+            { text: 'IPsecではTCP（UDP）ヘッダが ', style: 'plain' },
+            { text: '暗号化', style: 'red' },
+            { text: ' される ⇒ NATがあると ', style: 'plain' },
+            { text: 'ポート番号', style: 'red' },
+            { text: ' がないため通信に失敗することがある', style: 'plain' },
           ],
           [
             { text: 'NATトラバーサル', style: 'red' },
@@ -3138,7 +3201,9 @@ const NOTE_DB: Record<string, NoteData> = {
         heading: 'GRE（Generic Routing Encapsulation）',
         richItems: [
           [
-            { text: 'レイヤ3のトンネルプロトコル', style: 'plain' },
+            { text: 'レイヤ', style: 'plain' },
+            { text: '3', style: 'red' },
+            { text: ' のトンネルプロトコル', style: 'plain' },
           ],
           [
             { text: 'IPsecと比べた違い：GREは通信を ', style: 'plain' },
@@ -3147,18 +3212,30 @@ const NOTE_DB: Record<string, NoteData> = {
           [
             { text: 'GREは ', style: 'plain' },
             { text: 'マルチキャスト', style: 'red' },
-            { text: ' も転送できる（IPsec単独はユニキャストのみ）', style: 'plain' },
+            { text: ' も転送できる（IPsec単独は ', style: 'plain' },
+            { text: 'ユニキャスト', style: 'red' },
+            { text: ' のみ）', style: 'plain' },
           ],
           [
-            { text: 'GREによるマルチキャスト転送の活用：複数拠点間でOSPFのようなルーティングプロトコルを使用するケース（OSPFのLSA交換はマルチキャストが必要）', style: 'plain' },
+            { text: 'GREによるマルチキャスト転送の活用：複数拠点間で ', style: 'plain' },
+            { text: 'OSPF', style: 'red' },
+            { text: ' のようなルーティングプロトコルを使用するケース（OSPFのLSA交換はマルチキャストが必要）', style: 'plain' },
           ],
           [
             { text: 'IPsec上でGREを動作させる技術：', style: 'plain' },
             { text: 'GRE over IPsec', style: 'red' },
-            { text: '。暗号化できない・マルチキャストできない弱点を補完', style: 'plain' },
+            { text: '。', style: 'plain' },
+            { text: '暗号化', style: 'red' },
+            { text: ' できない・', style: 'plain' },
+            { text: 'マルチキャスト', style: 'red' },
+            { text: ' できない弱点を補完', style: 'plain' },
           ],
           [
-            { text: 'GRE等でヘッダを付与すると、MTUサイズが1500バイトを超え ', style: 'plain' },
+            { text: 'GRE等でヘッダを付与すると、', style: 'plain' },
+            { text: 'MTU', style: 'red' },
+            { text: ' サイズが ', style: 'plain' },
+            { text: '1500', style: 'red' },
+            { text: ' バイトを超え ', style: 'plain' },
             { text: 'フラグメント', style: 'red' },
             { text: ' が発生する場合があるため、ルータ等でMTUを調整する必要がある', style: 'plain' },
           ],
@@ -3256,7 +3333,7 @@ const NOTE_DB: Record<string, NoteData> = {
   },
 
   security: {
-    summary: '復習ノート「セキュリティ」準拠。標的型攻撃・認証（チャレンジレスポンス・証明書）・SSO・SSL/TLS・SSL-VPNを整理。',
+    summary: '復習ノート「セキュリティ」準拠。標的型攻撃・認証（チャレンジレスポンス・証明書）・SSO・SSL/TLSを整理。SSL-VPN は SSL/TLS・PKI ノートを参照。',
     sections: [
       {
         heading: '標的型攻撃',
@@ -3373,35 +3450,6 @@ const NOTE_DB: Record<string, NoteData> = {
           ],
         ],
       },
-      {
-        heading: 'SSL-VPN',
-        richItems: [
-          [
-            { text: 'IPsecはESPを用いて ', style: 'plain' },
-            { text: 'レイヤ3', style: 'red' },
-            { text: ' で通信する／SSL-VPNはTCP', style: 'plain' },
-            { text: '443', style: 'red' },
-            { text: '番（HTTPS）を用いた ', style: 'plain' },
-            { text: 'レイヤ4', style: 'red' },
-            { text: ' 通信', style: 'plain' },
-          ],
-          [
-            { text: 'SSL-VPNの方式①：', style: 'plain' },
-            { text: 'リバースプロキシ', style: 'red' },
-            { text: '。リバースプロキシサーバ（SSL-VPN装置）をWebサーバの前段に設置。Webサーバの改ざんを防ぐことが目的。外部からのアクセスはプロキシが代理応答するので、オリジナルのWebサーバにアクセスできない。改ざん防止以外には、アクセス負荷分散や、キャッシュによる表示速度向上も期待できる。Webブラウザで動作しないアプリには使用できない', style: 'plain' },
-          ],
-          [
-            { text: 'SSL-VPNの方式②：', style: 'plain' },
-            { text: 'ポートフォワーディング', style: 'red' },
-            { text: '。SSL-VPN装置で、サーバのIPアドレスとポート番号を事前に定義。通信中に動的にサーバのポート番号が変化するアプリケーションには使えない', style: 'plain' },
-          ],
-          [
-            { text: 'SSL-VPNの方式③：', style: 'plain' },
-            { text: 'L2フォワーディング', style: 'red' },
-            { text: '。PCに専用のソフトウェアをインストール。PCとSSL-VPN装置間でSSLのトンネルを作成。レイヤ2レベルの通信が行えるので、同一LAN内にいるかのような通信が行える。PCには仮想のIPアドレスが払い出される。使用するプロトコルの制限が無い', style: 'plain' },
-          ],
-        ],
-      },
       // ── 復習ノートに無い既存項目（ネイビー強調のみで残す） ──────────
       {
         heading: '補足：TLSハンドシェイク（参考）',
@@ -3500,8 +3548,6 @@ const NOTE_DB: Record<string, NoteData> = {
       'チャレンジレスポンス：毎回==異なるレスポンス==で安全',
       'クライアント証明書配布時には==秘密鍵==が必要',
       'サーバ証明書は接続FQDNと==CN==の一致確認',
-      'SSL-VPN：==リバースプロキシ==／==ポートフォワーディング==／==L2フォワーディング==の3方式',
-      'IPsecはL3／SSL-VPNはL4',
     ],
   },
 
@@ -3672,28 +3718,22 @@ const NOTE_DB: Record<string, NoteData> = {
             { text: '161/162', style: 'red' },
           ],
           [
-            { text: 'SNMP', style: 'red' },
+            { text: 'SNMP', style: 'plain' },
             { text: 'マネージャ', style: 'red' },
             { text: '：機器を管理する側', style: 'plain' },
           ],
           [
-            { text: 'SNMP', style: 'red' },
+            { text: 'SNMP', style: 'plain' },
             { text: 'エージェント', style: 'red' },
             { text: '：管理されるネットワーク機器やサーバ', style: 'plain' },
           ],
           [
-            { text: 'SNMPマネージャ側で管理すべきこと：', style: 'red' },
-            { text: 'エージェント', style: 'red' },
-            { text: ' と ', style: 'red' },
-            { text: 'マネージャ', style: 'red' },
-            { text: ' の設定で ', style: 'red' },
+            { text: 'SNMPマネージャ側で管理すべきこと：エージェントとマネージャの設定で ', style: 'plain' },
             { text: 'コミュニティ', style: 'red' },
-            { text: ' というグループを指定し、', style: 'red' },
-            { text: 'コミュニティ', style: 'red' },
-            { text: ' 単位で情報を管理（複数の部署の複数の機器の監視情報をやり取りするのが大変だから）', style: 'red' },
+            { text: ' というグループを指定し、コミュニティ単位で情報を管理', style: 'plain' },
           ],
           [
-            { text: 'コミュニティのデフォルト名：', style: 'red' },
+            { text: 'コミュニティのデフォルト名：', style: 'plain' },
             { text: 'public', style: 'red' },
           ],
         ],
@@ -3702,31 +3742,16 @@ const NOTE_DB: Record<string, NoteData> = {
         heading: 'SNMPの監視の種類',
         richItems: [
           [
-            { text: 'SNMPの監視の種類', style: 'plain' },
-          ],
-          [
             { text: 'ポーリング', style: 'red' },
-            { text: '：', style: 'red' },
-            { text: 'ping', style: 'red' },
-            { text: ' 監視と同様に、', style: 'red' },
-            { text: 'マネージャ', style: 'red' },
-            { text: ' から ', style: 'red' },
-            { text: 'エージェント', style: 'red' },
-            { text: ' へ ', style: 'red' },
+            { text: '：ping監視と同様に、マネージャからエージェントへ ', style: 'plain' },
             { text: '一定間隔', style: 'red' },
-            { text: ' で監視を行う', style: 'red' },
+            { text: ' で監視を行う', style: 'plain' },
           ],
           [
             { text: 'Trap', style: 'red' },
-            { text: '：', style: 'red' },
-            { text: 'SYSLOG', style: 'red' },
-            { text: ' 監視と同様に、', style: 'red' },
-            { text: 'エージェント', style: 'red' },
-            { text: ' から ', style: 'red' },
-            { text: 'マネージャ', style: 'red' },
-            { text: ' にリアルタイムで ', style: 'red' },
-            { text: '異常', style: 'red' },
-            { text: ' を通知する', style: 'red' },
+            { text: '：SYSLOG監視と同様に、エージェントからマネージャに ', style: 'plain' },
+            { text: 'リアルタイム', style: 'red' },
+            { text: ' で異常を通知する', style: 'plain' },
           ],
         ],
       },
@@ -4061,43 +4086,107 @@ const NOTE_DB: Record<string, NoteData> = {
     sections: [
       {
         heading: 'IoT通信プロトコル',
-        items: [
-          '==MQTT==（==TCP 1883/8883==）：==Pub/Subモデル==。ブローカーを介してPublisher→Subscriberにメッセージ配信。==QoS 0/1/2==',
-          '==CoAP==（==UDP 5683==）：RESTfulなHTTP互換の軽量プロトコル。==Confirmable/Non-confirmable==で信頼性を選択',
-          'AMQP：メッセージキューイングプロトコル。エンタープライズ向け（MQTTよりリッチ）',
+        richItems: [
+          [
+            { text: 'MQTT', style: 'navy' },
+            { text: '（', style: 'plain' },
+            { text: 'TCP 1883/8883', style: 'navy' },
+            { text: '）：', style: 'plain' },
+            { text: 'Pub/Subモデル', style: 'navy' },
+            { text: '。ブローカーを介してPublisher→Subscriberにメッセージ配信。', style: 'plain' },
+            { text: 'QoS 0/1/2', style: 'navy' },
+          ],
+          [
+            { text: 'CoAP', style: 'navy' },
+            { text: '（', style: 'plain' },
+            { text: 'UDP 5683', style: 'navy' },
+            { text: '）：RESTfulなHTTP互換の軽量プロトコル。', style: 'plain' },
+            { text: 'Confirmable/Non-confirmable', style: 'navy' },
+            { text: ' で信頼性を選択', style: 'plain' },
+          ],
+          [
+            { text: 'AMQP：メッセージキューイングプロトコル。エンタープライズ向け（MQTTよりリッチ）', style: 'plain' },
+          ],
         ],
       },
       {
         heading: 'LPWA（Low Power Wide Area）',
-        items: [
-          '==LoRaWAN==：==チャープ変調（CSS）==。==920MHz帯==。数km〜数十kmの長距離通信',
-          '==Sigfox==：Ultra-Narrow Band変調。月単位の電池駆動。最大==12==バイト/メッセージ',
-          '==NB-IoT / LTE-M==：3GPP標準。既存LTE基地局活用。キャリアサービス',
-          '==Wi-SUN==：スマートメーター向けメッシュネットワーク（日本標準）',
+        richItems: [
+          [
+            { text: 'LoRaWAN', style: 'navy' },
+            { text: '：', style: 'plain' },
+            { text: 'チャープ変調（CSS）', style: 'navy' },
+            { text: '。', style: 'plain' },
+            { text: '920MHz帯', style: 'navy' },
+            { text: '。数km〜数十kmの長距離通信', style: 'plain' },
+          ],
+          [
+            { text: 'Sigfox', style: 'navy' },
+            { text: '：Ultra-Narrow Band変調。月単位の電池駆動。最大 ', style: 'plain' },
+            { text: '12', style: 'navy' },
+            { text: ' バイト/メッセージ', style: 'plain' },
+          ],
+          [
+            { text: 'NB-IoT / LTE-M', style: 'navy' },
+            { text: '：3GPP標準。既存LTE基地局活用。キャリアサービス', style: 'plain' },
+          ],
+          [
+            { text: 'Wi-SUN', style: 'navy' },
+            { text: '：スマートメーター向けメッシュネットワーク（日本標準）', style: 'plain' },
+          ],
         ],
       },
       {
         heading: 'SASE・ゼロトラスト（令和8年予想）',
-        items: [
-          '==SASE==（Secure Access Service Edge）：==SD-WAN＋SWG・CASB・ZTNA・FWaaS==をクラウドで統合',
-          '==ZTNA==（Zero Trust Network Access）：「==常に認証・常に最小権限==」。VPN不要でアプリ単位アクセス制御',
-          '==CASB==（Cloud Access Security Broker）：クラウドサービス利用の可視化・制御',
-          '==SWG==（Secure Web Gateway）：クラウド型プロキシ。URLフィルタ・マルウェアスキャン・DLP',
+        richItems: [
+          [
+            { text: 'SASE', style: 'red' },
+            { text: '（Secure Access Service Edge）：', style: 'plain' },
+            { text: 'SD-WAN', style: 'navy' },
+            { text: '＋SWG・', style: 'plain' },
+            { text: 'CASB', style: 'red' },
+            { text: '・', style: 'plain' },
+            { text: 'ZTNA', style: 'navy' },
+            { text: '・FWaaS をクラウドで統合', style: 'plain' },
+          ],
+          [
+            { text: 'ZTNA', style: 'navy' },
+            { text: '（Zero Trust Network Access）：「', style: 'plain' },
+            { text: '常に認証・常に最小権限', style: 'navy' },
+            { text: '」。VPN不要でアプリ単位アクセス制御', style: 'plain' },
+          ],
+          [
+            { text: 'CASB', style: 'red' },
+            { text: '（Cloud Access Security Broker）：クラウドサービス利用の可視化・制御', style: 'plain' },
+          ],
+          [
+            { text: 'SWG', style: 'navy' },
+            { text: '（Secure Web Gateway）：クラウド型プロキシ。URLフィルタ・マルウェアスキャン・DLP', style: 'plain' },
+          ],
         ],
       },
       {
         heading: '試験制度変更（令和8年度）',
-        items: [
-          '==CBT==（Computer Based Testing）方式に完全移行',
-          '科目A-2（旧午前Ⅱ）・科目B（旧午後Ⅰ/Ⅱ → B-1/B-2）に名称変更',
-          '記述解答→==キーボード入力（タイピング）==方式に変更',
+        richItems: [
+          [
+            { text: 'CBT', style: 'navy' },
+            { text: '（Computer Based Testing）方式に完全移行', style: 'plain' },
+          ],
+          [
+            { text: '科目A-2（旧午前Ⅱ）・科目B（旧午後Ⅰ/Ⅱ → B-1/B-2）に名称変更', style: 'plain' },
+          ],
+          [
+            { text: '記述解答→', style: 'plain' },
+            { text: 'キーボード入力（タイピング）', style: 'navy' },
+            { text: ' 方式に変更', style: 'plain' },
+          ],
         ],
       },
     ],
     exam_tips: [
-      'MQTT（==TCP・Pub/Sub==）とCoAP（==UDP・RESTful==）の違いは令和7年に出題',
+      'MQTT（TCP・Pub/Sub）とCoAP（UDP・RESTful）の違いは令和7年に出題',
       'LPWAの各技術（LoRa・Sigfox・NB-IoT）の特徴の違い',
-      '==SASE== = ==SD-WAN== + セキュリティ（SWG+CASB+ZTNA+FWaaS）という構成を覚える',
+      '==SASE== = SD-WAN + セキュリティ（SWG+==CASB==+ZTNA+FWaaS）という構成を覚える',
     ],
   },
   // ─────────────────────────────────────────────
@@ -4569,12 +4658,12 @@ const NOTE_DB: Record<string, NoteData> = {
               },
               {
                 cells: [
-                  { label: '送信元IPv6アドレス（128bit）', bg: '#fef3c7', isRed: true, span: 6 },
+                  { label: '送信元IPv6アドレス（128bit）', bg: '#fef3c7', maskDigits: true, span: 6 },
                 ],
               },
               {
                 cells: [
-                  { label: '宛先IPv6アドレス（128bit）', bg: '#fef3c7', isRed: true, span: 6 },
+                  { label: '宛先IPv6アドレス（128bit）', bg: '#fef3c7', maskDigits: true, span: 6 },
                 ],
               },
               {

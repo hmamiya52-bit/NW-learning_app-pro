@@ -19,10 +19,35 @@ interface ProtocolEntry {
   ports: string
 }
 
+// 強調トークン（記号マークアップ廃止のための構造化データ）
+type EmphasisStyle = 'red' | 'navy' | 'plain'
+interface EmphasisToken {
+  text: string
+  style: EmphasisStyle
+}
+
+// 復習ノート準拠のリッチプロトコル
+interface RichProtocolEntry {
+  name: string
+  nameStyle?: EmphasisStyle      // プロトコル名の強調（既定 plain）
+  layer: string                  // "レイヤ2" / "レイヤ3" / "レイヤ4" / "(レイヤ5)" など
+  port?: string                  // 上位レイヤテーブル用ポート番号文字列。undefined なら下位レイヤ表
+  portStyle?: EmphasisStyle      // ポートの強調
+  description: EmphasisToken[]   // 説明文（強調混在）
+}
+
+interface RichProtocolTable {
+  heading: string                // テーブル見出し
+  hasPort: boolean               // ポート列を表示するか
+  rows: RichProtocolEntry[]
+}
+
 interface NoteSection {
   heading: string
   items?: string[]
   protocols?: ProtocolEntry[]
+  richProtocolTables?: RichProtocolTable[]   // 復習ノート準拠のプロトコル表
+  navyItems?: EmphasisToken[][]              // ネイビー強調のみで残す既存項目（各セクション末尾）
 }
 
 interface NoteData {
@@ -78,6 +103,36 @@ function RedWord({ text, masked, version }: RedWordProps) {
       {text}
     </span>
   )
+}
+
+// ─────────────────────────────────────────────
+// ネイビー強調（隠す機能なし）
+// ─────────────────────────────────────────────
+function NavyWord({ text }: { text: string }) {
+  return (
+    <span className="font-bold" style={{ color: '#1a3a5c' }}>
+      {text}
+    </span>
+  )
+}
+
+// ─────────────────────────────────────────────
+// 強調トークン配列 → React ノード（記号マークアップ不使用）
+// ─────────────────────────────────────────────
+function renderTokens(
+  tokens: EmphasisToken[],
+  hideRed: boolean,
+  version: number,
+): React.ReactNode {
+  return tokens.map((tok, i) => {
+    if (tok.style === 'red') {
+      return <RedWord key={i} text={tok.text} masked={hideRed} version={version} />
+    }
+    if (tok.style === 'navy') {
+      return <NavyWord key={i} text={tok.text} />
+    }
+    return <span key={i}>{tok.text}</span>
+  })
 }
 
 // ─────────────────────────────────────────────
@@ -1004,101 +1059,223 @@ const NOTE_DB: Record<string, NoteData> = {
   },
 
   'protocol-review': {
-    summary: 'L1〜L7の全レイヤを体系的に整理。ポート番号・プロトコル番号・Ethertype・イーサネット規格を一覧化。試験直前の総まとめに最適。',
+    summary: '復習ノート準拠。ネスペ午後で問われる主要プロトコルを2表に整理。赤字＝最重要、ネイビー＝重要。',
     sections: [
       {
-        heading: 'アプリケーション層（L5〜L7）— プロトコルとポート番号',
-        protocols: [
-          { name: 'HTTP',         transport: 'TCP',     ports: '80' },
-          { name: 'HTTPS',        transport: 'TCP',     ports: '443' },
-          { name: 'DNS',          transport: 'UDP/TCP', ports: '53' },
-          { name: 'SMTP',         transport: 'TCP',     ports: '25（送信）/ 587（サブミッション）' },
-          { name: 'POP3',         transport: 'TCP',     ports: '110（平文）/ 995（SSL）' },
-          { name: 'IMAP4',        transport: 'TCP',     ports: '143（平文）/ 993（SSL）' },
-          { name: 'SSH',          transport: 'TCP',     ports: '22' },
-          { name: 'Telnet',       transport: 'TCP',     ports: '23' },
-          { name: 'FTP',          transport: 'TCP',     ports: '21（制御）/ 20（データ・アクティブ）' },
-          { name: 'TFTP',         transport: 'UDP',     ports: '69' },
-          { name: 'DHCP',         transport: 'UDP',     ports: '67（サーバ）/ 68（クライアント）' },
-          { name: 'SNMP',         transport: 'UDP',     ports: '161（Get/Set）/ 162（Trap）' },
-          { name: 'NTP',          transport: 'UDP',     ports: '123' },
-          { name: 'Syslog',       transport: 'UDP',     ports: '514' },
-          { name: 'LDAP',         transport: 'TCP',     ports: '389（平文）/ 636（LDAPS）' },
-          { name: 'LDAPS',        transport: 'TCP',     ports: '636' },
-          { name: 'RADIUS',       transport: 'UDP',     ports: '1812（認証）/ 1813（課金）' },
-          { name: 'SIP',          transport: 'UDP/TCP', ports: '5060（平文）/ 5061（TLS）' },
-          { name: 'BGP',          transport: 'TCP',     ports: '179' },
-          { name: 'MQTT',         transport: 'TCP',     ports: '1883（平文）/ 8883（TLS）' },
-          { name: 'CoAP',         transport: 'UDP',     ports: '5683' },
-          { name: 'QUIC / HTTP/3',transport: 'UDP',     ports: '443' },
-          { name: 'OpenFlow',     transport: 'TCP',     ports: '6653' },
-          { name: 'IKEv2',        transport: 'UDP',     ports: '500（通常）/ 4500（NAT-T）' },
+        heading: '下位レイヤのプロトコル（L2／L3）',
+        richProtocolTables: [
+          {
+            heading: '下位レイヤ（L2／L3）',
+            hasPort: false,
+            rows: [
+              { name: 'IP',   layer: 'レイヤ3',
+                description: [{ text: 'ネットワーク上の住所', style: 'plain' }] },
+              { name: 'TCP',  layer: 'レイヤ4',
+                description: [
+                  { text: '３ウェイ', style: 'plain' },
+                  { text: 'ハンドシェイク', style: 'red' },
+                  { text: 'による信頼性の高い通信', style: 'plain' },
+                ] },
+              { name: 'UDP',  layer: 'レイヤ4',
+                description: [
+                  { text: '高速性を重視する', style: 'plain' },
+                  { text: 'コネクションレス', style: 'red' },
+                  { text: '型通信', style: 'plain' },
+                ] },
+              { name: 'STP',  nameStyle: 'red', layer: 'レイヤ2',
+                description: [{ text: 'ループ構成によるブロードキャストストームの防止', style: 'plain' }] },
+              { name: 'LACP', nameStyle: 'red', layer: 'レイヤ2',
+                description: [{ text: '動的なリンクアグリゲーション設定', style: 'plain' }] },
+              { name: 'PPP',  nameStyle: 'red', layer: 'レイヤ2',
+                description: [{ text: 'WAN を介した 2 地点間（1 対 1）のデータ通信', style: 'plain' }] },
+              { name: 'PPPoE', layer: 'レイヤ2',
+                description: [{ text: 'PPP フレームを MAC フレームでカプセル化して LAN 上で転送', style: 'plain' }] },
+              { name: 'CHAP', layer: 'レイヤ2',
+                description: [{ text: 'PPP でパスワードを暗号化して送る', style: 'plain' }] },
+              { name: 'EAP',  nameStyle: 'red', layer: 'レイヤ2',
+                description: [
+                  { text: 'PPP を拡張したプロトコル。無線 LAN に使う。\nEAP-PEAP：ユーザID/パスワードを使用\nEAP-TLS：クライアント証明書を使用', style: 'plain' },
+                ] },
+              { name: 'L2TP', layer: 'レイヤ2',
+                description: [{ text: 'レイヤ 2 のプロトコル（PPP 等）をトンネリング', style: 'plain' }] },
+              { name: 'LLDP', layer: 'レイヤ2',
+                description: [{ text: '隣接機器に対して自身の情報を通知', style: 'plain' }] },
+              { name: 'ICMP', nameStyle: 'red', layer: 'レイヤ3',
+                description: [
+                  { text: '機器の正常性確認。', style: 'plain' },
+                  { text: 'ping', style: 'red' },
+                  { text: ' や traceroute', style: 'plain' },
+                ] },
+              { name: 'VRRP', nameStyle: 'red', layer: 'レイヤ3',
+                description: [{ text: 'ルータの冗長化', style: 'plain' }] },
+              { name: 'ARP',  nameStyle: 'red', layer: 'レイヤ3',
+                description: [
+                  { text: 'IP', style: 'red' },
+                  { text: ' アドレスに対応した ', style: 'plain' },
+                  { text: 'MAC', style: 'red' },
+                  { text: ' アドレスを問合せ／回答', style: 'plain' },
+                ] },
+              { name: 'GARP', nameStyle: 'red', layer: 'レイヤ3',
+                description: [{ text: '自分自身の IP アドレスを同一セグメント内のノードに通知し、ARP テーブルを更新させる。自身の IP アドレスの重複検査にも使う。', style: 'plain' }] },
+              { name: 'RIP',  nameStyle: 'red', layer: 'レイヤ3',
+                description: [{ text: '距離ベクトル型アルゴリズムを用いるルーティングプロトコル', style: 'plain' }] },
+              { name: 'OSPF', nameStyle: 'red', layer: 'レイヤ3',
+                description: [{ text: 'リンクステート型アルゴリズムを用いるルーティングプロトコル', style: 'plain' }] },
+              { name: 'BGP',  nameStyle: 'red', layer: 'レイヤ3',
+                description: [{ text: 'AS 間で用いるパスベクトル型アルゴリズムのルーティングプロトコル', style: 'plain' }] },
+              { name: 'IGMP', layer: 'レイヤ3',
+                description: [{ text: 'クライアントがルータに、マルチキャストグループの参加・離脱を通知', style: 'plain' }] },
+              { name: 'GRE',  layer: 'レイヤ3',
+                description: [{ text: 'レイヤ 3 プロトコル（IP, IPsec 等）をトンネリング（暗号化機能なし）', style: 'plain' }] },
+            ],
+          },
         ],
       },
       {
-        heading: 'トランスポート層（L4）',
-        items: [
-          '==TCP==（IPプロトコル番号：==6==）：コネクション型・信頼性転送・フロー制御・輻輳制御・3ウェイハンドシェイク',
-          '==UDP==（IPプロトコル番号：==17==）：コネクションレス・低遅延・再送なし。VoIP・DNS・DHCP・QUIC に使用',
-          '==SCTP==（IPプロトコル番号：==132==）：マルチホーミング・マルチストリーム対応。信頼性はTCP相当',
-          'ウェルノウンポート：==0〜1023==（システムサービス用・root権限が必要）',
-          '登録ポート：==1024〜49151==（アプリケーションが登録して使用）',
-          'エフェメラルポート：==49152〜65535==（クライアントが一時的に使用する動的ポート）',
+        heading: '上位レイヤのプロトコルとポート番号',
+        richProtocolTables: [
+          {
+            heading: '上位レイヤ（ポート番号付き）',
+            hasPort: true,
+            rows: [
+              { name: 'HTTP',  nameStyle: 'red', layer: '—', port: 'TCP 80', portStyle: 'red',
+                description: [{ text: 'PC（ブラウザ）と Web サーバ間の通信', style: 'plain' }] },
+              { name: 'SSL/TLS', layer: '(レイヤ5)', port: '—',
+                description: [{ text: 'データ暗号化プロトコル。盗聴だけでなく、データの改ざん、なりすましを防止', style: 'plain' }] },
+              { name: 'HTTPS', nameStyle: 'red', layer: '—', port: 'TCP 443', portStyle: 'red',
+                description: [{ text: 'HTTP を SSL で暗号化した通信', style: 'plain' }] },
+              { name: 'DNS',   nameStyle: 'red', layer: '—', port: 'UDP 53 / TCP 53', portStyle: 'red',
+                description: [{ text: 'ホスト名から IP アドレスの問合せ／回答。問合せは UDP、ゾーン転送は TCP を使用', style: 'plain' }] },
+              { name: 'DHCP',  nameStyle: 'red', layer: '—', port: 'UDP 67/68',
+                portStyle: 'red',
+                description: [{ text: 'IP アドレスの払い出し、一元管理を行う。サーバ→クライアントのポート番号が 68', style: 'plain' }] },
+              { name: 'FTP',   layer: '—', port: 'TCP 20/21',
+                description: [{ text: 'ファイルの転送', style: 'plain' }] },
+              { name: 'SNMP',  layer: '—', port: 'UDP（161/162）', portStyle: 'red',
+                description: [{ text: 'NW 管理情報（故障情報やトラフィック情報）のやり取り', style: 'plain' }] },
+              { name: 'SMTP',  layer: '—', port: 'TCP 25', portStyle: 'red',
+                description: [{ text: 'シンプルなメール送信', style: 'plain' }] },
+              { name: 'POP3',  layer: '—', port: 'TCP 110', portStyle: 'red',
+                description: [{ text: 'メールサーバから PC へのメール受信', style: 'plain' }] },
+              { name: 'SMTP AUTH', layer: '—', port: 'TCP 587', portStyle: 'red',
+                description: [
+                  { text: 'ユーザ名・パスワードで認証を行うメール送信。TCP 587：', style: 'plain' },
+                  { text: 'サブミッション', style: 'red' },
+                  { text: 'ポート', style: 'plain' },
+                ] },
+              { name: 'SMTPS', layer: '—', port: 'TCP 465', portStyle: 'red',
+                description: [
+                  { text: 'TLS', style: 'red' },
+                  { text: ' で暗号化した SMTP', style: 'plain' },
+                ] },
+              { name: 'IMAP4', layer: '—', port: 'TCP 143',
+                description: [{ text: 'POP3 の改良版。複数 PC から同一メールを見れる', style: 'plain' }] },
+              { name: 'IKE',   layer: '—', port: 'UDP 500', portStyle: 'red',
+                description: [{ text: 'IPsec における鍵交換プロトコル', style: 'plain' }] },
+              { name: 'SIP',   layer: '—', port: 'UDP（5060）', portStyle: 'red',
+                description: [{ text: 'VoIP の呼制御', style: 'plain' }] },
+              { name: 'RTP',   layer: '—', port: '動的に変化',
+                description: [{ text: 'リアルタイムのデータ伝送（VoIP 等）', style: 'plain' }] },
+              { name: 'SDP',   layer: '—', port: '(TCP/UDP 5060)',
+                description: [{ text: 'セッション記述プロトコル。VoIP 等で使用', style: 'plain' }] },
+              { name: 'IMAPS', layer: '—', port: 'TCP 993',
+                description: [{ text: '認証やメール本文の受信など、IMAP 通信の全てを TLS によって暗号化', style: 'plain' }] },
+            ],
+          },
+        ],
+      },
+      // ── 復習ノートに無い既存項目（ネイビー強調のみで残す） ──────────
+      {
+        heading: '補足：トランスポート層（L4）の追加情報',
+        navyItems: [
+          [
+            { text: 'TCP', style: 'navy' },
+            { text: '（IPプロトコル番号：', style: 'plain' },
+            { text: '6', style: 'navy' },
+            { text: '）：コネクション型・信頼性転送・フロー制御・輻輳制御・3ウェイハンドシェイク', style: 'plain' },
+          ],
+          [
+            { text: 'UDP', style: 'navy' },
+            { text: '（IPプロトコル番号：', style: 'plain' },
+            { text: '17', style: 'navy' },
+            { text: '）：コネクションレス・低遅延・再送なし。VoIP・DNS・DHCP・QUIC に使用', style: 'plain' },
+          ],
+          [
+            { text: 'SCTP', style: 'navy' },
+            { text: '（IPプロトコル番号：', style: 'plain' },
+            { text: '132', style: 'navy' },
+            { text: '）：マルチホーミング・マルチストリーム対応。信頼性はTCP相当', style: 'plain' },
+          ],
+          [
+            { text: 'ウェルノウンポート：', style: 'plain' },
+            { text: '0〜1023', style: 'navy' },
+            { text: '（システムサービス用・root権限が必要）', style: 'plain' },
+          ],
+          [
+            { text: '登録ポート：', style: 'plain' },
+            { text: '1024〜49151', style: 'navy' },
+            { text: '（アプリケーションが登録して使用）', style: 'plain' },
+          ],
+          [
+            { text: 'エフェメラルポート：', style: 'plain' },
+            { text: '49152〜65535', style: 'navy' },
+            { text: '（クライアントが一時的に使用する動的ポート）', style: 'plain' },
+          ],
         ],
       },
       {
-        heading: 'ネットワーク層（L3）— IPプロトコル番号',
-        items: [
-          'ICMP：プロトコル番号 ==1==',
-          'TCP：プロトコル番号 ==6==',
-          'UDP：プロトコル番号 ==17==',
-          'GRE：プロトコル番号 ==47==',
-          'ESP（IPsec）：プロトコル番号 ==50==',
-          'AH（IPsec）：プロトコル番号 ==51==',
-          'OSPF：プロトコル番号 ==89==',
-          'SCTP：プロトコル番号 ==132==',
+        heading: '補足：IPプロトコル番号一覧（L3）',
+        navyItems: [
+          [{ text: 'ICMP：プロトコル番号 ', style: 'plain' }, { text: '1', style: 'navy' }],
+          [{ text: 'TCP：プロトコル番号 ', style: 'plain' },  { text: '6', style: 'navy' }],
+          [{ text: 'UDP：プロトコル番号 ', style: 'plain' },  { text: '17', style: 'navy' }],
+          [{ text: 'GRE：プロトコル番号 ', style: 'plain' },  { text: '47', style: 'navy' }],
+          [{ text: 'ESP（IPsec）：プロトコル番号 ', style: 'plain' }, { text: '50', style: 'navy' }],
+          [{ text: 'AH（IPsec）：プロトコル番号 ', style: 'plain' },  { text: '51', style: 'navy' }],
+          [{ text: 'OSPF：プロトコル番号 ', style: 'plain' }, { text: '89', style: 'navy' }],
+          [{ text: 'SCTP：プロトコル番号 ', style: 'plain' }, { text: '132', style: 'navy' }],
         ],
       },
       {
-        heading: 'ICMPタイプ番号（L3）',
-        items: [
-          'Type ==0==：Echo Reply（ping 応答）',
-          'Type ==3==：Destination Unreachable（到達不能）。Code ==3== = Port Unreachable',
-          'Type ==5==：Redirect（より良い経路をホストに通知）',
-          'Type ==8==：Echo Request（ping 要求）',
-          'Type ==11==：Time Exceeded（TTL=0。==traceroute== に使用）',
+        heading: '補足：ICMPタイプ番号（L3）',
+        navyItems: [
+          [{ text: 'Type ', style: 'plain' }, { text: '0', style: 'navy' }, { text: '：Echo Reply（ping 応答）', style: 'plain' }],
+          [{ text: 'Type ', style: 'plain' }, { text: '3', style: 'navy' }, { text: '：Destination Unreachable（到達不能）。Code 3 = Port Unreachable', style: 'plain' }],
+          [{ text: 'Type ', style: 'plain' }, { text: '5', style: 'navy' }, { text: '：Redirect（より良い経路をホストに通知）', style: 'plain' }],
+          [{ text: 'Type ', style: 'plain' }, { text: '8', style: 'navy' }, { text: '：Echo Request（ping 要求）', style: 'plain' }],
+          [{ text: 'Type ', style: 'plain' }, { text: '11', style: 'navy' }, { text: '：Time Exceeded（TTL=0。traceroute に使用）', style: 'plain' }],
         ],
       },
       {
-        heading: 'マルチキャストアドレス（L3）',
-        items: [
-          '==224.0.0.5==：全 OSPF ルータ宛',
-          '==224.0.0.6==：OSPF の DR/BDR 宛',
-          '==224.0.0.9==：RIPv2 ルータ宛',
-          '==224.0.0.18==：VRRP 宛',
-          '==ff02::1==：リンクローカル全ノード（IPv6）',
-          '==ff02::2==：リンクローカル全ルータ（IPv6）',
-          '==ff02::5==：OSPFv3 全ルータ（IPv6）',
+        heading: '補足：マルチキャストアドレス（L3）',
+        navyItems: [
+          [{ text: '224.0.0.5', style: 'navy' }, { text: '：全 OSPF ルータ宛', style: 'plain' }],
+          [{ text: '224.0.0.6', style: 'navy' }, { text: '：OSPF の DR/BDR 宛', style: 'plain' }],
+          [{ text: '224.0.0.9', style: 'navy' }, { text: '：RIPv2 ルータ宛', style: 'plain' }],
+          [{ text: '224.0.0.18', style: 'navy' }, { text: '：VRRP 宛', style: 'plain' }],
+          [{ text: 'ff02::1', style: 'navy' }, { text: '：リンクローカル全ノード（IPv6）', style: 'plain' }],
+          [{ text: 'ff02::2', style: 'navy' }, { text: '：リンクローカル全ルータ（IPv6）', style: 'plain' }],
+          [{ text: 'ff02::5', style: 'navy' }, { text: '：OSPFv3 全ルータ（IPv6）', style: 'plain' }],
         ],
       },
       {
-        heading: '物理層（L1）— 主要イーサネット規格',
-        items: [
-          '==100BASE-TX==：Fast Ethernet。UTP Cat5。最大 ==100==m',
-          '==1000BASE-T==：GbE。UTP Cat5e。最大 ==100==m',
-          '==1000BASE-SX==：GbE。マルチモードファイバ（MMF）。最大 ==550==m',
-          '==1000BASE-LX==：GbE。シングルモードファイバ（SMF）。最大 ==5==km',
-          '==10GBASE-T==：10GbE。UTP Cat6a。最大 ==100==m',
-          '==10GBASE-SR==：10GbE。マルチモードファイバ（MMF）。最大 ==300==m',
-          '==10GBASE-LR==：10GbE。シングルモードファイバ（SMF）。最大 ==10==km',
-          '==40GBASE-SR4==：40GbE。MMF×4 レーン（QSFP+）。最大 ==150==m',
-          '==100GBASE-SR4==：100GbE。MMF×4 レーン（QSFP28）。最大 ==100==m',
+        heading: '補足：物理層（L1）— 主要イーサネット規格',
+        navyItems: [
+          [{ text: '100BASE-TX', style: 'navy' }, { text: '：Fast Ethernet。UTP Cat5。最大 100m', style: 'plain' }],
+          [{ text: '1000BASE-T', style: 'navy' }, { text: '：GbE。UTP Cat5e。最大 100m', style: 'plain' }],
+          [{ text: '1000BASE-SX', style: 'navy' }, { text: '：GbE。マルチモードファイバ（MMF）。最大 550m', style: 'plain' }],
+          [{ text: '1000BASE-LX', style: 'navy' }, { text: '：GbE。シングルモードファイバ（SMF）。最大 5km', style: 'plain' }],
+          [{ text: '10GBASE-T', style: 'navy' }, { text: '：10GbE。UTP Cat6a。最大 100m', style: 'plain' }],
+          [{ text: '10GBASE-SR', style: 'navy' }, { text: '：10GbE。マルチモードファイバ（MMF）。最大 300m', style: 'plain' }],
+          [{ text: '10GBASE-LR', style: 'navy' }, { text: '：10GbE。シングルモードファイバ（SMF）。最大 10km', style: 'plain' }],
+          [{ text: '40GBASE-SR4', style: 'navy' }, { text: '：40GbE。MMF×4 レーン（QSFP+）。最大 150m', style: 'plain' }],
+          [{ text: '100GBASE-SR4', style: 'navy' }, { text: '：100GbE。MMF×4 レーン（QSFP28）。最大 100m', style: 'plain' }],
         ],
       },
     ],
     exam_tips: [
       'ポート番号は==平文 vs 暗号化版==をセットで暗記（HTTP:80/HTTPS:443、SMTP:25/587、POP3:110/995、IMAP4:143/993、LDAP:389/636）',
-      '==UDP 使用プロトコル==：DNS・SNMP・NTP・TFTP・DHCP・Syslog・RADIUS・CoAP・QUIC（HTTP/3）',
+      '==UDP 使用プロトコル==：DNS・SNMP・NTP・TFTP・DHCP・Syslog・RADIUS・QUIC（HTTP/3）',
       '==BGP は TCP 179==（OSPF・RIP・VRRP は IP を直接使用）',
       'IP プロトコル番号：==ICMP=1==・==TCP=6==・==UDP=17==・==GRE=47==・==ESP=50==・==AH=51==・==OSPF=89==',
       'ICMP タイプ：==0/8==（ping 応答/要求）・==11==（TTL 超過・traceroute）・==3==（到達不能）',
@@ -1315,6 +1492,66 @@ export default function NoteDetail() {
                     </tbody>
                   </table>
                 </div>
+              ) : section.richProtocolTables ? (
+                <div className="px-5 py-3 space-y-4">
+                  {section.richProtocolTables.map((tbl, ti) => (
+                    <div key={ti} className="overflow-x-auto">
+                      <table className="w-full text-sm border-collapse">
+                        <thead>
+                          <tr className="text-xs text-slate-400 border-b border-slate-200 bg-slate-50">
+                            <th className="text-left py-2 px-2 font-semibold w-28">プロトコル名</th>
+                            <th className="text-left py-2 px-2 font-semibold w-20">レイヤ</th>
+                            {tbl.hasPort && (
+                              <th className="text-left py-2 px-2 font-semibold w-32">ポート番号</th>
+                            )}
+                            <th className="text-left py-2 px-2 font-semibold">説明</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {tbl.rows.map((row, j) => (
+                            <tr key={j} className="border-b border-slate-100 hover:bg-slate-50/60 transition-colors align-top">
+                              <td className="py-2 px-2 font-mono text-xs whitespace-nowrap">
+                                {row.nameStyle === 'red' ? (
+                                  <RedWord text={row.name} masked={hideRed} version={maskVersion} />
+                                ) : row.nameStyle === 'navy' ? (
+                                  <NavyWord text={row.name} />
+                                ) : (
+                                  <span className="font-bold text-slate-800">{row.name}</span>
+                                )}
+                              </td>
+                              <td className="py-2 px-2 text-xs text-slate-500 whitespace-nowrap">{row.layer}</td>
+                              {tbl.hasPort && (
+                                <td className="py-2 px-2 font-mono text-xs whitespace-nowrap">
+                                  {row.port === undefined ? (
+                                    <span className="text-slate-300">—</span>
+                                  ) : row.portStyle === 'red' ? (
+                                    <RedWord text={row.port} masked={hideRed} version={maskVersion} />
+                                  ) : row.portStyle === 'navy' ? (
+                                    <NavyWord text={row.port} />
+                                  ) : (
+                                    <span className="text-slate-700">{row.port}</span>
+                                  )}
+                                </td>
+                              )}
+                              <td className="py-2 px-2 text-xs text-slate-700 leading-relaxed whitespace-pre-line">
+                                {renderTokens(row.description, hideRed, maskVersion)}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  ))}
+                </div>
+              ) : section.navyItems ? (
+                <ul className="px-5 py-4 space-y-2">
+                  {section.navyItems.map((tokens, j) => (
+                    <li key={j} className="flex items-start gap-2 text-sm text-slate-700 leading-relaxed">
+                      <span className="flex-shrink-0 mt-1.5 w-1.5 h-1.5 rounded-full bg-slate-400" />
+                      <span>{renderTokens(tokens, hideRed, maskVersion)}</span>
+                    </li>
+                  ))}
+                </ul>
               ) : (
                 <ul className="px-5 py-4 space-y-2">
                   {(section.items ?? []).map((item, j) => (

@@ -6,7 +6,8 @@ import { categories } from '../data/categories'
 export const NOTE_CATEGORY_IDS = [
   'layer1-3', 'layer4-7', 'firewall', 'wireless', 'routing',
   'vrrp', 'wan', 'load-balancer', 'dhcp', 'dns',
-  'mail', 'voip', 'ipsec', 'sdn', 'security',
+  'mail', 'voip', 'ipsec', 'sdn', 'ssl-tls',
+  'security', 'threat', 'ipv6',
   'proxy', 'network-mgmt', 'protocol-review', 'iot',
 ]
 
@@ -4097,6 +4098,600 @@ const NOTE_DB: Record<string, NoteData> = {
       'MQTT（==TCP・Pub/Sub==）とCoAP（==UDP・RESTful==）の違いは令和7年に出題',
       'LPWAの各技術（LoRa・Sigfox・NB-IoT）の特徴の違い',
       '==SASE== = ==SD-WAN== + セキュリティ（SWG+CASB+ZTNA+FWaaS）という構成を覚える',
+    ],
+  },
+  // ─────────────────────────────────────────────
+  // SSL/TLS・PKI
+  // ─────────────────────────────────────────────
+  'ssl-tls': {
+    summary: '復習ノート「SSL/TLS」「セキュリティ」より。TLSハンドシェイク／PKI（証明書・認証局）／SSL-VPNの3方式を整理。',
+    sections: [
+      {
+        heading: 'SSL/TLS の基本',
+        richItems: [
+          [
+            { text: 'Secure Socket Layer / Transport Layer Security — データを', style: 'plain' },
+            { text: '暗号化', style: 'red' },
+            { text: '・', style: 'plain' },
+            { text: '認証', style: 'red' },
+            { text: ' してセキュアな通信路を確保するプロトコル', style: 'plain' },
+          ],
+          [
+            { text: '代表例：HTTPS（HTTP over SSL/TLS）。ポート番号は ', style: 'plain' },
+            { text: '443', style: 'red' },
+          ],
+          [
+            { text: 'TLS通信の前は ', style: 'plain' },
+            { text: '認証・鍵交換', style: 'red' },
+            { text: ' で、暗号化アルゴリズムを使用', style: 'plain' },
+          ],
+          [
+            { text: 'ハッシュは ', style: 'plain' },
+            { text: 'メッセージ認証', style: 'red' },
+            { text: ' に使われる', style: 'plain' },
+          ],
+        ],
+      },
+      {
+        heading: 'SSL通信シーケンス',
+        richItems: [
+          [
+            { text: '①クライアント → サーバ：', style: 'plain' },
+            { text: 'Client Hello', style: 'red' },
+            { text: ' を送信。利用可能な暗号化アルゴリズムの一覧を伝える', style: 'plain' },
+          ],
+          [
+            { text: '②サーバ → クライアント：', style: 'plain' },
+            { text: 'Server Hello', style: 'red' },
+            { text: ' を送信。使用するアルゴリズムを通知する', style: 'plain' },
+          ],
+          [
+            { text: '③続いてサーバ証明書送付・鍵交換・Finished で暗号化通信を確立', style: 'plain' },
+          ],
+        ],
+        navyItems: [
+          [
+            { text: '補足（TLS 1.2 詳細）：', style: 'plain' },
+            { text: 'ClientHello', style: 'navy' },
+            { text: ' → ', style: 'plain' },
+            { text: 'ServerHello', style: 'navy' },
+            { text: ' + Certificate + ServerHelloDone → ', style: 'plain' },
+            { text: 'ClientKeyExchange', style: 'navy' },
+            { text: '（プリマスタシークレット送付）→ ', style: 'plain' },
+            { text: 'ChangeCipherSpec', style: 'navy' },
+            { text: ' + Finished', style: 'plain' },
+          ],
+          [
+            { text: 'TLS 1.3', style: 'navy' },
+            { text: '：', style: 'plain' },
+            { text: '0-RTT', style: 'navy' },
+            { text: ' / RSA鍵交換廃止（ECDHEのみ）/ 前方秘匿性', style: 'plain' },
+          ],
+        ],
+      },
+      {
+        heading: 'PKI / ディジタル証明書',
+        richItems: [
+          [
+            { text: 'ディジタル証明書：本人の ', style: 'plain' },
+            { text: '公開鍵', style: 'red' },
+            { text: ' であることを証明する', style: 'plain' },
+          ],
+          [
+            { text: 'ルート', style: 'red' },
+            { text: ' 証明書：認証局（CA）の公開鍵を証明', style: 'plain' },
+          ],
+          [
+            { text: 'サーバ', style: 'red' },
+            { text: ' 証明書：サーバの公開鍵を証明', style: 'plain' },
+          ],
+          [
+            { text: 'クライアント', style: 'red' },
+            { text: ' 証明書：クライアント（PC）の公開鍵を証明', style: 'plain' },
+          ],
+          [
+            { text: 'クライアント証明書をPCに配布する際に必要な情報 ⇒ クライアントの ', style: 'plain' },
+            { text: '秘密鍵', style: 'red' },
+            { text: '（無いとデータの暗号化ができない）。「クライアント証明書」ときたら「秘密鍵」!', style: 'plain' },
+          ],
+          [
+            { text: '証明書の中には公開鍵がある。持ち主はメッセージのハッシュ値を秘密鍵で暗号化して送る', style: 'plain' },
+          ],
+          [
+            { text: 'サーバ証明書では、接続するFQDNと証明書の ', style: 'plain' },
+            { text: 'CN', style: 'red' },
+            { text: ' が一致しているか確認する', style: 'plain' },
+          ],
+          [
+            { text: 'CAは誰でも作れる。信頼できる認証機関＝', style: 'plain' },
+            { text: '第三者認証局', style: 'red' },
+          ],
+          [
+            { text: 'CAサーバの自社運用は、セキュリティ対策や故障対応で手間がかかる', style: 'plain' },
+          ],
+        ],
+        navyItems: [
+          [
+            { text: 'X.509', style: 'navy' },
+            { text: '：証明書のフォーマット規格', style: 'plain' },
+          ],
+          [
+            { text: 'CRL', style: 'navy' },
+            { text: '（証明書失効リスト）／', style: 'plain' },
+            { text: 'OCSP', style: 'navy' },
+            { text: '（Online Certificate Status Protocol：失効状態をリアルタイム問い合わせ）', style: 'plain' },
+          ],
+          [
+            { text: 'HSTS', style: 'navy' },
+            { text: '（HTTP Strict Transport Security）：HTTPSへ強制リダイレクトをブラウザに記憶させる', style: 'plain' },
+          ],
+        ],
+      },
+      {
+        heading: 'SSL-VPN',
+        richItems: [
+          [
+            { text: 'IPsecはESPを用いて ', style: 'plain' },
+            { text: 'レイヤ3', style: 'red' },
+            { text: ' で通信する／SSL-VPNはTCP', style: 'plain' },
+            { text: '443', style: 'red' },
+            { text: '番（HTTPS）を用いた ', style: 'plain' },
+            { text: 'レイヤ4', style: 'red' },
+            { text: ' 通信', style: 'plain' },
+          ],
+          [
+            { text: 'SSL-VPNの方式①：', style: 'plain' },
+            { text: 'リバースプロキシ', style: 'red' },
+            { text: '。リバースプロキシサーバ（SSL-VPN装置）をWebサーバの前段に設置。Webサーバの改ざんを防ぐことが目的。外部からのアクセスはプロキシが代理応答するので、オリジナルのWebサーバにアクセスできない。改ざん防止以外には、アクセス負荷分散や、キャッシュによる表示速度向上も期待できる。Webブラウザで動作しないアプリには使用できない', style: 'plain' },
+          ],
+          [
+            { text: 'SSL-VPNの方式②：', style: 'plain' },
+            { text: 'ポートフォワーディング', style: 'red' },
+            { text: '。SSL-VPN装置で、サーバのIPアドレスとポート番号を事前に定義。通信中に動的にサーバのポート番号が変化するアプリケーションには使えない', style: 'plain' },
+          ],
+          [
+            { text: 'SSL-VPNの方式③：', style: 'plain' },
+            { text: 'L2フォワーディング', style: 'red' },
+            { text: '。PCに専用のソフトウェアをインストール。PCとSSL-VPN装置間でSSLのトンネルを作成。レイヤ2レベルの通信が行えるので、同一LAN内にいるかのような通信が行える。PCには仮想のIPアドレスが払い出される。使用するプロトコルの制限が無い', style: 'plain' },
+          ],
+        ],
+      },
+    ],
+    exam_tips: [
+      'HTTPS のポートは ==443==',
+      'TLSハンドシェイクは ==ClientHello → ServerHello== の順',
+      'クライアント証明書配布時には ==秘密鍵== が必要',
+      'サーバ証明書は接続FQDNと ==CN== の一致確認',
+      'SSL-VPN：==リバースプロキシ==／==ポートフォワーディング==／==L2フォワーディング== の3方式',
+      'IPsec は ==L3==／SSL-VPN は ==L4==',
+    ],
+  },
+  // ─────────────────────────────────────────────
+  // 脅威・攻撃手法
+  // ─────────────────────────────────────────────
+  threat: {
+    summary: '復習ノート全体に散らばる攻撃手法を整理。DoS/DDoS（SYNフラッド・スマーフ・DNSリフレクタ）／ARPスプーフィング／SQLインジェクション／XSS／標的型攻撃（C&C）。',
+    sections: [
+      {
+        heading: 'DoS / DDoS 攻撃',
+        richItems: [
+          [
+            { text: 'DoS攻撃：1台から大量パケットを送って対象を停止させる攻撃', style: 'plain' },
+          ],
+          [
+            { text: 'DDoS攻撃：', style: 'plain' },
+            { text: '多数', style: 'red' },
+            { text: ' のホストから一斉に攻撃する分散型のDoS（踏み台にされた多数のPCから一斉に通信）', style: 'plain' },
+          ],
+          [
+            { text: 'SYNフラッド：TCPの3wayハンドシェイクを悪用。', style: 'plain' },
+            { text: 'SYN', style: 'red' },
+            { text: ' を大量送信し、サーバを ', style: 'plain' },
+            { text: 'SYN_RECV', style: 'red' },
+            { text: ' 状態で滞留させてリソースを枯渇', style: 'plain' },
+          ],
+          [
+            { text: 'スマーフ', style: 'red' },
+            { text: ' 攻撃：送信元を被害者に偽装した', style: 'plain' },
+            { text: 'ICMP Echo Request', style: 'red' },
+            { text: ' をブロードキャスト宛に送り、応答（Echo Reply）を被害者に集中させる', style: 'plain' },
+          ],
+          [
+            { text: 'DNSリフレクタ', style: 'red' },
+            { text: ' 攻撃（DNSアンプ）：送信元を被害者に偽装した小さなDNSクエリを送り、', style: 'plain' },
+            { text: 'TXT', style: 'red' },
+            { text: ' レコードなど大きな応答を被害者に返させて回線を圧迫', style: 'plain' },
+          ],
+          [
+            { text: 'ACK', style: 'red' },
+            { text: ' リフレクション攻撃：偽装SYNを多数のサーバに送り、応答 SYN/', style: 'plain' },
+            { text: 'ACK', style: 'red' },
+            { text: ' を被害者に集中させる', style: 'plain' },
+          ],
+        ],
+        navyItems: [
+          [
+            { text: '対策：', style: 'plain' },
+            { text: 'IPS', style: 'navy' },
+            { text: '／', style: 'plain' },
+            { text: 'WAF', style: 'navy' },
+            { text: '／DDoS対策サービス（クラウド型WAF・スクラビングセンタ）', style: 'plain' },
+          ],
+          [
+            { text: 'BCP38', style: 'navy' },
+            { text: '：送信元IPの偽装パケットをISP側で破棄するベストプラクティス', style: 'plain' },
+          ],
+        ],
+      },
+      {
+        heading: '中間者攻撃 / 経路傍受',
+        richItems: [
+          [
+            { text: 'ARPスプーフィング', style: 'red' },
+            { text: '：偽のARP応答を返してデフォルトGW等のMACアドレスを攻撃者PCに紐付け、通信を傍受する攻撃', style: 'plain' },
+          ],
+          [
+            { text: '対策：L2SWの ', style: 'plain' },
+            { text: 'ダイナミックARPインスペクション', style: 'red' },
+            { text: '（DAI）／DHCPスヌーピングと組み合わせる', style: 'plain' },
+          ],
+        ],
+        navyItems: [
+          [
+            { text: 'DNSキャッシュポイズニング', style: 'navy' },
+            { text: '：キャッシュDNSサーバに偽の応答を覚え込ませる（対策：', style: 'plain' },
+            { text: 'DNSSEC', style: 'navy' },
+            { text: '・ソースポートランダム化）', style: 'plain' },
+          ],
+          [
+            { text: 'セッションハイジャック', style: 'navy' },
+            { text: '：Cookie等のセッションIDを盗んで成りすまし', style: 'plain' },
+          ],
+        ],
+      },
+      {
+        heading: 'Webアプリ攻撃',
+        richItems: [
+          [
+            { text: 'SQLインジェクション', style: 'red' },
+            { text: '：入力値にSQL構文を埋め込み、DBを不正操作する攻撃', style: 'plain' },
+          ],
+          [
+            { text: '対策：', style: 'plain' },
+            { text: 'プリペアドステートメント', style: 'red' },
+            { text: '（バインド機構）', style: 'plain' },
+          ],
+          [
+            { text: 'クロスサイトスクリプティング', style: 'red' },
+            { text: '（XSS）：悪意のスクリプトを反射／格納してブラウザで実行させる', style: 'plain' },
+          ],
+          [
+            { text: '対策：出力時の ', style: 'plain' },
+            { text: 'エスケープ', style: 'red' },
+            { text: '／CSP（Content Security Policy）', style: 'plain' },
+          ],
+        ],
+        navyItems: [
+          [
+            { text: 'CSRF', style: 'navy' },
+            { text: '：認証済みセッションを悪用して意図しないリクエストを送らせる（対策：CSRFトークン／SameSite Cookie）', style: 'plain' },
+          ],
+          [
+            { text: 'ディレクトリトラバーサル', style: 'navy' },
+            { text: '：../ でパスをさかのぼってファイルにアクセス（対策：入力値検証）', style: 'plain' },
+          ],
+          [
+            { text: 'OSコマンドインジェクション', style: 'navy' },
+            { text: '：入力値からシェルコマンドを実行（対策：シェル経由呼び出しを避ける）', style: 'plain' },
+          ],
+        ],
+      },
+      {
+        heading: '標的型攻撃（C&C）',
+        richItems: [
+          [
+            { text: '標的型攻撃では、攻撃者はマルウェアを送り込み、侵入したマルウェアが ', style: 'plain' },
+            { text: 'C&Cサーバ', style: 'red' },
+            { text: ' を経由して命令を送る', style: 'plain' },
+          ],
+          [
+            { text: 'FWで外部からの通信を全て拒否しているのにPCで遠隔操作できる理由：FWで内部LAN→外部NWの通信が許可されている場合、マルウェアからC&Cサーバに接続させ、その応答パケットで命令を送れるため', style: 'plain' },
+          ],
+          [
+            { text: 'マルウェアがC&Cサーバと通信しないようにするためには、', style: 'plain' },
+            { text: 'プロキシ', style: 'red' },
+            { text: ' サーバの導入が有効。内部LANからインターネットへの通信は、プロキシサーバ経由でのみ許可する', style: 'plain' },
+          ],
+          [
+            { text: 'プロキシサーバの設定を調査してくるマルウェアへの対策：プロキシサーバで ', style: 'plain' },
+            { text: '認証', style: 'red' },
+            { text: ' 設定を行う', style: 'plain' },
+          ],
+        ],
+      },
+      {
+        heading: '無線LAN特有の攻撃',
+        navyItems: [
+          [
+            { text: 'Evil Twin', style: 'navy' },
+            { text: '：正規APと同じSSIDの偽APを設置して接続を奪う', style: 'plain' },
+          ],
+          [
+            { text: 'デオーセンティケーション攻撃', style: 'navy' },
+            { text: '：管理フレームを偽造して切断させる（対策：Management Frame Protection／IEEE 802.11w）', style: 'plain' },
+          ],
+          [
+            { text: 'KRACK', style: 'navy' },
+            { text: '：WPA2 4ウェイハンドシェイクの再送悪用（対策：WPA3／パッチ適用）', style: 'plain' },
+          ],
+        ],
+      },
+    ],
+    exam_tips: [
+      'SYNフラッド = ==SYN== を投げ続ける／対策は ==SYN Cookie==',
+      'スマーフ攻撃 = ==ICMP Echo== をブロードキャスト送信',
+      'DNSリフレクタ攻撃は ==TXT== レコードで応答増幅',
+      'ARPスプーフィング対策 = L2SWの ==DAI==（ダイナミックARPインスペクション）',
+      'SQLインジェクション対策 = ==プリペアドステートメント==',
+      'C&Cサーバ対策 = ==プロキシ強制==（＋認証）',
+    ],
+  },
+  // ─────────────────────────────────────────────
+  // IPv6
+  // ─────────────────────────────────────────────
+  ipv6: {
+    summary: '復習ノート「レイヤ1〜3基礎」のIPv6項より。アドレス体系（128bit・省略ルール・リンクローカル）／NDP／SLAAC／IPv4からの移行技術。',
+    sections: [
+      {
+        heading: 'IPv6 アドレスの基本',
+        richItems: [
+          [
+            { text: 'IPv4のIPアドレスは ', style: 'plain' },
+            { text: '32', style: 'red' },
+            { text: ' ビット／IPv6のIPアドレスは ', style: 'plain' },
+            { text: '128', style: 'red' },
+            { text: ' ビット', style: 'plain' },
+          ],
+          [
+            { text: 'IPv6 は ', style: 'plain' },
+            { text: '16', style: 'red' },
+            { text: ' ビットずつ ', style: 'plain' },
+            { text: ':', style: 'red' },
+            { text: ' で区切り、16進数で8ブロック表記', style: 'plain' },
+          ],
+          [
+            { text: 'IPv6の省略ルール：2001:0db8:0000:0000:0000:ff00:0042:8329 → 2001:', style: 'plain' },
+            { text: 'db8::ff00:42:', style: 'red' },
+            { text: '8329（連続する 0 のブロックは ', style: 'plain' },
+            { text: '::', style: 'red' },
+            { text: ' で1か所だけ省略可能、各ブロックの先頭の 0 も省略可能）', style: 'plain' },
+          ],
+          [
+            { text: 'IPv6とIPv4は ', style: 'plain' },
+            { text: '互換性無し', style: 'red' },
+            { text: '（同一NW上で動かすには両方のスタックが必要）', style: 'plain' },
+          ],
+        ],
+      },
+      {
+        heading: 'IPv6 アドレスの種別',
+        richItems: [
+          [
+            { text: 'fe80', style: 'red' },
+            { text: ' で始まるIPv6アドレス：', style: 'plain' },
+            { text: 'リンクローカルユニキャストアドレス', style: 'red' },
+            { text: '。', style: 'plain' },
+            { text: 'ルータ', style: 'red' },
+            { text: ' を介さずに直接接続できる相手との通信にだけ使用', style: 'plain' },
+          ],
+          [
+            { text: 'IPv6にはブロードキャストが ', style: 'plain' },
+            { text: '無い', style: 'red' },
+            { text: '。代わりに ', style: 'plain' },
+            { text: 'マルチキャスト', style: 'red' },
+            { text: ' を使用', style: 'plain' },
+          ],
+        ],
+        navyItems: [
+          [
+            { text: 'グローバルユニキャスト', style: 'navy' },
+            { text: '：', style: 'plain' },
+            { text: '2000::/3', style: 'navy' },
+            { text: '（先頭3ビットが 001）— インターネット上で一意', style: 'plain' },
+          ],
+          [
+            { text: 'リンクローカル', style: 'navy' },
+            { text: '：', style: 'plain' },
+            { text: 'fe80::/10', style: 'navy' },
+            { text: ' — 同一リンク内のみ', style: 'plain' },
+          ],
+          [
+            { text: 'ユニークローカル', style: 'navy' },
+            { text: '：', style: 'plain' },
+            { text: 'fc00::/7', style: 'navy' },
+            { text: ' — IPv4 のプライベート相当', style: 'plain' },
+          ],
+          [
+            { text: 'マルチキャスト', style: 'navy' },
+            { text: '：', style: 'plain' },
+            { text: 'ff00::/8', style: 'navy' },
+            { text: '（', style: 'plain' },
+            { text: 'ff02::1', style: 'navy' },
+            { text: '＝全ノード／', style: 'plain' },
+            { text: 'ff02::2', style: 'navy' },
+            { text: '＝全ルータ／', style: 'plain' },
+            { text: 'ff02::5', style: 'navy' },
+            { text: '＝OSPFv3）', style: 'plain' },
+          ],
+          [
+            { text: 'ループバック', style: 'navy' },
+            { text: '：', style: 'plain' },
+            { text: '::1/128', style: 'navy' },
+            { text: '（IPv4 の 127.0.0.1 相当）', style: 'plain' },
+          ],
+        ],
+      },
+      {
+        heading: 'IPv6 ヘッダ',
+        richItems: [
+          [
+            { text: 'IPv6 ヘッダは ', style: 'plain' },
+            { text: '40', style: 'red' },
+            { text: ' バイトの固定長（IPv4 は可変長）。オプションは拡張ヘッダで実現', style: 'plain' },
+          ],
+          [
+            { text: 'チェックサムは ', style: 'plain' },
+            { text: '無い', style: 'red' },
+            { text: '（L2／L4 で検査するため）', style: 'plain' },
+          ],
+          [
+            { text: 'ルータでフラグメント化を ', style: 'plain' },
+            { text: 'しない', style: 'red' },
+            { text: '（送信元のみが行う／パスMTU探索を使用）', style: 'plain' },
+          ],
+          [
+            { text: 'IPv6パケット構造（下図）', style: 'plain' },
+          ],
+        ],
+        headerDiagrams: [
+          {
+            title: 'IPv6 ヘッダ構造（40バイト固定長）',
+            rows: [
+              {
+                cells: [
+                  { label: 'バージョン\n(6)', bg: '#dcfce7' },
+                  { label: 'トラフィック\nクラス', bg: '#dcfce7' },
+                  { label: 'フローラベル', bg: '#dcfce7' },
+                  { label: 'ペイロード長', bg: '#bbf7d0' },
+                  { label: '次ヘッダ', bg: '#bbf7d0' },
+                  { label: 'ホップ\nリミット', bg: '#bbf7d0' },
+                ],
+              },
+              {
+                cells: [
+                  { label: '送信元IPv6アドレス（128bit）', bg: '#fef3c7', isRed: true, span: 6 },
+                ],
+              },
+              {
+                cells: [
+                  { label: '宛先IPv6アドレス（128bit）', bg: '#fef3c7', isRed: true, span: 6 },
+                ],
+              },
+              {
+                cells: [
+                  { label: 'データ（L4 ペイロード）', bg: '#fee2e2', span: 6 },
+                ],
+              },
+            ],
+            caption: '緑＝制御フィールド／黄＝アドレス（赤字マスク対象）／橙＝ペイロード。',
+          },
+        ],
+      },
+      {
+        heading: 'NDP（近隣探索プロトコル）',
+        richItems: [
+          [
+            { text: 'IPv6 ではARPが廃止され、', style: 'plain' },
+            { text: 'NDP', style: 'red' },
+            { text: '（Neighbor Discovery Protocol）が代わりに使われる', style: 'plain' },
+          ],
+          [
+            { text: 'NDP は ', style: 'plain' },
+            { text: 'ICMPv6', style: 'red' },
+            { text: ' のメッセージで動作（タイプ133〜137）', style: 'plain' },
+          ],
+        ],
+        navyItems: [
+          [
+            { text: 'RS', style: 'navy' },
+            { text: '（Router Solicitation）：ホストがルータを探すメッセージ', style: 'plain' },
+          ],
+          [
+            { text: 'RA', style: 'navy' },
+            { text: '（Router Advertisement）：ルータがプレフィックス情報を通知', style: 'plain' },
+          ],
+          [
+            { text: 'NS', style: 'navy' },
+            { text: '（Neighbor Solicitation）：相手のMACアドレスを問い合わせ（ARP相当）', style: 'plain' },
+          ],
+          [
+            { text: 'NA', style: 'navy' },
+            { text: '（Neighbor Advertisement）：自分のMACアドレスを応答', style: 'plain' },
+          ],
+          [
+            { text: 'リダイレクト', style: 'navy' },
+            { text: '：より良い経路をホストに通知', style: 'plain' },
+          ],
+        ],
+      },
+      {
+        heading: 'SLAAC（自動アドレス設定）',
+        richItems: [
+          [
+            { text: 'SLAAC', style: 'red' },
+            { text: '（Stateless Address Auto Configuration）：DHCPサーバ無しでホストが自動的にIPv6アドレスを生成する仕組み', style: 'plain' },
+          ],
+          [
+            { text: '手順：ホストが ', style: 'plain' },
+            { text: 'RS', style: 'red' },
+            { text: ' を送信 → ルータが ', style: 'plain' },
+            { text: 'RA', style: 'red' },
+            { text: ' でプレフィックス通知 → ホストがプレフィックス＋インタフェースIDで自身のアドレスを生成', style: 'plain' },
+          ],
+        ],
+        navyItems: [
+          [
+            { text: 'インタフェースID（下位64bit）の生成方式：', style: 'plain' },
+            { text: 'EUI-64', style: 'navy' },
+            { text: '（MACアドレスから生成）またはランダム（プライバシー拡張：RFC 4941）', style: 'plain' },
+          ],
+          [
+            { text: 'DHCPv6', style: 'navy' },
+            { text: ' は SLAAC と併用される（DNSサーバ等の追加情報配布用、ステートフル運用も可）', style: 'plain' },
+          ],
+        ],
+      },
+      {
+        heading: 'IPv4 → IPv6 移行技術',
+        richItems: [
+          [
+            { text: 'デュアルスタック', style: 'red' },
+            { text: '：1台でIPv4・IPv6 両方のスタックを動かす最も基本的な移行方式', style: 'plain' },
+          ],
+          [
+            { text: 'トンネリング', style: 'red' },
+            { text: '：IPv6パケットをIPv4パケットでカプセル化して、IPv4網を通す', style: 'plain' },
+          ],
+        ],
+        navyItems: [
+          [
+            { text: '6to4', style: 'navy' },
+            { text: '：IPv4アドレスからIPv6プレフィックス（', style: 'plain' },
+            { text: '2002::/16', style: 'navy' },
+            { text: '）を生成して自動トンネル', style: 'plain' },
+          ],
+          [
+            { text: 'NAT64 / DNS64', style: 'navy' },
+            { text: '：IPv6 のみのクライアントから IPv4 サーバへアクセスさせる変換技術', style: 'plain' },
+          ],
+          [
+            { text: 'IPv4 over IPv6', style: 'navy' },
+            { text: '（', style: 'plain' },
+            { text: 'MAP-E', style: 'navy' },
+            { text: '／', style: 'plain' },
+            { text: 'DS-Lite', style: 'navy' },
+            { text: '）：日本のフレッツ回線で利用される IPoE 方式', style: 'plain' },
+          ],
+        ],
+      },
+    ],
+    exam_tips: [
+      'IPv6 アドレスは ==128== ビット／IPv4 は ==32== ビット',
+      '省略ルール：連続0は ==::== で1か所だけ省略可能',
+      '==fe80::/10== はリンクローカル（==ルータ==を越えない）',
+      'IPv6 では ARP 廃止 ⇒ ==NDP==（ICMPv6）',
+      '==SLAAC== は ==RS==／==RA== でアドレス自動生成',
+      'IPv6 にはブロードキャストが ==無い==（マルチキャストで代替）',
     ],
   },
 }

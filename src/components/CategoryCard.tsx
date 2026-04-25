@@ -10,12 +10,6 @@ interface CategoryCardProps {
   lastStudiedAt: string
 }
 
-function formatDate(iso: string): string {
-  if (!iso) return ''
-  const d = new Date(iso)
-  return `${d.getMonth() + 1}/${d.getDate()} 学習済`
-}
-
 function rateColor(rate: number): string {
   if (rate >= 80) return 'bg-emerald-500'
   if (rate >= 50) return 'bg-amber-400'
@@ -26,7 +20,7 @@ export default function CategoryCard({
   category,
   questionCount,
   correctRate,
-  lastStudiedAt,
+  lastStudiedAt: _lastStudiedAt,
 }: CategoryCardProps) {
   const isIot = category.id === 'iot'
   const isEmpty = questionCount === 0

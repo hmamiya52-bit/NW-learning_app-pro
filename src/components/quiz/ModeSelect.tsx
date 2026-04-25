@@ -1,12 +1,24 @@
+import { Link } from 'react-router-dom'
+
 type AnswerMode = 'multiple-choice' | 'written'
 
 interface Props {
   questionCount: number
   onSelect: (mode: AnswerMode) => void
   onBack: () => void
+  /** ノートが用意されているカテゴリのID。null/undefined ならノートリンクを非表示 */
+  noteCategoryId?: string | null
+  /** ノートリンクに表示するカテゴリ名（任意）。 */
+  noteCategoryName?: string
 }
 
-export default function ModeSelect({ questionCount, onSelect, onBack }: Props) {
+export default function ModeSelect({
+  questionCount,
+  onSelect,
+  onBack,
+  noteCategoryId,
+  noteCategoryName,
+}: Props) {
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] px-4 gap-6">
       <div className="text-center">
@@ -45,6 +57,26 @@ export default function ModeSelect({ questionCount, onSelect, onBack }: Props) {
             </div>
           </div>
         </button>
+
+        {/* ノートを開く（該当カテゴリのみ） */}
+        {noteCategoryId && (
+          <Link
+            to={`/notes/${noteCategoryId}`}
+            className="w-full bg-teal-50 hover:bg-teal-100 active:bg-teal-200 text-teal-800 border-2 border-teal-200 rounded-2xl p-4 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 flex items-center gap-3"
+            aria-label={`${noteCategoryName ? noteCategoryName + 'の' : ''}ノートを見る`}
+          >
+            <span className="text-2xl flex-shrink-0" aria-hidden="true">📖</span>
+            <div className="flex-1 min-w-0">
+              <p className="font-bold text-sm">
+                {noteCategoryName ? `${noteCategoryName}のノートを見る` : 'ノートを見る'}
+              </p>
+              <p className="text-teal-700 text-xs mt-0.5 leading-snug">
+                解く前に重要知識を確認できます
+              </p>
+            </div>
+            <span className="text-teal-400 flex-shrink-0" aria-hidden="true">→</span>
+          </Link>
+        )}
       </div>
 
       <button

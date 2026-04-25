@@ -5,6 +5,7 @@ import { categories } from '../data/categories'
 import { addAnswerRecord, getAllProgress, saveStudySession, updateProgress } from '../lib/storage'
 import type { Question, StudySession } from '../types'
 import ModeSelect from '../components/quiz/ModeSelect'
+import { NOTE_CATEGORY_IDS } from './NoteDetail'
 import QuizQuestion from '../components/quiz/QuizQuestion'
 import ResultMultipleChoice from '../components/quiz/ResultMultipleChoice'
 import ResultWritten from '../components/quiz/ResultWritten'
@@ -339,6 +340,10 @@ export default function Quiz() {
               setPhase('question')
             }}
             onBack={() => navigate('/')}
+            noteCategoryId={
+              categoryId && NOTE_CATEGORY_IDS.includes(categoryId) ? categoryId : null
+            }
+            noteCategoryName={categoryName || undefined}
           />
         )}
 

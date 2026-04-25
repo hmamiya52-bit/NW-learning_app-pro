@@ -41,12 +41,31 @@ interface RichProtocolTable {
   rows: RichProtocolEntry[]
 }
 
+// ヘッダ構成図（HTML表＋色分け＋赤字隠し対応）
+interface HeaderDiagramCell {
+  label: string
+  span?: number          // colspan（既定 1）
+  bg?: string            // 背景色（CSS color string）
+  isRed?: boolean        // ラベルを赤字＋マスク対象にする
+  small?: boolean        // 小さめのフォント
+}
+interface HeaderDiagramRow {
+  cells: HeaderDiagramCell[]
+}
+interface HeaderDiagram {
+  title: string
+  rows: HeaderDiagramRow[]
+  caption?: string       // 図の下に表示する補足
+  totalCols?: number     // テーブルの列数（colspan 計算用）
+}
+
 interface NoteSection {
   heading: string
   items?: string[]
   protocols?: ProtocolEntry[]
   richProtocolTables?: RichProtocolTable[]   // 復習ノート準拠のプロトコル表
   richItems?: EmphasisToken[][]              // 構造化された箇条書き（赤・ネイビー混在可）
+  headerDiagrams?: HeaderDiagram[]           // ヘッダ構成図（HTML表）
   navyItems?: EmphasisToken[][]              // ネイビー強調のみで残す既存項目（各セクション末尾）
 }
 
@@ -113,6 +132,60 @@ function NavyWord({ text }: { text: string }) {
     <span className="font-bold" style={{ color: '#1a3a5c' }}>
       {text}
     </span>
+  )
+}
+
+// ─────────────────────────────────────────────
+// ヘッダ構成図ビュー（HTML表＋色分け＋赤字隠し）
+// ─────────────────────────────────────────────
+function HeaderDiagramView({
+  dg,
+  hideRed,
+  version,
+}: {
+  dg: HeaderDiagram
+  hideRed: boolean
+  version: number
+}) {
+  return (
+    <figure className="border border-slate-200 rounded-lg overflow-hidden bg-white">
+      <figcaption className="px-3 py-1.5 text-xs font-bold text-slate-700 bg-slate-50 border-b border-slate-200">
+        {dg.title}
+      </figcaption>
+      <div className="overflow-x-auto p-3">
+        <table className="w-full border-collapse text-[11px]" style={{ tableLayout: 'fixed' }}>
+          <tbody>
+            {dg.rows.map((row, ri) => (
+              <tr key={ri}>
+                {row.cells.map((cell, ci) => (
+                  <td
+                    key={ci}
+                    colSpan={cell.span ?? 1}
+                    className="border border-slate-300 text-center align-middle whitespace-pre-line leading-tight"
+                    style={{
+                      backgroundColor: cell.bg ?? '#ffffff',
+                      padding: cell.small ? '4px 2px' : '6px 4px',
+                      fontSize: cell.small ? '10px' : undefined,
+                    }}
+                  >
+                    {cell.isRed ? (
+                      <RedWord text={cell.label} masked={hideRed} version={version} />
+                    ) : (
+                      <span className="text-slate-800 font-medium">{cell.label}</span>
+                    )}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {dg.caption && (
+        <p className="px-3 py-1.5 text-[10px] text-slate-400 border-t border-slate-200 bg-slate-50">
+          {dg.caption}
+        </p>
+      )}
+    </figure>
   )
 }
 
@@ -270,12 +343,25 @@ const NOTE_DB: Record<string, NoteData> = {
             { text: '（複数のPCがほぼ同時に複数のPCと通信可能）', style: 'plain' },
           ],
           [
-            { text: 'イーサネットフレームの構造：', style: 'red' },
-            { text: '宛先MAC', style: 'red' },
-            { text: ' / ', style: 'plain' },
-            { text: '送信元MAC', style: 'red' },
-            { text: ' / タイプ / データ(L3) / FCS', style: 'plain' },
+            { text: 'イーサネットフレームの構造（下図）', style: 'plain' },
           ],
+        ],
+        headerDiagrams: [
+          {
+            title: 'イーサネットフレームの構造',
+            rows: [
+              {
+                cells: [
+                  { label: '宛先MAC',  bg: '#dbeafe', isRed: true },
+                  { label: '送信元MAC', bg: '#dbeafe', isRed: true },
+                  { label: 'タイプ',    bg: '#e0e7ff' },
+                  { label: 'データ\n(L3)', bg: '#dcfce7', span: 2 },
+                  { label: 'FCS',       bg: '#e2e8f0' },
+                ],
+              },
+            ],
+            caption: '青＝L2(MAC) / 紺＝タイプ / 緑＝L3ペイロード / 灰＝トレーラ。赤字はマスク対象。',
+          },
         ],
       },
       {
@@ -355,6 +441,24 @@ const NOTE_DB: Record<string, NoteData> = {
             { text: ' で解決可能', style: 'plain' },
           ],
         ],
+        headerDiagrams: [
+          {
+            title: 'VLANタグ付きフレーム（IEEE 802.1Q）',
+            rows: [
+              {
+                cells: [
+                  { label: '宛先MAC',  bg: '#dbeafe' },
+                  { label: '送信元MAC', bg: '#dbeafe' },
+                  { label: 'VLANタグ\n(32bit)', bg: '#fde68a', isRed: true },
+                  { label: 'タイプ',    bg: '#e0e7ff' },
+                  { label: 'データ\n(L3)', bg: '#dcfce7' },
+                  { label: 'FCS',       bg: '#e2e8f0' },
+                ],
+              },
+            ],
+            caption: 'タグはMACアドレスとタイプの間に挿入。32bit（TPID 16bit + TCI 16bit、うちVLAN ID は12bit）。',
+          },
+        ],
       },
       {
         heading: 'VXLAN',
@@ -381,6 +485,22 @@ const NOTE_DB: Record<string, NoteData> = {
           [
             { text: 'L2トンネリングしたらブロードキャストドメインは同一', style: 'plain' },
           ],
+        ],
+        headerDiagrams: [
+          {
+            title: 'VXLANパケットの構造',
+            rows: [
+              {
+                cells: [
+                  { label: '新IPv4ヘッダ', bg: '#fce7f3' },
+                  { label: 'UDPヘッダ',     bg: '#fef3c7', isRed: true },
+                  { label: 'VXLANヘッダ\n(VNI 24bit)', bg: '#f3e8ff', isRed: true },
+                  { label: 'イーサネット\nフレーム（オリジナル）', bg: '#dbeafe', span: 2 },
+                ],
+              },
+            ],
+            caption: 'L3（アンダーレイ）上にL2（オーバーレイ）を作るカプセル化。VNIは24bit ⇒ 約1677万L2NWを構築可能。',
+          },
         ],
       },
       {
@@ -437,12 +557,25 @@ const NOTE_DB: Record<string, NoteData> = {
             { text: 'アドレスの重複は ✖', style: 'plain' },
           ],
           [
-            { text: 'IPヘッダとパケット構造：', style: 'plain' },
-            { text: '送信元', style: 'red' },
-            { text: 'IPアドレス / ', style: 'plain' },
-            { text: '宛先', style: 'red' },
-            { text: 'IPアドレス / プロトコル / その他 / データ(L4)', style: 'plain' },
+            { text: 'IPヘッダとパケット構造（下図）', style: 'plain' },
           ],
+        ],
+        headerDiagrams: [
+          {
+            title: 'IPヘッダとパケット構造',
+            rows: [
+              {
+                cells: [
+                  { label: '送信元IP\nアドレス',  bg: '#dcfce7', isRed: true },
+                  { label: '宛先IP\nアドレス',    bg: '#dcfce7', isRed: true },
+                  { label: 'プロトコル',          bg: '#bbf7d0' },
+                  { label: 'その他',              bg: '#bbf7d0' },
+                  { label: 'データ\n(L4)',        bg: '#fef3c7', span: 2 },
+                ],
+              },
+            ],
+            caption: '緑＝L3(IP)ヘッダ／黄＝L4ペイロード。赤字（送信元・宛先）はマスク対象。',
+          },
         ],
       },
       {
@@ -769,6 +902,22 @@ const NOTE_DB: Record<string, NoteData> = {
             { text: '20', style: 'red' },
             { text: ' バイトのため）', style: 'plain' },
           ],
+        ],
+        headerDiagrams: [
+          {
+            title: 'TCPヘッダとセグメント構造',
+            rows: [
+              {
+                cells: [
+                  { label: '送信元\nポート番号', bg: '#fef3c7', isRed: true },
+                  { label: '宛先\nポート番号',   bg: '#fef3c7', isRed: true },
+                  { label: 'その他のヘッダ\n(シーケンス番号 等)', bg: '#fde68a', span: 2 },
+                  { label: 'データ',             bg: '#dcfce7', span: 2 },
+                ],
+              },
+            ],
+            caption: '黄＝L4ヘッダ／緑＝L4ペイロード。シーケンス番号でパケット順序を管理。',
+          },
         ],
       },
       {
@@ -2901,10 +3050,7 @@ const NOTE_DB: Record<string, NoteData> = {
         heading: 'ESPパケットとNATトラバーサル',
         richItems: [
           [
-            { text: 'ESPパケット — トランスポートモード：オリジナルIPヘッダ／ESPヘッダ／TCP／データ／ESPトレーラ／ESP認証データ', style: 'plain' },
-          ],
-          [
-            { text: 'ESPパケット — トンネルモード（IPヘッダを新しく付与）：新IPヘッダ／ESPヘッダ／オリジナルIPヘッダ／TCP／データ／ESPトレーラ／ESP認証データ', style: 'plain' },
+            { text: 'ESPパケットの構造（下図）。暗号化範囲はピンク〜紫の部分', style: 'plain' },
           ],
           [
             { text: 'IPsecではTCP（UDP）ヘッダが暗号化される ⇒ NATがあるとポート番号がないため通信に失敗することがある', style: 'plain' },
@@ -2913,8 +3059,59 @@ const NOTE_DB: Record<string, NoteData> = {
             { text: 'NATトラバーサル', style: 'red' },
             { text: ' という技術を使い、ESPパケットに ', style: 'plain' },
             { text: 'UDP', style: 'red' },
-            { text: ' パケットを付与する', style: 'plain' },
+            { text: ' パケットを付与する（下図：トランスポートモード+NAT-T）', style: 'plain' },
           ],
+        ],
+        headerDiagrams: [
+          {
+            title: 'ESPパケット — トランスポートモード',
+            rows: [
+              {
+                cells: [
+                  { label: 'オリジナル\nIPヘッダ', bg: '#dbeafe' },
+                  { label: 'ESP\nヘッダ',         bg: '#fce7f3' },
+                  { label: 'TCP',                 bg: '#e9d5ff' },
+                  { label: 'データ',              bg: '#e9d5ff' },
+                  { label: 'ESP\nトレーラ',       bg: '#e9d5ff' },
+                  { label: 'ESP\n認証データ',     bg: '#fce7f3' },
+                ],
+              },
+            ],
+            caption: 'ピンク（ESPヘッダ／認証データ）が認証範囲。紫（TCP〜トレーラ）が暗号化範囲。',
+          },
+          {
+            title: 'ESPパケット — トンネルモード（IPヘッダを新しく付与）',
+            rows: [
+              {
+                cells: [
+                  { label: '新IP\nヘッダ',        bg: '#fef3c7' },
+                  { label: 'ESP\nヘッダ',         bg: '#fce7f3' },
+                  { label: 'オリジナル\nIPヘッダ', bg: '#e9d5ff' },
+                  { label: 'TCP',                 bg: '#e9d5ff' },
+                  { label: 'データ',              bg: '#e9d5ff' },
+                  { label: 'ESP\nトレーラ',       bg: '#e9d5ff' },
+                  { label: 'ESP\n認証データ',     bg: '#fce7f3' },
+                ],
+              },
+            ],
+            caption: 'オリジナルIPヘッダごと暗号化される。VPN装置間のトンネル化。',
+          },
+          {
+            title: 'ESPパケット — トランスポートモード + NAT-T（UDPカプセル化）',
+            rows: [
+              {
+                cells: [
+                  { label: '新IP\nヘッダ',        bg: '#fef3c7' },
+                  { label: '新UDP\nヘッダ',       bg: '#bae6fd' },
+                  { label: 'オリジナル\nIPヘッダ', bg: '#dbeafe' },
+                  { label: 'ESP\nヘッダ',         bg: '#fce7f3' },
+                  { label: '暗号化された\nデータ', bg: '#e9d5ff' },
+                  { label: 'ESP\n認証データ',     bg: '#fce7f3' },
+                ],
+              },
+            ],
+            caption: '青のUDPヘッダを追加することで、NAPT越えを実現する（NATトラバーサル）。',
+          },
         ],
       },
       {
@@ -4137,7 +4334,20 @@ export default function NoteDetail() {
                       <span>{renderTokens(tokens, hideRed, maskVersion)}</span>
                     </li>
                   ))}
+                  {section.headerDiagrams && section.headerDiagrams.length > 0 && (
+                    <li className="list-none pt-2 space-y-4">
+                      {section.headerDiagrams.map((dg, k) => (
+                        <HeaderDiagramView key={k} dg={dg} hideRed={hideRed} version={maskVersion} />
+                      ))}
+                    </li>
+                  )}
                 </ul>
+              ) : section.headerDiagrams ? (
+                <div className="px-5 py-4 space-y-4">
+                  {section.headerDiagrams.map((dg, k) => (
+                    <HeaderDiagramView key={k} dg={dg} hideRed={hideRed} version={maskVersion} />
+                  ))}
+                </div>
               ) : section.navyItems ? (
                 <ul className="px-5 py-4 space-y-2">
                   {section.navyItems.map((tokens, j) => (

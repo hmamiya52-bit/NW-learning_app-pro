@@ -44,8 +44,21 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
-        // ナビゲーションリクエストは常に index.html へ
+        // ナビゲーションリクエストは index.html へフォールバック
         navigateFallback: 'index.html',
+        // ハッシュ付きアセット等にはフォールバックさせない
+        // （SW が index.html を JS として返してしまうと、ブラウザは HTML を JS としてパースし失敗 → ページ崩壊）
+        navigateFallbackDenylist: [
+          /^\/api\//,
+          /\.(?:js|mjs|css|map|svg|png|jpg|jpeg|webp|gif|ico|woff2?|ttf|otf|json|webmanifest)$/i,
+          /^\/assets\//,
+        ],
+        // 旧バージョンのプリキャッシュを削除（ハッシュ違いの古い JS/CSS を残さない）
+        cleanupOutdatedCaches: true,
+        // 新 SW を即座にアクティブ化し、開いているクライアントを乗っ取る
+        // → デプロイ直後のリロードで確実に最新版が表示される
+        skipWaiting: true,
+        clientsClaim: true,
         // Service Worker のキャッシュ最大サイズを緩和
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
       },

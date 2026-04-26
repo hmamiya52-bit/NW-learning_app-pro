@@ -202,6 +202,54 @@ function HeaderDiagramView({
 }
 
 // ─────────────────────────────────────────────
+// 階層インデント検出
+//   箇条書きの先頭トークンに含まれる全角スペース（　）の数で
+//   インデントレベルを判定（最大2）。先頭の全角スペースは
+//   レンダリング時に剥がし、視覚的なインデント／小さめのドットで表現する。
+// ─────────────────────────────────────────────
+function detectIndent(tokens: EmphasisToken[]): {
+  level: number
+  stripped: EmphasisToken[]
+} {
+  if (tokens.length === 0) return { level: 0, stripped: tokens }
+  const first = tokens[0]
+  const m = first.text.match(/^(　+)/)
+  if (!m) return { level: 0, stripped: tokens }
+  const level = Math.min(m[1].length, 2) // 最大2レベル
+  const head = { ...first, text: first.text.slice(m[1].length) }
+  // 剥がしたあと先頭が空文字になったらドロップ
+  const rest = head.text === '' ? tokens.slice(1) : [head, ...tokens.slice(1)]
+  return { level, stripped: rest }
+}
+
+// インデントレベル別のスタイル
+function indentStyles(level: number, palette: 'blue' | 'slate' = 'blue') {
+  if (level === 0) {
+    return {
+      padClass: '',
+      dotClass: palette === 'blue' ? 'bg-blue-400' : 'bg-slate-400',
+      dotSize: 'w-1.5 h-1.5',
+      textClass: 'text-slate-700',
+    }
+  }
+  if (level === 1) {
+    return {
+      padClass: 'ml-5',
+      dotClass: palette === 'blue' ? 'bg-blue-300' : 'bg-slate-300',
+      dotSize: 'w-1.5 h-1.5',
+      textClass: 'text-slate-700',
+    }
+  }
+  // level >= 2
+  return {
+    padClass: 'ml-10',
+    dotClass: palette === 'blue' ? 'bg-blue-200' : 'bg-slate-300',
+    dotSize: 'w-1 h-1',
+    textClass: 'text-slate-600',
+  }
+}
+
+// ─────────────────────────────────────────────
 // 強調トークン配列 → React ノード（記号マークアップ不使用）
 // ─────────────────────────────────────────────
 function renderTokens(
@@ -5065,12 +5113,19 @@ export default function NoteDetail() {
                 </div>
               ) : section.richItems ? (
                 <ul className="px-5 py-4 space-y-2">
-                  {section.richItems.map((tokens, j) => (
-                    <li key={j} className="flex items-start gap-2 text-sm text-slate-700 leading-relaxed">
-                      <span className="flex-shrink-0 mt-1.5 w-1.5 h-1.5 rounded-full bg-blue-400" />
-                      <span>{renderTokens(tokens, hideRed, maskVersion)}</span>
-                    </li>
-                  ))}
+                  {section.richItems.map((tokens, j) => {
+                    const { level, stripped } = detectIndent(tokens)
+                    const s = indentStyles(level, 'blue')
+                    return (
+                      <li
+                        key={j}
+                        className={`flex items-start gap-2 text-sm leading-relaxed ${s.padClass} ${s.textClass}`}
+                      >
+                        <span className={`flex-shrink-0 mt-1.5 rounded-full ${s.dotSize} ${s.dotClass}`} />
+                        <span>{renderTokens(stripped, hideRed, maskVersion)}</span>
+                      </li>
+                    )
+                  })}
                   {section.headerDiagrams && section.headerDiagrams.length > 0 && (
                     <li className="list-none pt-2 space-y-4">
                       {section.headerDiagrams.map((dg, k) => (
@@ -5087,12 +5142,19 @@ export default function NoteDetail() {
                 </div>
               ) : section.navyItems ? (
                 <ul className="px-5 py-4 space-y-2">
-                  {section.navyItems.map((tokens, j) => (
-                    <li key={j} className="flex items-start gap-2 text-sm text-slate-700 leading-relaxed">
-                      <span className="flex-shrink-0 mt-1.5 w-1.5 h-1.5 rounded-full bg-slate-400" />
-                      <span>{renderTokens(tokens, hideRed, maskVersion)}</span>
-                    </li>
-                  ))}
+                  {section.navyItems.map((tokens, j) => {
+                    const { level, stripped } = detectIndent(tokens)
+                    const s = indentStyles(level, 'slate')
+                    return (
+                      <li
+                        key={j}
+                        className={`flex items-start gap-2 text-sm leading-relaxed ${s.padClass} ${s.textClass}`}
+                      >
+                        <span className={`flex-shrink-0 mt-1.5 rounded-full ${s.dotSize} ${s.dotClass}`} />
+                        <span>{renderTokens(stripped, hideRed, maskVersion)}</span>
+                      </li>
+                    )
+                  })}
                 </ul>
               ) : (
                 <ul className="px-5 py-4 space-y-2">

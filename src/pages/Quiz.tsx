@@ -133,7 +133,7 @@ export default function Quiz() {
         userAnswer: selected,
         answeredAt: new Date().toISOString(),
       })
-      updateProgress(currentQuestion.topicId, isCorrect)
+      updateProgress(currentQuestion.topicId, isCorrect, 'multiple-choice')
       const gr = recordGamificationAnswer({
         questionId: currentQuestion.id,
         topicId: currentQuestion.topicId,
@@ -164,7 +164,7 @@ export default function Quiz() {
           userAnswer: written,
           answeredAt: new Date().toISOString(),
         })
-        updateProgress(currentQuestion.topicId, true)
+        updateProgress(currentQuestion.topicId, true, 'written')
         const gr = recordGamificationAnswer({
           questionId: currentQuestion.id,
           topicId: currentQuestion.topicId,
@@ -230,7 +230,7 @@ export default function Quiz() {
         userAnswer: lastWritten,
         answeredAt: new Date().toISOString(),
       })
-      updateProgress(currentQuestion.topicId, isCorrect)
+      updateProgress(currentQuestion.topicId, isCorrect, 'written')
       const gr = recordGamificationAnswer({
         questionId: currentQuestion.id,
         topicId: currentQuestion.topicId,

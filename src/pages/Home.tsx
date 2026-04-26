@@ -210,28 +210,43 @@ export default function Home() {
     [studiedTopicIds]
   )
 
-  const globalRate = useMemo(() => {
-    const total = allProgress.reduce((s, p) => s + p.totalAttempts, 0)
-    const correct = allProgress.reduce((s, p) => s + p.correctCount, 0)
+  // 4択／記述の正答率は分離して算出
+  const globalMcRate = useMemo(() => {
+    const total = allProgress.reduce((s, p) => s + p.mcAttempts, 0)
+    const correct = allProgress.reduce((s, p) => s + p.mcCorrect, 0)
     if (total === 0) return null
     return Math.round((correct / total) * 100)
   }, [allProgress])
 
-  const progressPct = totalQuestions > 0 ? Math.round((studiedCount / totalQuestions) * 100) : 0
+  const globalWrRate = useMemo(() => {
+    const total = allProgress.reduce((s, p) => s + p.wrAttempts, 0)
+    const correct = allProgress.reduce((s, p) => s + p.wrCorrect, 0)
+    if (total === 0) return null
+    return Math.round((correct / total) * 100)
+  }, [allProgress])
 
   const categoryStats = useMemo(() => {
     return categories.map((cat) => {
       const catQuestions = questions.filter((q) => q.topicId === cat.id)
       const catProgress = allProgress.filter((p) => p.topicId === cat.id)
-      const total = catProgress.reduce((s, p) => s + p.totalAttempts, 0)
-      const correct = catProgress.reduce((s, p) => s + p.correctCount, 0)
-      const rate = total > 0 ? Math.round((correct / total) * 100) : null
+      const mcTotal = catProgress.reduce((s, p) => s + p.mcAttempts, 0)
+      const mcCorrect = catProgress.reduce((s, p) => s + p.mcCorrect, 0)
+      const wrTotal = catProgress.reduce((s, p) => s + p.wrAttempts, 0)
+      const wrCorrect = catProgress.reduce((s, p) => s + p.wrCorrect, 0)
+      const mcRate = mcTotal > 0 ? Math.round((mcCorrect / mcTotal) * 100) : null
+      const wrRate = wrTotal > 0 ? Math.round((wrCorrect / wrTotal) * 100) : null
       const lastStudied =
         catProgress
           .filter((p) => p.lastStudiedAt)
           .sort((a, b) => (b.lastStudiedAt > a.lastStudiedAt ? 1 : -1))[0]
           ?.lastStudiedAt ?? ''
-      return { category: cat, questionCount: catQuestions.length, correctRate: rate, lastStudiedAt: lastStudied }
+      return {
+        category: cat,
+        questionCount: catQuestions.length,
+        mcRate,
+        wrRate,
+        lastStudiedAt: lastStudied,
+      }
     })
   }, [allProgress])
 
@@ -313,15 +328,8 @@ export default function Home() {
           </h2>
           <div className="bg-white rounded-xl shadow-sm border border-slate-200 px-4 py-3">
             {/* Stats row */}
-            <div className="flex items-center gap-0 divide-x divide-slate-100 mb-2.5">
+            <div className="flex items-center gap-0 divide-x divide-slate-100 mb-3">
               <div className="flex items-baseline gap-1 pr-4">
-                <span className="text-xl font-black tabular-nums leading-none" style={{ color: '#1a3a5c' }}>
-                  {globalRate !== null ? globalRate : '—'}
-                </span>
-                {globalRate !== null && <span className="text-xs font-semibold text-blue-400">%</span>}
-                <span className="text-[11px] text-slate-400 ml-1">正答率</span>
-              </div>
-              <div className="flex items-baseline gap-1 px-4">
                 <span className="text-xl font-black tabular-nums leading-none" style={{ color: '#1a3a5c' }}>
                   {studiedCount}
                 </span>
@@ -333,24 +341,51 @@ export default function Home() {
                 <span className="text-[11px] text-slate-400 ml-1">重要問題</span>
               </div>
             </div>
-            {/* Progress bar */}
-            <div>
-              <div className="flex justify-between text-[11px] text-slate-400 mb-1">
-                <span>学習進捗</span>
-                <span>{progressPct}%</span>
-              </div>
-              <div
-                className="h-1.5 bg-slate-100 rounded-full overflow-hidden"
-                role="progressbar"
-                aria-valuenow={studiedCount}
-                aria-valuemin={0}
-                aria-valuemax={totalQuestions}
-                aria-label={`学習進捗 ${progressPct}%`}
-              >
+            {/* Progress bars: 4択／記述 を別々に表示 */}
+            <div className="space-y-2">
+              {/* 4択 */}
+              <div>
+                <div className="flex justify-between text-[11px] mb-1">
+                  <span className="text-slate-500 font-bold">4択 正答率</span>
+                  <span className="tabular-nums" style={{ color: '#1a3a5c' }}>
+                    {globalMcRate !== null ? `${globalMcRate}%` : '—'}
+                  </span>
+                </div>
                 <div
-                  className="h-full rounded-full transition-all duration-500"
-                  style={{ width: `${progressPct}%`, backgroundColor: '#0066cc' }}
-                />
+                  className="h-1.5 bg-slate-100 rounded-full overflow-hidden"
+                  role="progressbar"
+                  aria-valuenow={globalMcRate ?? 0}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-label={`4択正答率 ${globalMcRate ?? 0}%`}
+                >
+                  <div
+                    className="h-full rounded-full transition-all duration-500"
+                    style={{ width: `${globalMcRate ?? 0}%`, backgroundColor: '#0066cc' }}
+                  />
+                </div>
+              </div>
+              {/* 記述 */}
+              <div>
+                <div className="flex justify-between text-[11px] mb-1">
+                  <span className="text-slate-500 font-bold">記述 正答率</span>
+                  <span className="tabular-nums" style={{ color: '#1a3a5c' }}>
+                    {globalWrRate !== null ? `${globalWrRate}%` : '—'}
+                  </span>
+                </div>
+                <div
+                  className="h-1.5 bg-slate-100 rounded-full overflow-hidden"
+                  role="progressbar"
+                  aria-valuenow={globalWrRate ?? 0}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-label={`記述正答率 ${globalWrRate ?? 0}%`}
+                >
+                  <div
+                    className="h-full rounded-full transition-all duration-500"
+                    style={{ width: `${globalWrRate ?? 0}%`, backgroundColor: '#d97706' }}
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -365,12 +400,13 @@ export default function Home() {
             カテゴリ一覧（{categories.length}分野）
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-            {categoryStats.map(({ category, questionCount, correctRate, lastStudiedAt }) => (
+            {categoryStats.map(({ category, questionCount, mcRate, wrRate, lastStudiedAt }) => (
               <CategoryCard
                 key={category.id}
                 category={category}
                 questionCount={questionCount}
-                correctRate={correctRate}
+                mcRate={mcRate}
+                wrRate={wrRate}
                 lastStudiedAt={lastStudiedAt}
               />
             ))}

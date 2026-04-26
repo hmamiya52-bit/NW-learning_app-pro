@@ -38,14 +38,23 @@ export interface AnswerRecord {
   answeredAt: string  // ISO 8601
 }
 
-// トピック別学習進捗
+// トピック別学習進捗（4択／記述で別カウント。totalAttempts／correctCount は派生）
 export interface UserProgress {
   topicId: string
+  // 4択モードの集計
+  mcAttempts: number
+  mcCorrect: number
+  // 記述モードの集計
+  wrAttempts: number
+  wrCorrect: number
+  // 派生（mc + wr）— 既存ロジック後方互換用
   totalAttempts: number
   correctCount: number
   lastStudiedAt: string  // ISO 8601
   isBookmarked: boolean
 }
+
+export type AnswerMode = 'multiple-choice' | 'written'
 
 // 学習セッション
 export interface StudySession {

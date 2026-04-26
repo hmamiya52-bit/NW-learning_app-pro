@@ -420,6 +420,11 @@ export default function Home() {
           )}
         </section>
 
+        {/* フッター注記 */}
+        <p className="mt-8 text-center text-[11px] text-slate-400 leading-relaxed">
+          不具合報告、ご意見等は、LINEでお願いします。
+        </p>
+
       </div>
     </div>
   )

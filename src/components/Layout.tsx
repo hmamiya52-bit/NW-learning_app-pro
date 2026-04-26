@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
 import PwaInstallPrompt from './PwaInstallPrompt'
+import { VERSION_LABEL } from '../version'
 
 // ----------------------------------------------------------------
 // Types
@@ -320,6 +321,9 @@ export default function Layout() {
                 <img src="/pwa-192x192.png" alt="" className="w-6 h-6 rounded" />
                 <p className="text-[10px] text-white/40 whitespace-nowrap">NW試験学習</p>
               </div>
+              <p className="text-[10px] text-white/40 font-mono mt-1.5 whitespace-nowrap">
+                {VERSION_LABEL}
+              </p>
             </div>
           )}
         </nav>

@@ -5,7 +5,6 @@ import { questions } from '../data/questions'
 import { getAllProgress, getStudySessions } from '../lib/storage'
 import CategoryCard from '../components/CategoryCard'
 import type { StudySession } from '../types'
-import { VERSION_LABEL } from '../version'
 import LevelWidget from '../components/gamification/LevelWidget'
 
 // ----------------------------------------------------------------
@@ -227,16 +226,13 @@ export default function Home() {
     <div className="min-h-screen" style={{ backgroundColor: '#f8fafc' }}>
       <div className="max-w-4xl mx-auto px-4 pb-16 space-y-4 pt-4">
 
-        {/* ===== Welcome Banner ===== */}
-        <section aria-label="ようこそバナー">
-          <div className="rounded-xl bg-green-600 text-white px-4 py-3 shadow-md flex items-center justify-between gap-4">
-            <div>
-              <h1 className="text-base font-black leading-snug">NWスペシャリスト学習</h1>
-              <p className="text-xs text-green-100 mt-0.5">{totalQuestions}問 · 重要{importantCount}問</p>
-            </div>
-            <p className="text-[10px] text-green-300 font-mono flex-shrink-0">{VERSION_LABEL}</p>
-          </div>
-        </section>
+        {/* ===== タイトル ===== */}
+        <h1
+          className="text-center font-black leading-tight pt-2 pb-1"
+          style={{ color: '#1a3a5c', fontSize: 'clamp(1.5rem, 4vw, 2rem)' }}
+        >
+          ネットワークスペシャリスト学習アプリ
+        </h1>
 
         <LevelWidget />
 

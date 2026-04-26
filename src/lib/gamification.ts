@@ -168,7 +168,8 @@ function checkBadges(
 /** 解答を記録して XP/バッジを更新する */
 export function recordGamificationAnswer(event: AnswerEvent): AnswerGamificationResult {
   const state = loadGamification()
-  const prevLevel = getLevelFromXp(state.xp).level
+  const prevAllBadges = state.unlockedBadgeIds.length >= BADGES.length
+  const prevLevel = getLevelFromXp(state.xp, prevAllBadges).level
   const alreadyUnlocked = new Set(state.unlockedBadgeIds)
 
   // ストリーク更新
@@ -226,7 +227,8 @@ export function recordGamificationAnswer(event: AnswerEvent): AnswerGamification
 
   saveGamification(newState)
 
-  const newLevel = getLevelFromXp(newState.xp).level
+  const newAllBadges = newState.unlockedBadgeIds.length >= BADGES.length
+  const newLevel = getLevelFromXp(newState.xp, newAllBadges).level
   return {
     xpGained,
     newBadges,

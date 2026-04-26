@@ -2,10 +2,12 @@ import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { loadGamification } from '../../lib/gamification'
 import { getLevelFromXp, getNextLevel } from '../../data/levels'
+import { BADGES } from '../../data/badges'
 
 export default function LevelWidget() {
   const state = useMemo(() => loadGamification(), [])
-  const currentLv = getLevelFromXp(state.xp)
+  const allBadgesUnlocked = state.unlockedBadgeIds.length >= BADGES.length
+  const currentLv = getLevelFromXp(state.xp, allBadgesUnlocked)
   const nextLv = getNextLevel(currentLv.level)
 
   const progressPct = nextLv
@@ -13,6 +15,7 @@ export default function LevelWidget() {
     : 100
 
   const unlockedCount = state.unlockedBadgeIds.length
+  const totalBadges = BADGES.length
 
   return (
     <Link
@@ -28,7 +31,7 @@ export default function LevelWidget() {
         <div className="flex items-center gap-3 text-right">
           <span className="text-[10px] text-blue-300">
             勲章 <span className="text-sm font-black text-white">{unlockedCount}</span>
-            <span className="text-blue-300"> / 30</span>
+            <span className="text-blue-300"> / {totalBadges}</span>
           </span>
           <span className="text-[10px] text-blue-300">
             {state.xp.toLocaleString()} XP

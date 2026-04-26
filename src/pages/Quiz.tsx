@@ -28,14 +28,12 @@ interface AnswerLog {
 function filterQuestions(
   mode: string | null,
   categoryId: string | null,
+  onlyImportant: boolean = false,
 ): Question[] {
-  if (mode === 'important') {
-    return allQuestions.filter((q) => q.isImportant)
-  }
+  let pool: Question[]
   if (mode === 'topic' && categoryId) {
-    return allQuestions.filter((q) => q.topicId === categoryId)
-  }
-  if (mode === 'weakness') {
+    pool = allQuestions.filter((q) => q.topicId === categoryId)
+  } else if (mode === 'weakness') {
     const progress = getAllProgress()
     const rateMap = new Map(
       progress.map((p) => [
@@ -44,18 +42,22 @@ function filterQuestions(
       ])
     )
     // 正答率 60% 未満 or 未学習（totalAttempts=0）の問題
-    return allQuestions.filter((q) => {
+    pool = allQuestions.filter((q) => {
       const rate = rateMap.get(q.topicId)
       return rate === undefined || rate < 0.6
     })
+  } else {
+    // random: 全問シャッフル
+    pool = [...allQuestions].sort(() => Math.random() - 0.5)
   }
-  // random: 全問シャッフル
-  return [...allQuestions].sort(() => Math.random() - 0.5)
+  if (onlyImportant) {
+    pool = pool.filter((q) => q.isImportant)
+  }
+  return pool
 }
 
 function modeLabel(mode: string | null): string {
   switch (mode) {
-    case 'important': return '重要問題モード'
     case 'weakness': return '弱点克服モード'
     case 'random': return 'ランダム出題'
     case 'topic': return 'カテゴリ別学習'
@@ -79,10 +81,13 @@ export default function Quiz() {
   // 再挑戦用問題リスト（nullの場合は通常フィルタリング）
   const [retryList, setRetryList] = useState<Question[] | null>(null)
 
+  // 解答モード選択画面で「重要問題のみを出題」が ON か
+  const [onlyImportant, setOnlyImportant] = useState(false)
+
   // 問題リスト（retryListがあればそちらを優先）
   const baseList = useMemo(
-    () => filterQuestions(mode, categoryId),
-    [mode, categoryId]
+    () => filterQuestions(mode, categoryId, onlyImportant),
+    [mode, categoryId, onlyImportant]
   )
   const questionList = retryList ?? baseList
 
@@ -344,6 +349,8 @@ export default function Quiz() {
               categoryId && NOTE_CATEGORY_IDS.includes(categoryId) ? categoryId : null
             }
             noteCategoryName={categoryName || undefined}
+            onlyImportant={onlyImportant}
+            onChangeOnlyImportant={setOnlyImportant}
           />
         )}
 

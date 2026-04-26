@@ -7,7 +7,6 @@ import CategoryCard from '../components/CategoryCard'
 import type { StudySession } from '../types'
 import { VERSION_LABEL } from '../version'
 import LevelWidget from '../components/gamification/LevelWidget'
-import HowToUseCard from '../components/HowToUseCard'
 
 // ----------------------------------------------------------------
 // Helper functions
@@ -56,22 +55,6 @@ interface MenuCard {
   description: string
   iconBg: string
   icon: React.ReactNode
-}
-
-function IconStar({ className }: { className?: string }) {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" className={className ?? 'w-6 h-6'} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-    </svg>
-  )
-}
-
-function IconGrid({ className }: { className?: string }) {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" className={className ?? 'w-6 h-6'} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-    </svg>
-  )
 }
 
 function IconChart({ className }: { className?: string }) {
@@ -124,19 +107,21 @@ function IconPen({ className }: { className?: string }) {
 }
 
 const MENU_CARDS: MenuCard[] = [
+  // 左上：アプリの使い方（別ページ）
   {
-    to: '/quiz?mode=important',
-    title: '重要問題モード',
-    description: '厳選問題を集中学習',
-    iconBg: 'bg-amber-50',
-    icon: <IconStar className="w-6 h-6 text-amber-500" />,
-  },
-  {
-    to: '/#categories',
-    title: 'カテゴリ別学習',
-    description: '分野を選んで学習',
+    to: '/how-to-use',
+    title: 'アプリの使い方',
+    description: '3つのモードの活用方法',
     iconBg: 'bg-blue-50',
-    icon: <IconGrid className="w-6 h-6 text-blue-600" />,
+    icon: <IconBook className="w-6 h-6 text-blue-600" />,
+  },
+  // ノートモード（重要問題より前）
+  {
+    to: '/notes',
+    title: 'ノートモード',
+    description: '分野別の重要知識まとめ',
+    iconBg: 'bg-teal-50',
+    icon: <IconBook className="w-6 h-6 text-teal-600" />,
   },
   {
     to: '/quiz?mode=weakness',
@@ -144,27 +129,6 @@ const MENU_CARDS: MenuCard[] = [
     description: '正答率の低い問題',
     iconBg: 'bg-red-50',
     icon: <IconChart className="w-6 h-6 text-red-500" />,
-  },
-  {
-    to: '/quiz?mode=random',
-    title: 'ランダム出題',
-    description: '全問からランダムに',
-    iconBg: 'bg-emerald-50',
-    icon: <IconShuffle className="w-6 h-6 text-emerald-600" />,
-  },
-  {
-    to: '/protocols',
-    title: 'プロトコル一覧',
-    description: 'ポート番号・レイヤ一覧',
-    iconBg: 'bg-purple-50',
-    icon: <IconList className="w-6 h-6 text-purple-600" />,
-  },
-  {
-    to: '/notes',
-    title: 'ノートモード',
-    description: '分野別の重要知識まとめ',
-    iconBg: 'bg-teal-50',
-    icon: <IconBook className="w-6 h-6 text-teal-600" />,
   },
   {
     to: '/afternoon',
@@ -179,6 +143,14 @@ const MENU_CARDS: MenuCard[] = [
     description: 'ネスペ合格への道筋と心構え',
     iconBg: 'bg-amber-50',
     icon: <IconPen className="w-6 h-6 text-amber-600" />,
+  },
+  // プロトコル一覧は最後
+  {
+    to: '/protocols',
+    title: 'プロトコル一覧',
+    description: 'ポート番号・レイヤ一覧',
+    iconBg: 'bg-purple-50',
+    icon: <IconList className="w-6 h-6 text-purple-600" />,
   },
 ]
 
@@ -276,8 +248,6 @@ export default function Home() {
           >
             学習メニュー
           </h2>
-          {/* 学習メニュー最上部：アプリの使い方（折り畳み式の読み物） */}
-          <HowToUseCard />
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
             {MENU_CARDS.map((card) => {
               const isWeakness = card.to === '/quiz?mode=weakness'
@@ -301,11 +271,6 @@ export default function Home() {
                   to={card.to}
                   className="group relative flex items-center gap-3 bg-white rounded-xl border border-slate-200 px-3 py-2.5 hover:border-blue-400 hover:shadow-md transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                 >
-                  {card.to === '/quiz?mode=important' && (
-                    <span className="absolute top-1.5 right-1.5 text-[9px] font-bold bg-amber-400 text-amber-900 rounded-full px-1.5 py-0.5 leading-none">
-                      おすすめ
-                    </span>
-                  )}
                   <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${card.iconBg}`}>
                     {card.icon}
                   </div>
@@ -323,12 +288,22 @@ export default function Home() {
 
         {/* ===== 全体の学習進捗 ===== */}
         <section aria-labelledby="progress-heading">
-          <h2
-            id="progress-heading"
-            className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3"
-          >
-            全体の学習進捗
-          </h2>
+          <div className="flex items-center justify-between mb-3">
+            <h2
+              id="progress-heading"
+              className="text-xs font-bold text-slate-500 uppercase tracking-wider"
+            >
+              全体の学習進捗
+            </h2>
+            <Link
+              to="/quiz?mode=random"
+              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-700 text-[11px] font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+              aria-label="ランダム出題で学習する"
+            >
+              <IconShuffle className="w-3.5 h-3.5" />
+              ランダム出題
+            </Link>
+          </div>
           <div className="bg-white rounded-xl shadow-sm border border-slate-200 px-4 py-3">
             {/* Stats row */}
             <div className="flex items-center gap-0 divide-x divide-slate-100 mb-3">

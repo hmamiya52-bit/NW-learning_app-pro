@@ -7,6 +7,7 @@ import CategoryCard from '../components/CategoryCard'
 import type { StudySession } from '../types'
 import { VERSION_LABEL } from '../version'
 import LevelWidget from '../components/gamification/LevelWidget'
+import HowToUseCard from '../components/HowToUseCard'
 
 // ----------------------------------------------------------------
 // Helper functions
@@ -275,6 +276,8 @@ export default function Home() {
           >
             学習メニュー
           </h2>
+          {/* 学習メニュー最上部：アプリの使い方（折り畳み式の読み物） */}
+          <HowToUseCard />
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
             {MENU_CARDS.map((card) => {
               const isWeakness = card.to === '/quiz?mode=weakness'

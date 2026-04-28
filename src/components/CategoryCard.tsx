@@ -8,6 +8,10 @@ interface CategoryCardProps {
   mcRate: number | null
   /** 記述モードの正答率。null = 未挑戦 */
   wrRate: number | null
+  /** 達成数：1回でも正解した問題数（重複なし） */
+  achieved: number
+  /** 達成率（%）。questionCount=0 の場合は null */
+  achievementRate: number | null
   /** 最終学習日時の ISO 文字列。未学習なら空文字 */
   lastStudiedAt: string
 }
@@ -21,8 +25,12 @@ function rateColor(rate: number): string {
 interface MiniBarProps {
   label: string
   rate: number | null
+  /** 任意のサフィックス（達成率の場合 "(2/10)" 等を末尾に付ける） */
+  suffix?: string
+  /** 任意のバー色クラス。指定が無ければ rateColor() による rate 連動色 */
+  barColor?: string
 }
-function MiniBar({ label, rate }: MiniBarProps) {
+function MiniBar({ label, rate, suffix, barColor }: MiniBarProps) {
   return (
     <div className="flex items-center gap-1.5">
       <span className="text-[9px] font-bold text-slate-400 w-5 flex-shrink-0">{label}</span>
@@ -34,21 +42,23 @@ function MiniBar({ label, rate }: MiniBarProps) {
             aria-valuenow={rate}
             aria-valuemin={0}
             aria-valuemax={100}
-            aria-label={`${label}正答率 ${rate}%`}
+            aria-label={`${label} ${rate}%`}
           >
             <div
-              className={`h-full rounded-full transition-all ${rateColor(rate)}`}
+              className={`h-full rounded-full transition-all ${barColor ?? rateColor(rate)}`}
               style={{ width: `${rate}%` }}
             />
           </div>
-          <span className="text-[10px] font-medium text-slate-500 tabular-nums w-7 text-right flex-shrink-0">
-            {rate}%
+          <span className="text-[10px] font-medium text-slate-500 tabular-nums whitespace-nowrap text-right flex-shrink-0">
+            {rate}%{suffix ? <span className="text-slate-300 ml-0.5">{suffix}</span> : null}
           </span>
         </>
       ) : (
         <>
           <div className="flex-1 h-1 rounded-full bg-slate-100" aria-hidden="true" />
-          <span className="text-[10px] text-slate-300 w-7 text-right flex-shrink-0">—</span>
+          <span className="text-[10px] text-slate-300 whitespace-nowrap text-right flex-shrink-0">
+            —{suffix ? <span className="ml-0.5">{suffix}</span> : null}
+          </span>
         </>
       )}
     </div>
@@ -60,6 +70,8 @@ export default function CategoryCard({
   questionCount,
   mcRate,
   wrRate,
+  achieved,
+  achievementRate,
   lastStudiedAt: _lastStudiedAt,
 }: CategoryCardProps) {
   const isIot = category.id === 'iot'
@@ -96,11 +108,12 @@ export default function CategoryCard({
         </span>
       </div>
 
-      {/* 2行目以降：4択／記述の2本バー */}
+      {/* 2行目以降：達成率 + 4択／記述の正答率 */}
       {isEmpty ? (
         <span className="text-[11px] text-slate-300">準備中</span>
       ) : (
         <div className="space-y-1">
+          <MiniBar label="達成" rate={achievementRate} suffix={`(${achieved}/${questionCount})`} barColor="bg-emerald-500" />
           <MiniBar label="4択" rate={mcRate} />
           <MiniBar label="記述" rate={wrRate} />
         </div>

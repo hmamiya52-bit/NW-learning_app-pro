@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { categories } from '../data/categories'
 import { questions } from '../data/questions'
-import { getAllProgress, getStudySessions } from '../lib/storage'
+import { getAllProgress, getAnswerRecords, getStudySessions } from '../lib/storage'
 import CategoryCard from '../components/CategoryCard'
 import type { StudySession } from '../types'
 import LevelWidget from '../components/gamification/LevelWidget'
@@ -172,15 +172,28 @@ export default function Home() {
   const totalQuestions = questions.length
   const importantCount = questions.filter((q) => q.isImportant).length
 
-  const studiedTopicIds = useMemo(
-    () => new Set(allProgress.filter((p) => p.totalAttempts > 0).map((p) => p.topicId)),
-    [allProgress]
+  // 「達成」した問題ID集合：1回でも正解した問題の questionId（重複は1つに集約）
+  const achievedQuestionIds = useMemo(() => {
+    const set = new Set<string>()
+    for (const r of getAnswerRecords()) {
+      if (r.isCorrect) set.add(r.questionId)
+    }
+    return set
+  }, [])
+
+  // 全体達成数 = 達成済みのうち、現在も questions に存在する ID の数
+  const achievedCount = useMemo(
+    () => questions.filter((q) => achievedQuestionIds.has(q.id)).length,
+    [achievedQuestionIds],
   )
 
-  const studiedCount = useMemo(
-    () => questions.filter((q) => studiedTopicIds.has(q.topicId)).length,
-    [studiedTopicIds]
-  )
+  // 弱点克服モードの非活性化判定用：1問でも回答していれば学習済みとみなす
+  const studiedCount = useMemo(() => {
+    const studiedTopicIds = new Set(
+      allProgress.filter((p) => p.totalAttempts > 0).map((p) => p.topicId),
+    )
+    return questions.filter((q) => studiedTopicIds.has(q.topicId)).length
+  }, [allProgress])
 
   // 4択／記述の正答率は分離して算出
   const globalMcRate = useMemo(() => {
@@ -207,6 +220,12 @@ export default function Home() {
       const wrCorrect = catProgress.reduce((s, p) => s + p.wrCorrect, 0)
       const mcRate = mcTotal > 0 ? Math.round((mcCorrect / mcTotal) * 100) : null
       const wrRate = wrTotal > 0 ? Math.round((wrCorrect / wrTotal) * 100) : null
+      // 達成数 = カテゴリ内の問題のうち1回でも正解した問題数
+      const achieved = catQuestions.filter((q) => achievedQuestionIds.has(q.id)).length
+      const achievementRate =
+        catQuestions.length > 0
+          ? Math.round((achieved / catQuestions.length) * 100)
+          : null
       const lastStudied =
         catProgress
           .filter((p) => p.lastStudiedAt)
@@ -217,10 +236,12 @@ export default function Home() {
         questionCount: catQuestions.length,
         mcRate,
         wrRate,
+        achieved,
+        achievementRate,
         lastStudiedAt: lastStudied,
       }
     })
-  }, [allProgress])
+  }, [allProgress, achievedQuestionIds])
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#f8fafc' }}>
@@ -305,18 +326,48 @@ export default function Home() {
             <div className="flex items-center gap-0 divide-x divide-slate-100 mb-3">
               <div className="flex items-baseline gap-1 pr-4">
                 <span className="text-xl font-black tabular-nums leading-none" style={{ color: '#1a3a5c' }}>
-                  {studiedCount}
+                  {achievedCount}
                 </span>
                 <span className="text-xs font-normal text-slate-400">/{totalQuestions}</span>
-                <span className="text-[11px] text-slate-400 ml-1">学習済み</span>
+                <span className="text-[11px] text-slate-400 ml-1">達成</span>
               </div>
               <div className="flex items-baseline gap-1 pl-4">
                 <span className="text-xl font-black tabular-nums text-amber-500 leading-none">{importantCount}</span>
                 <span className="text-[11px] text-slate-400 ml-1">重要問題</span>
               </div>
             </div>
-            {/* Progress bars: 4択／記述 を別々に表示 */}
+            {/* Progress bars: 達成率 + 4択／記述 正答率 */}
             <div className="space-y-2">
+              {/* 達成率：1問でも正解した問題 / 全問題 */}
+              {(() => {
+                const achievementRate =
+                  totalQuestions > 0
+                    ? Math.round((achievedCount / totalQuestions) * 100)
+                    : 0
+                return (
+                  <div>
+                    <div className="flex justify-between text-[11px] mb-1">
+                      <span className="text-slate-500 font-bold">達成率</span>
+                      <span className="tabular-nums" style={{ color: '#1a3a5c' }}>
+                        {achievementRate}%
+                      </span>
+                    </div>
+                    <div
+                      className="h-1.5 bg-slate-100 rounded-full overflow-hidden"
+                      role="progressbar"
+                      aria-valuenow={achievementRate}
+                      aria-valuemin={0}
+                      aria-valuemax={100}
+                      aria-label={`達成率 ${achievementRate}%`}
+                    >
+                      <div
+                        className="h-full rounded-full transition-all duration-500"
+                        style={{ width: `${achievementRate}%`, backgroundColor: '#10b981' }}
+                      />
+                    </div>
+                  </div>
+                )
+              })()}
               {/* 4択 */}
               <div>
                 <div className="flex justify-between text-[11px] mb-1">
@@ -374,13 +425,15 @@ export default function Home() {
             カテゴリ一覧（{categories.length}分野）
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-            {categoryStats.map(({ category, questionCount, mcRate, wrRate, lastStudiedAt }) => (
+            {categoryStats.map(({ category, questionCount, mcRate, wrRate, achieved, achievementRate, lastStudiedAt }) => (
               <CategoryCard
                 key={category.id}
                 category={category}
                 questionCount={questionCount}
                 mcRate={mcRate}
                 wrRate={wrRate}
+                achieved={achieved}
+                achievementRate={achievementRate}
                 lastStudiedAt={lastStudiedAt}
               />
             ))}

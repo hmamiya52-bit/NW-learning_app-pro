@@ -1,12 +1,5 @@
 // 認証情報リスト
-//
-// パスワードは SHA-256 ハッシュで保存。平文は管理者が別途管理。
-// 追加・削除は Claude Code に依頼するのが標準運用。
-//
-// ID 規則: フォネティックコード(Alpha〜Foxtrot) + 数字2桁
-//          ※管理者のみ 'mamiya-admin'
-// PW 規則: ネスペ頻出略称 + 数字6桁
-// セッション有効期限: AUTH_SESSION_DAYS 日
+// パスワードは SHA-256 ハッシュで保存。
 
 export const AUTH_SESSION_DAYS = 60
 

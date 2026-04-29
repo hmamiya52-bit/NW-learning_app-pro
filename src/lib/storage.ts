@@ -170,4 +170,30 @@ export function calcCorrectRateByMode(
 
 export function resetAllData(): void {
   Object.values(KEYS).forEach((k) => localStorage.removeItem(k))
+  localStorage.removeItem('nwsp:note_understanding')
+}
+
+// --- NoteUnderstanding ---
+export type UnderstandingLevel = 'green' | 'yellow' | 'red'
+type NoteUnderstandingMap = Record<string, UnderstandingLevel>
+
+const NOTE_UNDERSTANDING_KEY = 'nwsp:note_understanding'
+
+export function getNoteUnderstanding(): NoteUnderstandingMap {
+  return load(NOTE_UNDERSTANDING_KEY, {})
+}
+
+export function setNoteUnderstanding(
+  categoryId: string,
+  sectionIndex: number,
+  level: UnderstandingLevel | null,
+): void {
+  const map = getNoteUnderstanding()
+  const key = `${categoryId}:${sectionIndex}`
+  if (level === null) {
+    delete map[key]
+  } else {
+    map[key] = level
+  }
+  save(NOTE_UNDERSTANDING_KEY, map)
 }

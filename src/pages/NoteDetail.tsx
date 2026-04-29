@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useParams, useLocation, Link } from 'react-router-dom'
 import { categories } from '../data/categories'
+import { getNoteUnderstanding, setNoteUnderstanding, type UnderstandingLevel } from '../lib/storage'
 
 // NOTE_DB に存在するカテゴリIDの順序リスト（前後ナビ用 / Notes 一覧フィルタ用）
 export const NOTE_CATEGORY_IDS = [
@@ -4908,6 +4909,15 @@ export default function NoteDetail() {
     setProtoVersion((v) => v + 1)
   }
 
+  const [understanding, setUnderstanding] = useState(() => getNoteUnderstanding())
+
+  const handleUnderstanding = (sectionIndex: number, level: UnderstandingLevel) => {
+    const key = `${categoryId}:${sectionIndex}`
+    const next = understanding[key] === level ? null : level
+    setNoteUnderstanding(categoryId!, sectionIndex, next)
+    setUnderstanding(getNoteUnderstanding())
+  }
+
   const [toastVisible, setToastVisible] = useState(false)
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -5016,34 +5026,64 @@ export default function NoteDetail() {
               }`}
             >
               <div
-                className={`px-5 py-3 border-b border-slate-100 ${section.protocols ? 'flex items-center justify-between gap-2' : ''}`}
+                className="px-5 py-3 border-b border-slate-100 flex items-center justify-between gap-2"
                 style={{ backgroundColor: '#1a3a5c' }}
               >
-                <h2 className="text-sm font-bold text-white leading-snug">{section.heading}</h2>
-                {section.protocols && (
-                  <div className="flex items-center gap-1 flex-shrink-0">
-                    <button
-                      onClick={() => setProtoMaskMode(protoMask === 'name' ? 'none' : 'name')}
-                      className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-colors ${
-                        protoMask === 'name'
-                          ? 'bg-red-500 text-white'
-                          : 'bg-blue-800 text-blue-200 hover:bg-blue-700'
-                      }`}
-                    >
-                      {protoMask === 'name' ? '名前が赤字 ✓' : '名前を赤字に'}
-                    </button>
-                    <button
-                      onClick={() => setProtoMaskMode(protoMask === 'port' ? 'none' : 'port')}
-                      className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-colors ${
-                        protoMask === 'port'
-                          ? 'bg-red-500 text-white'
-                          : 'bg-blue-800 text-blue-200 hover:bg-blue-700'
-                      }`}
-                    >
-                      {protoMask === 'port' ? 'ポートが赤字 ✓' : 'ポートを赤字に'}
-                    </button>
-                  </div>
-                )}
+                <h2 className="text-sm font-bold text-white leading-snug flex-1">{section.heading}</h2>
+                <div className="flex items-center gap-1.5 flex-shrink-0">
+                  {section.protocols && (
+                    <>
+                      <button
+                        onClick={() => setProtoMaskMode(protoMask === 'name' ? 'none' : 'name')}
+                        className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-colors ${
+                          protoMask === 'name'
+                            ? 'bg-red-500 text-white'
+                            : 'bg-blue-800 text-blue-200 hover:bg-blue-700'
+                        }`}
+                      >
+                        {protoMask === 'name' ? '名前が赤字 ✓' : '名前を赤字に'}
+                      </button>
+                      <button
+                        onClick={() => setProtoMaskMode(protoMask === 'port' ? 'none' : 'port')}
+                        className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-colors ${
+                          protoMask === 'port'
+                            ? 'bg-red-500 text-white'
+                            : 'bg-blue-800 text-blue-200 hover:bg-blue-700'
+                        }`}
+                      >
+                        {protoMask === 'port' ? 'ポートが赤字 ✓' : 'ポートを赤字に'}
+                      </button>
+                      <div className="w-px h-4 bg-blue-700 mx-0.5" />
+                    </>
+                  )}
+                  {(['green', 'yellow', 'red'] as UnderstandingLevel[]).map((level) => {
+                    const isActive = understanding[`${categoryId}:${i}`] === level
+                    const colorMap = {
+                      green: 'bg-emerald-400',
+                      yellow: 'bg-amber-400',
+                      red: 'bg-red-400',
+                    }
+                    const labelMap = {
+                      green: '理解できた',
+                      yellow: 'なんとなく',
+                      red: 'まだ難しい',
+                    }
+                    return (
+                      <button
+                        key={level}
+                        onClick={(e) => { e.stopPropagation(); handleUnderstanding(i, level) }}
+                        title={labelMap[level]}
+                        aria-label={labelMap[level]}
+                        aria-pressed={isActive}
+                        className={`w-5 h-5 rounded-full transition-all ${colorMap[level]} ${
+                          isActive
+                            ? 'opacity-100 ring-2 ring-white/70 ring-offset-1 ring-offset-[#1a3a5c]'
+                            : 'opacity-30 hover:opacity-60'
+                        }`}
+                      />
+                    )
+                  })}
+                </div>
               </div>
               {section.protocols ? (
                 <div className="px-5 py-3 overflow-x-auto">

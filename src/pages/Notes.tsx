@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { categories } from '../data/categories'
 import { NOTE_CATEGORY_IDS, NOTE_SECTION_INDEX } from './NoteDetail'
+import { getNoteUnderstanding } from '../lib/storage'
 
 const NOTE_AVAILABLE = new Set(NOTE_CATEGORY_IDS)
 
@@ -53,6 +54,40 @@ function highlight(text: string, query: string) {
       <mark className="bg-yellow-200 text-slate-900 px-0.5 rounded">{text.slice(idx, idx + query.length)}</mark>
       {text.slice(idx + query.length)}
     </>
+  )
+}
+
+function UnderstandingBadges({ categoryId }: { categoryId: string }) {
+  const understanding = useMemo(() => getNoteUnderstanding(), [])
+  const sections = useMemo(
+    () => NOTE_SECTION_INDEX.filter((e) => e.categoryId === categoryId),
+    [categoryId],
+  )
+  const green = sections.filter((e) => understanding[`${categoryId}:${e.sectionIndex}`] === 'green').length
+  const yellow = sections.filter((e) => understanding[`${categoryId}:${e.sectionIndex}`] === 'yellow').length
+  const red = sections.filter((e) => understanding[`${categoryId}:${e.sectionIndex}`] === 'red').length
+  if (green + yellow + red === 0) return null
+  return (
+    <div className="flex items-center gap-1.5 mt-1.5">
+      {green > 0 && (
+        <span className="flex items-center gap-0.5 text-[10px] text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-full font-semibold">
+          <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block" />
+          {green}
+        </span>
+      )}
+      {yellow > 0 && (
+        <span className="flex items-center gap-0.5 text-[10px] text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded-full font-semibold">
+          <span className="w-2 h-2 rounded-full bg-amber-400 inline-block" />
+          {yellow}
+        </span>
+      )}
+      {red > 0 && (
+        <span className="flex items-center gap-0.5 text-[10px] text-red-700 bg-red-50 px-1.5 py-0.5 rounded-full font-semibold">
+          <span className="w-2 h-2 rounded-full bg-red-400 inline-block" />
+          {red}
+        </span>
+      )}
+    </div>
   )
 }
 
@@ -167,6 +202,7 @@ export default function Notes() {
                     <p className="text-xs text-slate-400 mt-0.5 leading-snug line-clamp-1">
                       {cat.description}
                     </p>
+                    <UnderstandingBadges categoryId={cat.id} />
                   </div>
                   <div className="text-slate-300 group-hover:text-blue-400 transition-colors flex-shrink-0">
                     <ArrowRightIcon />

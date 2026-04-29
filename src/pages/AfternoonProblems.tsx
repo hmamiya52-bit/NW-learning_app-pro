@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { Fragment, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { afternoonProblems, YEARS } from '../data/afternoonProblems'
 import type { AfternoonProblem, ProblemSection } from '../data/afternoonProblems'
@@ -211,90 +211,138 @@ function RecordModal({ problem, onSave, onClose }: RecordModalProps) {
 }
 
 // ----------------------------------------------------------------
-// History modal
+// インライン詳細パネル（行タップで展開）
 // ----------------------------------------------------------------
 
-interface HistoryModalProps {
-  problem: AfternoonProblem
-  records: PracticeRecord[]
-  onDelete: (id: string) => void
-  onAddRecord: () => void
-  onClose: () => void
+interface DetailPanelProps {
+  row: RowData
+  onRecord: () => void
+  onDeleteRecord: (id: string) => void
+  onPlanChange: (date: string) => void
 }
 
-function HistoryModal({ problem, records, onDelete, onAddRecord, onClose }: HistoryModalProps) {
-  const maxScore = getMaxScore(problem.section)
-  const sectionLabel = problem.section === 'G1' ? '午後Ⅰ' : '午後Ⅱ'
+function DetailPanel({ row, onRecord, onDeleteRecord, onPlanChange }: DetailPanelProps) {
+  const { problem, records, hasAnswer, plannedDate, maxScore } = row
+  const [planEditing, setPlanEditing] = useState(false)
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4" onClick={onClose}>
-      <div className="absolute inset-0 bg-black/40" />
-      <div
-        className="relative bg-white rounded-2xl w-full max-w-md shadow-xl max-h-[80vh] flex flex-col"
-        onClick={e => e.stopPropagation()}
-      >
-        <div className="px-5 pt-5 pb-3 border-b border-slate-100 flex-shrink-0">
-          <p className="text-[11px] text-slate-400">
-            {sectionLabel} 問{problem.number} · {problem.yearLabel}
-          </p>
-          <h3 className="text-sm font-bold text-slate-800 mt-0.5 leading-snug">{problem.title}</h3>
-          <p className="text-xs text-slate-400 mt-1">
-            満点 {maxScore} 点 · {records.length} 回演習
-          </p>
+    <div className="px-4 py-3 bg-slate-50/70 border-l-4 border-indigo-200 space-y-3">
+      {/* アクション行：PDF・解答欄・公式解答・記録 */}
+      <div className="flex flex-wrap gap-1.5">
+        {problem.questionPdfUrl && (
+          <a
+            href={problem.questionPdfUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[11px] font-bold text-white bg-slate-600 hover:bg-slate-700 rounded-md px-2.5 py-1.5 inline-flex items-center gap-1 transition-colors"
+          >
+            📄 PDFを開く
+          </a>
+        )}
+        {hasAnswer && (
+          <Link
+            to={`/afternoon/answers/${problem.id}/myAnswer`}
+            className="text-[11px] font-bold text-teal-700 border border-teal-300 bg-white hover:bg-teal-50 rounded-md px-2.5 py-1.5 inline-flex items-center gap-1 transition-colors"
+          >
+            ✍ 解答欄モード
+          </Link>
+        )}
+        {hasAnswer && (
+          <Link
+            to={`/afternoon/answers/${problem.id}`}
+            className="text-[11px] font-bold text-indigo-700 border border-indigo-300 bg-white hover:bg-indigo-50 rounded-md px-2.5 py-1.5 inline-flex items-center gap-1 transition-colors"
+          >
+            🗒 公式解答を表示
+          </Link>
+        )}
+        <button
+          onClick={onRecord}
+          className="text-[11px] font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-md px-2.5 py-1.5 inline-flex items-center gap-1 transition-colors ml-auto"
+        >
+          ＋ 記録する
+        </button>
+      </div>
+
+      {/* メタ情報行：周回 / 次回計画日 */}
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[11px]">
+        <div>
+          <span className="text-slate-400 font-bold mr-1">周回数</span>
+          <span className="text-indigo-700 font-bold tabular-nums">{records.length}回</span>
         </div>
-        <div className="overflow-y-auto flex-1 px-5 py-3">
-          {records.length === 0 ? (
-            <p className="text-sm text-slate-400 text-center py-6">演習記録がありません</p>
+        <div className="flex items-center gap-1.5">
+          <span className="text-slate-400 font-bold">次回計画日</span>
+          {planEditing ? (
+            <input
+              type="text"
+              placeholder="例: 5/10"
+              defaultValue={plannedDate ? formatDate(plannedDate) : ''}
+              autoFocus
+              className="w-20 border border-indigo-300 rounded px-1.5 py-0.5 text-[11px] focus:outline-none focus:ring-1 focus:ring-indigo-400"
+              onKeyDown={e => {
+                if (e.key === 'Enter') {
+                  onPlanChange((e.target as HTMLInputElement).value)
+                  setPlanEditing(false)
+                }
+                if (e.key === 'Escape') setPlanEditing(false)
+              }}
+              onBlur={e => {
+                onPlanChange(e.target.value)
+                setPlanEditing(false)
+              }}
+            />
           ) : (
-            <ul className="divide-y divide-slate-100">
-              {records.map((r, i) => (
-                <li key={r.id} className="flex items-start gap-3 py-2.5">
-                  <div className="flex-shrink-0 text-xs text-slate-400 w-5 text-right pt-0.5">
-                    {records.length - i}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-xs text-slate-500">{formatDate(r.date)}</span>
-                      <span className={`text-sm font-black tabular-nums ${scoreColor(r.score, maxScore)}`}>
-                        {r.score}
-                        <span className="text-[10px] font-normal text-slate-400">/{maxScore}</span>
-                      </span>
-                      <span className="text-[10px] text-slate-400">
-                        ({Math.round((r.score / maxScore) * 100)}%)
-                      </span>
-                    </div>
-                    {r.memo && (
-                      <p className="text-xs text-slate-500 mt-0.5 leading-snug">{r.memo}</p>
-                    )}
-                  </div>
-                  <button
-                    onClick={() => onDelete(r.id)}
-                    className="text-slate-300 hover:text-red-400 transition-colors p-1 flex-shrink-0"
-                    aria-label="削除"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                  </button>
-                </li>
-              ))}
-            </ul>
+            <button
+              onClick={() => setPlanEditing(true)}
+              className={`text-[11px] underline-offset-2 hover:underline ${
+                plannedDate ? 'text-slate-700 font-bold' : 'text-slate-400'
+              }`}
+            >
+              {plannedDate ? formatDate(plannedDate) : '未設定（タップで入力）'}
+            </button>
           )}
         </div>
-        <div className="px-5 py-4 border-t border-slate-100 flex-shrink-0 flex gap-2">
-          <button
-            onClick={onClose}
-            className="flex-1 py-2.5 rounded-xl border border-slate-200 text-sm font-bold text-slate-500 hover:bg-slate-50"
-          >
-            閉じる
-          </button>
-          <button
-            onClick={onAddRecord}
-            className="flex-1 py-2.5 rounded-xl bg-indigo-600 text-white text-sm font-bold hover:bg-indigo-700"
-          >
-            ＋記録する
-          </button>
-        </div>
+      </div>
+
+      {/* 各回の点数と実施日 */}
+      <div>
+        <p className="text-[10px] font-bold text-slate-400 mb-1">演習履歴</p>
+        {records.length === 0 ? (
+          <p className="text-[11px] text-slate-400 italic">まだ記録がありません</p>
+        ) : (
+          <ul className="bg-white rounded-md border border-slate-200 divide-y divide-slate-100">
+            {records.map((r, i) => (
+              <li key={r.id} className="flex items-center gap-2 px-2.5 py-1.5">
+                <span className="flex-shrink-0 text-[10px] text-slate-400 w-5 text-right">
+                  {records.length - i}
+                </span>
+                <span className="text-[11px] text-slate-500 tabular-nums w-12">
+                  {formatDate(r.date)}
+                </span>
+                <span className={`text-[12px] font-black tabular-nums ${scoreColor(r.score, maxScore)}`}>
+                  {r.score}
+                  <span className="text-[9px] font-normal text-slate-300">/{maxScore}</span>
+                </span>
+                <span className="text-[10px] text-slate-400">
+                  ({Math.round((r.score / maxScore) * 100)}%)
+                </span>
+                {r.memo && (
+                  <span className="text-[10px] text-slate-500 truncate flex-1 min-w-0">
+                    💬 {r.memo}
+                  </span>
+                )}
+                <button
+                  onClick={() => onDeleteRecord(r.id)}
+                  className="ml-auto text-slate-300 hover:text-red-400 transition-colors p-0.5 flex-shrink-0"
+                  aria-label="この記録を削除"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   )
@@ -309,17 +357,24 @@ interface ProblemTableProps {
   rows: RowData[]
   studiedCount: number
   sortMode: SortMode
+  expandedId: string | null
+  onToggleExpand: (id: string) => void
   onRecord: (problem: AfternoonProblem) => void
-  onHistory: (problem: AfternoonProblem) => void
+  onDeleteRecord: (id: string) => void
   onPlanChange: (problemId: string, date: string) => void
 }
 
-function ProblemTable({ section, rows, studiedCount, sortMode, onRecord, onHistory, onPlanChange }: ProblemTableProps) {
-  const [editingPlanId, setEditingPlanId] = useState<string | null>(null)
+function ProblemTable({
+  section, rows, studiedCount, sortMode,
+  expandedId, onToggleExpand,
+  onRecord, onDeleteRecord, onPlanChange,
+}: ProblemTableProps) {
   const label = section === 'G1' ? '午後Ⅰ' : '午後Ⅱ'
   const headerColor = section === 'G1' ? 'bg-blue-700' : 'bg-purple-700'
   const badgeColor = section === 'G1' ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'
   const actualStudied = rows.filter(r => r.roundCount > 0).length
+  // 主要列(年度・問・テーマ・最高点・実施日)＋展開アイコン列で 6 列。
+  const COL_SPAN_MOBILE = 6
 
   return (
     <section>
@@ -335,184 +390,110 @@ function ProblemTable({ section, rows, studiedCount, sortMode, onRecord, onHisto
             条件に一致する問題がありません
           </div>
         ) : (
-          <table className="w-full border-collapse text-sm min-w-[800px]">
+          <table className="w-full border-collapse text-sm">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-200">
                 <th className="py-2 px-2 text-left text-xs font-bold text-slate-500 w-12">年度</th>
                 <th className="py-2 px-2 text-left text-xs font-bold text-slate-500 w-11">問</th>
                 <th className="py-2 px-2 text-left text-xs font-bold text-slate-500">テーマ</th>
-                <th className="py-2 px-2 text-center text-xs font-bold text-slate-500 w-12">周回</th>
                 <th className="py-2 px-2 text-center text-xs font-bold text-slate-500 w-16">最高点</th>
                 <th className="py-2 px-2 text-left text-xs font-bold text-slate-500 w-14">実施日</th>
-                <th className="py-2 px-2 text-left text-xs font-bold text-slate-500 w-16">計画日</th>
-                <th className="py-2 px-2 text-center text-xs font-bold text-slate-500 w-12 whitespace-nowrap">問題文</th>
-                <th className="py-2 px-2 text-xs font-bold text-slate-500 w-40">アクション</th>
+                {/* 展開アイコン列：常時表示 */}
+                <th className="py-2 px-1 w-6" aria-label="詳細" />
               </tr>
             </thead>
             <tbody>
               {rows.map((row, i) => {
                 // score モード時のみセパレータを表示
                 const isSeparator = sortMode === 'score' && i === studiedCount && studiedCount > 0 && i < rows.length
+                const isExpanded = expandedId === row.problem.id
                 return (
-                  <tr
-                    key={row.problem.id}
-                    className={[
-                      'group align-middle cursor-pointer hover:bg-indigo-50/40 transition-colors',
-                      isSeparator ? 'border-t-2 border-indigo-200' : 'border-t border-slate-100',
-                    ].join(' ')}
-                    onClick={() => onHistory(row.problem)}
-                  >
-                    {/* 年度 */}
-                    <td className="py-1.5 px-2 text-xs text-slate-500 whitespace-nowrap">
-                      {row.problem.year}
-                    </td>
+                  <Fragment key={row.problem.id}>
+                    <tr
+                      className={[
+                        'align-middle cursor-pointer transition-colors',
+                        isExpanded ? 'bg-indigo-50' : 'hover:bg-indigo-50/40',
+                        isSeparator ? 'border-t-2 border-indigo-200' : 'border-t border-slate-100',
+                      ].join(' ')}
+                      onClick={() => onToggleExpand(row.problem.id)}
+                      aria-expanded={isExpanded}
+                    >
+                      {/* 年度 */}
+                      <td className="py-2 px-2 text-xs text-slate-500 whitespace-nowrap">
+                        {row.problem.year}
+                      </td>
 
-                    {/* 問番号 */}
-                    <td className="py-1.5 px-2">
-                      <span className={`text-[11px] font-bold rounded-full px-2 py-0.5 whitespace-nowrap ${badgeColor}`}>
-                        問{row.problem.number}
-                      </span>
-                    </td>
+                      {/* 問番号 */}
+                      <td className="py-2 px-2">
+                        <span className={`text-[11px] font-bold rounded-full px-2 py-0.5 whitespace-nowrap ${badgeColor}`}>
+                          問{row.problem.number}
+                        </span>
+                      </td>
 
-                    {/* テーマ + キーワード */}
-                    <td className="py-1.5 px-2">
-                      <div className="text-xs font-semibold text-slate-800 leading-snug">
-                        {row.problem.title}
-                        <span className="ml-1 opacity-0 group-hover:opacity-40 transition-opacity text-slate-400 text-xs">›</span>
-                      </div>
-                      {row.problem.keywords.length > 0 && (
-                        <div className="flex flex-wrap gap-0.5 mt-0.5">
-                          {row.problem.keywords.map(kw => (
-                            <span
-                              key={kw}
-                              className="text-[9px] bg-slate-100 text-slate-400 rounded px-1 py-0 leading-tight"
-                            >
-                              {kw}
-                            </span>
-                          ))}
+                      {/* テーマ */}
+                      <td className="py-2 px-2">
+                        <div className="text-xs font-semibold text-slate-800 leading-snug line-clamp-2">
+                          {row.problem.title}
                         </div>
-                      )}
-                    </td>
-
-                    {/* 周回 */}
-                    <td className="py-1.5 px-2 text-center">
-                      {row.roundCount > 0 ? (
-                        <span className="text-xs font-bold text-indigo-600">{row.roundCount}回</span>
-                      ) : (
-                        <span className="text-xs text-slate-300">—</span>
-                      )}
-                    </td>
-
-                    {/* 最高点 */}
-                    <td className="py-1.5 px-2 text-center">
-                      {row.latestScore !== null ? (
-                        <span className={`text-xs font-black tabular-nums ${scoreColor(row.latestScore, row.maxScore)}`}>
-                          {row.latestScore}
-                          <span className="text-[10px] font-normal text-slate-300">/{row.maxScore}</span>
-                        </span>
-                      ) : (
-                        <span className="text-xs text-slate-300">—</span>
-                      )}
-                    </td>
-
-                    {/* 実施日 */}
-                    <td className="py-1.5 px-2 text-xs text-slate-500 whitespace-nowrap">
-                      {row.latestDate ? formatDate(row.latestDate) : (
-                        <span className="text-slate-300">—</span>
-                      )}
-                    </td>
-
-                    {/* 計画日（月/日入力） */}
-                    <td
-                      className="py-1.5 px-2 text-xs text-slate-500"
-                      onClick={e => { e.stopPropagation(); setEditingPlanId(row.problem.id) }}
-                    >
-                      {editingPlanId === row.problem.id ? (
-                        <input
-                          type="text"
-                          placeholder="例: 5/10"
-                          defaultValue={row.plannedDate ? formatDate(row.plannedDate) : ''}
-                          autoFocus
-                          className="w-[4.5rem] border border-indigo-300 rounded px-1 py-0.5 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-400"
-                          onKeyDown={e => {
-                            if (e.key === 'Enter') {
-                              onPlanChange(row.problem.id, (e.target as HTMLInputElement).value)
-                              setEditingPlanId(null)
-                            }
-                            if (e.key === 'Escape') setEditingPlanId(null)
-                          }}
-                          onBlur={e => {
-                            onPlanChange(row.problem.id, e.target.value)
-                            setEditingPlanId(null)
-                          }}
-                          onClick={e => e.stopPropagation()}
-                        />
-                      ) : row.plannedDate ? (
-                        <span className="cursor-pointer hover:text-indigo-600 hover:underline transition-colors whitespace-nowrap">
-                          {formatDate(row.plannedDate)}
-                        </span>
-                      ) : (
-                        <span className="text-slate-300 cursor-pointer hover:text-indigo-400 transition-colors">—</span>
-                      )}
-                    </td>
-
-                    {/* 問題文PDF */}
-                    <td
-                      className="py-1.5 px-2 text-center"
-                      onClick={e => e.stopPropagation()}
-                    >
-                      {row.problem.questionPdfUrl ? (
-                        <a
-                          href={row.problem.questionPdfUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-[10px] font-bold text-indigo-500 hover:text-indigo-700 hover:underline transition-colors"
-                        >
-                          PDF
-                        </a>
-                      ) : (
-                        <span className="text-slate-200 text-[10px]">—</span>
-                      )}
-                    </td>
-
-                    {/* アクション：3列1行 */}
-                    <td
-                      className="py-1.5 px-2"
-                      onClick={e => e.stopPropagation()}
-                    >
-                      <div className="flex gap-1 items-center">
-                        {/* 解答欄 */}
-                        {row.hasAnswer ? (
-                          <Link
-                            to={`/afternoon/answers/${row.problem.id}/myAnswer`}
-                            className="text-[10px] font-bold text-teal-600 border border-teal-300 rounded px-1.5 py-0.5 hover:bg-teal-50 transition-colors leading-tight whitespace-nowrap"
-                          >
-                            解答欄
-                          </Link>
-                        ) : (
-                          <span className="text-[10px] px-1.5 py-0.5 invisible whitespace-nowrap">解答欄</span>
+                        {/* キーワードはデスクトップでのみ表示（モバイルは省略） */}
+                        {row.problem.keywords.length > 0 && (
+                          <div className="hidden sm:flex flex-wrap gap-0.5 mt-0.5">
+                            {row.problem.keywords.map(kw => (
+                              <span
+                                key={kw}
+                                className="text-[9px] bg-slate-100 text-slate-400 rounded px-1 py-0 leading-tight"
+                              >
+                                {kw}
+                              </span>
+                            ))}
+                          </div>
                         )}
-                        {/* 公式解答 */}
-                        {row.hasAnswer ? (
-                          <Link
-                            to={`/afternoon/answers/${row.problem.id}`}
-                            className="text-[10px] font-bold text-indigo-600 border border-indigo-300 rounded px-1.5 py-0.5 hover:bg-indigo-50 transition-colors leading-tight whitespace-nowrap"
-                          >
-                            公式解答
-                          </Link>
+                      </td>
+
+                      {/* 最高点 */}
+                      <td className="py-2 px-2 text-center">
+                        {row.latestScore !== null ? (
+                          <span className={`text-xs font-black tabular-nums ${scoreColor(row.latestScore, row.maxScore)}`}>
+                            {row.latestScore}
+                            <span className="text-[10px] font-normal text-slate-300">/{row.maxScore}</span>
+                          </span>
                         ) : (
-                          <span className="text-[10px] px-1.5 py-0.5 invisible whitespace-nowrap">公式解答</span>
+                          <span className="text-xs text-slate-300">—</span>
                         )}
-                        {/* 記録 */}
-                        <button
-                          onClick={() => onRecord(row.problem)}
-                          className="text-[10px] font-bold text-slate-500 border border-slate-200 rounded px-1.5 py-0.5 hover:bg-slate-50 hover:border-slate-300 transition-colors leading-tight whitespace-nowrap"
+                      </td>
+
+                      {/* 実施日 */}
+                      <td className="py-2 px-2 text-xs text-slate-500 whitespace-nowrap">
+                        {row.latestDate ? formatDate(row.latestDate) : (
+                          <span className="text-slate-300">—</span>
+                        )}
+                      </td>
+
+                      {/* 展開トグルアイコン */}
+                      <td className="py-2 px-1 text-center text-slate-400">
+                        <span
+                          className={`inline-block transition-transform ${isExpanded ? 'rotate-90' : ''}`}
+                          aria-hidden="true"
                         >
-                          記録
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
+                          ›
+                        </span>
+                      </td>
+                    </tr>
+
+                    {/* 詳細インライン展開行 */}
+                    {isExpanded && (
+                      <tr className="border-t border-indigo-100">
+                        <td colSpan={COL_SPAN_MOBILE} className="p-0">
+                          <DetailPanel
+                            row={row}
+                            onRecord={() => onRecord(row.problem)}
+                            onDeleteRecord={onDeleteRecord}
+                            onPlanChange={(date) => onPlanChange(row.problem.id, date)}
+                          />
+                        </td>
+                      </tr>
+                    )}
+                  </Fragment>
                 )
               })}
             </tbody>
@@ -531,7 +512,8 @@ export default function AfternoonProblems() {
   const [records, setRecords] = useState<PracticeRecord[]>(() => loadRecords())
   const [plans, setPlans] = useState<Record<string, string>>(() => loadPlans())
   const [recordModal, setRecordModal] = useState<AfternoonProblem | null>(null)
-  const [historyModal, setHistoryModal] = useState<AfternoonProblem | null>(null)
+  // 行タップで展開する詳細パネル：1度に1問のみ展開（インライン）
+  const [expandedId, setExpandedId] = useState<string | null>(null)
 
   const [selectedKeywords, setSelectedKeywords] = useState<string[]>([])
   const [practiceFilter, setPracticeFilter] = useState<PracticeFilter>('all')
@@ -582,13 +564,9 @@ export default function AfternoonProblems() {
 
   const hasFilter = selectedKeywords.length > 0 || practiceFilter !== 'all'
 
-  // HistoryModal 用レコード
-  const historyRecords = useMemo(() => {
-    if (!historyModal) return []
-    return records
-      .filter(r => r.problemId === historyModal.id)
-      .sort((a, b) => b.date.localeCompare(a.date))
-  }, [historyModal, records])
+  function toggleExpand(id: string) {
+    setExpandedId(prev => (prev === id ? null : id))
+  }
 
   // 記録保存
   function handleSaveRecord(data: { date: string; score: number; plannedDate: string; memo: string }) {
@@ -621,14 +599,6 @@ export default function AfternoonProblems() {
       removePlan(problemId)
     }
     setPlans(loadPlans())
-  }
-
-  // 履歴モーダルから記録モーダルへ切り替え
-  function handleRecordFromHistory() {
-    if (!historyModal) return
-    const problem = historyModal
-    setHistoryModal(null)
-    setRecordModal(problem)
   }
 
   const toggleKeyword = (kw: string) => {
@@ -756,14 +726,21 @@ export default function AfternoonProblems() {
           </div>
         </section>
 
+        {/* 操作説明 */}
+        <p className="text-[11px] text-slate-500 leading-relaxed bg-indigo-50/50 border border-indigo-100 rounded-lg px-3 py-2">
+          問題をタップすると、記録・解答欄・公式解答・PDF を確認できます。
+        </p>
+
         {/* 午後Ⅰ テーブル */}
         <ProblemTable
           section="G1"
           rows={g1Filtered}
           studiedCount={practiceFilter === 'all' ? g1StudiedCount : g1Filtered.length}
           sortMode={sortMode}
+          expandedId={expandedId}
+          onToggleExpand={toggleExpand}
           onRecord={setRecordModal}
-          onHistory={setHistoryModal}
+          onDeleteRecord={handleDeleteRecord}
           onPlanChange={handlePlanChange}
         />
 
@@ -773,8 +750,10 @@ export default function AfternoonProblems() {
           rows={g2Filtered}
           studiedCount={practiceFilter === 'all' ? g2StudiedCount : g2Filtered.length}
           sortMode={sortMode}
+          expandedId={expandedId}
+          onToggleExpand={toggleExpand}
           onRecord={setRecordModal}
-          onHistory={setHistoryModal}
+          onDeleteRecord={handleDeleteRecord}
           onPlanChange={handlePlanChange}
         />
 
@@ -786,17 +765,6 @@ export default function AfternoonProblems() {
           problem={recordModal}
           onSave={handleSaveRecord}
           onClose={() => setRecordModal(null)}
-        />
-      )}
-
-      {/* History modal */}
-      {historyModal && (
-        <HistoryModal
-          problem={historyModal}
-          records={historyRecords}
-          onDelete={handleDeleteRecord}
-          onAddRecord={handleRecordFromHistory}
-          onClose={() => setHistoryModal(null)}
         />
       )}
     </div>

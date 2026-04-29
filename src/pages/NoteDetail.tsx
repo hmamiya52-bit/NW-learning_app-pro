@@ -5058,11 +5058,7 @@ export default function NoteDetail() {
                   )}
                   {(['green', 'yellow', 'red'] as UnderstandingLevel[]).map((level) => {
                     const isActive = understanding[`${categoryId}:${i}`] === level
-                    const colorMap = {
-                      green: 'bg-emerald-400',
-                      yellow: 'bg-amber-400',
-                      red: 'bg-red-400',
-                    }
+                    const fillColor = { green: '#10b981', yellow: '#f59e0b', red: '#ef4444' }[level]
                     const labelMap = {
                       green: '理解できた',
                       yellow: 'なんとなく',
@@ -5075,12 +5071,26 @@ export default function NoteDetail() {
                         title={labelMap[level]}
                         aria-label={labelMap[level]}
                         aria-pressed={isActive}
-                        className={`w-5 h-5 rounded-full transition-all ${colorMap[level]} ${
-                          isActive
-                            ? 'opacity-100 ring-2 ring-white/70 ring-offset-1 ring-offset-[#1a3a5c]'
-                            : 'opacity-30 hover:opacity-60'
-                        }`}
-                      />
+                        className="transition-transform hover:scale-110 active:scale-95"
+                      >
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <rect
+                            x="1.5" y="1.5" width="17" height="17" rx="3.5"
+                            fill={isActive ? fillColor : 'transparent'}
+                            stroke={isActive ? fillColor : 'rgba(255,255,255,0.35)'}
+                            strokeWidth="1.75"
+                          />
+                          {isActive && (
+                            <path
+                              d="M5.5 10.5 L8.5 13.5 L14.5 7"
+                              stroke="white"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          )}
+                        </svg>
+                      </button>
                     )
                   })}
                 </div>

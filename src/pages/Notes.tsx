@@ -199,7 +199,7 @@ export default function Notes() {
                     <p className="text-sm font-bold text-slate-800 leading-snug group-hover:text-blue-700 transition-colors truncate">
                       {cat.name}
                     </p>
-                    <p className="text-xs text-slate-400 mt-0.5 leading-snug line-clamp-1">
+                    <p className="text-xs text-slate-400 mt-0.5 leading-snug line-clamp-2">
                       {cat.description}
                     </p>
                     <UnderstandingBadges categoryId={cat.id} />

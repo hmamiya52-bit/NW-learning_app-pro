@@ -5,6 +5,7 @@ import type { BadgeTier } from '../data/badges'
 // ----------------------------------------------------------------
 
 export interface QuizSessionPayload {
+  sessionId: string
   mode: 'topic' | 'weakness' | 'random' | 'important'
   categoryId: string | null
   categoryName: string | null
@@ -70,6 +71,34 @@ export function addActivityEvent(event: Omit<ActivityEvent, 'id'>): void {
   const events = loadActivityLog()
   const newEvent = { ...event, id: crypto.randomUUID() } as ActivityEvent
   events.push(newEvent)
+  const pruned = events.length > MAX_EVENTS ? events.slice(events.length - MAX_EVENTS) : events
+  localStorage.setItem(KEY, JSON.stringify(pruned))
+}
+
+/** quiz-session イベントを sessionId で upsert する（1問ごとに呼び出す） */
+export function upsertQuizSessionEvent(
+  sessionId: string,
+  data: Omit<QuizSessionPayload, 'sessionId'> & { xp: number },
+): void {
+  const events = loadActivityLog()
+  const idx = events.findIndex(
+    e => e.type === 'quiz-session' && (e as ActivityEvent & { type: 'quiz-session' }).payload.sessionId === sessionId,
+  )
+  const payload: QuizSessionPayload = { sessionId, ...data }
+  if (idx >= 0) {
+    const existing = events[idx] as ActivityEvent & { type: 'quiz-session' }
+    events[idx] = { ...existing, xp: data.xp, payload }
+  } else {
+    const now = new Date()
+    events.push({
+      id: crypto.randomUUID(),
+      type: 'quiz-session',
+      date: now.toISOString().slice(0, 10),
+      createdAt: now.toISOString(),
+      xp: data.xp,
+      payload,
+    } as ActivityEvent)
+  }
   const pruned = events.length > MAX_EVENTS ? events.slice(events.length - MAX_EVENTS) : events
   localStorage.setItem(KEY, JSON.stringify(pruned))
 }

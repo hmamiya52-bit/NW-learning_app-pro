@@ -13,7 +13,7 @@ import QuizSummary from './QuizSummary'
 import { recordGamificationAnswer } from '../lib/gamification'
 import BadgeUnlockToast from '../components/gamification/BadgeUnlockToast'
 import type { BadgeDefinition } from '../data/badges'
-import { addActivityEvent } from '../lib/activityLog'
+import { addActivityEvent, upsertQuizSessionEvent } from '../lib/activityLog'
 
 type Phase = 'mode-select' | 'question' | 'result-mc' | 'result-wr' | 'summary'
 type AnswerMode = 'multiple-choice' | 'written'
@@ -229,9 +229,20 @@ export default function Quiz() {
       const newLogs = [...logs, newLog]
       setLogs(newLogs)
 
+      // 1問ごとに upsert（途中離脱でも記録が残る）
+      const correctCount = newLogs.filter((l) => l.isCorrect).length
+      upsertQuizSessionEvent(sessionId.current, {
+        mode: (mode as 'topic' | 'weakness' | 'random' | 'important') ?? 'random',
+        categoryId,
+        categoryName: categoryId ? (categories.find(c => c.id === categoryId)?.name ?? null) : null,
+        questionCount: newLogs.length,
+        correctCount,
+        answerMode,
+        xp: sessionXpRef.current,
+      })
+
       if (isLast) {
         // セッション完了（開始時刻は sessionStartedAt.current を再利用）
-        const correctCount = newLogs.filter((l) => l.isCorrect).length
         saveStudySession({
           id: sessionId.current,
           startedAt: sessionStartedAt.current,
@@ -240,21 +251,6 @@ export default function Quiz() {
           categoryId: categoryId,
           questionCount: questionList.length,
           correctCount,
-        })
-        const now = new Date()
-        addActivityEvent({
-          type: 'quiz-session',
-          date: now.toISOString().slice(0, 10),
-          createdAt: now.toISOString(),
-          xp: sessionXpRef.current,
-          payload: {
-            mode: (mode as 'topic' | 'weakness' | 'random' | 'important') ?? 'random',
-            categoryId,
-            categoryName: categoryId ? (categories.find(c => c.id === categoryId)?.name ?? null) : null,
-            questionCount: questionList.length,
-            correctCount,
-            answerMode,
-          },
         })
         sessionXpRef.current = 0
         setPhase('summary')

@@ -106,18 +106,17 @@ export default function CategoryCard({
           <MasteryBar label="4択" mastery={mcMastery} />
           <MasteryBar label="記述" mastery={wrMastery} />
           {/* 数字テキスト行 */}
-          <div className="flex items-center gap-1.5 text-[10px] text-slate-400 leading-none pt-0.5">
-            <span className="font-medium">{questionCount}問</span>
-            {mcRate !== null && (
+          <div className="flex items-center gap-1.5 text-[10px] text-slate-400 leading-none pt-0.5 flex-wrap">
+            <span>全<span className="font-medium">{questionCount}</span>問</span>
+            {(mcRate !== null || wrRate !== null) && (
               <>
                 <span className="text-slate-200">|</span>
-                <span>4択 <span className="font-medium text-slate-500">{mcRate}%</span></span>
-              </>
-            )}
-            {wrRate !== null && (
-              <>
-                <span className="text-slate-200">|</span>
-                <span>記述 <span className="font-medium text-slate-500">{wrRate}%</span></span>
+                <span>
+                  正答率：
+                  {mcRate !== null && <>4択 <span className="font-medium text-slate-500">{mcRate}%</span></>}
+                  {mcRate !== null && wrRate !== null && <span className="mx-0.5">　</span>}
+                  {wrRate !== null && <>記述 <span className="font-medium text-slate-500">{wrRate}%</span></>}
+                </span>
               </>
             )}
           </div>

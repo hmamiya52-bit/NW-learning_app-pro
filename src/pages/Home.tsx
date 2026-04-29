@@ -252,6 +252,23 @@ export default function Home() {
     })
   }, [allProgress])
 
+  // 全カテゴリの mastery を集計（凡例バー用）
+  const globalMastery = useMemo(() => {
+    const mc = { consecutive: 0, correct: 0, incorrect: 0, total: 0 }
+    const wr = { consecutive: 0, correct: 0, incorrect: 0, total: 0 }
+    for (const s of categoryStats) {
+      mc.consecutive += s.mcMastery.consecutive
+      mc.correct += s.mcMastery.correct
+      mc.incorrect += s.mcMastery.incorrect
+      mc.total += s.mcMastery.total
+      wr.consecutive += s.wrMastery.consecutive
+      wr.correct += s.wrMastery.correct
+      wr.incorrect += s.wrMastery.incorrect
+      wr.total += s.wrMastery.total
+    }
+    return { mc, wr }
+  }, [categoryStats])
+
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#f8fafc' }}>
       <div className="max-w-4xl mx-auto px-4 pb-16 space-y-4 pt-4">
@@ -349,81 +366,56 @@ export default function Home() {
                 <span className="text-[11px] text-slate-400 ml-1">重要問題</span>
               </div>
             </div>
-            {/* Progress bars: 達成率 + 4択／記述 正答率 */}
+            {/* Progress bars: 4択 + 記述 の達成度（4セグメント） */}
             <div className="space-y-2">
-              {/* 達成率：1問でも正解した問題 / 全問題 */}
-              {(() => {
-                const achievementRate =
-                  totalQuestions > 0
-                    ? Math.round((achievedCount / totalQuestions) * 100)
-                    : 0
+              {(['mc', 'wr'] as const).map((mode) => {
+                const m = globalMastery[mode]
+                const unattempted = Math.max(0, m.total - m.consecutive - m.correct - m.incorrect)
+                const pct = (n: number) => m.total > 0 ? `${(n / m.total) * 100}%` : '0%'
                 return (
-                  <div>
-                    <div className="flex justify-between text-[11px] mb-1">
-                      <span className="text-slate-500 font-bold">達成率</span>
-                      <span className="tabular-nums" style={{ color: '#1a3a5c' }}>
-                        {achievementRate}%
-                      </span>
+                  <div key={mode}>
+                    <div className="text-[11px] mb-1 font-bold text-slate-500">
+                      {mode === 'mc' ? '4択 達成度' : '記述 達成度'}
                     </div>
                     <div
-                      className="h-1.5 bg-slate-100 rounded-full overflow-hidden"
+                      className="h-2 bg-slate-100 rounded-full overflow-hidden flex"
                       role="progressbar"
-                      aria-valuenow={achievementRate}
+                      aria-label={`${mode === 'mc' ? '4択' : '記述'} 達成度`}
                       aria-valuemin={0}
-                      aria-valuemax={100}
-                      aria-label={`達成率 ${achievementRate}%`}
+                      aria-valuemax={m.total}
+                      aria-valuenow={m.consecutive + m.correct}
                     >
-                      <div
-                        className="h-full rounded-full transition-all duration-500"
-                        style={{ width: `${achievementRate}%`, backgroundColor: '#10b981' }}
-                      />
+                      {m.consecutive > 0 && <div className="h-full bg-blue-500 flex-shrink-0 transition-all duration-500" style={{ width: pct(m.consecutive) }} />}
+                      {m.correct > 0 && <div className="h-full bg-emerald-500 flex-shrink-0 transition-all duration-500" style={{ width: pct(m.correct) }} />}
+                      {m.incorrect > 0 && <div className="h-full bg-orange-400 flex-shrink-0 transition-all duration-500" style={{ width: pct(m.incorrect) }} />}
+                      {unattempted > 0 && <div className="h-full bg-slate-200 flex-shrink-0" style={{ width: pct(unattempted) }} />}
                     </div>
                   </div>
                 )
-              })()}
-              {/* 4択 */}
-              <div>
-                <div className="flex justify-between text-[11px] mb-1">
-                  <span className="text-slate-500 font-bold">4択 正答率</span>
-                  <span className="tabular-nums" style={{ color: '#1a3a5c' }}>
-                    {globalMcRate !== null ? `${globalMcRate}%` : '—'}
+              })}
+              {/* 凡例 */}
+              <div className="flex items-center flex-wrap gap-x-3 gap-y-1 pt-0.5">
+                {[
+                  { color: 'bg-blue-500', label: '連続正解' },
+                  { color: 'bg-emerald-500', label: '１回正解' },
+                  { color: 'bg-orange-400', label: '不正解' },
+                  { color: 'bg-slate-200', label: '未着手' },
+                ].map(({ color, label }) => (
+                  <span key={label} className="flex items-center gap-1 text-[10px] text-slate-400">
+                    <span className={`w-2.5 h-2.5 rounded-sm flex-shrink-0 ${color}`} />
+                    {label}
                   </span>
-                </div>
-                <div
-                  className="h-1.5 bg-slate-100 rounded-full overflow-hidden"
-                  role="progressbar"
-                  aria-valuenow={globalMcRate ?? 0}
-                  aria-valuemin={0}
-                  aria-valuemax={100}
-                  aria-label={`4択正答率 ${globalMcRate ?? 0}%`}
-                >
-                  <div
-                    className="h-full rounded-full transition-all duration-500"
-                    style={{ width: `${globalMcRate ?? 0}%`, backgroundColor: '#0066cc' }}
-                  />
-                </div>
+                ))}
               </div>
-              {/* 記述 */}
-              <div>
-                <div className="flex justify-between text-[11px] mb-1">
-                  <span className="text-slate-500 font-bold">記述 正答率</span>
-                  <span className="tabular-nums" style={{ color: '#1a3a5c' }}>
-                    {globalWrRate !== null ? `${globalWrRate}%` : '—'}
-                  </span>
-                </div>
-                <div
-                  className="h-1.5 bg-slate-100 rounded-full overflow-hidden"
-                  role="progressbar"
-                  aria-valuenow={globalWrRate ?? 0}
-                  aria-valuemin={0}
-                  aria-valuemax={100}
-                  aria-label={`記述正答率 ${globalWrRate ?? 0}%`}
-                >
-                  <div
-                    className="h-full rounded-full transition-all duration-500"
-                    style={{ width: `${globalWrRate ?? 0}%`, backgroundColor: '#d97706' }}
-                  />
-                </div>
+              {/* ラベル付き数字 */}
+              <div className="text-[11px] text-slate-400 pt-0.5">
+                問題数：{totalQuestions}問
+                {globalMcRate !== null && (
+                  <> ｜ ４択正答率 <span className="font-medium text-slate-500">{globalMcRate}%</span></>
+                )}
+                {globalWrRate !== null && (
+                  <> ｜ 記述正答率 <span className="font-medium text-slate-500">{globalWrRate}%</span></>
+                )}
               </div>
             </div>
           </div>

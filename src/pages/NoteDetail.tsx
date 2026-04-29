@@ -5012,6 +5012,14 @@ export default function NoteDetail() {
             ) : (
               <span>画面下の「赤字を隠す」で暗記テストができます</span>
             )}
+            <span className="mx-1 text-slate-300">|</span>
+            <span className="flex items-center gap-1">
+              <svg width="13" height="13" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <rect x="1.5" y="1.5" width="17" height="17" rx="3.5" fill="#10b981" stroke="#10b981" strokeWidth="1.75"/>
+                <path d="M5.5 10.5 L8.5 13.5 L14.5 7" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              <span>チェックボックスで理解度を記録できます</span>
+            </span>
           </div>
         </div>
 
@@ -5056,43 +5064,46 @@ export default function NoteDetail() {
                       <div className="w-px h-4 bg-blue-700 mx-0.5" />
                     </>
                   )}
-                  {(['green', 'yellow', 'red'] as UnderstandingLevel[]).map((level) => {
-                    const isActive = understanding[`${categoryId}:${i}`] === level
-                    const fillColor = { green: '#10b981', yellow: '#f59e0b', red: '#ef4444' }[level]
-                    const labelMap = {
-                      green: '理解できた',
-                      yellow: 'なんとなく',
-                      red: 'まだ難しい',
-                    }
-                    return (
-                      <button
-                        key={level}
-                        onClick={(e) => { e.stopPropagation(); handleUnderstanding(i, level) }}
-                        title={labelMap[level]}
-                        aria-label={labelMap[level]}
-                        aria-pressed={isActive}
-                        className="transition-transform hover:scale-110 active:scale-95"
-                      >
-                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <rect
-                            x="1.5" y="1.5" width="17" height="17" rx="3.5"
-                            fill={isActive ? fillColor : 'transparent'}
-                            stroke={isActive ? fillColor : 'rgba(255,255,255,0.35)'}
-                            strokeWidth="1.75"
-                          />
-                          {isActive && (
+                  {(section.richItems || section.protocols || section.richProtocolTables || section.headerDiagrams) && (
+                    (['green', 'yellow', 'red'] as UnderstandingLevel[]).map((level) => {
+                      const isActive = understanding[`${categoryId}:${i}`] === level
+                      const fillColor = { green: '#10b981', yellow: '#f59e0b', red: '#ef4444' }[level]
+                      const labelMap = {
+                        green: '理解できた',
+                        yellow: 'なんとなく',
+                        red: 'まだ難しい',
+                      }
+                      return (
+                        <button
+                          key={level}
+                          onClick={(e) => { e.stopPropagation(); handleUnderstanding(i, level) }}
+                          title={labelMap[level]}
+                          aria-label={labelMap[level]}
+                          aria-pressed={isActive}
+                          className="transition-transform hover:scale-110 active:scale-95"
+                        >
+                          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect
+                              x="1.5" y="1.5" width="17" height="17" rx="3.5"
+                              fill={fillColor}
+                              fillOpacity={isActive ? 1 : 0.35}
+                              stroke={fillColor}
+                              strokeOpacity={isActive ? 1 : 0.5}
+                              strokeWidth="1.75"
+                            />
                             <path
                               d="M5.5 10.5 L8.5 13.5 L14.5 7"
                               stroke="white"
+                              strokeOpacity={isActive ? 1 : 0.6}
                               strokeWidth="2"
                               strokeLinecap="round"
                               strokeLinejoin="round"
                             />
-                          )}
-                        </svg>
-                      </button>
-                    )
-                  })}
+                          </svg>
+                        </button>
+                      )
+                    })
+                  )}
                 </div>
               </div>
               {section.protocols ? (

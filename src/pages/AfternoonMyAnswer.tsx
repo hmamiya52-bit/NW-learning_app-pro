@@ -285,6 +285,7 @@ export default function AfternoonMyAnswer() {
   const [showFinishConfirm, setShowFinishConfirm] = useState(false)
   const [scorings, setScorings] = useState<Scorings>({})
   const [recorded, setRecorded] = useState(false)
+  const [savedRecordId, setSavedRecordId] = useState<string | null>(null)
   const timer = useTimer()
 
   useEffect(() => {
@@ -351,6 +352,7 @@ export default function AfternoonMyAnswer() {
     setScorings({})
     setCheckMode(false)
     setRecorded(true)
+    setSavedRecordId(record.id)
   }
 
   return (
@@ -381,18 +383,14 @@ export default function AfternoonMyAnswer() {
         </section>
 
         {/* PDFリンク */}
-        <div className="flex justify-end gap-4">
-          {problem?.questionPdfUrl && (
+        {problem?.questionPdfUrl && (
+          <div className="flex justify-end">
             <a href={problem.questionPdfUrl} target="_blank" rel="noopener noreferrer"
                className="text-xs text-slate-500 hover:text-indigo-600 hover:underline transition-colors">
               問題文 PDF を開く →
             </a>
-          )}
-          <a href={answerSet.pdfUrl} target="_blank" rel="noopener noreferrer"
-             className="text-xs text-indigo-500 hover:text-indigo-700 hover:underline transition-colors">
-            公式 PDF を開く →
-          </a>
-        </div>
+          </div>
+        )}
 
         {/* Timer + progress */}
         <div className="bg-white rounded-xl border border-slate-200 px-4 py-3 flex items-center gap-4">
@@ -495,6 +493,24 @@ export default function AfternoonMyAnswer() {
             >
               {recorded ? '記録済み ✓' : 'トラッカーに記録'}
             </button>
+          </div>
+        )}
+
+        {/* 保存完了カード */}
+        {savedRecordId && (
+          <div className="bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-3 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <svg className="w-4 h-4 text-emerald-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+              <p className="text-[12px] font-bold text-emerald-800">解答を保存しました。</p>
+            </div>
+            <Link
+              to={`/afternoon/answers/${id}/myAnswer?recordId=${savedRecordId}`}
+              className="text-[11px] font-bold text-emerald-700 border border-emerald-300 rounded-md px-2.5 py-1 bg-white hover:bg-emerald-50 transition-colors flex-shrink-0"
+            >
+              保存した解答を確認する →
+            </Link>
           </div>
         )}
 

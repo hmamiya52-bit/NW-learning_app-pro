@@ -184,11 +184,11 @@ export const securityQuestions: Question[] = [
   {
     id: 'q-312',
     topicId: 'security',
-    questionText: 'Kerberos認証においてユーザが最初に取得する、TGSからサービスチケットを入手するための証明書を{{blank}}という。',
+    questionText: 'Kerberos認証においてユーザが最初に取得する、TGSからサービスチケットを入手するためのチケットを{{blank}}という。',
     correctAnswer: 'TGT（Ticket Granting Ticket）',
     choices: ['TGT（Ticket Granting Ticket）', 'セッションキー', 'サービスチケット', 'KDCチケット'],
     isImportant: true,
-    explanation: 'Kerberosの認証フロー：①ユーザがAS（Authentication Server）に認証→TGTを取得 ②TGTを使いTGS（Ticket Granting Server）にサービスチケットを要求 ③サービスチケットをアプリサーバに提示してアクセス。AS+TGSをまとめてKDC（Key Distribution Center）という。',
+    explanation: 'TGT・ST は X.509 のような「証明書」ではなく、KDC が暗号化して発行する「チケット」（認可された ID の通行手形）である。Kerberosの認証フロー：①ユーザが AS（Authentication Server）に認証→TGT を取得 ②TGT を提示して TGS（Ticket Granting Server）にサービスチケット（ST）を要求 ③ST をアプリサーバに提示してアクセス。AS+TGS をまとめて KDC（Key Distribution Center）という。',
     difficulty: 2,
   },
   {

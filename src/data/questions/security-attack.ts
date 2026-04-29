@@ -89,7 +89,7 @@ export const securityAttackQuestions: Question[] = [
     correctAnswer: 'Webサイト改ざん（水飲み場攻撃）',
     choices: ['Webサイト改ざん（水飲み場攻撃）', 'ドライブバイダウンロード', 'フィッシング', 'ビジネスメール詐欺（BEC）'],
     isImportant: true,
-    explanation: '水飲み場攻撃（Watering Hole Attack）は標的組織がよく訪問するWebサイトを改ざんしてマルウェアを仕込む。標的型攻撃の一手法で、セキュリティ意識の高いユーザも被害を受けやすい。正規サイトからのため気づきにくい。',
+    explanation: '水飲み場攻撃（Watering Hole Attack）は標的組織がよく訪問するWebサイトを改ざんしてマルウェアを仕込み、訪問者を悪意あるページへ誘導する標的型攻撃の一手法。「動物が水を飲みに集まる場所で待ち伏せする」イメージで命名されている。混同されやすい用語：ドライブバイダウンロード（Webアクセスだけで気付かれずマルウェア感染）、フィッシング（偽メール／偽サイトで認証情報詐取）、BEC（経営者を装ったメールで送金指示）。水飲み場攻撃は「標的を絞った正規サイト改ざん」という点が他と異なる。',
     difficulty: 2,
   },
   {
@@ -119,7 +119,7 @@ export const securityAttackQuestions: Question[] = [
     correctAnswer: 'セッションハイジャック（MitB：Man-in-the-Browser）',
     choices: ['セッションハイジャック（MitB：Man-in-the-Browser）', 'XSS', 'CSRF', 'クリックジャッキング'],
     isImportant: false,
-    explanation: 'MitB（Man-in-the-Browser）はブラウザに侵入したマルウェアがWebページのDOMをリアルタイムで改ざんし、フォームデータを盗取する。HTTPSで暗号化されていてもブラウザ内で復号後のデータを読める。多要素認証でも突破されるケースがある。',
+    explanation: 'MitB（Man-in-the-Browser）はブラウザに侵入したマルウェアが Web ページの DOM をリアルタイムで改ざんし、フォームデータを盗取する。HTTPS で暗号化されていてもブラウザ内で復号後のデータを読める。多要素認証でも突破されるケースがある。混同されやすい用語：MitM（Man-in-the-Middle）は通信経路上で割り込む中間者攻撃、XSS は他者がスクリプトを「埋め込む」攻撃、CSRF は認証済みセッションを別サイトから「悪用」する攻撃、クリックジャッキングは透明レイヤで「クリック先を誤認させる」攻撃。MitB は「ブラウザ内部に常駐するマルウェアによる改ざん」が特徴。',
     difficulty: 3,
   },
   // ── 復習ノートからの追補（DoS・中間者攻撃・ARP系） ─────────────

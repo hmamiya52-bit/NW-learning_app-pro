@@ -111,7 +111,7 @@ export const ipv6Questions: Question[] = [
     correctAnswer: 'DHCPv6',
     choices: ['DHCPv6', 'SLAAC', 'NDP', 'RA'],
     isImportant: true,
-    explanation: 'DHCPv6はIPv6向けのDHCPプロトコル（RFC 8415）。SLAACと異なりDHCPサーバが管理するため、アドレス割り当ての追跡や細かな制御が可能。RAのM（Managed）フラグが1の場合はDHCPv6でアドレス取得、O（Other）フラグが1の場合はDHCPv6でDNS等の情報のみ取得する。',
+    explanation: 'DHCPv6はIPv6向けのDHCPプロトコル（RFC 8415）。SLAACと異なりDHCPサーバが管理するため、アドレス割り当ての追跡や細かな制御が可能。RAのM（Managed）フラグが1の場合はDHCPv6でアドレス取得、O（Other）フラグが1の場合はDHCPv6でDNS等の情報のみ取得する。注意：IPv6ではデフォルトゲートウェイ（既定ルータ）はDHCPv6では通知されず、ルータ自身が送信するRA（Router Advertisement）で通知される。これはIPv4のDHCPがゲートウェイも一緒に配るのと異なるポイント。',
     difficulty: 2,
   },
   // ── 復習ノートからの追補（IPv6基礎） ─────────────────────────

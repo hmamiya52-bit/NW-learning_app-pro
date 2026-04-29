@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { questions as allQuestions } from '../data/questions'
 import { categories } from '../data/categories'
-import { addAnswerRecord, getAllProgress, saveStudySession, updateProgress } from '../lib/storage'
+import { addAnswerRecord, getAllProgress, saveStudySession, updateProgress, updateQuestionMastery } from '../lib/storage'
 import type { Question, StudySession } from '../types'
 import ModeSelect from '../components/quiz/ModeSelect'
 import { NOTE_CATEGORY_IDS } from './NoteDetail'
@@ -146,6 +146,7 @@ export default function Quiz() {
         answeredAt: new Date().toISOString(),
       })
       updateProgress(currentQuestion.topicId, isCorrect, 'multiple-choice')
+      updateQuestionMastery(currentQuestion.id, 'multiple-choice', isCorrect)
       const gr = recordGamificationAnswer({
         questionId: currentQuestion.id,
         topicId: currentQuestion.topicId,
@@ -177,6 +178,7 @@ export default function Quiz() {
           answeredAt: new Date().toISOString(),
         })
         updateProgress(currentQuestion.topicId, true, 'written')
+        updateQuestionMastery(currentQuestion.id, 'written', true)
         const gr = recordGamificationAnswer({
           questionId: currentQuestion.id,
           topicId: currentQuestion.topicId,
@@ -243,6 +245,7 @@ export default function Quiz() {
         answeredAt: new Date().toISOString(),
       })
       updateProgress(currentQuestion.topicId, isCorrect, 'written')
+      updateQuestionMastery(currentQuestion.id, 'written', isCorrect)
       const gr = recordGamificationAnswer({
         questionId: currentQuestion.id,
         topicId: currentQuestion.topicId,

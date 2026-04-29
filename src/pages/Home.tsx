@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { categories } from '../data/categories'
 import { questions } from '../data/questions'
-import { getAllProgress, getAnswerRecords, getStudySessions } from '../lib/storage'
+import { getAllProgress, getAnswerRecords, getStudySessions, getQuestionMastery } from '../lib/storage'
 import CategoryCard from '../components/CategoryCard'
 import type { StudySession } from '../types'
 import LevelWidget from '../components/gamification/LevelWidget'
@@ -211,6 +211,7 @@ export default function Home() {
   }, [allProgress])
 
   const categoryStats = useMemo(() => {
+    const masteryMap = getQuestionMastery()
     return categories.map((cat) => {
       const catQuestions = questions.filter((q) => q.topicId === cat.id)
       const catProgress = allProgress.filter((p) => p.topicId === cat.id)
@@ -220,12 +221,20 @@ export default function Home() {
       const wrCorrect = catProgress.reduce((s, p) => s + p.wrCorrect, 0)
       const mcRate = mcTotal > 0 ? Math.round((mcCorrect / mcTotal) * 100) : null
       const wrRate = wrTotal > 0 ? Math.round((wrCorrect / wrTotal) * 100) : null
-      // 達成数 = カテゴリ内の問題のうち1回でも正解した問題数
-      const achieved = catQuestions.filter((q) => achievedQuestionIds.has(q.id)).length
-      const achievementRate =
-        catQuestions.length > 0
-          ? Math.round((achieved / catQuestions.length) * 100)
-          : null
+
+      const mcMastery = { consecutive: 0, correct: 0, incorrect: 0 }
+      const wrMastery = { consecutive: 0, correct: 0, incorrect: 0 }
+      for (const q of catQuestions) {
+        const ms = masteryMap[`${q.id}:multiple-choice`]
+        if (ms === 'consecutive') mcMastery.consecutive++
+        else if (ms === 'correct') mcMastery.correct++
+        else if (ms === 'incorrect') mcMastery.incorrect++
+        const ws = masteryMap[`${q.id}:written`]
+        if (ws === 'consecutive') wrMastery.consecutive++
+        else if (ws === 'correct') wrMastery.correct++
+        else if (ws === 'incorrect') wrMastery.incorrect++
+      }
+
       const lastStudied =
         catProgress
           .filter((p) => p.lastStudiedAt)
@@ -236,12 +245,12 @@ export default function Home() {
         questionCount: catQuestions.length,
         mcRate,
         wrRate,
-        achieved,
-        achievementRate,
+        mcMastery: { ...mcMastery, total: catQuestions.length },
+        wrMastery: { ...wrMastery, total: catQuestions.length },
         lastStudiedAt: lastStudied,
       }
     })
-  }, [allProgress, achievedQuestionIds])
+  }, [allProgress])
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#f8fafc' }}>
@@ -429,15 +438,15 @@ export default function Home() {
             カテゴリ一覧（{categories.length}分野）
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-            {categoryStats.map(({ category, questionCount, mcRate, wrRate, achieved, achievementRate, lastStudiedAt }) => (
+            {categoryStats.map(({ category, questionCount, mcRate, wrRate, mcMastery, wrMastery, lastStudiedAt }) => (
               <CategoryCard
                 key={category.id}
                 category={category}
                 questionCount={questionCount}
                 mcRate={mcRate}
                 wrRate={wrRate}
-                achieved={achieved}
-                achievementRate={achievementRate}
+                mcMastery={mcMastery}
+                wrMastery={wrMastery}
                 lastStudiedAt={lastStudiedAt}
               />
             ))}

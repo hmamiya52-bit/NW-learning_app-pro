@@ -1,5 +1,8 @@
 import type { AnswerRecord, AnswerMode, UserProgress, StudySession, Bookmark } from '../types'
 
+export type MasteryState = 'consecutive' | 'correct' | 'incorrect'
+type MasteryMap = Record<string, MasteryState>
+
 // KEY を v2 にすることで旧スキーマのデータを自動的に無効化（リセット）
 const KEYS = {
   ANSWER_RECORDS: 'nwsp:answer_records',
@@ -171,6 +174,39 @@ export function calcCorrectRateByMode(
 export function resetAllData(): void {
   Object.values(KEYS).forEach((k) => localStorage.removeItem(k))
   localStorage.removeItem('nwsp:note_understanding')
+  localStorage.removeItem('nwsp:question_mastery')
+}
+
+// --- QuestionMastery ---
+const QUESTION_MASTERY_KEY = 'nwsp:question_mastery'
+
+export function getQuestionMastery(): MasteryMap {
+  return load(QUESTION_MASTERY_KEY, {})
+}
+
+export function updateQuestionMastery(
+  questionId: string,
+  mode: AnswerMode,
+  isCorrect: boolean,
+): void {
+  const map = getQuestionMastery()
+  const key = `${questionId}:${mode}`
+  const current = map[key]
+
+  let next: MasteryState
+  if (!current) {
+    next = isCorrect ? 'correct' : 'incorrect'
+  } else if (current === 'correct') {
+    next = isCorrect ? 'consecutive' : 'incorrect'
+  } else if (current === 'consecutive') {
+    next = isCorrect ? 'consecutive' : 'incorrect'
+  } else {
+    // incorrect
+    next = isCorrect ? 'correct' : 'incorrect'
+  }
+
+  map[key] = next
+  save(QUESTION_MASTERY_KEY, map)
 }
 
 // --- NoteUnderstanding ---

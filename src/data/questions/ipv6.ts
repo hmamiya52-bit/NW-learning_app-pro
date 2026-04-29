@@ -71,6 +71,7 @@ export const ipv6Questions: Question[] = [
     isImportant: true,
     explanation: 'IPv6アドレス割り当ての標準的な階層：ISPが/32を受け取り、組織（企業）に/48を割り当て、組織内のサブネットは/64を使用する。/64はEUI-64インタフェースIDとの組み合わせや、SLAACに必要なプレフィックス長。',
     difficulty: 2,
+    excludeFromWritten: true,
   },
   // ── R7 午後II-1 IPv6移行・運用 ──────────────────────────────────
   {

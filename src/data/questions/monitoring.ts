@@ -92,6 +92,7 @@ export const monitoringQuestions: Question[] = [
     isImportant: false,
     explanation: 'NTPはネットワーク機器・サーバの時刻をUTCに同期する。原子時計などの基準時計（Stratum 0）から段階的にStratum 1→2…と同期が伝播する。ログのタイムスタンプ整合性やKerberos認証（時刻差5分以内）のために重要。',
     difficulty: 1,
+    excludeFromWritten: true,
   },
   {
     id: 'q-146',

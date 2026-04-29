@@ -84,15 +84,22 @@ export default function Quiz() {
   // 解答モード選択画面で「重要問題のみを出題」が ON か
   const [onlyImportant, setOnlyImportant] = useState(false)
 
+  const [phase, setPhase] = useState<Phase>('mode-select')
+  const [answerMode, setAnswerMode] = useState<AnswerMode>('multiple-choice')
+
   // 問題リスト（retryListがあればそちらを優先）
   const baseList = useMemo(
     () => filterQuestions(mode, categoryId, onlyImportant),
     [mode, categoryId, onlyImportant]
   )
-  const questionList = retryList ?? baseList
-
-  const [phase, setPhase] = useState<Phase>('mode-select')
-  const [answerMode, setAnswerMode] = useState<AnswerMode>('multiple-choice')
+  // 答えモードに応じて記述非対応問題を除外
+  const questionList = useMemo(() => {
+    const src = retryList ?? baseList
+    if (answerMode === 'written') {
+      return src.filter((q) => !q.excludeFromWritten)
+    }
+    return src
+  }, [retryList, baseList, answerMode])
   const [currentIndex, setCurrentIndex] = useState(0)
   const [logs, setLogs] = useState<AnswerLog[]>([])
   const [lastSelected, setLastSelected] = useState('')

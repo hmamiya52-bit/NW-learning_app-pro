@@ -30,6 +30,7 @@ export const vrrpQuestions: Question[] = [
     isImportant: true,
     explanation: 'VRRPプライオリティは1〜254の範囲で設定できる（0と255は予約済み）。デフォルト値は100。値が大きいほど優先度が高く、マスタールータに選出される。仮想IPを自身に設定したルータは自動的にプライオリティ255となる。',
     difficulty: 2,
+    excludeFromWritten: true,
   },
   {
     id: 'q-123',

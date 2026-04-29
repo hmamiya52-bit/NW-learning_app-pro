@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useParams, useLocation, Link } from 'react-router-dom'
 import { categories } from '../data/categories'
 import { getNoteUnderstanding, setNoteUnderstanding, type UnderstandingLevel } from '../lib/storage'
+import { addActivityEvent } from '../lib/activityLog'
 
 // NOTE_DB に存在するカテゴリIDの順序リスト（前後ナビ用 / Notes 一覧フィルタ用）
 export const NOTE_CATEGORY_IDS = [
@@ -4916,6 +4917,21 @@ export default function NoteDetail() {
     const next = understanding[key] === level ? null : level
     setNoteUnderstanding(categoryId!, sectionIndex, next)
     setUnderstanding(getNoteUnderstanding())
+    if (next !== null) {
+      const now = new Date()
+      addActivityEvent({
+        type: 'note-check',
+        date: now.toISOString().slice(0, 10),
+        createdAt: now.toISOString(),
+        xp: 0,
+        payload: {
+          noteId: categoryId!,
+          noteName: category?.name ?? categoryId!,
+          level: next,
+          sectionLabel: note?.sections[sectionIndex]?.heading ?? `セクション${sectionIndex + 1}`,
+        },
+      })
+    }
   }
 
   const [toastVisible, setToastVisible] = useState(false)

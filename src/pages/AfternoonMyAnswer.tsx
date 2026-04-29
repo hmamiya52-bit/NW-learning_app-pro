@@ -5,6 +5,7 @@ import type { OfficialAnswerSet } from '../data/officialAnswers'
 import { afternoonProblems } from '../data/afternoonProblems'
 import { processRows, BORDER_OUTER, BORDER_INNER, BORDER_HEAD } from '../lib/answerTable'
 import { addRecord, getMaxScore, loadRecords } from '../lib/tracker'
+import { addActivityEvent } from '../lib/activityLog'
 
 // ----------------------------------------------------------------
 // Types & storage
@@ -378,6 +379,21 @@ export default function AfternoonMyAnswer() {
     const record = addRecord({ problemId: id, date: today(), score: calculatedScore })
     // 解答を記録IDに紐づけて保存し、下書きをクリア
     saveSavedAnswers(record.id, myAnswers)
+    addActivityEvent({
+      type: 'afternoon-record',
+      date: today(),
+      createdAt: new Date().toISOString(),
+      xp: 0,
+      payload: {
+        problemId: id,
+        year: answerSet.year,
+        section: answerSet.section,
+        number: answerSet.number,
+        title: problem?.title ?? '',
+        score: calculatedScore,
+        recordId: record.id,
+      },
+    })
     if (id) saveMyAnswers(id, {})
     setMyAnswers({})
     setScorings({})

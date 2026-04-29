@@ -2,47 +2,15 @@ import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { categories } from '../data/categories'
 import { questions } from '../data/questions'
-import { getAllProgress, getAnswerRecords, getStudySessions, getQuestionMastery } from '../lib/storage'
+import { getAllProgress, getAnswerRecords, getQuestionMastery } from '../lib/storage'
 import CategoryCard from '../components/CategoryCard'
-import type { StudySession } from '../types'
 import LevelWidget from '../components/gamification/LevelWidget'
+import { getRecentDaySummaries } from '../lib/activityLog'
+import { StudyHistoryList } from '../components/history/StudyHistoryList'
 
 // ----------------------------------------------------------------
 // Helper functions
 // ----------------------------------------------------------------
-
-function formatSessionDate(iso: string): string {
-  if (!iso) return '—'
-  const d = new Date(iso)
-  const now = new Date()
-  const diffMs = now.getTime() - d.getTime()
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
-  if (diffDays === 0) return '今日'
-  if (diffDays === 1) return '昨日'
-  if (diffDays < 7) return `${diffDays}日前`
-  return `${d.getMonth() + 1}/${d.getDate()}`
-}
-
-function modeLabel(mode: StudySession['mode']): string {
-  switch (mode) {
-    case 'important': return '重要問題'
-    case 'weakness': return '弱点克服'
-    case 'random': return 'ランダム'
-    case 'topic': return 'カテゴリ別'
-    default: return mode
-  }
-}
-
-function sessionRate(s: StudySession): number | null {
-  if (s.questionCount === 0) return null
-  return Math.round((s.correctCount / s.questionCount) * 100)
-}
-
-function rateTextColor(rate: number): string {
-  if (rate >= 80) return 'text-emerald-600'
-  if (rate >= 50) return 'text-amber-600'
-  return 'text-red-500'
-}
 
 // ----------------------------------------------------------------
 // Menu card data
@@ -160,14 +128,7 @@ const MENU_CARDS: MenuCard[] = [
 export default function Home() {
   // --- Data ---
   const allProgress = useMemo(() => getAllProgress(), [])
-  const sessions = useMemo(
-    () =>
-      getStudySessions()
-        .filter((s) => s.endedAt)
-        .sort((a, b) => (b.startedAt > a.startedAt ? 1 : -1))
-        .slice(0, 5),
-    []
-  )
+  const daySummaries = useMemo(() => getRecentDaySummaries(10), [])
 
   const totalQuestions = questions.length
   const importantCount = questions.filter((q) => q.isImportant).length
@@ -445,46 +406,26 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ===== 最近の学習履歴 ===== */}
+        {/* ===== 学習履歴 ===== */}
         <section aria-labelledby="history-heading">
-          <h2
-            id="history-heading"
-            className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3"
-          >
-            最近の学習履歴
-          </h2>
-          {sessions.length === 0 ? (
-            <div className="bg-white border border-slate-200 rounded-xl p-6 text-center">
-              <p className="text-slate-400 text-sm">まだ学習履歴がありません</p>
-              <p className="text-slate-300 text-xs mt-1">上のモードから学習を始めましょう</p>
+          <div className="flex items-center justify-between mb-3">
+            <h2
+              id="history-heading"
+              className="text-xs font-bold text-slate-500 uppercase tracking-wider"
+            >
+              学習履歴（直近10日）
+            </h2>
+          </div>
+          <StudyHistoryList daySummaries={daySummaries} />
+          {daySummaries.length > 0 && (
+            <div className="mt-2 flex justify-end">
+              <Link
+                to="/history"
+                className="text-xs text-indigo-600 hover:text-indigo-800 hover:underline transition-colors"
+              >
+                全件表示 →
+              </Link>
             </div>
-          ) : (
-            <ul className="bg-white border border-slate-200 rounded-xl divide-y divide-slate-100 overflow-hidden">
-              {sessions.map((s) => {
-                const rate = sessionRate(s)
-                return (
-                  <li key={s.id} className="flex items-center gap-3 px-4 py-3">
-                    <span
-                      className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-base flex-shrink-0"
-                      aria-hidden="true"
-                    >
-                      {s.mode === 'important' ? '★' : s.mode === 'weakness' ? '📉' : s.mode === 'topic' ? '📂' : '🎲'}
-                    </span>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-slate-700 truncate">{modeLabel(s.mode)}</p>
-                      <p className="text-xs text-slate-400">
-                        {formatSessionDate(s.startedAt)} · {s.questionCount}問
-                      </p>
-                    </div>
-                    {rate !== null && (
-                      <span className={`text-sm font-bold tabular-nums flex-shrink-0 ${rateTextColor(rate)}`}>
-                        {rate}%
-                      </span>
-                    )}
-                  </li>
-                )
-              })}
-            </ul>
           )}
         </section>
 

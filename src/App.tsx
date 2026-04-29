@@ -13,6 +13,7 @@ import AfternoonAnswerDetail from './pages/AfternoonAnswerDetail'
 import AfternoonMyAnswer from './pages/AfternoonMyAnswer'
 import Column from './pages/Column'
 import HowToUse from './pages/HowToUse'
+import ActivityHistory from './pages/ActivityHistory'
 import Login from './pages/Login'
 import AuthGuard from './auth/AuthGuard'
 
@@ -56,6 +57,7 @@ export default function App() {
           <Route path="/afternoon/answers/:id/myAnswer" element={<AfternoonMyAnswer />} />
           <Route path="/column" element={<Column />} />
           <Route path="/how-to-use" element={<HowToUse />} />
+          <Route path="/history" element={<ActivityHistory />} />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -13,6 +13,7 @@ import QuizSummary from './QuizSummary'
 import { recordGamificationAnswer } from '../lib/gamification'
 import BadgeUnlockToast from '../components/gamification/BadgeUnlockToast'
 import type { BadgeDefinition } from '../data/badges'
+import { addActivityEvent } from '../lib/activityLog'
 
 type Phase = 'mode-select' | 'question' | 'result-mc' | 'result-wr' | 'summary'
 type AnswerMode = 'multiple-choice' | 'written'
@@ -74,6 +75,8 @@ export default function Quiz() {
 
   // セッションID（リトライのたびに更新）
   const sessionId = useRef(crypto.randomUUID())
+  // セッション中の累積 XP（セッション完了時に activityLog へ記録）
+  const sessionXpRef = useRef(0)
 
   // セッション開始時刻（完了時に上書きしないよう ref で保持）
   const sessionStartedAt = useRef('')
@@ -115,6 +118,7 @@ export default function Quiz() {
     if (phase === 'question' && startedSessionId.current !== sessionId.current) {
       startedSessionId.current = sessionId.current
       sessionStartedAt.current = new Date().toISOString()
+      sessionXpRef.current = 0
       const session: StudySession = {
         id: sessionId.current,
         startedAt: sessionStartedAt.current,
@@ -156,7 +160,14 @@ export default function Quiz() {
         difficulty: currentQuestion.difficulty,
       })
       setLastXpGained(gr.xpGained)
-      if (gr.newBadges.length > 0) setPendingBadges((prev) => [...prev, ...gr.newBadges])
+      sessionXpRef.current += gr.xpGained
+      if (gr.newBadges.length > 0) {
+        setPendingBadges((prev) => [...prev, ...gr.newBadges])
+        const now = new Date()
+        for (const badge of gr.newBadges) {
+          addActivityEvent({ type: 'badge-unlock', date: now.toISOString().slice(0, 10), createdAt: now.toISOString(), xp: badge.xpBonus, payload: { badgeId: badge.id, badgeName: badge.name, tier: badge.tier } })
+        }
+      }
       setPhase('result-mc')
     },
     [currentQuestion]
@@ -188,7 +199,14 @@ export default function Quiz() {
           difficulty: currentQuestion.difficulty,
         })
         setLastXpGained(gr.xpGained)
-        if (gr.newBadges.length > 0) setPendingBadges((prev) => [...prev, ...gr.newBadges])
+        sessionXpRef.current += gr.xpGained
+        if (gr.newBadges.length > 0) {
+          setPendingBadges((prev) => [...prev, ...gr.newBadges])
+          const now = new Date()
+          for (const badge of gr.newBadges) {
+            addActivityEvent({ type: 'badge-unlock', date: now.toISOString().slice(0, 10), createdAt: now.toISOString(), xp: badge.xpBonus, payload: { badgeId: badge.id, badgeName: badge.name, tier: badge.tier } })
+          }
+        }
         setLastIsCorrect(true)
         setAutoCorrect(true)
       } else {
@@ -223,6 +241,22 @@ export default function Quiz() {
           questionCount: questionList.length,
           correctCount,
         })
+        const now = new Date()
+        addActivityEvent({
+          type: 'quiz-session',
+          date: now.toISOString().slice(0, 10),
+          createdAt: now.toISOString(),
+          xp: sessionXpRef.current,
+          payload: {
+            mode: (mode as 'topic' | 'weakness' | 'random' | 'important') ?? 'random',
+            categoryId,
+            categoryName: categoryId ? (categories.find(c => c.id === categoryId)?.name ?? null) : null,
+            questionCount: questionList.length,
+            correctCount,
+            answerMode,
+          },
+        })
+        sessionXpRef.current = 0
         setPhase('summary')
       } else {
         setCurrentIndex((i) => i + 1)
@@ -255,7 +289,14 @@ export default function Quiz() {
         difficulty: currentQuestion.difficulty,
       })
       setLastXpGained(gr.xpGained)
-      if (gr.newBadges.length > 0) setPendingBadges((prev) => [...prev, ...gr.newBadges])
+      sessionXpRef.current += gr.xpGained
+      if (gr.newBadges.length > 0) {
+        setPendingBadges((prev) => [...prev, ...gr.newBadges])
+        const now = new Date()
+        for (const badge of gr.newBadges) {
+          addActivityEvent({ type: 'badge-unlock', date: now.toISOString().slice(0, 10), createdAt: now.toISOString(), xp: badge.xpBonus, payload: { badgeId: badge.id, badgeName: badge.name, tier: badge.tier } })
+        }
+      }
       setLastIsCorrect(isCorrect)
       advanceOrFinish(isCorrect)
     },
@@ -283,6 +324,7 @@ export default function Quiz() {
     }
     // セッションIDをリフレッシュ
     sessionId.current = crypto.randomUUID()
+    sessionXpRef.current = 0
     // 状態をリセットして再スタート
     setRetryList(wrongQuestions)
     setLogs([])

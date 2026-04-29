@@ -272,30 +272,34 @@ export default function Home() {
               return weaknessDisabled ? (
                 <div
                   key={card.to}
-                  className="flex items-center gap-3 bg-slate-50 rounded-xl border border-slate-200 px-3 py-2.5 opacity-60 cursor-not-allowed"
+                  className="flex items-center gap-2 sm:gap-3 bg-slate-50 rounded-xl border border-slate-200 px-2.5 py-2 sm:px-3 sm:py-2.5 opacity-60 cursor-not-allowed"
                 >
-                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${card.iconBg}`}>
-                    {card.icon}
+                  <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${card.iconBg}`}>
+                    <span className="[&>svg]:w-5 [&>svg]:h-5 sm:[&>svg]:w-6 sm:[&>svg]:h-6 flex">
+                      {card.icon}
+                    </span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-slate-500 leading-tight truncate">{card.title}</p>
-                    <p className="text-[11px] text-slate-400 leading-tight">問題を解くと使えます</p>
+                    <p className="text-[13px] sm:text-sm font-bold text-slate-500 leading-tight truncate">{card.title}</p>
+                    <p className="text-[10px] sm:text-[11px] text-slate-400 leading-tight truncate">問題を解くと使えます</p>
                   </div>
                 </div>
               ) : (
                 <Link
                   key={card.to}
                   to={card.to}
-                  className="group relative flex items-center gap-3 bg-white rounded-xl border border-slate-200 px-3 py-2.5 hover:border-blue-400 hover:shadow-md transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                  className="group relative flex items-center gap-2 sm:gap-3 bg-white rounded-xl border border-slate-200 px-2.5 py-2 sm:px-3 sm:py-2.5 hover:border-blue-400 hover:shadow-md transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                 >
-                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${card.iconBg}`}>
-                    {card.icon}
+                  <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${card.iconBg}`}>
+                    <span className="[&>svg]:w-5 [&>svg]:h-5 sm:[&>svg]:w-6 sm:[&>svg]:h-6 flex">
+                      {card.icon}
+                    </span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-slate-800 leading-tight group-hover:text-blue-700 transition-colors truncate">
+                    <p className="text-[13px] sm:text-sm font-bold text-slate-800 leading-tight group-hover:text-blue-700 transition-colors truncate">
                       {card.title}
                     </p>
-                    <p className="text-[11px] text-slate-400 leading-tight truncate">{card.description}</p>
+                    <p className="text-[10px] sm:text-[11px] text-slate-400 leading-tight truncate">{card.description}</p>
                   </div>
                 </Link>
               )

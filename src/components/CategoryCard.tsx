@@ -94,18 +94,15 @@ export default function CategoryCard({
         </span>
       )}
 
-      {/* 1行目：カテゴリ名 + 問題数 */}
-      <div className="flex items-baseline justify-between gap-2 pr-8">
+      {/* 1行目：カテゴリ名のみ（問題数は達成バーの (N/総数) に集約） */}
+      <div className="pr-8">
         <p
-          className={`font-semibold text-sm leading-tight truncate ${
+          className={`font-semibold text-[13px] sm:text-sm leading-tight truncate ${
             isEmpty ? 'text-slate-400' : 'text-slate-800 group-hover:text-blue-700'
           } transition-colors`}
         >
           {category.name}
         </p>
-        <span className={`text-[11px] flex-shrink-0 ${isEmpty ? 'text-slate-300' : 'text-slate-400'}`}>
-          {questionCount}問
-        </span>
       </div>
 
       {/* 2行目以降：達成率 + 4択／記述の正答率 */}

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { useParams, useNavigate, Link } from 'react-router-dom'
+import { useParams, useNavigate, useSearchParams, Link } from 'react-router-dom'
 import { officialAnswers } from '../data/officialAnswers'
 import type { OfficialAnswerSet } from '../data/officialAnswers'
 import { afternoonProblems } from '../data/afternoonProblems'
@@ -25,6 +25,19 @@ function loadMyAnswers(id: string): MyAnswers {
 
 function saveMyAnswers(id: string, answers: MyAnswers) {
   localStorage.setItem(storageKey(id), JSON.stringify(answers))
+}
+
+function savedAnswersKey(recordId: string) { return `nwsp:savedAnswers:${recordId}` }
+
+function loadSavedAnswers(recordId: string): MyAnswers {
+  try {
+    const raw = localStorage.getItem(savedAnswersKey(recordId))
+    return raw ? JSON.parse(raw) : {}
+  } catch { return {} }
+}
+
+function saveSavedAnswers(recordId: string, answers: MyAnswers) {
+  localStorage.setItem(savedAnswersKey(recordId), JSON.stringify(answers))
 }
 
 function today(): string {
@@ -89,6 +102,7 @@ function AnswerInputTable({
   checkMode,
   scorings,
   onMark,
+  readOnly = false,
 }: {
   answerSet: OfficialAnswerSet
   myAnswers: MyAnswers
@@ -96,6 +110,7 @@ function AnswerInputTable({
   checkMode: boolean
   scorings: Scorings
   onMark: (rowIndex: string, marking: Marking) => void
+  readOnly?: boolean
 }) {
   const rows = processRows(answerSet.answers)
 
@@ -157,10 +172,11 @@ function AnswerInputTable({
             const inputContent = row.essay ? (
               <div>
                 <textarea
-                  className="w-full min-h-[56px] text-xs text-slate-800 border-0 outline-none resize-y bg-transparent leading-snug p-1.5 placeholder:text-slate-300"
+                  className={`w-full min-h-[56px] text-xs text-slate-800 border-0 outline-none resize-y bg-transparent leading-snug p-1.5 placeholder:text-slate-300 ${readOnly ? 'cursor-default' : ''}`}
                   placeholder="記述してください"
                   value={val}
-                  onChange={e => onChange(rowKey, e.target.value)}
+                  onChange={e => !readOnly && onChange(rowKey, e.target.value)}
+                  readOnly={readOnly}
                 />
                 <div className="text-right text-[10px] text-slate-400 pr-1 pb-0.5 leading-none">
                   {val.length} 文字
@@ -177,10 +193,11 @@ function AnswerInputTable({
               <div>
                 <input
                   type="text"
-                  className="w-full text-xs text-slate-800 border-0 outline-none bg-transparent p-1.5 placeholder:text-slate-300"
+                  className={`w-full text-xs text-slate-800 border-0 outline-none bg-transparent p-1.5 placeholder:text-slate-300 ${readOnly ? 'cursor-default' : ''}`}
                   placeholder="—"
                   value={val}
-                  onChange={e => onChange(rowKey, e.target.value)}
+                  onChange={e => !readOnly && onChange(rowKey, e.target.value)}
+                  readOnly={readOnly}
                 />
                 {checkMode && (
                   <div className="mx-1 mb-1 border-t border-indigo-200 pt-1 text-[11px] text-indigo-800 bg-indigo-50 rounded px-2 py-1 leading-snug">
@@ -252,22 +269,27 @@ function AnswerInputTable({
 export default function AfternoonMyAnswer() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const viewRecordId = searchParams.get('recordId')
+  const isViewMode = !!viewRecordId
 
   const answerSet = officialAnswers.find(a => a.id === id)
   const problem = answerSet ? afternoonProblems.find(p => p.id === answerSet.id) : null
 
-  const [myAnswers, setMyAnswers] = useState<MyAnswers>(() =>
-    id ? loadMyAnswers(id) : {}
-  )
+  const [myAnswers, setMyAnswers] = useState<MyAnswers>(() => {
+    if (viewRecordId) return loadSavedAnswers(viewRecordId)
+    return id ? loadMyAnswers(id) : {}
+  })
   const [checkMode, setCheckMode] = useState(false)
   const [showClearModal, setShowClearModal] = useState(false)
+  const [showFinishConfirm, setShowFinishConfirm] = useState(false)
   const [scorings, setScorings] = useState<Scorings>({})
   const [recorded, setRecorded] = useState(false)
   const timer = useTimer()
 
   useEffect(() => {
-    if (id) saveMyAnswers(id, myAnswers)
-  }, [id, myAnswers])
+    if (id && !isViewMode) saveMyAnswers(id, myAnswers)
+  }, [id, myAnswers, isViewMode])
 
   const handleChange = useCallback((rowIndex: string, value: string) => {
     setMyAnswers(prev => ({ ...prev, [rowIndex]: value }))
@@ -321,7 +343,13 @@ export default function AfternoonMyAnswer() {
     : 0
 
   const handleRecordToTracker = () => {
-    addRecord({ problemId: id, date: today(), score: calculatedScore })
+    const record = addRecord({ problemId: id, date: today(), score: calculatedScore })
+    // 解答を記録IDに紐づけて保存し、下書きをクリア
+    saveSavedAnswers(record.id, myAnswers)
+    if (id) saveMyAnswers(id, {})
+    setMyAnswers({})
+    setScorings({})
+    setCheckMode(false)
     setRecorded(true)
   }
 
@@ -406,16 +434,39 @@ export default function AfternoonMyAnswer() {
           </div>
         </div>
 
+        {/* 閲覧モードバナー */}
+        {isViewMode && (
+          <div className="bg-teal-50 border border-teal-200 rounded-xl px-4 py-2.5 flex items-center justify-between gap-3">
+            <span className="text-[11px] font-bold text-teal-700">📂 過去の解答を確認中（編集不可）</span>
+            <Link
+              to={`/afternoon/answers/${id}/myAnswer`}
+              className="text-[11px] font-bold text-teal-600 hover:text-teal-800 border border-teal-300 rounded-md px-2 py-1 bg-white transition-colors flex-shrink-0"
+            >
+              新たに解答する
+            </Link>
+          </div>
+        )}
+
         {/* Action buttons */}
         <div className="flex justify-between items-center">
-          <button onClick={handleClear} className="text-[11px] text-red-400 hover:text-red-600 transition-colors">
-            解答をクリア
-          </button>
+          {!isViewMode && (
+            <button onClick={handleClear} className="text-[11px] text-red-400 hover:text-red-600 transition-colors">
+              解答をクリア
+            </button>
+          )}
           <button
-            onClick={() => { if (!checkMode) timer.pause(); setCheckMode(v => !v) }}
-            className={`text-xs font-bold rounded-lg px-3 py-1.5 transition-colors ${
+            onClick={() => {
+              if (checkMode) {
+                setCheckMode(false)
+              } else if (isViewMode) {
+                setCheckMode(true)
+              } else {
+                setShowFinishConfirm(true)
+              }
+            }}
+            className={`text-xs font-bold rounded-lg px-3 py-1.5 transition-colors ${isViewMode ? '' : ''} ${
               checkMode ? 'bg-indigo-600 text-white hover:bg-indigo-700' : 'text-indigo-600 border border-indigo-300 hover:bg-indigo-50'
-            }`}
+            } ${isViewMode ? 'ml-auto' : ''}`}
           >
             {checkMode ? '答え合わせ中 ✓' : '答え合わせ'}
           </button>
@@ -456,6 +507,7 @@ export default function AfternoonMyAnswer() {
             checkMode={checkMode}
             scorings={scorings}
             onMark={handleMark}
+            readOnly={isViewMode}
           />
         </div>
 
@@ -470,6 +522,31 @@ export default function AfternoonMyAnswer() {
         </div>
 
       </div>
+
+      {/* 答え合わせ確認ダイアログ */}
+      {showFinishConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={() => setShowFinishConfirm(false)}>
+          <div className="absolute inset-0 bg-black/40" />
+          <div className="relative bg-white rounded-2xl w-full max-w-sm shadow-xl px-6 py-5 space-y-4" onClick={e => e.stopPropagation()}>
+            <h3 className="text-sm font-bold text-slate-800">解答を終了しますか？</h3>
+            <p className="text-xs text-slate-500">答え合わせモードに切り替えます。タイマーを一時停止します。</p>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setShowFinishConfirm(false)}
+                className="flex-1 py-2.5 rounded-xl border border-slate-200 text-sm font-bold text-slate-500 hover:bg-slate-50"
+              >
+                キャンセル
+              </button>
+              <button
+                onClick={() => { timer.pause(); setCheckMode(true); setShowFinishConfirm(false) }}
+                className="flex-1 py-2.5 rounded-xl bg-indigo-600 text-white text-sm font-bold hover:bg-indigo-700"
+              >
+                はい
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Clear confirmation modal */}
       {showClearModal && (

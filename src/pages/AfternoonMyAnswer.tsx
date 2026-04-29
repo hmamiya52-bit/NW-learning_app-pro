@@ -301,14 +301,21 @@ export default function AfternoonMyAnswer() {
     return idx >= 0 ? idx + 1 : null
   }, [viewRecordId, id])
 
-  // 閲覧モードへの遷移（同一コンポーネント内のURL変化）時に保存済み解答を再読み込み
+  // 閲覧モード ⇄ 編集モード切り替え時に state をリセット
   useEffect(() => {
     if (viewRecordId) {
       setMyAnswers(loadSavedAnswers(viewRecordId))
       setCheckMode(true)
       setScorings({})
+    } else {
+      // 編集モードに戻ったとき: 下書き（空でも可）を読み込み直す
+      setMyAnswers(id ? loadMyAnswers(id) : {})
+      setCheckMode(false)
+      setScorings({})
+      setRecorded(false)
+      setSavedRecordId(null)
     }
-  }, [viewRecordId])
+  }, [viewRecordId, id])
 
   const timer = useTimer()
 

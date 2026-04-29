@@ -1,10 +1,10 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { useParams, useNavigate, useSearchParams, Link } from 'react-router-dom'
 import { officialAnswers } from '../data/officialAnswers'
 import type { OfficialAnswerSet } from '../data/officialAnswers'
 import { afternoonProblems } from '../data/afternoonProblems'
 import { processRows, BORDER_OUTER, BORDER_INNER, BORDER_HEAD } from '../lib/answerTable'
-import { addRecord, getMaxScore } from '../lib/tracker'
+import { addRecord, getMaxScore, loadRecords } from '../lib/tracker'
 
 // ----------------------------------------------------------------
 // Types & storage
@@ -280,12 +280,36 @@ export default function AfternoonMyAnswer() {
     if (viewRecordId) return loadSavedAnswers(viewRecordId)
     return id ? loadMyAnswers(id) : {}
   })
-  const [checkMode, setCheckMode] = useState(false)
+  const [checkMode, setCheckMode] = useState(isViewMode)
   const [showClearModal, setShowClearModal] = useState(false)
   const [showFinishConfirm, setShowFinishConfirm] = useState(false)
   const [scorings, setScorings] = useState<Scorings>({})
   const [recorded, setRecorded] = useState(false)
   const [savedRecordId, setSavedRecordId] = useState<string | null>(null)
+
+  const viewRecord = useMemo(() => {
+    if (!viewRecordId) return null
+    return loadRecords().find(r => r.id === viewRecordId) ?? null
+  }, [viewRecordId])
+
+  const attemptNumber = useMemo(() => {
+    if (!viewRecordId || !id) return null
+    const records = loadRecords()
+      .filter(r => r.problemId === id)
+      .sort((a, b) => a.date.localeCompare(b.date))
+    const idx = records.findIndex(r => r.id === viewRecordId)
+    return idx >= 0 ? idx + 1 : null
+  }, [viewRecordId, id])
+
+  // 閲覧モードへの遷移（同一コンポーネント内のURL変化）時に保存済み解答を再読み込み
+  useEffect(() => {
+    if (viewRecordId) {
+      setMyAnswers(loadSavedAnswers(viewRecordId))
+      setCheckMode(true)
+      setScorings({})
+    }
+  }, [viewRecordId])
+
   const timer = useTimer()
 
   useEffect(() => {
@@ -393,7 +417,7 @@ export default function AfternoonMyAnswer() {
         )}
 
         {/* Timer + progress */}
-        <div className="bg-white rounded-xl border border-slate-200 px-4 py-3 flex items-center gap-4">
+        {!isViewMode && <div className="bg-white rounded-xl border border-slate-200 px-4 py-3 flex items-center gap-4">
           <div className="flex items-center gap-2">
             <span className="text-lg font-mono font-bold text-slate-800 w-20 tabular-nums">
               {timer.fmt(timer.elapsed)}
@@ -430,12 +454,22 @@ export default function AfternoonMyAnswer() {
               />
             </div>
           </div>
-        </div>
+        </div>}
 
         {/* 閲覧モードバナー */}
         {isViewMode && (
           <div className="bg-teal-50 border border-teal-200 rounded-xl px-4 py-2.5 flex items-center justify-between gap-3">
-            <span className="text-[11px] font-bold text-teal-700">📂 過去の解答を確認中（編集不可）</span>
+            <div className="min-w-0">
+              <p className="text-[11px] font-bold text-teal-700">
+                {attemptNumber !== null ? `第${attemptNumber}回` : '過去'}の解答を確認中
+                <span className="ml-1.5 font-normal text-teal-600">（編集不可）</span>
+              </p>
+              {viewRecord && (
+                <p className="text-[10px] text-teal-600 mt-0.5">
+                  解答日：{viewRecord.date.replace(/-/g, '/')}　スコア：{viewRecord.score}点
+                </p>
+              )}
+            </div>
             <Link
               to={`/afternoon/answers/${id}/myAnswer`}
               className="text-[11px] font-bold text-teal-600 hover:text-teal-800 border border-teal-300 rounded-md px-2 py-1 bg-white transition-colors flex-shrink-0"
@@ -446,7 +480,7 @@ export default function AfternoonMyAnswer() {
         )}
 
         {/* Action buttons */}
-        <div className="flex justify-between items-center">
+        {!isViewMode && <div className="flex justify-between items-center">
           {!isViewMode && (
             <button onClick={handleClear} className="text-[11px] text-red-400 hover:text-red-600 transition-colors">
               解答をクリア
@@ -468,10 +502,10 @@ export default function AfternoonMyAnswer() {
           >
             {checkMode ? '答え合わせ中 ✓' : '答え合わせ'}
           </button>
-        </div>
+        </div>}
 
         {/* 採点結果カード */}
-        {checkMode && markedCount > 0 && (
+        {!isViewMode && checkMode && markedCount > 0 && (
           <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 flex items-center justify-between gap-3">
             <div className="space-y-0.5">
               <p className="text-[11px] font-bold text-amber-800">採点結果</p>
@@ -497,7 +531,7 @@ export default function AfternoonMyAnswer() {
         )}
 
         {/* 保存完了カード */}
-        {savedRecordId && (
+        {savedRecordId && !isViewMode && (
           <div className="bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-3 flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <svg className="w-4 h-4 text-emerald-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>

@@ -5,6 +5,7 @@ import type { OfficialAnswerSet } from '../data/officialAnswers'
 import { afternoonProblems } from '../data/afternoonProblems'
 import { processRows, BORDER_OUTER, BORDER_INNER, BORDER_HEAD } from '../lib/answerTable'
 import { addRecord, getMaxScore, loadRecords } from '../lib/tracker'
+import { scoringMap } from '../data/scoringMap'
 import { addActivityEvent } from '../lib/activityLog'
 import { recordAfternoonXp } from '../lib/gamification'
 
@@ -367,15 +368,15 @@ export default function AfternoonMyAnswer() {
 
   // 採点計算
   const markedCount = Object.keys(scorings).length
-  const earnedPoints = Object.values(scorings).reduce((sum, m) => {
-    if (m === 'correct') return sum + 1
-    if (m === 'partial') return sum + 0.5
+  const maxScore = getMaxScore(answerSet.section)
+  const rowScores = scoringMap[id] ?? []
+  const calculatedScore = Object.entries(scorings).reduce((sum, [rowKey, marking]) => {
+    const pts = rowScores[parseInt(rowKey)]
+    if (!pts) return sum
+    if (marking === 'correct') return sum + pts.correct
+    if (marking === 'partial') return sum + pts.partial
     return sum
   }, 0)
-  const maxScore = getMaxScore(answerSet.section)
-  const calculatedScore = totalRows > 0
-    ? Math.round(maxScore * earnedPoints / totalRows)
-    : 0
 
   const handleRecordToTracker = () => {
     const record = addRecord({ problemId: id, date: today(), score: calculatedScore })

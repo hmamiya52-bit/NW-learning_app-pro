@@ -22,5 +22,5 @@ export const categories: Category[] = [
   { id: 'proxy', name: 'プロキシサーバ', order: 19, description: 'PAC・HTTPS復号' },
   { id: 'network-mgmt', name: 'ネットワーク管理', order: 20, description: 'ping・SYSLOG・SNMP・BFD' },
   { id: 'protocol-review', name: 'プロトコル総復習', order: 21, description: '各プロトコルのレイヤ・ポート番号一覧' },
-  { id: 'iot', name: 'IoT（令和7年補足）', order: 22, description: 'CoAP・LPWA・MQTT・指数再送（令和7年試験出題）' },
+  { id: 'iot', name: 'IoT+補足', order: 22, description: 'CoAP・LPWA・MQTT・指数再送（令和7年試験出題）' },
 ]

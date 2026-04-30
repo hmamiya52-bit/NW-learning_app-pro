@@ -6,17 +6,16 @@ import { getNoteUnderstanding } from '../lib/storage'
 
 const NOTE_AVAILABLE = new Set(NOTE_CATEGORY_IDS)
 
-// Category icon colors for visual variety
-const CARD_COLORS: string[] = [
-  'bg-blue-50 text-blue-600',
-  'bg-emerald-50 text-emerald-600',
-  'bg-amber-50 text-amber-600',
-  'bg-purple-50 text-purple-600',
-  'bg-red-50 text-red-600',
-  'bg-teal-50 text-teal-600',
-  'bg-orange-50 text-orange-600',
-  'bg-indigo-50 text-indigo-600',
-  'bg-pink-50 text-pink-600',
+const CARD_BORDER_COLORS: string[] = [
+  'border-l-blue-300',
+  'border-l-emerald-300',
+  'border-l-amber-300',
+  'border-l-purple-300',
+  'border-l-red-300',
+  'border-l-teal-300',
+  'border-l-orange-300',
+  'border-l-indigo-300',
+  'border-l-pink-300',
 ]
 
 function BookIcon({ className }: { className?: string }) {
@@ -184,19 +183,16 @@ export default function Notes() {
         {!trimmed && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {availableCategories.map((cat, idx) => {
-              const colorClass = CARD_COLORS[idx % CARD_COLORS.length]
+              const borderColor = CARD_BORDER_COLORS[idx % CARD_BORDER_COLORS.length]
               return (
                 <Link
                   key={cat.id}
                   to={`/notes/${cat.id}`}
-                  className="group flex items-center gap-4 bg-white rounded-xl border border-slate-200 px-4 py-4 hover:border-blue-400 hover:shadow-md transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                  className={`group flex items-center gap-3 bg-white rounded-xl border border-slate-200 border-l-4 ${borderColor} px-4 py-3 hover:shadow-md transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2`}
                   aria-label={`${cat.name}のノートを開く`}
                 >
-                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${colorClass}`}>
-                    <BookIcon className="w-5 h-5" />
-                  </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-slate-800 leading-snug group-hover:text-blue-700 transition-colors truncate">
+                    <p className="text-sm font-bold text-slate-800 leading-snug group-hover:text-blue-700 transition-colors">
                       {cat.name}
                     </p>
                     <p className="text-xs text-slate-400 mt-0.5 leading-snug line-clamp-2">
@@ -222,20 +218,17 @@ export default function Notes() {
         {trimmed && searchResults && searchResults.length > 0 && (
           <div className="space-y-3">
             {searchResults.map(({ cat, headings, nameHit, descHit }, idx) => {
-              const colorClass = CARD_COLORS[idx % CARD_COLORS.length]
+              const borderColor = CARD_BORDER_COLORS[idx % CARD_BORDER_COLORS.length]
               return (
                 <div
                   key={cat.id}
-                  className="bg-white rounded-xl border border-slate-200 overflow-hidden"
+                  className={`bg-white rounded-xl border border-slate-200 border-l-4 ${borderColor} overflow-hidden`}
                 >
                   {/* カテゴリヘッダ */}
                   <Link
                     to={`/notes/${cat.id}`}
                     className="flex items-center gap-3 px-4 py-3 border-b border-slate-100 hover:bg-slate-50 transition-colors"
                   >
-                    <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 ${colorClass}`}>
-                      <BookIcon className="w-4 h-4" />
-                    </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-bold text-slate-800 truncate">
                         {nameHit ? highlight(cat.name, trimmed) : cat.name}

@@ -682,18 +682,21 @@ export default function AfternoonProblems() {
         {/* Filter bar */}
         <section className="bg-white rounded-xl border border-slate-200 px-4 py-3 space-y-2.5">
           {/* キーワードチップ（折りたたみ） */}
-          <div className="flex items-start gap-2">
-            <div className="flex flex-col items-start flex-shrink-0 gap-1">
-              <span className="text-[10px] font-bold text-slate-500 pt-px">キーワード</span>
-              <button
-                onClick={() => setKeywordsExpanded(v => !v)}
-                className="text-[9px] text-indigo-500 hover:text-indigo-700 leading-none transition-colors"
-              >
-                {keywordsExpanded ? '折りたたむ' : 'すべて▾'}
-              </button>
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className={`flex flex-wrap gap-1.5 overflow-hidden transition-all ${keywordsExpanded ? '' : 'max-h-[22px]'}`}>
+          <div>
+            <button
+              onClick={() => setKeywordsExpanded(v => !v)}
+              className="flex items-center gap-1.5 text-[10px] font-bold text-slate-500 hover:text-indigo-600 transition-colors"
+            >
+              <span>キーワード</span>
+              {selectedKeywords.length > 0 && (
+                <span className="bg-indigo-600 text-white rounded-full px-1.5 py-0 leading-tight text-[9px]">
+                  {selectedKeywords.length}
+                </span>
+              )}
+              <span className="text-slate-400">{keywordsExpanded ? '▲' : '絞り込む▼'}</span>
+            </button>
+            {keywordsExpanded && (
+              <div className="flex flex-wrap gap-1.5 mt-2">
                 {allKeywords.map(kw => {
                   const selected = selectedKeywords.includes(kw)
                   return (
@@ -711,7 +714,7 @@ export default function AfternoonProblems() {
                   )
                 })}
               </div>
-            </div>
+            )}
           </div>
 
           {/* 絞り込みオプション */}

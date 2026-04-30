@@ -88,9 +88,9 @@ export default function CategoryCard({
       )}
 
       {/* カテゴリ名 */}
-      <div className="pr-8">
+      <div className={isEmpty || isIot ? 'pr-8' : 'pr-1'}>
         <p
-          className={`font-semibold text-[13px] sm:text-sm leading-tight truncate ${
+          className={`font-semibold text-[13px] sm:text-sm leading-snug ${
             isEmpty ? 'text-slate-400' : 'text-slate-800 group-hover:text-blue-700'
           } transition-colors`}
         >

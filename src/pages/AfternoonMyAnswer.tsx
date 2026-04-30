@@ -5,6 +5,7 @@ import type { OfficialAnswerSet } from '../data/officialAnswers'
 import { afternoonProblems } from '../data/afternoonProblems'
 import { processRows, BORDER_OUTER, BORDER_INNER, BORDER_HEAD } from '../lib/answerTable'
 import { addRecord, getMaxScore, loadRecords } from '../lib/tracker'
+import { scoringMap } from '../data/scoringMap'
 import { addActivityEvent } from '../lib/activityLog'
 import { recordAfternoonXp } from '../lib/gamification'
 
@@ -367,15 +368,15 @@ export default function AfternoonMyAnswer() {
 
   // 採点計算
   const markedCount = Object.keys(scorings).length
-  const earnedPoints = Object.values(scorings).reduce((sum, m) => {
-    if (m === 'correct') return sum + 1
-    if (m === 'partial') return sum + 0.5
+  const maxScore = getMaxScore(answerSet.section)
+  const rowScores = scoringMap[id] ?? []
+  const calculatedScore = Object.entries(scorings).reduce((sum, [rowKey, marking]) => {
+    const pts = rowScores[parseInt(rowKey)]
+    if (!pts) return sum
+    if (marking === 'correct') return sum + pts.correct
+    if (marking === 'partial') return sum + pts.partial
     return sum
   }, 0)
-  const maxScore = getMaxScore(answerSet.section)
-  const calculatedScore = totalRows > 0
-    ? Math.round(maxScore * earnedPoints / totalRows)
-    : 0
 
   const handleRecordToTracker = () => {
     const record = addRecord({ problemId: id, date: today(), score: calculatedScore })
@@ -412,21 +413,23 @@ export default function AfternoonMyAnswer() {
 
         {/* Header */}
         <section>
-          <div className="rounded-xl bg-teal-700 text-white px-4 py-3 shadow-md flex items-center justify-between gap-4">
-            <div className="flex items-center gap-2 min-w-0">
-              {/* 年度バッジ */}
-              <span className="text-[11px] font-bold bg-teal-500 rounded-full px-2 py-0.5 flex-shrink-0">
-                {answerSet.year}
-              </span>
-              {/* 午後Ⅰ/Ⅱ・問番号バッジ */}
-              <span className={`text-[11px] font-bold rounded-full px-2 py-0.5 flex-shrink-0 ${sectionColor}`}>
-                {sectionLabel} 問{answerSet.number}
-              </span>
-              <h1 className="text-sm font-black leading-snug truncate">{problem?.title ?? '解答欄'}</h1>
+          <div className="rounded-xl bg-teal-700 text-white px-4 py-3 shadow-md flex items-start justify-between gap-4">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-0.5">
+                {/* 年度バッジ */}
+                <span className="text-[11px] font-bold bg-teal-500 rounded-full px-2 py-0.5 flex-shrink-0">
+                  {answerSet.year}
+                </span>
+                {/* 午後Ⅰ/Ⅱ・問番号バッジ */}
+                <span className={`text-[11px] font-bold rounded-full px-2 py-0.5 flex-shrink-0 ${sectionColor}`}>
+                  {sectionLabel} 問{answerSet.number}
+                </span>
+              </div>
+              <h1 className="text-sm font-black leading-snug">{problem?.title ?? '解答欄'}</h1>
             </div>
             <button
               onClick={() => navigate(-1)}
-              className="text-[11px] text-teal-300 hover:text-white transition-colors flex-shrink-0"
+              className="text-[11px] text-teal-300 hover:text-white transition-colors flex-shrink-0 mt-0.5"
             >
               ← 戻る
             </button>
@@ -593,15 +596,27 @@ export default function AfternoonMyAnswer() {
           />
         </div>
 
-        {/* Bottom link */}
-        <div className="flex justify-end">
-          <Link
-            to={`/afternoon/answers/${id}`}
-            className="text-xs font-bold text-indigo-600 border border-indigo-300 rounded-lg px-3 py-1.5 hover:bg-indigo-50 transition-colors"
-          >
-            解答例を確認する →
-          </Link>
-        </div>
+        {/* Bottom check button */}
+        {!isViewMode && (
+          <div className="flex justify-end">
+            <button
+              onClick={() => {
+                if (checkMode) {
+                  setCheckMode(false)
+                } else {
+                  setShowFinishConfirm(true)
+                }
+              }}
+              className={`text-xs font-bold rounded-lg px-3 py-1.5 transition-colors ${
+                checkMode
+                  ? 'bg-indigo-600 text-white hover:bg-indigo-700'
+                  : 'text-indigo-600 border border-indigo-300 hover:bg-indigo-50'
+              }`}
+            >
+              {checkMode ? '答え合わせ中 ✓' : '答え合わせ'}
+            </button>
+          </div>
+        )}
 
       </div>
 

@@ -6,6 +6,7 @@ import { afternoonProblems } from '../data/afternoonProblems'
 import { processRows, BORDER_OUTER, BORDER_INNER, BORDER_HEAD } from '../lib/answerTable'
 import { addRecord, getMaxScore, loadRecords } from '../lib/tracker'
 import { addActivityEvent } from '../lib/activityLog'
+import { recordAfternoonXp } from '../lib/gamification'
 
 // ----------------------------------------------------------------
 // Types & storage
@@ -287,6 +288,7 @@ export default function AfternoonMyAnswer() {
   const [scorings, setScorings] = useState<Scorings>({})
   const [recorded, setRecorded] = useState(false)
   const [savedRecordId, setSavedRecordId] = useState<string | null>(null)
+  const [savedXp, setSavedXp] = useState(0)
 
   const viewRecord = useMemo(() => {
     if (!viewRecordId) return null
@@ -379,11 +381,12 @@ export default function AfternoonMyAnswer() {
     const record = addRecord({ problemId: id, date: today(), score: calculatedScore })
     // 解答を記録IDに紐づけて保存し、下書きをクリア
     saveSavedAnswers(record.id, myAnswers)
+    const xpGained = recordAfternoonXp(answerSet.section, calculatedScore)
     addActivityEvent({
       type: 'afternoon-record',
       date: today(),
       createdAt: new Date().toISOString(),
-      xp: 0,
+      xp: xpGained,
       payload: {
         problemId: id,
         year: answerSet.year,
@@ -394,6 +397,7 @@ export default function AfternoonMyAnswer() {
         recordId: record.id,
       },
     })
+    setSavedXp(xpGained)
     if (id) saveMyAnswers(id, {})
     setMyAnswers({})
     setScorings({})
@@ -560,7 +564,12 @@ export default function AfternoonMyAnswer() {
               <svg className="w-4 h-4 text-emerald-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
               </svg>
-              <p className="text-[12px] font-bold text-emerald-800">解答を保存しました。</p>
+              <div>
+                <p className="text-[12px] font-bold text-emerald-800">解答を保存しました。</p>
+                {savedXp > 0 && (
+                  <p className="text-[11px] text-amber-600 font-bold mt-0.5">+{savedXp} XP 獲得！</p>
+                )}
+              </div>
             </div>
             <Link
               to={`/afternoon/answers/${id}/myAnswer?recordId=${savedRecordId}`}

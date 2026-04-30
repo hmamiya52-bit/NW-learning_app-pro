@@ -69,7 +69,8 @@ function saveGamification(state: GamificationState): void {
 
 /** XP 計算（正解時のみ） */
 function calcXp(event: AnswerEvent, newStreak: number): number {
-  let xp = event.mode === 'written' ? 20 : 10
+  // 記述20・4択3（4択を大幅下方修正）
+  let xp = event.mode === 'written' ? 20 : 3
 
   // 難易度ボーナス
   if (event.difficulty === 2) xp += 2
@@ -78,14 +79,37 @@ function calcXp(event: AnswerEvent, newStreak: number): number {
   // 重要問題ボーナス
   if (event.isImportant) xp += 5
 
-  // 連続正解ボーナス（今回の正解後のストリーク）
-  if (newStreak >= 50) xp += 300
-  else if (newStreak >= 30) xp += 150
-  else if (newStreak >= 20) xp += 80
-  else if (newStreak >= 10) xp += 40
-  else if (newStreak >= 5) xp += 20
-  else if (newStreak >= 3) xp += 10
+  // 連続正解ボーナス（旧値の半分に下方修正）
+  if (newStreak >= 50) xp += 150
+  else if (newStreak >= 30) xp += 75
+  else if (newStreak >= 20) xp += 40
+  else if (newStreak >= 10) xp += 20
+  else if (newStreak >= 5)  xp += 10
+  else if (newStreak >= 3)  xp += 5
 
+  return xp
+}
+
+/**
+ * 午後問題演習の結果に応じて XP を付与する。
+ * @returns 付与した XP
+ */
+export function recordAfternoonXp(section: 'G1' | 'G2', score: number): number {
+  let xp = 0
+  if (section === 'G1') {
+    if (score < 30)      xp = score * 3
+    else if (score < 40) xp = score * 5
+    else                 xp = Math.min(score * 10, 500)
+  } else {
+    if (score < 40)      xp = score * 3
+    else if (score < 60) xp = score * 4
+    else if (score < 80) xp = score * 8
+    else                 xp = Math.min(score * 15, 1500)
+  }
+  if (xp > 0) {
+    const state = loadGamification()
+    saveGamification({ ...state, xp: state.xp + xp })
+  }
   return xp
 }
 

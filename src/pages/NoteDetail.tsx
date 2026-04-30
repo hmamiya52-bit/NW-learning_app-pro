@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
 import { useParams, useLocation, Link } from 'react-router-dom'
 import { categories } from '../data/categories'
+import { getNoteUnderstanding, setNoteUnderstanding, type UnderstandingLevel } from '../lib/storage'
+import { addActivityEvent } from '../lib/activityLog'
 
 // NOTE_DB に存在するカテゴリIDの順序リスト（前後ナビ用 / Notes 一覧フィルタ用）
 export const NOTE_CATEGORY_IDS = [
@@ -4908,6 +4910,30 @@ export default function NoteDetail() {
     setProtoVersion((v) => v + 1)
   }
 
+  const [understanding, setUnderstanding] = useState(() => getNoteUnderstanding())
+
+  const handleUnderstanding = (sectionIndex: number, level: UnderstandingLevel) => {
+    const key = `${categoryId}:${sectionIndex}`
+    const next = understanding[key] === level ? null : level
+    setNoteUnderstanding(categoryId!, sectionIndex, next)
+    setUnderstanding(getNoteUnderstanding())
+    if (next !== null) {
+      const now = new Date()
+      addActivityEvent({
+        type: 'note-check',
+        date: now.toISOString().slice(0, 10),
+        createdAt: now.toISOString(),
+        xp: 0,
+        payload: {
+          noteId: categoryId!,
+          noteName: category?.name ?? categoryId!,
+          level: next,
+          sectionLabel: note?.sections[sectionIndex]?.heading ?? `セクション${sectionIndex + 1}`,
+        },
+      })
+    }
+  }
+
   const [toastVisible, setToastVisible] = useState(false)
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -5002,6 +5028,14 @@ export default function NoteDetail() {
             ) : (
               <span>画面下の「赤字を隠す」で暗記テストができます</span>
             )}
+            <span className="mx-1 text-slate-300">|</span>
+            <span className="flex items-center gap-1">
+              <svg width="13" height="13" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <rect x="1.5" y="1.5" width="17" height="17" rx="3.5" fill="#10b981" stroke="#10b981" strokeWidth="1.75"/>
+                <path d="M5.5 10.5 L8.5 13.5 L14.5 7" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              <span>チェックボックスで理解度を記録できます</span>
+            </span>
           </div>
         </div>
 
@@ -5016,34 +5050,77 @@ export default function NoteDetail() {
               }`}
             >
               <div
-                className={`px-5 py-3 border-b border-slate-100 ${section.protocols ? 'flex items-center justify-between gap-2' : ''}`}
+                className="px-5 py-3 border-b border-slate-100 flex items-center justify-between gap-2"
                 style={{ backgroundColor: '#1a3a5c' }}
               >
-                <h2 className="text-sm font-bold text-white leading-snug">{section.heading}</h2>
-                {section.protocols && (
-                  <div className="flex items-center gap-1 flex-shrink-0">
-                    <button
-                      onClick={() => setProtoMaskMode(protoMask === 'name' ? 'none' : 'name')}
-                      className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-colors ${
-                        protoMask === 'name'
-                          ? 'bg-red-500 text-white'
-                          : 'bg-blue-800 text-blue-200 hover:bg-blue-700'
-                      }`}
-                    >
-                      {protoMask === 'name' ? '名前が赤字 ✓' : '名前を赤字に'}
-                    </button>
-                    <button
-                      onClick={() => setProtoMaskMode(protoMask === 'port' ? 'none' : 'port')}
-                      className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-colors ${
-                        protoMask === 'port'
-                          ? 'bg-red-500 text-white'
-                          : 'bg-blue-800 text-blue-200 hover:bg-blue-700'
-                      }`}
-                    >
-                      {protoMask === 'port' ? 'ポートが赤字 ✓' : 'ポートを赤字に'}
-                    </button>
-                  </div>
-                )}
+                <h2 className="text-sm font-bold text-white leading-snug flex-1">{section.heading}</h2>
+                <div className="flex items-center gap-1.5 flex-shrink-0">
+                  {section.protocols && (
+                    <>
+                      <button
+                        onClick={() => setProtoMaskMode(protoMask === 'name' ? 'none' : 'name')}
+                        className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-colors ${
+                          protoMask === 'name'
+                            ? 'bg-red-500 text-white'
+                            : 'bg-blue-800 text-blue-200 hover:bg-blue-700'
+                        }`}
+                      >
+                        {protoMask === 'name' ? '名前が赤字 ✓' : '名前を赤字に'}
+                      </button>
+                      <button
+                        onClick={() => setProtoMaskMode(protoMask === 'port' ? 'none' : 'port')}
+                        className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-colors ${
+                          protoMask === 'port'
+                            ? 'bg-red-500 text-white'
+                            : 'bg-blue-800 text-blue-200 hover:bg-blue-700'
+                        }`}
+                      >
+                        {protoMask === 'port' ? 'ポートが赤字 ✓' : 'ポートを赤字に'}
+                      </button>
+                      <div className="w-px h-4 bg-blue-700 mx-0.5" />
+                    </>
+                  )}
+                  {(section.richItems || section.protocols || section.richProtocolTables || section.headerDiagrams) && (
+                    (['green', 'yellow', 'red'] as UnderstandingLevel[]).map((level) => {
+                      const isActive = understanding[`${categoryId}:${i}`] === level
+                      const fillColor = { green: '#10b981', yellow: '#f59e0b', red: '#ef4444' }[level]
+                      const labelMap = {
+                        green: '理解できた',
+                        yellow: 'なんとなく',
+                        red: 'まだ難しい',
+                      }
+                      return (
+                        <button
+                          key={level}
+                          onClick={(e) => { e.stopPropagation(); handleUnderstanding(i, level) }}
+                          title={labelMap[level]}
+                          aria-label={labelMap[level]}
+                          aria-pressed={isActive}
+                          className="transition-transform hover:scale-110 active:scale-95"
+                        >
+                          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect
+                              x="1.5" y="1.5" width="17" height="17" rx="3.5"
+                              fill={fillColor}
+                              fillOpacity={isActive ? 1 : 0.35}
+                              stroke={fillColor}
+                              strokeOpacity={isActive ? 1 : 0.5}
+                              strokeWidth="1.75"
+                            />
+                            <path
+                              d="M5.5 10.5 L8.5 13.5 L14.5 7"
+                              stroke="white"
+                              strokeOpacity={isActive ? 1 : 0.6}
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        </button>
+                      )
+                    })
+                  )}
+                </div>
               </div>
               {section.protocols ? (
                 <div className="px-5 py-3 overflow-x-auto">

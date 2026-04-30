@@ -4,24 +4,20 @@ export interface LevelDefinition {
   xpRequired: number
 }
 
-/**
- * v0.9.9 でランク名称を全面刷新（10段階）。
- * 問題数増に対応して Lv6 (熟練者) 以降の必要 XP を以前より増量している。
- * 最終Lv10 (ネットワークスペシャリスト) は全勲章コンプリートが必須。
- */
 export const LEVELS: LevelDefinition[] = [
   { level: 1,  title: '未経験者',                    xpRequired: 0 },
   { level: 2,  title: '駆け出し',                    xpRequired: 200 },
   { level: 3,  title: '見習い',                      xpRequired: 600 },
   { level: 4,  title: '一人前',                      xpRequired: 1400 },
-  { level: 5,  title: '中堅',                        xpRequired: 2700 },
-  // ↓ 熟練者以降は問題数増に合わせて必要XPを引き上げ
-  { level: 6,  title: '熟練者',                      xpRequired: 6000 },
-  { level: 7,  title: '達人',                        xpRequired: 11000 },
-  { level: 8,  title: '名人',                        xpRequired: 18000 },
-  { level: 9,  title: 'ネットワークエキスパート',    xpRequired: 28000 },
+  { level: 5,  title: '中堅',                        xpRequired: 4000 },
+  { level: 6,  title: '熟練者',                      xpRequired: 8000 },
+  { level: 7,  title: '達人',                        xpRequired: 20000 },
+  { level: 8,  title: '名人',                        xpRequired: 50000 },
+  { level: 9,  title: 'ネットワークエキスパート',    xpRequired: 85000 },
   // Lv10 は XP しきい値だけでなく勲章コンプも必須（getLevelFromXp の第2引数で判定）
-  { level: 10, title: 'ネットワークスペシャリスト', xpRequired: 40000 },
+  { level: 10, title: 'ネットワークスペシャリスト', xpRequired: 150000 },
+  // Lv11 は Lv10（勲章コンプ必須）を経由しないと到達不可
+  { level: 11, title: '神',                          xpRequired: 500000 },
 ]
 
 export const MAX_LEVEL_REQUIRES_ALL_BADGES = true
@@ -37,7 +33,7 @@ export function getLevelFromXp(
 ): LevelDefinition {
   let result = LEVELS[0]
   for (const lv of LEVELS) {
-    // Lv10 は勲章コンプ必須
+    // Lv10 は勲章コンプ必須（Lv11 は Lv10 経由が必須なので実質同じ制約）
     if (lv.level === 10 && !allBadgesUnlocked) break
     if (xp >= lv.xpRequired) result = lv
     else break

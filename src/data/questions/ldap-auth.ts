@@ -34,11 +34,11 @@ export const ldapAuthQuestions: Question[] = [
   {
     id: 'q-163',
     topicId: 'security',
-    questionText: 'Kerberosプロトコルにおいてクライアントがサービスにアクセスするために取得する証明書を{{blank}}という。',
+    questionText: 'Kerberosプロトコルにおいてクライアントがサービスにアクセスするために取得するチケットを{{blank}}という。',
     correctAnswer: 'サービスチケット（ST）',
     choices: ['サービスチケット（ST）', 'TGT（Ticket Granting Ticket）', 'PKIトークン', 'OTPトークン'],
     isImportant: false,
-    explanation: 'Kerberosの流れ：①KDC/ASにTGTを要求 ②TGTを持ちKDC/TGSにサービスチケット（ST）を要求 ③STをサービスに提示してアクセス。パスワードをネットワーク上に流さない設計。',
+    explanation: 'Kerberos の TGT・ST は X.509 のような「証明書」ではなく、KDC が発行する「チケット（暗号化された認可情報）」である。流れ：①KDC/AS に TGT を要求 ②TGT を提示して KDC/TGS にサービスチケット（ST）を要求 ③ST をサービスに提示してアクセス。パスワード自体はネットワーク上に流さない仕組み。',
     difficulty: 3,
   },
 ]

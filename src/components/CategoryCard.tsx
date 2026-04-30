@@ -1,6 +1,13 @@
 import { Link } from 'react-router-dom'
 import type { Category } from '../types'
 
+interface MasterySummary {
+  consecutive: number
+  correct: number
+  incorrect: number
+  total: number
+}
+
 interface CategoryCardProps {
   category: Category
   questionCount: number
@@ -8,49 +15,45 @@ interface CategoryCardProps {
   mcRate: number | null
   /** 記述モードの正答率。null = 未挑戦 */
   wrRate: number | null
+  /** 4択の達成度サマリー */
+  mcMastery: MasterySummary
+  /** 記述の達成度サマリー */
+  wrMastery: MasterySummary
   /** 最終学習日時の ISO 文字列。未学習なら空文字 */
   lastStudiedAt: string
 }
 
-function rateColor(rate: number): string {
-  if (rate >= 80) return 'bg-emerald-500'
-  if (rate >= 50) return 'bg-amber-400'
-  return 'bg-red-500'
-}
+// 4セグメントの達成度バー
+function MasteryBar({ label, mastery }: { label: string; mastery: MasterySummary }) {
+  const { consecutive, correct, incorrect, total } = mastery
+  if (total === 0) return null
+  const unattempted = Math.max(0, total - consecutive - correct - incorrect)
+  const pct = (n: number) => `${(n / total) * 100}%`
 
-interface MiniBarProps {
-  label: string
-  rate: number | null
-}
-function MiniBar({ label, rate }: MiniBarProps) {
   return (
     <div className="flex items-center gap-1.5">
       <span className="text-[9px] font-bold text-slate-400 w-5 flex-shrink-0">{label}</span>
-      {rate !== null ? (
-        <>
-          <div
-            className="flex-1 h-1 rounded-full bg-slate-100 overflow-hidden"
-            role="progressbar"
-            aria-valuenow={rate}
-            aria-valuemin={0}
-            aria-valuemax={100}
-            aria-label={`${label}正答率 ${rate}%`}
-          >
-            <div
-              className={`h-full rounded-full transition-all ${rateColor(rate)}`}
-              style={{ width: `${rate}%` }}
-            />
-          </div>
-          <span className="text-[10px] font-medium text-slate-500 tabular-nums w-7 text-right flex-shrink-0">
-            {rate}%
-          </span>
-        </>
-      ) : (
-        <>
-          <div className="flex-1 h-1 rounded-full bg-slate-100" aria-hidden="true" />
-          <span className="text-[10px] text-slate-300 w-7 text-right flex-shrink-0">—</span>
-        </>
-      )}
+      <div
+        className="flex-1 h-1.5 rounded-full overflow-hidden flex bg-slate-100"
+        role="progressbar"
+        aria-label={`${label} 達成度`}
+        aria-valuemin={0}
+        aria-valuemax={total}
+        aria-valuenow={consecutive + correct}
+      >
+        {consecutive > 0 && (
+          <div className="h-full bg-blue-500 flex-shrink-0" style={{ width: pct(consecutive) }} />
+        )}
+        {correct > 0 && (
+          <div className="h-full bg-emerald-500 flex-shrink-0" style={{ width: pct(correct) }} />
+        )}
+        {incorrect > 0 && (
+          <div className="h-full bg-orange-400 flex-shrink-0" style={{ width: pct(incorrect) }} />
+        )}
+        {unattempted > 0 && (
+          <div className="h-full bg-slate-200 flex-shrink-0" style={{ width: pct(unattempted) }} />
+        )}
+      </div>
     </div>
   )
 }
@@ -60,6 +63,8 @@ export default function CategoryCard({
   questionCount,
   mcRate,
   wrRate,
+  mcMastery,
+  wrMastery,
   lastStudiedAt: _lastStudiedAt,
 }: CategoryCardProps) {
   const isIot = category.id === 'iot'
@@ -82,27 +87,39 @@ export default function CategoryCard({
         </span>
       )}
 
-      {/* 1行目：カテゴリ名 + 問題数 */}
-      <div className="flex items-baseline justify-between gap-2 pr-8">
+      {/* カテゴリ名 */}
+      <div className="pr-8">
         <p
-          className={`font-semibold text-sm leading-tight truncate ${
+          className={`font-semibold text-[13px] sm:text-sm leading-tight truncate ${
             isEmpty ? 'text-slate-400' : 'text-slate-800 group-hover:text-blue-700'
           } transition-colors`}
         >
           {category.name}
         </p>
-        <span className={`text-[11px] flex-shrink-0 ${isEmpty ? 'text-slate-300' : 'text-slate-400'}`}>
-          {questionCount}問
-        </span>
       </div>
 
-      {/* 2行目以降：4択／記述の2本バー */}
+      {/* 達成度バー + 数字 */}
       {isEmpty ? (
         <span className="text-[11px] text-slate-300">準備中</span>
       ) : (
         <div className="space-y-1">
-          <MiniBar label="4択" rate={mcRate} />
-          <MiniBar label="記述" rate={wrRate} />
+          <MasteryBar label="4択" mastery={mcMastery} />
+          <MasteryBar label="記述" mastery={wrMastery} />
+          {/* 数字テキスト行 */}
+          <div className="flex items-center gap-1.5 text-[10px] text-slate-400 leading-none pt-0.5 flex-wrap">
+            <span>全<span className="font-medium">{questionCount}</span>問</span>
+            {(mcRate !== null || wrRate !== null) && (
+              <>
+                <span className="text-slate-200">|</span>
+                <span>
+                  正答率：
+                  {mcRate !== null && <>4択 <span className="font-medium text-slate-500">{mcRate}%</span></>}
+                  {mcRate !== null && wrRate !== null && <span className="mx-0.5">　</span>}
+                  {wrRate !== null && <>記述 <span className="font-medium text-slate-500">{wrRate}%</span></>}
+                </span>
+              </>
+            )}
+          </div>
         </div>
       )}
     </>

@@ -91,6 +91,7 @@ export const sdnQuestions: Question[] = [
     isImportant: true,
     explanation: 'VNI（VXLAN Network Identifier）は24ビットで約1677万（2の24乗）の仮想セグメントを識別できる。これはVLAN IDの12ビット（4094個）の制約を大幅に超える。クラウド事業者がテナントごとに独立したL2ネットワークを提供するマルチテナント環境に適している。',
     difficulty: 2,
+    excludeFromWritten: true,
   },
   {
     id: 'q-332',

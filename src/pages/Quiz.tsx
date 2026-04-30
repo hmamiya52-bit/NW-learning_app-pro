@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { questions as allQuestions } from '../data/questions'
 import { categories } from '../data/categories'
-import { addAnswerRecord, getAllProgress, saveStudySession, updateProgress } from '../lib/storage'
+import { addAnswerRecord, getAllProgress, saveStudySession, updateProgress, updateQuestionMastery } from '../lib/storage'
 import type { Question, StudySession } from '../types'
 import ModeSelect from '../components/quiz/ModeSelect'
 import { NOTE_CATEGORY_IDS } from './NoteDetail'
@@ -13,6 +13,7 @@ import QuizSummary from './QuizSummary'
 import { recordGamificationAnswer } from '../lib/gamification'
 import BadgeUnlockToast from '../components/gamification/BadgeUnlockToast'
 import type { BadgeDefinition } from '../data/badges'
+import { addActivityEvent, upsertQuizSessionEvent } from '../lib/activityLog'
 
 type Phase = 'mode-select' | 'question' | 'result-mc' | 'result-wr' | 'summary'
 type AnswerMode = 'multiple-choice' | 'written'
@@ -74,6 +75,8 @@ export default function Quiz() {
 
   // セッションID（リトライのたびに更新）
   const sessionId = useRef(crypto.randomUUID())
+  // セッション中の累積 XP（セッション完了時に activityLog へ記録）
+  const sessionXpRef = useRef(0)
 
   // セッション開始時刻（完了時に上書きしないよう ref で保持）
   const sessionStartedAt = useRef('')
@@ -84,15 +87,22 @@ export default function Quiz() {
   // 解答モード選択画面で「重要問題のみを出題」が ON か
   const [onlyImportant, setOnlyImportant] = useState(false)
 
+  const [phase, setPhase] = useState<Phase>('mode-select')
+  const [answerMode, setAnswerMode] = useState<AnswerMode>('multiple-choice')
+
   // 問題リスト（retryListがあればそちらを優先）
   const baseList = useMemo(
     () => filterQuestions(mode, categoryId, onlyImportant),
     [mode, categoryId, onlyImportant]
   )
-  const questionList = retryList ?? baseList
-
-  const [phase, setPhase] = useState<Phase>('mode-select')
-  const [answerMode, setAnswerMode] = useState<AnswerMode>('multiple-choice')
+  // 答えモードに応じて記述非対応問題を除外
+  const questionList = useMemo(() => {
+    const src = retryList ?? baseList
+    if (answerMode === 'written') {
+      return src.filter((q) => !q.excludeFromWritten)
+    }
+    return src
+  }, [retryList, baseList, answerMode])
   const [currentIndex, setCurrentIndex] = useState(0)
   const [logs, setLogs] = useState<AnswerLog[]>([])
   const [lastSelected, setLastSelected] = useState('')
@@ -108,6 +118,7 @@ export default function Quiz() {
     if (phase === 'question' && startedSessionId.current !== sessionId.current) {
       startedSessionId.current = sessionId.current
       sessionStartedAt.current = new Date().toISOString()
+      sessionXpRef.current = 0
       const session: StudySession = {
         id: sessionId.current,
         startedAt: sessionStartedAt.current,
@@ -139,6 +150,7 @@ export default function Quiz() {
         answeredAt: new Date().toISOString(),
       })
       updateProgress(currentQuestion.topicId, isCorrect, 'multiple-choice')
+      updateQuestionMastery(currentQuestion.id, 'multiple-choice', isCorrect)
       const gr = recordGamificationAnswer({
         questionId: currentQuestion.id,
         topicId: currentQuestion.topicId,
@@ -148,7 +160,14 @@ export default function Quiz() {
         difficulty: currentQuestion.difficulty,
       })
       setLastXpGained(gr.xpGained)
-      if (gr.newBadges.length > 0) setPendingBadges((prev) => [...prev, ...gr.newBadges])
+      sessionXpRef.current += gr.xpGained
+      if (gr.newBadges.length > 0) {
+        setPendingBadges((prev) => [...prev, ...gr.newBadges])
+        const now = new Date()
+        for (const badge of gr.newBadges) {
+          addActivityEvent({ type: 'badge-unlock', date: now.toISOString().slice(0, 10), createdAt: now.toISOString(), xp: badge.xpBonus, payload: { badgeId: badge.id, badgeName: badge.name, tier: badge.tier } })
+        }
+      }
       setPhase('result-mc')
     },
     [currentQuestion]
@@ -170,6 +189,7 @@ export default function Quiz() {
           answeredAt: new Date().toISOString(),
         })
         updateProgress(currentQuestion.topicId, true, 'written')
+        updateQuestionMastery(currentQuestion.id, 'written', true)
         const gr = recordGamificationAnswer({
           questionId: currentQuestion.id,
           topicId: currentQuestion.topicId,
@@ -179,7 +199,14 @@ export default function Quiz() {
           difficulty: currentQuestion.difficulty,
         })
         setLastXpGained(gr.xpGained)
-        if (gr.newBadges.length > 0) setPendingBadges((prev) => [...prev, ...gr.newBadges])
+        sessionXpRef.current += gr.xpGained
+        if (gr.newBadges.length > 0) {
+          setPendingBadges((prev) => [...prev, ...gr.newBadges])
+          const now = new Date()
+          for (const badge of gr.newBadges) {
+            addActivityEvent({ type: 'badge-unlock', date: now.toISOString().slice(0, 10), createdAt: now.toISOString(), xp: badge.xpBonus, payload: { badgeId: badge.id, badgeName: badge.name, tier: badge.tier } })
+          }
+        }
         setLastIsCorrect(true)
         setAutoCorrect(true)
       } else {
@@ -202,9 +229,20 @@ export default function Quiz() {
       const newLogs = [...logs, newLog]
       setLogs(newLogs)
 
+      // 1問ごとに upsert（途中離脱でも記録が残る）
+      const correctCount = newLogs.filter((l) => l.isCorrect).length
+      upsertQuizSessionEvent(sessionId.current, {
+        mode: (mode as 'topic' | 'weakness' | 'random' | 'important') ?? 'random',
+        categoryId,
+        categoryName: categoryId ? (categories.find(c => c.id === categoryId)?.name ?? null) : null,
+        questionCount: newLogs.length,
+        correctCount,
+        answerMode,
+        xp: sessionXpRef.current,
+      })
+
       if (isLast) {
         // セッション完了（開始時刻は sessionStartedAt.current を再利用）
-        const correctCount = newLogs.filter((l) => l.isCorrect).length
         saveStudySession({
           id: sessionId.current,
           startedAt: sessionStartedAt.current,
@@ -214,6 +252,7 @@ export default function Quiz() {
           questionCount: questionList.length,
           correctCount,
         })
+        sessionXpRef.current = 0
         setPhase('summary')
       } else {
         setCurrentIndex((i) => i + 1)
@@ -236,6 +275,7 @@ export default function Quiz() {
         answeredAt: new Date().toISOString(),
       })
       updateProgress(currentQuestion.topicId, isCorrect, 'written')
+      updateQuestionMastery(currentQuestion.id, 'written', isCorrect)
       const gr = recordGamificationAnswer({
         questionId: currentQuestion.id,
         topicId: currentQuestion.topicId,
@@ -245,7 +285,14 @@ export default function Quiz() {
         difficulty: currentQuestion.difficulty,
       })
       setLastXpGained(gr.xpGained)
-      if (gr.newBadges.length > 0) setPendingBadges((prev) => [...prev, ...gr.newBadges])
+      sessionXpRef.current += gr.xpGained
+      if (gr.newBadges.length > 0) {
+        setPendingBadges((prev) => [...prev, ...gr.newBadges])
+        const now = new Date()
+        for (const badge of gr.newBadges) {
+          addActivityEvent({ type: 'badge-unlock', date: now.toISOString().slice(0, 10), createdAt: now.toISOString(), xp: badge.xpBonus, payload: { badgeId: badge.id, badgeName: badge.name, tier: badge.tier } })
+        }
+      }
       setLastIsCorrect(isCorrect)
       advanceOrFinish(isCorrect)
     },
@@ -273,6 +320,7 @@ export default function Quiz() {
     }
     // セッションIDをリフレッシュ
     sessionId.current = crypto.randomUUID()
+    sessionXpRef.current = 0
     // 状態をリセットして再スタート
     setRetryList(wrongQuestions)
     setLogs([])

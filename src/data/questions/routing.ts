@@ -126,6 +126,7 @@ export const routingQuestions: Question[] = [
     isImportant: true,
     explanation: 'LOCAL_PREFはIBGP内でのみ共有されるBGP属性で、複数の出口経路（EBGP接続先）の優先度を設定する。デフォルト値は100で、値が高いほど優先される。例えば主回線にLOCAL_PREF=200、バックアップに100を設定する。',
     difficulty: 2,
+    excludeFromWritten: true,
   },
   {
     id: 'q-303',

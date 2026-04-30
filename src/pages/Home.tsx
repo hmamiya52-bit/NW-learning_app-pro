@@ -2,47 +2,15 @@ import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { categories } from '../data/categories'
 import { questions } from '../data/questions'
-import { getAllProgress, getStudySessions } from '../lib/storage'
+import { getAllProgress, getAnswerRecords, getQuestionMastery } from '../lib/storage'
 import CategoryCard from '../components/CategoryCard'
-import type { StudySession } from '../types'
 import LevelWidget from '../components/gamification/LevelWidget'
+import { getRecentDaySummaries } from '../lib/activityLog'
+import { StudyHistoryList } from '../components/history/StudyHistoryList'
 
 // ----------------------------------------------------------------
 // Helper functions
 // ----------------------------------------------------------------
-
-function formatSessionDate(iso: string): string {
-  if (!iso) return '—'
-  const d = new Date(iso)
-  const now = new Date()
-  const diffMs = now.getTime() - d.getTime()
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
-  if (diffDays === 0) return '今日'
-  if (diffDays === 1) return '昨日'
-  if (diffDays < 7) return `${diffDays}日前`
-  return `${d.getMonth() + 1}/${d.getDate()}`
-}
-
-function modeLabel(mode: StudySession['mode']): string {
-  switch (mode) {
-    case 'important': return '重要問題'
-    case 'weakness': return '弱点克服'
-    case 'random': return 'ランダム'
-    case 'topic': return 'カテゴリ別'
-    default: return mode
-  }
-}
-
-function sessionRate(s: StudySession): number | null {
-  if (s.questionCount === 0) return null
-  return Math.round((s.correctCount / s.questionCount) * 100)
-}
-
-function rateTextColor(rate: number): string {
-  if (rate >= 80) return 'text-emerald-600'
-  if (rate >= 50) return 'text-amber-600'
-  return 'text-red-500'
-}
 
 // ----------------------------------------------------------------
 // Menu card data
@@ -160,27 +128,33 @@ const MENU_CARDS: MenuCard[] = [
 export default function Home() {
   // --- Data ---
   const allProgress = useMemo(() => getAllProgress(), [])
-  const sessions = useMemo(
-    () =>
-      getStudySessions()
-        .filter((s) => s.endedAt)
-        .sort((a, b) => (b.startedAt > a.startedAt ? 1 : -1))
-        .slice(0, 5),
-    []
-  )
+  const daySummaries = useMemo(() => getRecentDaySummaries(10), [])
 
   const totalQuestions = questions.length
   const importantCount = questions.filter((q) => q.isImportant).length
 
-  const studiedTopicIds = useMemo(
-    () => new Set(allProgress.filter((p) => p.totalAttempts > 0).map((p) => p.topicId)),
-    [allProgress]
+  // 「達成」した問題ID集合：1回でも正解した問題の questionId（重複は1つに集約）
+  const achievedQuestionIds = useMemo(() => {
+    const set = new Set<string>()
+    for (const r of getAnswerRecords()) {
+      if (r.isCorrect) set.add(r.questionId)
+    }
+    return set
+  }, [])
+
+  // 全体達成数 = 達成済みのうち、現在も questions に存在する ID の数
+  const achievedCount = useMemo(
+    () => questions.filter((q) => achievedQuestionIds.has(q.id)).length,
+    [achievedQuestionIds],
   )
 
-  const studiedCount = useMemo(
-    () => questions.filter((q) => studiedTopicIds.has(q.topicId)).length,
-    [studiedTopicIds]
-  )
+  // 弱点克服モードの非活性化判定用：1問でも回答していれば学習済みとみなす
+  const studiedCount = useMemo(() => {
+    const studiedTopicIds = new Set(
+      allProgress.filter((p) => p.totalAttempts > 0).map((p) => p.topicId),
+    )
+    return questions.filter((q) => studiedTopicIds.has(q.topicId)).length
+  }, [allProgress])
 
   // 4択／記述の正答率は分離して算出
   const globalMcRate = useMemo(() => {
@@ -198,6 +172,7 @@ export default function Home() {
   }, [allProgress])
 
   const categoryStats = useMemo(() => {
+    const masteryMap = getQuestionMastery()
     return categories.map((cat) => {
       const catQuestions = questions.filter((q) => q.topicId === cat.id)
       const catProgress = allProgress.filter((p) => p.topicId === cat.id)
@@ -207,6 +182,20 @@ export default function Home() {
       const wrCorrect = catProgress.reduce((s, p) => s + p.wrCorrect, 0)
       const mcRate = mcTotal > 0 ? Math.round((mcCorrect / mcTotal) * 100) : null
       const wrRate = wrTotal > 0 ? Math.round((wrCorrect / wrTotal) * 100) : null
+
+      const mcMastery = { consecutive: 0, correct: 0, incorrect: 0 }
+      const wrMastery = { consecutive: 0, correct: 0, incorrect: 0 }
+      for (const q of catQuestions) {
+        const ms = masteryMap[`${q.id}:multiple-choice`]
+        if (ms === 'consecutive') mcMastery.consecutive++
+        else if (ms === 'correct') mcMastery.correct++
+        else if (ms === 'incorrect') mcMastery.incorrect++
+        const ws = masteryMap[`${q.id}:written`]
+        if (ws === 'consecutive') wrMastery.consecutive++
+        else if (ws === 'correct') wrMastery.correct++
+        else if (ws === 'incorrect') wrMastery.incorrect++
+      }
+
       const lastStudied =
         catProgress
           .filter((p) => p.lastStudiedAt)
@@ -217,10 +206,29 @@ export default function Home() {
         questionCount: catQuestions.length,
         mcRate,
         wrRate,
+        mcMastery: { ...mcMastery, total: catQuestions.length },
+        wrMastery: { ...wrMastery, total: catQuestions.length },
         lastStudiedAt: lastStudied,
       }
     })
   }, [allProgress])
+
+  // 全カテゴリの mastery を集計（凡例バー用）
+  const globalMastery = useMemo(() => {
+    const mc = { consecutive: 0, correct: 0, incorrect: 0, total: 0 }
+    const wr = { consecutive: 0, correct: 0, incorrect: 0, total: 0 }
+    for (const s of categoryStats) {
+      mc.consecutive += s.mcMastery.consecutive
+      mc.correct += s.mcMastery.correct
+      mc.incorrect += s.mcMastery.incorrect
+      mc.total += s.mcMastery.total
+      wr.consecutive += s.wrMastery.consecutive
+      wr.correct += s.wrMastery.correct
+      wr.incorrect += s.wrMastery.incorrect
+      wr.total += s.wrMastery.total
+    }
+    return { mc, wr }
+  }, [categoryStats])
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#f8fafc' }}>
@@ -251,30 +259,34 @@ export default function Home() {
               return weaknessDisabled ? (
                 <div
                   key={card.to}
-                  className="flex items-center gap-3 bg-slate-50 rounded-xl border border-slate-200 px-3 py-2.5 opacity-60 cursor-not-allowed"
+                  className="flex items-center gap-2 sm:gap-3 bg-slate-50 rounded-xl border border-slate-200 px-2.5 py-2 sm:px-3 sm:py-2.5 opacity-60 cursor-not-allowed"
                 >
-                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${card.iconBg}`}>
-                    {card.icon}
+                  <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${card.iconBg}`}>
+                    <span className="[&>svg]:w-5 [&>svg]:h-5 sm:[&>svg]:w-6 sm:[&>svg]:h-6 flex">
+                      {card.icon}
+                    </span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-slate-500 leading-tight truncate">{card.title}</p>
-                    <p className="text-[11px] text-slate-400 leading-tight">問題を解くと使えます</p>
+                    <p className="text-[13px] sm:text-sm font-bold text-slate-500 leading-tight truncate">{card.title}</p>
+                    <p className="text-[10px] sm:text-[11px] text-slate-400 leading-tight truncate">問題を解くと使えます</p>
                   </div>
                 </div>
               ) : (
                 <Link
                   key={card.to}
                   to={card.to}
-                  className="group relative flex items-center gap-3 bg-white rounded-xl border border-slate-200 px-3 py-2.5 hover:border-blue-400 hover:shadow-md transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                  className="group relative flex items-center gap-2 sm:gap-3 bg-white rounded-xl border border-slate-200 px-2.5 py-2 sm:px-3 sm:py-2.5 hover:border-blue-400 hover:shadow-md transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                 >
-                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${card.iconBg}`}>
-                    {card.icon}
+                  <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${card.iconBg}`}>
+                    <span className="[&>svg]:w-5 [&>svg]:h-5 sm:[&>svg]:w-6 sm:[&>svg]:h-6 flex">
+                      {card.icon}
+                    </span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-slate-800 leading-tight group-hover:text-blue-700 transition-colors truncate">
+                    <p className="text-[13px] sm:text-sm font-bold text-slate-800 leading-tight group-hover:text-blue-700 transition-colors truncate">
                       {card.title}
                     </p>
-                    <p className="text-[11px] text-slate-400 leading-tight truncate">{card.description}</p>
+                    <p className="text-[10px] sm:text-[11px] text-slate-400 leading-tight truncate">{card.description}</p>
                   </div>
                 </Link>
               )
@@ -305,61 +317,66 @@ export default function Home() {
             <div className="flex items-center gap-0 divide-x divide-slate-100 mb-3">
               <div className="flex items-baseline gap-1 pr-4">
                 <span className="text-xl font-black tabular-nums leading-none" style={{ color: '#1a3a5c' }}>
-                  {studiedCount}
+                  {achievedCount}
                 </span>
                 <span className="text-xs font-normal text-slate-400">/{totalQuestions}</span>
-                <span className="text-[11px] text-slate-400 ml-1">学習済み</span>
+                <span className="text-[11px] text-slate-400 ml-1">達成</span>
               </div>
               <div className="flex items-baseline gap-1 pl-4">
                 <span className="text-xl font-black tabular-nums text-amber-500 leading-none">{importantCount}</span>
                 <span className="text-[11px] text-slate-400 ml-1">重要問題</span>
               </div>
             </div>
-            {/* Progress bars: 4択／記述 を別々に表示 */}
+            {/* Progress bars: 4択 + 記述 の達成度（4セグメント） */}
             <div className="space-y-2">
-              {/* 4択 */}
-              <div>
-                <div className="flex justify-between text-[11px] mb-1">
-                  <span className="text-slate-500 font-bold">4択 正答率</span>
-                  <span className="tabular-nums" style={{ color: '#1a3a5c' }}>
-                    {globalMcRate !== null ? `${globalMcRate}%` : '—'}
+              {(['mc', 'wr'] as const).map((mode) => {
+                const m = globalMastery[mode]
+                const unattempted = Math.max(0, m.total - m.consecutive - m.correct - m.incorrect)
+                const pct = (n: number) => m.total > 0 ? `${(n / m.total) * 100}%` : '0%'
+                return (
+                  <div key={mode}>
+                    <div className="text-[11px] mb-1 font-bold text-slate-500">
+                      {mode === 'mc' ? '4択 達成度' : '記述 達成度'}
+                    </div>
+                    <div
+                      className="h-2 bg-slate-100 rounded-full overflow-hidden flex"
+                      role="progressbar"
+                      aria-label={`${mode === 'mc' ? '4択' : '記述'} 達成度`}
+                      aria-valuemin={0}
+                      aria-valuemax={m.total}
+                      aria-valuenow={m.consecutive + m.correct}
+                    >
+                      {m.consecutive > 0 && <div className="h-full bg-blue-500 flex-shrink-0 transition-all duration-500" style={{ width: pct(m.consecutive) }} />}
+                      {m.correct > 0 && <div className="h-full bg-emerald-500 flex-shrink-0 transition-all duration-500" style={{ width: pct(m.correct) }} />}
+                      {m.incorrect > 0 && <div className="h-full bg-orange-400 flex-shrink-0 transition-all duration-500" style={{ width: pct(m.incorrect) }} />}
+                      {unattempted > 0 && <div className="h-full bg-slate-200 flex-shrink-0" style={{ width: pct(unattempted) }} />}
+                    </div>
+                  </div>
+                )
+              })}
+              {/* 凡例 */}
+              <div className="flex items-center flex-wrap gap-x-3 gap-y-1 pt-0.5">
+                {[
+                  { color: 'bg-blue-500', label: '連続正解' },
+                  { color: 'bg-emerald-500', label: '１回正解' },
+                  { color: 'bg-orange-400', label: '不正解' },
+                  { color: 'bg-slate-200', label: '未着手' },
+                ].map(({ color, label }) => (
+                  <span key={label} className="flex items-center gap-1 text-[10px] text-slate-400">
+                    <span className={`w-2.5 h-2.5 rounded-sm flex-shrink-0 ${color}`} />
+                    {label}
                   </span>
-                </div>
-                <div
-                  className="h-1.5 bg-slate-100 rounded-full overflow-hidden"
-                  role="progressbar"
-                  aria-valuenow={globalMcRate ?? 0}
-                  aria-valuemin={0}
-                  aria-valuemax={100}
-                  aria-label={`4択正答率 ${globalMcRate ?? 0}%`}
-                >
-                  <div
-                    className="h-full rounded-full transition-all duration-500"
-                    style={{ width: `${globalMcRate ?? 0}%`, backgroundColor: '#0066cc' }}
-                  />
-                </div>
+                ))}
               </div>
-              {/* 記述 */}
-              <div>
-                <div className="flex justify-between text-[11px] mb-1">
-                  <span className="text-slate-500 font-bold">記述 正答率</span>
-                  <span className="tabular-nums" style={{ color: '#1a3a5c' }}>
-                    {globalWrRate !== null ? `${globalWrRate}%` : '—'}
-                  </span>
-                </div>
-                <div
-                  className="h-1.5 bg-slate-100 rounded-full overflow-hidden"
-                  role="progressbar"
-                  aria-valuenow={globalWrRate ?? 0}
-                  aria-valuemin={0}
-                  aria-valuemax={100}
-                  aria-label={`記述正答率 ${globalWrRate ?? 0}%`}
-                >
-                  <div
-                    className="h-full rounded-full transition-all duration-500"
-                    style={{ width: `${globalWrRate ?? 0}%`, backgroundColor: '#d97706' }}
-                  />
-                </div>
+              {/* ラベル付き数字 */}
+              <div className="text-[11px] text-slate-400 pt-0.5">
+                問題数：{totalQuestions}問
+                {globalMcRate !== null && (
+                  <> ｜ ４択正答率 <span className="font-medium text-slate-500">{globalMcRate}%</span></>
+                )}
+                {globalWrRate !== null && (
+                  <> ｜ 記述正答率 <span className="font-medium text-slate-500">{globalWrRate}%</span></>
+                )}
               </div>
             </div>
           </div>
@@ -374,59 +391,41 @@ export default function Home() {
             カテゴリ一覧（{categories.length}分野）
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-            {categoryStats.map(({ category, questionCount, mcRate, wrRate, lastStudiedAt }) => (
+            {categoryStats.map(({ category, questionCount, mcRate, wrRate, mcMastery, wrMastery, lastStudiedAt }) => (
               <CategoryCard
                 key={category.id}
                 category={category}
                 questionCount={questionCount}
                 mcRate={mcRate}
                 wrRate={wrRate}
+                mcMastery={mcMastery}
+                wrMastery={wrMastery}
                 lastStudiedAt={lastStudiedAt}
               />
             ))}
           </div>
         </section>
 
-        {/* ===== 最近の学習履歴 ===== */}
+        {/* ===== 学習履歴 ===== */}
         <section aria-labelledby="history-heading">
-          <h2
-            id="history-heading"
-            className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3"
-          >
-            最近の学習履歴
-          </h2>
-          {sessions.length === 0 ? (
-            <div className="bg-white border border-slate-200 rounded-xl p-6 text-center">
-              <p className="text-slate-400 text-sm">まだ学習履歴がありません</p>
-              <p className="text-slate-300 text-xs mt-1">上のモードから学習を始めましょう</p>
+          <div className="flex items-center justify-between mb-3">
+            <h2
+              id="history-heading"
+              className="text-xs font-bold text-slate-500 uppercase tracking-wider"
+            >
+              学習履歴（直近10日）
+            </h2>
+          </div>
+          <StudyHistoryList daySummaries={daySummaries} />
+          {daySummaries.length > 0 && (
+            <div className="mt-2 flex justify-end">
+              <Link
+                to="/history"
+                className="text-xs text-indigo-600 hover:text-indigo-800 hover:underline transition-colors"
+              >
+                全件表示 →
+              </Link>
             </div>
-          ) : (
-            <ul className="bg-white border border-slate-200 rounded-xl divide-y divide-slate-100 overflow-hidden">
-              {sessions.map((s) => {
-                const rate = sessionRate(s)
-                return (
-                  <li key={s.id} className="flex items-center gap-3 px-4 py-3">
-                    <span
-                      className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-base flex-shrink-0"
-                      aria-hidden="true"
-                    >
-                      {s.mode === 'important' ? '★' : s.mode === 'weakness' ? '📉' : s.mode === 'topic' ? '📂' : '🎲'}
-                    </span>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-slate-700 truncate">{modeLabel(s.mode)}</p>
-                      <p className="text-xs text-slate-400">
-                        {formatSessionDate(s.startedAt)} · {s.questionCount}問
-                      </p>
-                    </div>
-                    {rate !== null && (
-                      <span className={`text-sm font-bold tabular-nums flex-shrink-0 ${rateTextColor(rate)}`}>
-                        {rate}%
-                      </span>
-                    )}
-                  </li>
-                )
-              })}
-            </ul>
           )}
         </section>
 

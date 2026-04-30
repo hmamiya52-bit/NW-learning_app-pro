@@ -44,11 +44,11 @@ export const wirelessQuestions: Question[] = [
   {
     id: 'q-104',
     topicId: 'wireless',
-    questionText: '無線LANで隠れ端末問題を解決するために使用するアクセス制御方式を{{blank}}という。',
+    questionText: '無線LANで媒体アクセス制御の基本方式となるのは{{blank}}である。',
     correctAnswer: 'CSMA/CA（Collision Avoidance）',
     choices: ['CSMA/CA（Collision Avoidance）', 'CSMA/CD', 'TDMA', 'FDMA'],
     isImportant: false,
-    explanation: '無線LANはキャリア衝突を検出できないためCSMA/CAを採用。送信前にランダム時間（バックオフ）待機してから送信する。さらにRTS/CTSを使って隠れ端末問題を軽減できる。',
+    explanation: 'CSMA/CA は無線LAN（IEEE 802.11）の基本的な媒体アクセス制御方式。電波は衝突検出が困難なため、送信前にキャリアセンスし、空いていればランダム時間（バックオフ）待機してから送信する「衝突回避型」である（有線LANのCSMA/CDとは異なる）。なお、互いの電波が直接届かない端末同士が同時送信して衝突する「隠れ端末問題」への対策としては、CSMA/CAに加えて RTS/CTS（送信権予約）を併用するのが定番。設問は基本方式を問うものなので CSMA/CA が正解。',
     difficulty: 2,
   },
   // R7-8年 Wi-Fi 7問題

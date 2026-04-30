@@ -50,6 +50,7 @@ export const dnsQuestions: Question[] = [
     isImportant: false,
     explanation: '正引き（Forward Lookup）はAレコードを使ったドメイン→IPの変換。逆引き（Reverse Lookup）はPTRレコードを使ったIP→ドメインの変換でin-addr.arpa ドメインを使用する。',
     difficulty: 1,
+    excludeFromWritten: true,
   },
   {
     id: 'q-025',

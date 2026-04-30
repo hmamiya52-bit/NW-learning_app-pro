@@ -1,10 +1,12 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
-import { useParams, useNavigate, Link } from 'react-router-dom'
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
+import { useParams, useNavigate, useSearchParams, Link } from 'react-router-dom'
 import { officialAnswers } from '../data/officialAnswers'
 import type { OfficialAnswerSet } from '../data/officialAnswers'
 import { afternoonProblems } from '../data/afternoonProblems'
 import { processRows, BORDER_OUTER, BORDER_INNER, BORDER_HEAD } from '../lib/answerTable'
-import { addRecord, getMaxScore } from '../lib/tracker'
+import { addRecord, getMaxScore, loadRecords } from '../lib/tracker'
+import { addActivityEvent } from '../lib/activityLog'
+import { recordAfternoonXp } from '../lib/gamification'
 
 // ----------------------------------------------------------------
 // Types & storage
@@ -25,6 +27,19 @@ function loadMyAnswers(id: string): MyAnswers {
 
 function saveMyAnswers(id: string, answers: MyAnswers) {
   localStorage.setItem(storageKey(id), JSON.stringify(answers))
+}
+
+function savedAnswersKey(recordId: string) { return `nwsp:savedAnswers:${recordId}` }
+
+function loadSavedAnswers(recordId: string): MyAnswers {
+  try {
+    const raw = localStorage.getItem(savedAnswersKey(recordId))
+    return raw ? JSON.parse(raw) : {}
+  } catch { return {} }
+}
+
+function saveSavedAnswers(recordId: string, answers: MyAnswers) {
+  localStorage.setItem(savedAnswersKey(recordId), JSON.stringify(answers))
 }
 
 function today(): string {
@@ -89,6 +104,7 @@ function AnswerInputTable({
   checkMode,
   scorings,
   onMark,
+  readOnly = false,
 }: {
   answerSet: OfficialAnswerSet
   myAnswers: MyAnswers
@@ -96,6 +112,7 @@ function AnswerInputTable({
   checkMode: boolean
   scorings: Scorings
   onMark: (rowIndex: string, marking: Marking) => void
+  readOnly?: boolean
 }) {
   const rows = processRows(answerSet.answers)
 
@@ -157,10 +174,11 @@ function AnswerInputTable({
             const inputContent = row.essay ? (
               <div>
                 <textarea
-                  className="w-full min-h-[56px] text-xs text-slate-800 border-0 outline-none resize-y bg-transparent leading-snug p-1.5 placeholder:text-slate-300"
+                  className={`w-full min-h-[56px] text-xs text-slate-800 border-0 outline-none resize-y bg-transparent leading-snug p-1.5 placeholder:text-slate-300 ${readOnly ? 'cursor-default' : ''}`}
                   placeholder="記述してください"
                   value={val}
-                  onChange={e => onChange(rowKey, e.target.value)}
+                  onChange={e => !readOnly && onChange(rowKey, e.target.value)}
+                  readOnly={readOnly}
                 />
                 <div className="text-right text-[10px] text-slate-400 pr-1 pb-0.5 leading-none">
                   {val.length} 文字
@@ -177,10 +195,11 @@ function AnswerInputTable({
               <div>
                 <input
                   type="text"
-                  className="w-full text-xs text-slate-800 border-0 outline-none bg-transparent p-1.5 placeholder:text-slate-300"
+                  className={`w-full text-xs text-slate-800 border-0 outline-none bg-transparent p-1.5 placeholder:text-slate-300 ${readOnly ? 'cursor-default' : ''}`}
                   placeholder="—"
                   value={val}
-                  onChange={e => onChange(rowKey, e.target.value)}
+                  onChange={e => !readOnly && onChange(rowKey, e.target.value)}
+                  readOnly={readOnly}
                 />
                 {checkMode && (
                   <div className="mx-1 mb-1 border-t border-indigo-200 pt-1 text-[11px] text-indigo-800 bg-indigo-50 rounded px-2 py-1 leading-snug">
@@ -252,22 +271,60 @@ function AnswerInputTable({
 export default function AfternoonMyAnswer() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const viewRecordId = searchParams.get('recordId')
+  const isViewMode = !!viewRecordId
 
   const answerSet = officialAnswers.find(a => a.id === id)
   const problem = answerSet ? afternoonProblems.find(p => p.id === answerSet.id) : null
 
-  const [myAnswers, setMyAnswers] = useState<MyAnswers>(() =>
-    id ? loadMyAnswers(id) : {}
-  )
-  const [checkMode, setCheckMode] = useState(false)
+  const [myAnswers, setMyAnswers] = useState<MyAnswers>(() => {
+    if (viewRecordId) return loadSavedAnswers(viewRecordId)
+    return id ? loadMyAnswers(id) : {}
+  })
+  const [checkMode, setCheckMode] = useState(isViewMode)
   const [showClearModal, setShowClearModal] = useState(false)
+  const [showFinishConfirm, setShowFinishConfirm] = useState(false)
   const [scorings, setScorings] = useState<Scorings>({})
   const [recorded, setRecorded] = useState(false)
+  const [savedRecordId, setSavedRecordId] = useState<string | null>(null)
+  const [savedXp, setSavedXp] = useState(0)
+
+  const viewRecord = useMemo(() => {
+    if (!viewRecordId) return null
+    return loadRecords().find(r => r.id === viewRecordId) ?? null
+  }, [viewRecordId])
+
+  const attemptNumber = useMemo(() => {
+    if (!viewRecordId || !id) return null
+    const records = loadRecords()
+      .filter(r => r.problemId === id)
+      .sort((a, b) => a.date.localeCompare(b.date))
+    const idx = records.findIndex(r => r.id === viewRecordId)
+    return idx >= 0 ? idx + 1 : null
+  }, [viewRecordId, id])
+
+  // 閲覧モード ⇄ 編集モード切り替え時に state をリセット
+  useEffect(() => {
+    if (viewRecordId) {
+      setMyAnswers(loadSavedAnswers(viewRecordId))
+      setCheckMode(true)
+      setScorings({})
+    } else {
+      // 編集モードに戻ったとき: 下書き（空でも可）を読み込み直す
+      setMyAnswers(id ? loadMyAnswers(id) : {})
+      setCheckMode(false)
+      setScorings({})
+      setRecorded(false)
+      setSavedRecordId(null)
+    }
+  }, [viewRecordId, id])
+
   const timer = useTimer()
 
   useEffect(() => {
-    if (id) saveMyAnswers(id, myAnswers)
-  }, [id, myAnswers])
+    if (id && !isViewMode) saveMyAnswers(id, myAnswers)
+  }, [id, myAnswers, isViewMode])
 
   const handleChange = useCallback((rowIndex: string, value: string) => {
     setMyAnswers(prev => ({ ...prev, [rowIndex]: value }))
@@ -321,8 +378,32 @@ export default function AfternoonMyAnswer() {
     : 0
 
   const handleRecordToTracker = () => {
-    addRecord({ problemId: id, date: today(), score: calculatedScore })
+    const record = addRecord({ problemId: id, date: today(), score: calculatedScore })
+    // 解答を記録IDに紐づけて保存し、下書きをクリア
+    saveSavedAnswers(record.id, myAnswers)
+    const xpGained = recordAfternoonXp(answerSet.section, calculatedScore)
+    addActivityEvent({
+      type: 'afternoon-record',
+      date: today(),
+      createdAt: new Date().toISOString(),
+      xp: xpGained,
+      payload: {
+        problemId: id,
+        year: answerSet.year,
+        section: answerSet.section,
+        number: answerSet.number,
+        title: problem?.title ?? '',
+        score: calculatedScore,
+        recordId: record.id,
+      },
+    })
+    setSavedXp(xpGained)
+    if (id) saveMyAnswers(id, {})
+    setMyAnswers({})
+    setScorings({})
+    setCheckMode(false)
     setRecorded(true)
+    setSavedRecordId(record.id)
   }
 
   return (
@@ -353,21 +434,17 @@ export default function AfternoonMyAnswer() {
         </section>
 
         {/* PDFリンク */}
-        <div className="flex justify-end gap-4">
-          {problem?.questionPdfUrl && (
+        {problem?.questionPdfUrl && (
+          <div className="flex justify-end">
             <a href={problem.questionPdfUrl} target="_blank" rel="noopener noreferrer"
                className="text-xs text-slate-500 hover:text-indigo-600 hover:underline transition-colors">
               問題文 PDF を開く →
             </a>
-          )}
-          <a href={answerSet.pdfUrl} target="_blank" rel="noopener noreferrer"
-             className="text-xs text-indigo-500 hover:text-indigo-700 hover:underline transition-colors">
-            公式 PDF を開く →
-          </a>
-        </div>
+          </div>
+        )}
 
         {/* Timer + progress */}
-        <div className="bg-white rounded-xl border border-slate-200 px-4 py-3 flex items-center gap-4">
+        {!isViewMode && <div className="bg-white rounded-xl border border-slate-200 px-4 py-3 flex items-center gap-4">
           <div className="flex items-center gap-2">
             <span className="text-lg font-mono font-bold text-slate-800 w-20 tabular-nums">
               {timer.fmt(timer.elapsed)}
@@ -404,25 +481,58 @@ export default function AfternoonMyAnswer() {
               />
             </div>
           </div>
-        </div>
+        </div>}
+
+        {/* 閲覧モードバナー */}
+        {isViewMode && (
+          <div className="bg-teal-50 border border-teal-200 rounded-xl px-4 py-2.5 flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-[11px] font-bold text-teal-700">
+                {attemptNumber !== null ? `第${attemptNumber}回` : '過去'}の解答を確認中
+                <span className="ml-1.5 font-normal text-teal-600">（編集不可）</span>
+              </p>
+              {viewRecord && (
+                <p className="text-[10px] text-teal-600 mt-0.5">
+                  解答日：{viewRecord.date.replace(/-/g, '/')}　スコア：{viewRecord.score}点
+                </p>
+              )}
+            </div>
+            <Link
+              to={`/afternoon/answers/${id}/myAnswer`}
+              className="text-[11px] font-bold text-teal-600 hover:text-teal-800 border border-teal-300 rounded-md px-2 py-1 bg-white transition-colors flex-shrink-0"
+            >
+              新たに解答する
+            </Link>
+          </div>
+        )}
 
         {/* Action buttons */}
-        <div className="flex justify-between items-center">
-          <button onClick={handleClear} className="text-[11px] text-red-400 hover:text-red-600 transition-colors">
-            解答をクリア
-          </button>
+        {!isViewMode && <div className="flex justify-between items-center">
+          {!isViewMode && (
+            <button onClick={handleClear} className="text-[11px] text-red-400 hover:text-red-600 transition-colors">
+              解答をクリア
+            </button>
+          )}
           <button
-            onClick={() => { if (!checkMode) timer.pause(); setCheckMode(v => !v) }}
-            className={`text-xs font-bold rounded-lg px-3 py-1.5 transition-colors ${
+            onClick={() => {
+              if (checkMode) {
+                setCheckMode(false)
+              } else if (isViewMode) {
+                setCheckMode(true)
+              } else {
+                setShowFinishConfirm(true)
+              }
+            }}
+            className={`text-xs font-bold rounded-lg px-3 py-1.5 transition-colors ${isViewMode ? '' : ''} ${
               checkMode ? 'bg-indigo-600 text-white hover:bg-indigo-700' : 'text-indigo-600 border border-indigo-300 hover:bg-indigo-50'
-            }`}
+            } ${isViewMode ? 'ml-auto' : ''}`}
           >
             {checkMode ? '答え合わせ中 ✓' : '答え合わせ'}
           </button>
-        </div>
+        </div>}
 
         {/* 採点結果カード */}
-        {checkMode && markedCount > 0 && (
+        {!isViewMode && checkMode && markedCount > 0 && (
           <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 flex items-center justify-between gap-3">
             <div className="space-y-0.5">
               <p className="text-[11px] font-bold text-amber-800">採点結果</p>
@@ -447,6 +557,29 @@ export default function AfternoonMyAnswer() {
           </div>
         )}
 
+        {/* 保存完了カード */}
+        {savedRecordId && !isViewMode && (
+          <div className="bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-3 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <svg className="w-4 h-4 text-emerald-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+              <div>
+                <p className="text-[12px] font-bold text-emerald-800">解答を保存しました。</p>
+                {savedXp > 0 && (
+                  <p className="text-[11px] text-amber-600 font-bold mt-0.5">+{savedXp} XP 獲得！</p>
+                )}
+              </div>
+            </div>
+            <Link
+              to={`/afternoon/answers/${id}/myAnswer?recordId=${savedRecordId}`}
+              className="text-[11px] font-bold text-emerald-700 border border-emerald-300 rounded-md px-2.5 py-1 bg-white hover:bg-emerald-50 transition-colors flex-shrink-0"
+            >
+              保存した解答を確認する →
+            </Link>
+          </div>
+        )}
+
         {/* Input table */}
         <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
           <AnswerInputTable
@@ -456,6 +589,7 @@ export default function AfternoonMyAnswer() {
             checkMode={checkMode}
             scorings={scorings}
             onMark={handleMark}
+            readOnly={isViewMode}
           />
         </div>
 
@@ -470,6 +604,31 @@ export default function AfternoonMyAnswer() {
         </div>
 
       </div>
+
+      {/* 答え合わせ確認ダイアログ */}
+      {showFinishConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={() => setShowFinishConfirm(false)}>
+          <div className="absolute inset-0 bg-black/40" />
+          <div className="relative bg-white rounded-2xl w-full max-w-sm shadow-xl px-6 py-5 space-y-4" onClick={e => e.stopPropagation()}>
+            <h3 className="text-sm font-bold text-slate-800">解答を終了しますか？</h3>
+            <p className="text-xs text-slate-500">答え合わせモードに切り替えます。タイマーを一時停止します。</p>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setShowFinishConfirm(false)}
+                className="flex-1 py-2.5 rounded-xl border border-slate-200 text-sm font-bold text-slate-500 hover:bg-slate-50"
+              >
+                キャンセル
+              </button>
+              <button
+                onClick={() => { timer.pause(); setCheckMode(true); setShowFinishConfirm(false) }}
+                className="flex-1 py-2.5 rounded-xl bg-indigo-600 text-white text-sm font-bold hover:bg-indigo-700"
+              >
+                はい
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Clear confirmation modal */}
       {showClearModal && (

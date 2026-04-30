@@ -30,6 +30,7 @@ export const voipQuestions: Question[] = [
     isImportant: false,
     explanation: 'ジッタはネットワーク輻輳等でパケット到着間隔が不均一になる現象。ジッタバッファは一定量のパケットを蓄積してから再生し、音声品質を改善する。バッファが大きいほど遅延は増加する。',
     difficulty: 2,
+    excludeFromWritten: true,
   },
   {
     id: 'q-voip-004',

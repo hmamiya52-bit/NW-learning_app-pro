@@ -40,6 +40,7 @@ export const sslTlsQuestions: Question[] = [
     isImportant: true,
     explanation: '証明書チェーンはサーバ証明書→中間CA証明書→ルートCA証明書と連なる。ルートCA証明書はOSやブラウザに組み込まれている。中間CAを使うことでルートCA秘密鍵の漏洩リスクを限定する。',
     difficulty: 2,
+    excludeFromWritten: true,
   },
   {
     id: 'q-064',

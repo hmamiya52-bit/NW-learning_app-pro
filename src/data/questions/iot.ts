@@ -81,6 +81,7 @@ export const iotQuestions: Question[] = [
     isImportant: true,
     explanation: 'CoAPはMQTTのQoSレベルに相当する仕組みとして、Confirmable（CON）とNon-confirmable（NON）の2種類を持つ。CONはACKが返るまで再送し信頼性を確保する。NONは再送なしで低オーバーヘッド通信に向く。',
     difficulty: 2,
+    excludeFromWritten: true,
   },
   // R8年 SASE・ZTNA問題
   {

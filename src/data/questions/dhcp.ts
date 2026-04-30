@@ -40,6 +40,7 @@ export const dhcpQuestions: Question[] = [
     isImportant: false,
     explanation: 'DHCPスヌーピングはスイッチ機能で、DHCPサーバ側ポートをトラステッドに設定する。アントラステッドポートからのDHCP Offer/Ackをブロックして偽DHCPサーバを防止する。',
     difficulty: 3,
+    excludeFromWritten: true,
   },
   {
     id: 'q-280',

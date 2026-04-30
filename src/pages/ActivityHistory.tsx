@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getAllDaySummaries } from '../lib/activityLog'
 import { StudyHistoryList } from '../components/history/StudyHistoryList'
+import { XpChart } from '../components/history/XpChart'
 
 export default function ActivityHistory() {
   const navigate = useNavigate()
@@ -24,6 +25,8 @@ export default function ActivityHistory() {
           <h1 className="text-base font-black text-slate-800">学習履歴（全件）</h1>
           <span className="ml-auto text-xs text-slate-400">{daySummaries.length} 日分</span>
         </div>
+
+        <XpChart daySummaries={daySummaries} />
 
         <StudyHistoryList daySummaries={daySummaries} />
 

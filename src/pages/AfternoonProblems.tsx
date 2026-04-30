@@ -433,8 +433,8 @@ function ProblemTable({
                 <th className="py-2 px-1.5 text-left text-[10px] font-bold text-slate-500">テーマ</th>
                 <th className="py-2 px-0.5 text-center text-[10px] font-bold text-slate-500">回</th>
                 <th className="py-2 px-1 text-center text-[10px] font-bold text-slate-500">最高点</th>
-                <th className="py-2 px-1 text-center text-[10px] font-bold text-slate-500">実施日</th>
-                <th className="py-2 px-1 text-center text-[10px] font-bold text-slate-500">計画日</th>
+                <th className="py-2 px-0.5 text-center text-[9px] font-bold text-slate-500 whitespace-nowrap">実施日</th>
+                <th className="py-2 px-0.5 text-center text-[9px] font-bold text-slate-500 whitespace-nowrap">計画日</th>
                 <th className="py-2 px-0.5 w-4" aria-label="詳細" />
               </tr>
             </thead>
@@ -566,6 +566,7 @@ export default function AfternoonProblems() {
   const [expandedId, setExpandedId] = useState<string | null>(null)
 
   const [selectedKeywords, setSelectedKeywords] = useState<string[]>([])
+  const [keywordsExpanded, setKeywordsExpanded] = useState(false)
   const [practiceFilter, setPracticeFilter] = useState<PracticeFilter>('all')
   const [sortMode, setSortMode] = useState<SortMode>('score')
 
@@ -668,31 +669,31 @@ export default function AfternoonProblems() {
 
         {/* Header */}
         <section>
-          <div className="rounded-xl bg-indigo-700 text-white px-4 py-3 shadow-md flex items-center justify-between gap-4">
-            <div>
-              <h1 className="text-base font-black leading-snug">午後問題演習補助ツール</h1>
-              <p className="text-xs text-indigo-200 mt-0.5">
-                H25〜R7 全{totalProblems}問（午後Ⅰ / 午後Ⅱ）
-                <span className="mx-2 opacity-50">|</span>
-                演習済 {totalStudied} / {totalProblems}問
-              </p>
-            </div>
-            <Link
-              to="/"
-              className="text-[11px] text-indigo-300 hover:text-white transition-colors flex-shrink-0"
-            >
-              ← ホーム
-            </Link>
+          <div className="rounded-xl bg-indigo-700 text-white px-4 py-3 shadow-md">
+            <h1 className="text-base font-black leading-snug">午後問題演習補助ツール</h1>
+            <p className="text-xs text-indigo-200 mt-0.5 whitespace-nowrap">
+              H25〜R7 全{totalProblems}問（午後Ⅰ / 午後Ⅱ）
+              <span className="mx-1.5 opacity-50">|</span>
+              演習済 {totalStudied} / {totalProblems}問
+            </p>
           </div>
         </section>
 
         {/* Filter bar */}
         <section className="bg-white rounded-xl border border-slate-200 px-4 py-3 space-y-2.5">
-          {/* キーワードチップ（折り返し・3行折りたたみ） */}
+          {/* キーワードチップ（折りたたみ） */}
           <div className="flex items-start gap-2">
-            <span className="text-[10px] font-bold text-slate-500 flex-shrink-0 mt-0.5 pt-px">キーワード</span>
+            <div className="flex flex-col items-start flex-shrink-0 gap-1">
+              <span className="text-[10px] font-bold text-slate-500 pt-px">キーワード</span>
+              <button
+                onClick={() => setKeywordsExpanded(v => !v)}
+                className="text-[9px] text-indigo-500 hover:text-indigo-700 leading-none transition-colors"
+              >
+                {keywordsExpanded ? '折りたたむ' : 'すべて▾'}
+              </button>
+            </div>
             <div className="flex-1 min-w-0">
-              <div className="flex flex-wrap gap-1.5">
+              <div className={`flex flex-wrap gap-1.5 overflow-hidden transition-all ${keywordsExpanded ? '' : 'max-h-[22px]'}`}>
                 {allKeywords.map(kw => {
                   const selected = selectedKeywords.includes(kw)
                   return (
@@ -777,8 +778,8 @@ export default function AfternoonProblems() {
         </section>
 
         {/* 操作説明 */}
-        <p className="text-[11px] text-slate-500 leading-relaxed bg-indigo-50/50 border border-indigo-100 rounded-lg px-3 py-2">
-          問題をタップすると、記録・解答欄・公式解答・PDF を確認できます。
+        <p className="text-[11px] text-slate-500 bg-indigo-50/50 border border-indigo-100 rounded-lg px-3 py-2">
+          問題をタップで、記録・解答欄・公式解答・PDFを確認
         </p>
 
         {/* 午後Ⅰ テーブル */}

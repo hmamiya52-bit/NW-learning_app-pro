@@ -236,6 +236,7 @@ interface DetailPanelProps {
 function DetailPanel({ row, onRecord, onDeleteRecord, onPlanChange }: DetailPanelProps) {
   const { problem, records, hasAnswer, plannedDate, maxScore } = row
   const [planEditing, setPlanEditing] = useState(false)
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
 
   return (
     <div className="px-4 py-3 bg-slate-50/70 border-l-4 border-indigo-200 space-y-3">
@@ -348,7 +349,7 @@ function DetailPanel({ row, onRecord, onDeleteRecord, onPlanChange }: DetailPane
                     </Link>
                   )}
                   <button
-                    onClick={() => onDeleteRecord(r.id)}
+                    onClick={() => setDeleteConfirmId(r.id)}
                     className={`${hasSaved ? '' : 'ml-auto'} text-slate-300 hover:text-red-400 transition-colors p-0.5 flex-shrink-0`}
                     aria-label="この記録を削除"
                   >
@@ -369,6 +370,31 @@ function DetailPanel({ row, onRecord, onDeleteRecord, onPlanChange }: DetailPane
           ＋ 記録する
         </button>
       </div>
+
+      {/* 削除確認ダイアログ */}
+      {deleteConfirmId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={() => setDeleteConfirmId(null)}>
+          <div className="absolute inset-0 bg-black/40" />
+          <div className="relative bg-white rounded-2xl w-full max-w-sm shadow-xl px-6 py-5 space-y-4" onClick={e => e.stopPropagation()}>
+            <h3 className="text-sm font-bold text-slate-800">この演習記録を削除しますか？</h3>
+            <p className="text-xs text-slate-500">削除した記録は元に戻せません。</p>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setDeleteConfirmId(null)}
+                className="flex-1 py-2.5 rounded-xl border border-slate-200 text-sm font-bold text-slate-500 hover:bg-slate-50"
+              >
+                キャンセル
+              </button>
+              <button
+                onClick={() => { onDeleteRecord(deleteConfirmId); setDeleteConfirmId(null) }}
+                className="flex-1 py-2.5 rounded-xl bg-red-500 text-white text-sm font-bold hover:bg-red-600"
+              >
+                削除する
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

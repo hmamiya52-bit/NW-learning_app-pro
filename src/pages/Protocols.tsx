@@ -4,6 +4,7 @@ import { protocols, protocolCategories } from '../data/protocols'
 export default function Protocols() {
   const [selectedCategory, setSelectedCategory] = useState<string>('すべて')
   const [search, setSearch] = useState('')
+  const [layerFilterOpen, setLayerFilterOpen] = useState(false)
 
   const filtered = protocols.filter((p) => {
     const matchCat = selectedCategory === 'すべて' || p.category === selectedCategory
@@ -36,25 +37,55 @@ export default function Protocols() {
           />
         </div>
 
-        {/* カテゴリタブ（横スクロール可） */}
-        <div className="relative mb-4">
-        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none" role="tablist" aria-label="カテゴリで絞り込み">
-          {['すべて', ...protocolCategories].map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              className={`flex-shrink-0 text-xs font-medium px-3 py-1.5 rounded-full border transition-colors ${
-                selectedCategory === cat
-                  ? 'bg-blue-900 text-white border-blue-900'
-                  : 'bg-white text-slate-600 border-slate-200 hover:border-blue-400'
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
+        {/* カテゴリタブ — モバイル: 折りたたみ / PC: 横並び */}
+        {/* モバイル */}
+        <div className="sm:hidden mb-4">
+          <button
+            onClick={() => setLayerFilterOpen(v => !v)}
+            className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full border border-slate-300 bg-white text-slate-700 w-full justify-between"
+          >
+            <span>
+              レイヤーで絞り込み：
+              <span className="font-bold text-blue-900">{selectedCategory}</span>
+            </span>
+            <span className="text-slate-400">{layerFilterOpen ? '▲' : '▼'}</span>
+          </button>
+          {layerFilterOpen && (
+            <div className="flex flex-col gap-1.5 mt-2 pl-1">
+              {['すべて', ...protocolCategories].map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => { setSelectedCategory(cat); setLayerFilterOpen(false) }}
+                  className={`text-left text-xs font-medium px-3 py-1.5 rounded-full border transition-colors ${
+                    selectedCategory === cat
+                      ? 'bg-blue-900 text-white border-blue-900'
+                      : 'bg-white text-slate-600 border-slate-200 hover:border-blue-400'
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
-        {/* 右端フェードでスクロール可能であることを示す */}
-        <div className="pointer-events-none absolute right-0 top-0 bottom-2 w-8 bg-gradient-to-l from-slate-50 to-transparent" aria-hidden="true" />
+        {/* PC: 横スクロール */}
+        <div className="relative mb-4 hidden sm:block">
+          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none" role="tablist" aria-label="カテゴリで絞り込み">
+            {['すべて', ...protocolCategories].map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                className={`flex-shrink-0 text-xs font-medium px-3 py-1.5 rounded-full border transition-colors ${
+                  selectedCategory === cat
+                    ? 'bg-blue-900 text-white border-blue-900'
+                    : 'bg-white text-slate-600 border-slate-200 hover:border-blue-400'
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+          <div className="pointer-events-none absolute right-0 top-0 bottom-2 w-8 bg-gradient-to-l from-slate-50 to-transparent" aria-hidden="true" />
         </div>
 
         {/* 件数 */}

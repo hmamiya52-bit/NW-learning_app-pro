@@ -150,7 +150,7 @@ function AnswerInputTable({
             const answerColspan = row.showQ && row.qLabel === '' ? 2 : 1
 
             const markingButtons = checkMode && (
-              <div className="flex gap-1 px-1 pb-1.5 pt-0.5">
+              <div className="flex gap-2.5 px-1 pb-1.5 pt-0.5">
                 {(['correct', 'partial', 'wrong'] as Marking[]).map(m => {
                   const isSelected = scorings[rowKey] === m
                   const labels: Record<Marking, string> = { correct: '○', partial: '△', wrong: '×' }
@@ -175,7 +175,7 @@ function AnswerInputTable({
             const inputContent = row.essay ? (
               <div>
                 <textarea
-                  className={`w-full min-h-[56px] text-xs text-slate-800 border-0 outline-none resize-y bg-transparent leading-snug p-1.5 placeholder:text-slate-300 ${readOnly ? 'cursor-default' : ''}`}
+                  className={`w-full min-h-[80px] sm:min-h-[56px] text-xs text-slate-800 border-0 outline-none resize-y bg-transparent leading-snug p-1.5 placeholder:text-slate-300 ${readOnly ? 'cursor-default' : ''}`}
                   placeholder="記述してください"
                   value={val}
                   onChange={e => !readOnly && onChange(rowKey, e.target.value)}
@@ -617,6 +617,16 @@ export default function AfternoonMyAnswer() {
             </button>
           </div>
         )}
+
+        {/* 問題一覧へ戻る */}
+        <div className="flex justify-center pt-2">
+          <Link
+            to="/afternoon"
+            className="text-xs text-slate-400 hover:text-indigo-600 border border-slate-200 rounded-lg px-4 py-2 hover:border-indigo-300 transition-colors"
+          >
+            ← 問題一覧へ戻る
+          </Link>
+        </div>
 
       </div>
 

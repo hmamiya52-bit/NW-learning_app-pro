@@ -166,6 +166,16 @@ export default function AfternoonAnswerDetail() {
 
         {/* Action buttons */}
         <div className="flex gap-2 justify-end">
+          {problem?.questionPdfUrl && (
+            <a
+              href={problem.questionPdfUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs font-bold text-slate-600 border border-slate-300 rounded-lg px-3 py-1.5 hover:bg-slate-50 transition-colors"
+            >
+              問題PDF
+            </a>
+          )}
           <Link
             to={`/afternoon/answers/${id}/myAnswer`}
             className="text-xs font-bold text-teal-600 border border-teal-300 rounded-lg px-3 py-1.5 hover:bg-teal-50 transition-colors"
@@ -174,28 +184,18 @@ export default function AfternoonAnswerDetail() {
           </Link>
         </div>
 
-        {/* 問題文PDFリンク */}
-        {problem?.questionPdfUrl && (
-          <div className="flex justify-end">
-            <a href={problem.questionPdfUrl} target="_blank" rel="noopener noreferrer"
-               className="text-xs text-slate-500 hover:text-indigo-600 hover:underline transition-colors">
-              問題文 PDF を開く →
-            </a>
-          </div>
-        )}
-
         {/* Table */}
         <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
           <AnswerTable answerSet={answerSet} />
         </div>
 
-        {/* Bottom action */}
+        {/* 問題一覧へ戻る */}
         <div className="flex justify-center">
           <Link
-            to={`/afternoon/answers/${id}/myAnswer`}
-            className="text-sm font-bold text-white bg-teal-600 hover:bg-teal-700 rounded-xl px-5 py-2.5 transition-colors"
+            to="/afternoon"
+            className="text-xs text-slate-400 hover:text-indigo-600 border border-slate-200 rounded-lg px-4 py-2 hover:border-indigo-300 transition-colors"
           >
-            解答欄で練習する →
+            ← 問題一覧へ戻る
           </Link>
         </div>
 

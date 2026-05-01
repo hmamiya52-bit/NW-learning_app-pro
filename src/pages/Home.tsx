@@ -247,7 +247,15 @@ export default function Home() {
           className="text-center font-black leading-tight pt-2 pb-1"
           style={{ color: '#1a3a5c', fontSize: 'clamp(1.5rem, 4vw, 2rem)' }}
         >
-          ネットワークスペシャリスト学習アプリ
+          <span
+            className="inline-block pb-1"
+            style={{
+              borderBottom: '2px solid rgba(26, 58, 92, 0.72)',
+              textShadow: '0 0 12px rgba(26, 58, 92, 0.22)',
+            }}
+          >
+            ネットワークスペシャリスト学習アプリ
+          </span>
         </h1>
 
         <LevelWidget />

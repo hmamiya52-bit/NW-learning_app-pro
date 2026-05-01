@@ -57,31 +57,34 @@ function useTimer() {
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const start = useCallback(() => {
-    setRunning(prev => {
-      if (prev) return prev
-      intervalRef.current = setInterval(() => setElapsed(e => e + 1), 1000)
-      return true
-    })
+    if (intervalRef.current) return
+    intervalRef.current = setInterval(() => setElapsed(e => e + 1), 1000)
+    setRunning(true)
   }, [])
 
   const pause = useCallback(() => {
-    setRunning(prev => {
-      if (!prev) return prev
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current)
-        intervalRef.current = null
-      }
-      return false
-    })
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current)
+      intervalRef.current = null
+    }
+    setRunning(false)
   }, [])
 
   const reset = useCallback(() => {
-    setRunning(false)
-    if (intervalRef.current) clearInterval(intervalRef.current)
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current)
+      intervalRef.current = null
+    }
     setElapsed(0)
+    setRunning(false)
   }, [])
 
-  useEffect(() => () => { if (intervalRef.current) clearInterval(intervalRef.current) }, [])
+  useEffect(() => () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current)
+      intervalRef.current = null
+    }
+  }, [])
 
   const fmt = (s: number) => {
     const h = Math.floor(s / 3600)
@@ -428,7 +431,7 @@ export default function AfternoonMyAnswer() {
               <h1 className="text-sm font-black leading-snug">{problem?.title ?? '解答欄'}</h1>
             </div>
             <button
-              onClick={() => navigate(-1)}
+              onClick={() => navigate('/afternoon')}
               className="text-[11px] text-teal-300 hover:text-white transition-colors flex-shrink-0 mt-0.5"
             >
               ← 戻る

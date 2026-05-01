@@ -50,6 +50,7 @@ const DEFAULT_GAMIFICATION: GamificationState = {
   correctQuestionIds: [],
   writtenCorrectQuestionIds: [],
   recentResults: [],
+  recentWrittenResults: [],
   unlockedBadgeIds: [],
 }
 
@@ -275,6 +276,7 @@ function rebuildGamification(
   let currentStreak = 0
   let maxStreak = 0
   const recentResults: boolean[] = []
+  const recentWrittenResults: boolean[] = []
   const correctQuestionIds = new Set<string>([
     ...current.correctQuestionIds,
     ...incoming.correctQuestionIds,
@@ -288,6 +290,7 @@ function rebuildGamification(
     currentStreak = record.isCorrect ? currentStreak + 1 : 0
     maxStreak = Math.max(maxStreak, currentStreak)
     recentResults.push(record.isCorrect)
+    if (record.mode === 'written') recentWrittenResults.push(record.isCorrect)
     if (record.isCorrect) {
       correctQuestionIds.add(record.questionId)
       if (record.mode === 'written') writtenCorrectQuestionIds.add(record.questionId)
@@ -304,6 +307,7 @@ function rebuildGamification(
     correctQuestionIds: Array.from(correctQuestionIds),
     writtenCorrectQuestionIds: Array.from(writtenCorrectQuestionIds),
     recentResults: recentResults.slice(-20),
+    recentWrittenResults: recentWrittenResults.slice(-20),
     unlockedBadgeIds: Array.from(new Set([
       ...current.unlockedBadgeIds,
       ...incoming.unlockedBadgeIds,

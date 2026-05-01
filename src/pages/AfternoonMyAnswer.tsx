@@ -8,6 +8,8 @@ import { addRecord, getMaxScore, loadRecords } from '../lib/tracker'
 import { scoringMap } from '../data/scoringMap'
 import { addActivityEvent } from '../lib/activityLog'
 import { recordAfternoonXp } from '../lib/gamification'
+import BadgeUnlockToast from '../components/gamification/BadgeUnlockToast'
+import type { BadgeDefinition } from '../data/badges'
 
 // ----------------------------------------------------------------
 // Types & storage
@@ -293,6 +295,7 @@ export default function AfternoonMyAnswer() {
   const [recorded, setRecorded] = useState(false)
   const [savedRecordId, setSavedRecordId] = useState<string | null>(null)
   const [savedXp, setSavedXp] = useState(0)
+  const [pendingBadges, setPendingBadges] = useState<BadgeDefinition[]>([])
 
   const viewRecord = useMemo(() => {
     if (!viewRecordId) return null
@@ -385,12 +388,12 @@ export default function AfternoonMyAnswer() {
     const record = addRecord({ problemId: id, date: today(), score: calculatedScore })
     // 解答を記録IDに紐づけて保存し、下書きをクリア
     saveSavedAnswers(record.id, myAnswers)
-    const xpGained = recordAfternoonXp(answerSet.section, calculatedScore)
+    const result = recordAfternoonXp(answerSet.section, calculatedScore)
     addActivityEvent({
       type: 'afternoon-record',
       date: today(),
       createdAt: new Date().toISOString(),
-      xp: xpGained,
+      xp: result.xpGained,
       payload: {
         problemId: id,
         year: answerSet.year,
@@ -401,7 +404,20 @@ export default function AfternoonMyAnswer() {
         recordId: record.id,
       },
     })
-    setSavedXp(xpGained)
+    if (result.newBadges.length > 0) {
+      setPendingBadges(prev => [...prev, ...result.newBadges])
+      const now = new Date()
+      for (const badge of result.newBadges) {
+        addActivityEvent({
+          type: 'badge-unlock',
+          date: now.toISOString().slice(0, 10),
+          createdAt: now.toISOString(),
+          xp: badge.xpBonus,
+          payload: { badgeId: badge.id, badgeName: badge.name, tier: badge.tier },
+        })
+      }
+    }
+    setSavedXp(result.xpGained)
     if (id) saveMyAnswers(id, {})
     setMyAnswers({})
     setScorings({})
@@ -679,6 +695,12 @@ export default function AfternoonMyAnswer() {
         </div>
       )}
 
+      {pendingBadges.length > 0 && (
+        <BadgeUnlockToast
+          badges={pendingBadges}
+          onDone={() => setPendingBadges([])}
+        />
+      )}
     </div>
   )
 }

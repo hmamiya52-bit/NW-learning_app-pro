@@ -13,11 +13,14 @@ export type BadgeCategory =
   | 'coverage'    // 踏破率
   | 'mastery'     // 習熟
   | 'category'    // カテゴリ制覇
+  | 'afternoon'   // 午後問題演習
   | 'complete'    // コンプリート
 
 export interface BadgeDefinition {
   id: string
   name: string
+  /** 表示専用の名前（改行を含めたい場合に使用）。未指定なら name を使用 */
+  displayName?: string
   description: string
   category: BadgeCategory
   /** lucide-react のコンポーネント名 */
@@ -33,6 +36,8 @@ export interface BadgeDefinition {
   condition: string
   /** 解放条件の数値（比較用） */
   conditionValue: number
+  /** 解放前は条件を「？？？」と隠す */
+  hideConditionUntilUnlock?: boolean
 }
 
 export const BADGES: BadgeDefinition[] = [
@@ -91,7 +96,7 @@ export const BADGES: BadgeDefinition[] = [
   },
   {
     id: 'study-5',
-    name: '不屈の探求者',
+    name: '無我夢中',
     description: '合計1000問以上解いた',
     category: 'study',
     iconName: 'GraduationCap',
@@ -103,20 +108,7 @@ export const BADGES: BadgeDefinition[] = [
     conditionValue: 1000,
   },
 
-  // ── ⚡ 連続正答 (6枚) ────────────────────────────────────────
-  {
-    id: 'streak-1',
-    name: '好スタート',
-    description: '3問連続正解',
-    category: 'streak',
-    iconName: 'Zap',
-    gradient: 'from-amber-400 to-orange-500',
-    shadowColor: 'shadow-orange-500/50',
-    tier: 'bronze',
-    xpBonus: 30,
-    condition: '3問連続正解',
-    conditionValue: 3,
-  },
+  // ── ⚡ 連続正答 (4枚) ────────────────────────────────────────
   {
     id: 'streak-2',
     name: '快進撃',
@@ -144,19 +136,6 @@ export const BADGES: BadgeDefinition[] = [
     conditionValue: 10,
   },
   {
-    id: 'streak-4',
-    name: '無敵モード',
-    description: '20問連続正解',
-    category: 'streak',
-    iconName: 'Bolt',
-    gradient: 'from-amber-500 to-orange-600',
-    shadowColor: 'shadow-orange-600/50',
-    tier: 'silver',
-    xpBonus: 500,
-    condition: '20問連続正解',
-    conditionValue: 20,
-  },
-  {
     id: 'streak-5',
     name: 'フルコンボ',
     description: '30問連続正解',
@@ -171,16 +150,16 @@ export const BADGES: BadgeDefinition[] = [
   },
   {
     id: 'streak-6',
-    name: '伝説のストリーク',
-    description: '50問連続正解',
+    name: '十全十美',
+    description: '75問連続正解',
     category: 'streak',
     iconName: 'Crown',
     gradient: 'from-yellow-300 via-amber-400 to-orange-500',
     shadowColor: 'shadow-amber-500/60',
     tier: 'legendary',
     xpBonus: 3000,
-    condition: '50問連続正解',
-    conditionValue: 50,
+    condition: '75問連続正解',
+    conditionValue: 75,
   },
 
   // ── ✍️ 記述モード (4枚) ────────────────────────────────────────
@@ -225,7 +204,7 @@ export const BADGES: BadgeDefinition[] = [
   },
   {
     id: 'written-4',
-    name: '完全記述制覇',
+    name: '千鍛万錬',
     description: '記述モードで全問正解（1周）',
     category: 'written',
     iconName: 'Trophy',
@@ -237,7 +216,7 @@ export const BADGES: BadgeDefinition[] = [
     conditionValue: 0,
   },
 
-  // ── 📊 踏破率 (6枚) ────────────────────────────────────────
+  // ── 📊 踏破率 (5枚) ────────────────────────────────────────
   {
     id: 'coverage-1',
     name: '探索開始',
@@ -291,21 +270,8 @@ export const BADGES: BadgeDefinition[] = [
     conditionValue: 75,
   },
   {
-    id: 'coverage-5',
-    name: '全問制覇',
-    description: '全問題の90%を正解',
-    category: 'coverage',
-    iconName: 'CheckCircle',
-    gradient: 'from-teal-400 to-cyan-700',
-    shadowColor: 'shadow-cyan-600/60',
-    tier: 'gold',
-    xpBonus: 1000,
-    condition: '全問題の90%正解',
-    conditionValue: 90,
-  },
-  {
     id: 'coverage-6',
-    name: '完全踏破',
+    name: '初志貫徹',
     description: '全問題を正解',
     category: 'coverage',
     iconName: 'Medal',
@@ -317,125 +283,172 @@ export const BADGES: BadgeDefinition[] = [
     conditionValue: 100,
   },
 
-  // ── 🏆 習熟 (4枚) ────────────────────────────────────────
+  // ── 🏆 習熟 (3枚 / 記述モード対象) ────────────────────────────────────────
   {
     id: 'mastery-1',
     name: '正答率50%',
-    description: '直近20問の正答率が50%以上',
+    description: '記述モード直近20問の正答率が50%以上',
     category: 'mastery',
     iconName: 'BarChart2',
     gradient: 'from-violet-400 to-purple-600',
     shadowColor: 'shadow-purple-500/50',
     tier: 'bronze',
     xpBonus: 200,
-    condition: '直近20問の正答率50%以上',
+    condition: '記述モード直近20問の正答率50%以上',
     conditionValue: 50,
   },
   {
     id: 'mastery-2',
     name: '正答率70%',
-    description: '直近20問の正答率が70%以上',
+    description: '記述モード直近20問の正答率が70%以上',
     category: 'mastery',
     iconName: 'TrendingUp',
     gradient: 'from-violet-400 to-purple-600',
     shadowColor: 'shadow-purple-500/50',
     tier: 'silver',
     xpBonus: 400,
-    condition: '直近20問の正答率70%以上',
+    condition: '記述モード直近20問の正答率70%以上',
     conditionValue: 70,
-  },
-  {
-    id: 'mastery-3',
-    name: '正答率90%',
-    description: '直近20問の正答率が90%以上',
-    category: 'mastery',
-    iconName: 'Star',
-    gradient: 'from-violet-500 to-purple-700',
-    shadowColor: 'shadow-purple-600/60',
-    tier: 'gold',
-    xpBonus: 900,
-    condition: '直近20問の正答率90%以上',
-    conditionValue: 90,
   },
   {
     id: 'mastery-4',
     name: 'パーフェクト',
-    description: '直近20問をすべて正解',
+    description: '記述モード直近20問をすべて正解',
     category: 'mastery',
     iconName: 'Gem',
     gradient: 'from-fuchsia-400 to-purple-700',
     shadowColor: 'shadow-purple-600/70',
     tier: 'legendary',
     xpBonus: 1000,
-    condition: '直近20問をすべて正解',
+    condition: '記述モード直近20問をすべて正解',
     conditionValue: 100,
   },
 
-  // ── 📂 カテゴリ制覇 (4枚) ────────────────────────────────────────
+  // ── 📂 カテゴリ制覇 (3枚 / 達成率：連続正解状態の問題比率) ────────────────────────────────────────
   {
     id: 'category-1',
     name: 'カテゴリ初制覇',
-    description: '任意のカテゴリで正答率80%以上',
+    description: '任意のカテゴリで達成率80%超',
     category: 'category',
     iconName: 'FolderCheck',
     gradient: 'from-rose-400 to-pink-600',
     shadowColor: 'shadow-pink-500/50',
     tier: 'bronze',
     xpBonus: 300,
-    condition: '1カテゴリ制覇（正答率80%以上）',
+    condition: '1カテゴリ達成（達成率80%超）',
     conditionValue: 1,
   },
   {
     id: 'category-2',
     name: 'マルチドメイン',
-    description: '3カテゴリで正答率80%以上',
+    description: '7カテゴリで達成率80%超',
     category: 'category',
     iconName: 'Folders',
     gradient: 'from-rose-400 to-pink-600',
     shadowColor: 'shadow-pink-500/50',
     tier: 'silver',
     xpBonus: 600,
-    condition: '3カテゴリ制覇',
-    conditionValue: 3,
-  },
-  {
-    id: 'category-3',
-    name: '全領域制圧',
-    description: '7カテゴリで正答率80%以上',
-    category: 'category',
-    iconName: 'LayoutGrid',
-    gradient: 'from-rose-500 to-pink-700',
-    shadowColor: 'shadow-pink-600/60',
-    tier: 'gold',
-    xpBonus: 1500,
-    condition: '7カテゴリ制覇',
+    condition: '7カテゴリ達成（達成率80%超）',
     conditionValue: 7,
   },
   {
     id: 'category-4',
-    name: 'ネットワーク神',
-    description: '全カテゴリで正答率80%以上',
+    name: '百戦錬磨',
+    description: '全カテゴリで達成率80%超',
     category: 'category',
     iconName: 'Network',
     gradient: 'from-rose-400 via-pink-500 to-fuchsia-600',
     shadowColor: 'shadow-pink-600/70',
     tier: 'legendary',
     xpBonus: 2100,
-    condition: '全カテゴリ制覇',
+    condition: '全カテゴリ達成（達成率80%超）',
     conditionValue: 999,
+  },
+
+  // ── 📝 午後問題演習 (5枚 / 取得前は条件を「？？？」表示) ────────────────────────────────────────
+  {
+    id: 'afternoon-1',
+    name: '勇猛果敢',
+    description: '午後問題演習を3回実施',
+    category: 'afternoon',
+    iconName: 'Flame',
+    gradient: 'from-teal-400 to-cyan-600',
+    shadowColor: 'shadow-teal-500/50',
+    tier: 'bronze',
+    xpBonus: 300,
+    condition: '午後問題演習を3回実施',
+    conditionValue: 3,
+    hideConditionUntilUnlock: true,
+  },
+  {
+    id: 'afternoon-2',
+    name: '不撓不屈',
+    description: '午後問題演習を30回実施',
+    category: 'afternoon',
+    iconName: 'BookMarked',
+    gradient: 'from-teal-500 to-emerald-700',
+    shadowColor: 'shadow-teal-600/60',
+    tier: 'silver',
+    xpBonus: 1000,
+    condition: '午後問題演習を30回実施',
+    conditionValue: 30,
+    hideConditionUntilUnlock: true,
+  },
+  {
+    id: 'afternoon-3',
+    name: '天衣無縫',
+    description: '午後Ⅰで40点以上を10回取得',
+    category: 'afternoon',
+    iconName: 'Star',
+    gradient: 'from-blue-400 to-indigo-600',
+    shadowColor: 'shadow-blue-500/60',
+    tier: 'gold',
+    xpBonus: 1500,
+    condition: '午後Ⅰで40点以上を10回取得',
+    conditionValue: 10,
+    hideConditionUntilUnlock: true,
+  },
+  {
+    id: 'afternoon-4',
+    name: '気炎万丈',
+    description: '午後Ⅱで80点以上を5回取得',
+    category: 'afternoon',
+    iconName: 'Trophy',
+    gradient: 'from-purple-400 to-fuchsia-600',
+    shadowColor: 'shadow-purple-500/60',
+    tier: 'gold',
+    xpBonus: 2000,
+    condition: '午後Ⅱで80点以上を5回取得',
+    conditionValue: 5,
+    hideConditionUntilUnlock: true,
+  },
+  {
+    id: 'afternoon-5',
+    name: '万里一空',
+    description: '全午後問題で6割以上を取得（午後Ⅰ30点・午後Ⅱ60点）',
+    category: 'afternoon',
+    iconName: 'Crown',
+    gradient: 'from-amber-300 via-orange-400 to-rose-500',
+    shadowColor: 'shadow-orange-500/70',
+    tier: 'legendary',
+    xpBonus: 4000,
+    condition: '全午後問題で6割以上を取得（午後Ⅰ30点・午後Ⅱ60点）',
+    conditionValue: 0,
+    hideConditionUntilUnlock: true,
   },
 
   // ── 🏅 コンプリート (1枚) ────────────────────────────────────────
   {
     id: 'complete-1',
     name: 'ネットワークスペシャリスト',
+    displayName: 'ネットワーク\nスペシャリスト',
     description: '全30枚の勲章を獲得',
     category: 'complete',
     iconName: 'Award',
     gradient: 'from-yellow-300 via-amber-400 to-orange-500',
     shadowColor: 'shadow-amber-400/80',
     tier: 'legendary',
-    xpBonus: 5000,
+    xpBonus: 10000,
     condition: '全30枚の勲章を獲得',
     conditionValue: 30,
   },
@@ -449,10 +462,11 @@ export const BADGE_CATEGORY_LABELS: Record<BadgeCategory, string> = {
   coverage: '踏破率',
   mastery: '習熟',
   category: 'カテゴリ制覇',
+  afternoon: '午後問題演習',
   complete: 'コンプリート',
 }
 
 /** カテゴリ順序 */
 export const BADGE_CATEGORY_ORDER: BadgeCategory[] = [
-  'study', 'streak', 'written', 'coverage', 'mastery', 'category', 'complete'
+  'study', 'streak', 'written', 'coverage', 'mastery', 'category', 'afternoon', 'complete'
 ]

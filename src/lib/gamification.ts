@@ -1,8 +1,10 @@
 import { BADGES, type BadgeDefinition } from '../data/badges'
 import { getLevelFromXp } from '../data/levels'
-import { getAllProgress } from './storage'
+import { getQuestionMastery } from './storage'
 import { categories } from '../data/categories'
 import { questions as allQuestions } from '../data/questions'
+import { afternoonProblems } from '../data/afternoonProblems'
+import { loadRecords } from './tracker'
 
 const STORAGE_KEY = 'nwsp:gamification'
 
@@ -19,6 +21,8 @@ export interface GamificationState {
   writtenCorrectQuestionIds: string[]
   /** 直近20問の正誤（true/false）—最新が末尾 */
   recentResults: boolean[]
+  /** 直近20問の記述モード正誤（mastery 判定用） */
+  recentWrittenResults: boolean[]
   /** 解放済みバッジ ID の配列 */
   unlockedBadgeIds: string[]
 }
@@ -40,6 +44,14 @@ export interface AnswerGamificationResult {
   newXp: number
 }
 
+export interface AfternoonGamificationResult {
+  xpGained: number
+  newBadges: BadgeDefinition[]
+  didLevelUp: boolean
+  newLevel: number
+  newXp: number
+}
+
 const DEFAULT_STATE: GamificationState = {
   xp: 0,
   totalAnswered: 0,
@@ -50,6 +62,7 @@ const DEFAULT_STATE: GamificationState = {
   correctQuestionIds: [],
   writtenCorrectQuestionIds: [],
   recentResults: [],
+  recentWrittenResults: [],
   unlockedBadgeIds: [],
 }
 
@@ -69,7 +82,7 @@ function saveGamification(state: GamificationState): void {
 
 /** XP 計算（正解時のみ） */
 function calcXp(event: AnswerEvent, newStreak: number): number {
-  // 記述20・4択3（4択を大幅下方修正）
+  // 記述20・4択3
   let xp = event.mode === 'written' ? 20 : 3
 
   // 難易度ボーナス
@@ -79,38 +92,74 @@ function calcXp(event: AnswerEvent, newStreak: number): number {
   // 重要問題ボーナス
   if (event.isImportant) xp += 5
 
-  // 連続正解ボーナス（旧値の半分に下方修正）
-  if (newStreak >= 50) xp += 150
+  // 連続正解ボーナス
+  if (newStreak >= 75) xp += 200
   else if (newStreak >= 30) xp += 75
-  else if (newStreak >= 20) xp += 40
   else if (newStreak >= 10) xp += 20
   else if (newStreak >= 5)  xp += 10
-  else if (newStreak >= 3)  xp += 5
 
   return xp
 }
 
-/**
- * 午後問題演習の結果に応じて XP を付与する。
- * @returns 付与した XP
- */
-export function recordAfternoonXp(section: 'G1' | 'G2', score: number): number {
-  let xp = 0
-  if (section === 'G1') {
-    if (score < 30)      xp = score * 3
-    else if (score < 40) xp = score * 5
-    else                 xp = Math.min(score * 10, 500)
-  } else {
-    if (score < 40)      xp = score * 3
-    else if (score < 60) xp = score * 4
-    else if (score < 80) xp = score * 8
-    else                 xp = Math.min(score * 15, 1500)
+/** カテゴリごとの達成率（連続正解状態の問題比率）が threshold を超えるカテゴリ数 */
+function countMasteredCategories(threshold: number): number {
+  const mastery = getQuestionMastery()
+  // category(topicId) -> 全問題数
+  const totalByCat = new Map<string, number>()
+  for (const q of allQuestions) {
+    totalByCat.set(q.topicId, (totalByCat.get(q.topicId) ?? 0) + 1)
   }
-  if (xp > 0) {
-    const state = loadGamification()
-    saveGamification({ ...state, xp: state.xp + xp })
+  // category(topicId) -> 連続正解状態の問題集合（mode を問わずどちらか consecutive なら達成）
+  const consecutiveByCat = new Map<string, Set<string>>()
+  for (const q of allQuestions) {
+    const mc = mastery[`${q.id}:multiple-choice`]
+    const wr = mastery[`${q.id}:written`]
+    if (mc === 'consecutive' || wr === 'consecutive') {
+      let set = consecutiveByCat.get(q.topicId)
+      if (!set) {
+        set = new Set<string>()
+        consecutiveByCat.set(q.topicId, set)
+      }
+      set.add(q.id)
+    }
   }
-  return xp
+  let count = 0
+  for (const cat of categories) {
+    const total = totalByCat.get(cat.id) ?? 0
+    if (total === 0) continue
+    const ach = consecutiveByCat.get(cat.id)?.size ?? 0
+    if (ach / total > threshold) count++
+  }
+  return count
+}
+
+/** 午後問題関連バッジの判定材料を集約 */
+function computeAfternoonStats() {
+  const records = loadRecords()
+  const total = records.length
+  const sectionByProblemId = new Map(afternoonProblems.map(p => [p.id, p.section]))
+  let g1Over40 = 0
+  let g2Over80 = 0
+  // 各 problemId について最高得点を集計（万里一空判定用）
+  const bestScoreByProblem = new Map<string, number>()
+  for (const r of records) {
+    const sec = sectionByProblemId.get(r.problemId)
+    if (sec === 'G1' && r.score >= 40) g1Over40++
+    if (sec === 'G2' && r.score >= 80) g2Over80++
+    const prev = bestScoreByProblem.get(r.problemId) ?? -1
+    if (r.score > prev) bestScoreByProblem.set(r.problemId, r.score)
+  }
+  // 万里一空: 全 afternoonProblems で section に応じた閾値（G1=30,G2=60）以上の記録が存在
+  let allClearedSixty = afternoonProblems.length > 0
+  for (const p of afternoonProblems) {
+    const best = bestScoreByProblem.get(p.id) ?? -1
+    const threshold = p.section === 'G1' ? 30 : 60
+    if (best < threshold) {
+      allClearedSixty = false
+      break
+    }
+  }
+  return { total, g1Over40, g2Over80, allClearedSixty }
 }
 
 /** バッジ解放チェック */
@@ -123,21 +172,16 @@ function checkBadges(
   const coveragePct = totalQuestions > 0
     ? (state.correctQuestionIds.length / totalQuestions) * 100
     : 0
-  const recentLen = state.recentResults.length
-  const recentCorrect = state.recentResults.filter(Boolean).length
-  const recentAccPct = recentLen >= 20 ? (recentCorrect / 20) * 100 : -1
+  const recentWrLen = state.recentWrittenResults.length
+  const recentWrCorrect = state.recentWrittenResults.filter(Boolean).length
+  const recentWrAccPct = recentWrLen >= 20 ? (recentWrCorrect / 20) * 100 : -1
 
-  // カテゴリ制覇: 正答率80%以上のカテゴリ数
-  const allProgress = getAllProgress()
-  const progressMap = new Map(allProgress.map((p) => [p.topicId, p]))
-  let masterCategoryCount = 0
+  // カテゴリ制覇: 達成率（連続正解状態の問題比率）が 80% を超えるカテゴリ数
+  const masterCategoryCount = countMasteredCategories(0.8)
   const totalCategories = categories.length
-  for (const cat of categories) {
-    const p = progressMap.get(cat.id)
-    if (p && p.totalAttempts >= 5 && p.correctCount / p.totalAttempts >= 0.8) {
-      masterCategoryCount++
-    }
-  }
+
+  // 午後問題演習統計
+  const afternoonStats = computeAfternoonStats()
 
   for (const badge of BADGES) {
     if (alreadyUnlocked.has(badge.id)) continue
@@ -151,12 +195,10 @@ function checkBadges(
       case 'study-4': unlocked = state.totalAnswered >= 500; break
       case 'study-5': unlocked = state.totalAnswered >= 1000; break
       // 連続正答
-      case 'streak-1': unlocked = state.maxStreak >= 3; break
       case 'streak-2': unlocked = state.maxStreak >= 5; break
       case 'streak-3': unlocked = state.maxStreak >= 10; break
-      case 'streak-4': unlocked = state.maxStreak >= 20; break
       case 'streak-5': unlocked = state.maxStreak >= 30; break
-      case 'streak-6': unlocked = state.maxStreak >= 50; break
+      case 'streak-6': unlocked = state.maxStreak >= 75; break
       // 記述モード
       case 'written-1': unlocked = state.writtenCorrect >= 1; break
       case 'written-2': unlocked = state.writtenCorrect >= 20; break
@@ -167,19 +209,22 @@ function checkBadges(
       case 'coverage-2': unlocked = coveragePct >= 25; break
       case 'coverage-3': unlocked = coveragePct >= 50; break
       case 'coverage-4': unlocked = coveragePct >= 75; break
-      case 'coverage-5': unlocked = coveragePct >= 90; break
       case 'coverage-6': unlocked = coveragePct >= 100; break
-      // 習熟
-      case 'mastery-1': unlocked = recentAccPct >= 50; break
-      case 'mastery-2': unlocked = recentAccPct >= 70; break
-      case 'mastery-3': unlocked = recentAccPct >= 90; break
-      case 'mastery-4': unlocked = recentAccPct >= 100; break
+      // 習熟（記述モード対象）
+      case 'mastery-1': unlocked = recentWrAccPct >= 50; break
+      case 'mastery-2': unlocked = recentWrAccPct >= 70; break
+      case 'mastery-4': unlocked = recentWrAccPct >= 100; break
       // カテゴリ制覇
       case 'category-1': unlocked = masterCategoryCount >= 1; break
-      case 'category-2': unlocked = masterCategoryCount >= 3; break
-      case 'category-3': unlocked = masterCategoryCount >= 7; break
+      case 'category-2': unlocked = masterCategoryCount >= 7; break
       case 'category-4': unlocked = masterCategoryCount >= totalCategories; break
-      // コンプリート（自分以外の全29バッジ）
+      // 午後問題演習
+      case 'afternoon-1': unlocked = afternoonStats.total >= 3; break
+      case 'afternoon-2': unlocked = afternoonStats.total >= 30; break
+      case 'afternoon-3': unlocked = afternoonStats.g1Over40 >= 10; break
+      case 'afternoon-4': unlocked = afternoonStats.g2Over80 >= 5; break
+      case 'afternoon-5': unlocked = afternoonStats.allClearedSixty; break
+      // コンプリート（自分以外の全バッジ）
       case 'complete-1': unlocked = state.unlockedBadgeIds.length >= BADGES.length - 1; break
     }
 
@@ -189,11 +234,15 @@ function checkBadges(
   return newBadges
 }
 
+/** 全勲章コンプ判定 */
+function isAllBadgesUnlocked(unlockedIds: string[]): boolean {
+  return unlockedIds.length >= BADGES.length
+}
+
 /** 解答を記録して XP/バッジを更新する */
 export function recordGamificationAnswer(event: AnswerEvent): AnswerGamificationResult {
   const state = loadGamification()
-  const prevAllBadges = state.unlockedBadgeIds.length >= BADGES.length
-  const prevLevel = getLevelFromXp(state.xp, prevAllBadges).level
+  const prevLevel = getLevelFromXp(state.xp, isAllBadgesUnlocked(state.unlockedBadgeIds)).level
   const alreadyUnlocked = new Set(state.unlockedBadgeIds)
 
   // ストリーク更新
@@ -205,6 +254,9 @@ export function recordGamificationAnswer(event: AnswerEvent): AnswerGamification
 
   // 直近20問更新
   const recentResults = [...state.recentResults, event.isCorrect].slice(-20)
+  const recentWrittenResults = event.mode === 'written'
+    ? [...state.recentWrittenResults, event.isCorrect].slice(-20)
+    : state.recentWrittenResults
 
   // 踏破率用 Set
   const correctSet = new Set(state.correctQuestionIds)
@@ -223,6 +275,7 @@ export function recordGamificationAnswer(event: AnswerEvent): AnswerGamification
     currentStreak: newStreak,
     maxStreak: newMaxStreak,
     recentResults,
+    recentWrittenResults,
     correctQuestionIds: Array.from(correctSet),
     writtenCorrectQuestionIds: Array.from(writtenCorrectSet),
     unlockedBadgeIds: state.unlockedBadgeIds, // 後で更新
@@ -251,10 +304,67 @@ export function recordGamificationAnswer(event: AnswerEvent): AnswerGamification
 
   saveGamification(newState)
 
-  const newAllBadges = newState.unlockedBadgeIds.length >= BADGES.length
-  const newLevel = getLevelFromXp(newState.xp, newAllBadges).level
+  const newLevel = getLevelFromXp(newState.xp, isAllBadgesUnlocked(newState.unlockedBadgeIds)).level
   return {
     xpGained,
+    newBadges,
+    didLevelUp: newLevel > prevLevel,
+    newLevel,
+    newXp: newState.xp,
+  }
+}
+
+/**
+ * 午後問題演習の結果に応じて XP を付与し、関連バッジを判定する。
+ * @returns 付与した XP、解放されたバッジ、レベル情報
+ */
+export function recordAfternoonXp(section: 'G1' | 'G2', score: number): AfternoonGamificationResult {
+  let xp = 0
+  if (section === 'G1') {
+    if (score < 30)      xp = score * 3
+    else if (score < 40) xp = score * 5
+    else                 xp = Math.min(score * 10, 500)
+  } else {
+    if (score < 40)      xp = score * 3
+    else if (score < 60) xp = score * 4
+    else if (score < 80) xp = score * 8
+    else                 xp = Math.min(score * 15, 1500)
+  }
+
+  const state = loadGamification()
+  const prevLevel = getLevelFromXp(state.xp, isAllBadgesUnlocked(state.unlockedBadgeIds)).level
+  const alreadyUnlocked = new Set(state.unlockedBadgeIds)
+
+  const newState: GamificationState = {
+    ...state,
+    xp: state.xp + xp,
+  }
+
+  // バッジ判定（午後系を含む全バッジを評価）
+  const newBadges = checkBadges(newState, alreadyUnlocked)
+  if (newBadges.length > 0) {
+    newState.unlockedBadgeIds = [
+      ...newState.unlockedBadgeIds,
+      ...newBadges.map((b) => b.id),
+    ]
+    // complete-1 再チェック
+    const completeSet = new Set(newState.unlockedBadgeIds)
+    if (!completeSet.has('complete-1')) {
+      const completeBadge = BADGES.find((b) => b.id === 'complete-1')!
+      if (newState.unlockedBadgeIds.length >= BADGES.length - 1) {
+        newState.unlockedBadgeIds.push('complete-1')
+        newBadges.push(completeBadge)
+      }
+    }
+    const bonusXp = newBadges.reduce((sum, b) => sum + b.xpBonus, 0)
+    newState.xp += bonusXp
+  }
+
+  saveGamification(newState)
+
+  const newLevel = getLevelFromXp(newState.xp, isAllBadgesUnlocked(newState.unlockedBadgeIds)).level
+  return {
+    xpGained: xp,
     newBadges,
     didLevelUp: newLevel > prevLevel,
     newLevel,

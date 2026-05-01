@@ -36,12 +36,16 @@ function BadgeDetailModal({ badge, unlocked, onClose }: {
           <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${TIER_COLOR[badge.tier]}`}>
             {TIER_LABEL[badge.tier]}
           </span>
-          <h2 className="text-lg font-bold text-slate-800 mt-2">{badge.name}</h2>
-          <p className="text-slate-500 text-sm mt-1">{badge.description}</p>
+          <h2 className="text-lg font-bold text-slate-800 mt-2 whitespace-pre-line leading-tight">
+            {badge.displayName ?? badge.name}
+          </h2>
+          <p className="text-slate-500 text-sm mt-1">
+            {badge.hideConditionUntilUnlock && !unlocked ? '？？？' : badge.description}
+          </p>
         </div>
         <div className="w-full bg-slate-50 rounded-2xl p-3 text-sm text-slate-600 text-center">
           <p className="font-medium text-slate-700 mb-1">解放条件</p>
-          <p>{badge.condition}</p>
+          <p>{badge.hideConditionUntilUnlock && !unlocked ? '？？？' : badge.condition}</p>
         </div>
         <div className="flex items-center gap-1.5">
           <span className="text-amber-500 font-bold text-base">+{badge.xpBonus.toLocaleString()} XP</span>
@@ -118,10 +122,10 @@ export default function Badges() {
                       size="md"
                       onClick={() => setSelected(badge)}
                     />
-                    <p className={`text-[10px] font-medium text-center leading-tight line-clamp-2 ${
+                    <p className={`text-[10px] font-medium text-center leading-tight line-clamp-2 whitespace-pre-line ${
                       unlocked ? 'text-slate-700' : 'text-slate-400'
                     }`}>
-                      {badge.name}
+                      {badge.displayName ?? badge.name}
                     </p>
                   </div>
                 )

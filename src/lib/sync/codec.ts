@@ -264,6 +264,7 @@ function decodeGamification(state: CompactGamification): GamificationState {
     correctQuestionIds: state[6].map(decodeQuestionRef),
     writtenCorrectQuestionIds: state[7].map(decodeQuestionRef),
     recentResults: state[8].split('').map((value) => value === '1'),
+    recentWrittenResults: [],
     unlockedBadgeIds: state[9].map(decodeBadgeRef),
   }
 }

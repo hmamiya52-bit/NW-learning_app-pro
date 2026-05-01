@@ -19,9 +19,11 @@ import { StudyHistoryList } from '../components/history/StudyHistoryList'
 interface MenuCard {
   to: string
   title: string
+  desktopTitle?: string
   description: string
   iconBg: string
   icon: React.ReactNode
+  desktopFull?: boolean
 }
 
 function IconChart({ className }: { className?: string }) {
@@ -99,18 +101,20 @@ const MENU_CARDS: MenuCard[] = [
     icon: <IconBook className="w-6 h-6 text-teal-600" />,
   },
   {
-    to: '/afternoon',
-    title: '午後問題演習補助',
-    description: '問題一覧・過去問トラッカー',
-    iconBg: 'bg-indigo-50',
-    icon: <IconClipboard className="w-6 h-6 text-indigo-600" />,
-  },
-  {
     to: '/column',
     title: 'コラム：間宮塾勉強論',
     description: 'ネスペ合格への道筋と心構え',
     iconBg: 'bg-amber-50',
     icon: <IconPen className="w-6 h-6 text-amber-600" />,
+  },
+  {
+    to: '/afternoon',
+    title: '午後問題演習補助',
+    desktopTitle: '午後問題演習補助ツール',
+    description: '問題一覧・過去問トラッカー',
+    iconBg: 'bg-indigo-50',
+    icon: <IconClipboard className="w-6 h-6 text-indigo-600" />,
+    desktopFull: true,
   },
 ]
 
@@ -147,7 +151,7 @@ function MenuCardGrid({ cards, studiedCount }: { cards: MenuCard[]; studiedCount
         return weaknessDisabled ? (
           <div
             key={card.to}
-            className="flex items-center gap-1.5 sm:gap-3 bg-slate-50 rounded-xl border border-slate-200 px-2.5 py-2 sm:px-3 sm:py-2.5 opacity-60 cursor-not-allowed"
+            className={`flex items-center gap-1.5 sm:gap-3 bg-slate-50 rounded-xl border border-slate-200 px-2.5 py-2 sm:px-3 sm:py-2.5 opacity-60 cursor-not-allowed ${card.desktopFull ? 'sm:col-span-3' : ''}`}
           >
             <div className={`w-6 h-6 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${card.iconBg}`}>
               <span className="[&>svg]:w-4 [&>svg]:h-4 sm:[&>svg]:w-6 sm:[&>svg]:h-6 flex">
@@ -155,7 +159,10 @@ function MenuCardGrid({ cards, studiedCount }: { cards: MenuCard[]; studiedCount
               </span>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-[11px] sm:text-sm font-bold text-slate-500 leading-tight truncate">{card.title}</p>
+              <p className="text-[11px] sm:text-sm font-bold text-slate-500 leading-tight truncate">
+                <span className={card.desktopTitle ? 'sm:hidden' : ''}>{card.title}</span>
+                {card.desktopTitle && <span className="hidden sm:inline">{card.desktopTitle}</span>}
+              </p>
               <p className="text-[9px] sm:text-[11px] text-slate-400 leading-tight truncate">問題を解くと使えます</p>
             </div>
           </div>
@@ -163,7 +170,7 @@ function MenuCardGrid({ cards, studiedCount }: { cards: MenuCard[]; studiedCount
           <Link
             key={card.to}
             to={card.to}
-            className="group relative flex items-center gap-1.5 sm:gap-3 bg-white rounded-xl border border-slate-200 px-2.5 py-2 sm:px-3 sm:py-2.5 hover:border-blue-400 hover:shadow-md transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+            className={`group relative flex items-center gap-1.5 sm:gap-3 bg-white rounded-xl border border-slate-200 px-2.5 py-2 sm:px-3 sm:py-2.5 hover:border-blue-400 hover:shadow-md transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${card.desktopFull ? 'sm:col-span-3' : ''}`}
           >
             <div className={`w-6 h-6 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${card.iconBg}`}>
               <span className="[&>svg]:w-4 [&>svg]:h-4 sm:[&>svg]:w-6 sm:[&>svg]:h-6 flex">
@@ -172,7 +179,8 @@ function MenuCardGrid({ cards, studiedCount }: { cards: MenuCard[]; studiedCount
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-[11px] sm:text-sm font-bold text-slate-800 leading-tight group-hover:text-blue-700 transition-colors truncate">
-                {card.title}
+                <span className={card.desktopTitle ? 'sm:hidden' : ''}>{card.title}</span>
+                {card.desktopTitle && <span className="hidden sm:inline">{card.desktopTitle}</span>}
               </p>
               <p className="text-[9px] sm:text-[11px] text-slate-400 leading-tight truncate">{card.description}</p>
             </div>

@@ -1,50 +1,12 @@
 import { Link } from 'react-router-dom'
 
-interface GuideStep {
-  label: string
-  title: string
-  body: string
-  to: string
-  linkLabel: string
-}
-
 interface ScreenshotGuide {
   title: string
   image: string
   alt: string
   points: string[]
+  variant?: 'wide' | 'phone'
 }
-
-const QUICK_STEPS: GuideStep[] = [
-  {
-    label: 'STEP 1',
-    title: 'まずはカテゴリを選ぶ',
-    body: 'トップページのカテゴリ一覧から、学習したい分野を開きます。迷ったらノートモードで確認してから問題演習に進みます。',
-    to: '/',
-    linkLabel: 'トップページへ',
-  },
-  {
-    label: 'STEP 2',
-    title: '4択で慣れて、記述で仕上げる',
-    body: '同じ問題を4択と記述で解けます。最初は4択、定着確認は記述、苦手な分野は弱点克服モードで戻ります。',
-    to: '/quiz?mode=random',
-    linkLabel: 'ランダム出題へ',
-  },
-  {
-    label: 'STEP 3',
-    title: '午後問題は点数を残す',
-    body: '午後問題演習補助では、年度・問・テーマ・最高点・実施日を一覧で確認できます。解答欄モードで練習し、点数を記録します。',
-    to: '/afternoon',
-    linkLabel: '午後問題演習へ',
-  },
-  {
-    label: 'STEP 4',
-    title: '履歴と同期で継続する',
-    body: '学習履歴、経験値、勲章で進み具合を確認します。PCとスマホを併用する場合は、まとまった学習後に同期します。',
-    to: '/history',
-    linkLabel: '学習履歴へ',
-  },
-]
 
 const SCREENSHOT_GUIDES: ScreenshotGuide[] = [
   {
@@ -59,28 +21,20 @@ const SCREENSHOT_GUIDES: ScreenshotGuide[] = [
   },
   {
     title: 'ノートモード',
-    image: '/how-to-use/notes-desktop.png',
-    alt: 'ノートモードのカテゴリ一覧',
+    image: '/how-to-use/note-detail-mobile.png',
+    alt: 'ノートモードで赤字を隠している画面',
+    variant: 'phone',
     points: [
-      '分野ごとの重要知識をまとめて確認します。',
-      '検索欄から見たい項目を探せます。',
-      '理解度メモは自分の確認用として使います。',
-    ],
-  },
-  {
-    title: '問題演習の開始画面',
-    image: '/how-to-use/quiz-mode-desktop.png',
-    alt: '問題演習のモード選択画面',
-    points: [
-      '4択モードは最初の確認に向いています。',
-      '記述モードは用語を自力で出せるか確認できます。',
-      '重要問題のみの出題に切り替えられます。',
+      '分野別の重要知識を、実際のノート画面で確認します。',
+      '赤字を隠すと、重要キーワードを伏せた暗記テストとして使えます。',
+      'チェックボックスで理解度を記録できます。',
     ],
   },
   {
     title: '問題演習中の画面',
     image: '/how-to-use/quiz-question-mobile.png',
     alt: 'スマホ版の問題演習画面',
+    variant: 'phone',
     points: [
       'スマホでも片手で選択肢を押しやすい配置です。',
       '解答後に正誤と解説を確認します。',
@@ -98,13 +52,23 @@ const SCREENSHOT_GUIDES: ScreenshotGuide[] = [
     ],
   },
   {
-    title: 'スマホのメニュー',
-    image: '/how-to-use/mobile-menu.png',
-    alt: 'スマホ版のサイドメニュー',
+    title: '午後問題の解答欄モード',
+    image: '/how-to-use/afternoon-answer-mode.png',
+    alt: '午後問題の解答欄モードで答え合わせしている画面',
     points: [
-      '左上のメニューボタンから各ページへ移動します。',
-      '勲章コレクション、PC・スマホ同期、設定もここから開けます。',
-      'PCとスマホの学習状況は同期ページで統合します。',
+      '解答欄に自分の答えを入力し、すぐに答え合わせできます。',
+      '○、△、×で自己採点すると、推定スコアが表示されます。',
+      'トラッカーに記録すると、点数と保存した解答を後から確認できます。',
+    ],
+  },
+  {
+    title: 'PC・スマホ同期',
+    image: '/how-to-use/sync-desktop.png',
+    alt: 'PC・スマホ同期の端末選択画面',
+    points: [
+      'PC版アプリとスマホ版アプリの学習状況を統合します。',
+      '最初に操作している端末を選ぶと、必要な手順だけが表示されます。',
+      'QRコードが使えない場合は、同期文字列で同じ操作を行えます。',
     ],
   },
 ]
@@ -125,28 +89,16 @@ function BackIcon() {
   )
 }
 
-function StepLink({ step }: { step: GuideStep }) {
-  return (
-    <Link
-      to={step.to}
-      className="group flex h-full flex-col rounded-lg border border-slate-200 bg-white p-4 shadow-sm transition hover:border-blue-300 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-    >
-      <span className="text-[11px] font-black tracking-wide text-blue-700">{step.label}</span>
-      <h2 className="mt-2 text-base font-black leading-snug text-slate-900">{step.title}</h2>
-      <p className="mt-2 flex-1 text-sm leading-relaxed text-slate-600">{step.body}</p>
-      <span className="mt-4 inline-flex items-center gap-1 text-sm font-bold text-blue-700 group-hover:text-blue-900">
-        {step.linkLabel}
-        <ArrowIcon />
-      </span>
-    </Link>
-  )
-}
-
 function ScreenshotSection({ guide, index }: { guide: ScreenshotGuide; index: number }) {
+  const figureClass = [
+    'overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm',
+    guide.variant === 'phone' ? 'mx-auto max-w-sm' : '',
+  ].filter(Boolean).join(' ')
+
   return (
     <section className="border-t border-slate-200 py-8">
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1.3fr)_minmax(260px,0.7fr)] lg:items-start">
-        <figure className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
+        <figure className={figureClass}>
           <img
             src={guide.image}
             alt={guide.alt}
@@ -182,33 +134,12 @@ export default function HowToUse() {
               アプリの使い方
             </h1>
             <p className="mt-3 text-sm leading-relaxed text-slate-600 sm:text-base">
-              このアプリは、ネットワークスペシャリスト試験の知識整理、問題演習、午後問題の点数管理をまとめて行うための学習アプリです。まずはトップページから分野を選び、ノートで確認し、問題演習で定着させます。
+              このアプリは、ネットワークスペシャリスト試験の知識整理、問題演習、午後問題の点数管理をまとめて行うための学習アプリです。画面ごとの役割を確認しながら、自分の学習状況に合わせて使い分けます。
             </p>
           </div>
         </div>
 
-        <section className="mt-6">
-          <div className="mb-3 flex items-end justify-between gap-3">
-            <div>
-              <p className="text-xs font-black tracking-wide text-slate-500">START</p>
-              <h2 className="text-lg font-black text-slate-900">基本の進め方</h2>
-            </div>
-            <Link
-              to="/"
-              className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-700 shadow-sm hover:border-blue-300 hover:text-blue-800"
-            >
-              <BackIcon />
-              ホーム
-            </Link>
-          </div>
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            {QUICK_STEPS.map((step) => (
-              <StepLink key={step.label} step={step} />
-            ))}
-          </div>
-        </section>
-
-        <div className="mt-8 rounded-lg border border-slate-200 bg-white px-5 shadow-sm sm:px-7">
+        <div className="mt-6 rounded-lg border border-slate-200 bg-white px-5 shadow-sm sm:px-7">
           {SCREENSHOT_GUIDES.map((guide, index) => (
             <ScreenshotSection key={guide.title} guide={guide} index={index} />
           ))}

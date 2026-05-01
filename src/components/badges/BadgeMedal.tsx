@@ -44,6 +44,7 @@ interface Props {
   size?: 'sm' | 'md' | 'lg'
   /** クリックハンドラ */
   onClick?: () => void
+  ariaLabel?: string
 }
 
 const SIZE_CLASS: Record<'sm' | 'md' | 'lg', string> = {
@@ -58,7 +59,7 @@ const SIZE_ICON: Record<'sm' | 'md' | 'lg', number> = {
   lg: 30,
 }
 
-export default function BadgeMedal({ badge, unlocked = false, size = 'md', onClick }: Props) {
+export default function BadgeMedal({ badge, unlocked = false, size = 'md', onClick, ariaLabel }: Props) {
   const IconComponent = ICON_MAP[badge.iconName] ?? Award
   const iconSize = SIZE_ICON[size] ?? TIER_ICON_SIZE[badge.tier]
 
@@ -77,7 +78,7 @@ export default function BadgeMedal({ badge, unlocked = false, size = 'md', onCli
       type="button"
       className={circleClass}
       onClick={onClick}
-      aria-label={badge.name}
+      aria-label={ariaLabel ?? badge.name}
       disabled={!onClick}
     >
       {unlocked ? (

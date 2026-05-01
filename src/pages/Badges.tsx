@@ -22,6 +22,12 @@ function BadgeDetailModal({ badge, unlocked, onClose }: {
   unlocked: boolean
   onClose: () => void
 }) {
+  const shouldHide = badge.hideConditionUntilUnlock && !unlocked
+  const displayName = shouldHide ? '？？？' : (badge.displayName ?? badge.name)
+  const description = shouldHide ? '？？？' : badge.description
+  const condition = shouldHide ? '？？？' : badge.condition
+  const xpBonus = shouldHide ? '？？？' : `+${badge.xpBonus.toLocaleString()} XP`
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
@@ -37,18 +43,18 @@ function BadgeDetailModal({ badge, unlocked, onClose }: {
             {TIER_LABEL[badge.tier]}
           </span>
           <h2 className="text-lg font-bold text-slate-800 mt-2 whitespace-pre-line leading-tight">
-            {badge.displayName ?? badge.name}
+            {displayName}
           </h2>
           <p className="text-slate-500 text-sm mt-1">
-            {badge.hideConditionUntilUnlock && !unlocked ? '？？？' : badge.description}
+            {description}
           </p>
         </div>
         <div className="w-full bg-slate-50 rounded-2xl p-3 text-sm text-slate-600 text-center">
           <p className="font-medium text-slate-700 mb-1">解放条件</p>
-          <p>{badge.hideConditionUntilUnlock && !unlocked ? '？？？' : badge.condition}</p>
+          <p>{condition}</p>
         </div>
         <div className="flex items-center gap-1.5">
-          <span className="text-amber-500 font-bold text-base">+{badge.xpBonus.toLocaleString()} XP</span>
+          <span className="text-amber-500 font-bold text-base">{xpBonus}</span>
           <span className="text-slate-400 text-sm">ボーナス</span>
         </div>
         {!unlocked && (
@@ -114,6 +120,8 @@ export default function Badges() {
             <div className="grid grid-cols-5 gap-3">
               {categoryBadges.map((badge) => {
                 const unlocked = unlockedSet.has(badge.id)
+                const shouldHide = badge.hideConditionUntilUnlock && !unlocked
+                const displayName = shouldHide ? '？？？' : (badge.displayName ?? badge.name)
                 return (
                   <div key={badge.id} className="flex flex-col items-center gap-1.5">
                     <BadgeMedal
@@ -121,11 +129,12 @@ export default function Badges() {
                       unlocked={unlocked}
                       size="md"
                       onClick={() => setSelected(badge)}
+                      ariaLabel={displayName}
                     />
                     <p className={`text-[10px] font-medium text-center leading-tight line-clamp-2 whitespace-pre-line ${
                       unlocked ? 'text-slate-700' : 'text-slate-400'
                     }`}>
-                      {badge.displayName ?? badge.name}
+                      {displayName}
                     </p>
                   </div>
                 )

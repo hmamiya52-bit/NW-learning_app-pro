@@ -106,6 +106,7 @@ export const BADGES: BadgeDefinition[] = [
     xpBonus: 1000,
     condition: '合計1000問解く',
     conditionValue: 1000,
+    hideConditionUntilUnlock: true,
   },
 
   // ── ⚡ 連続正答 (4枚) ────────────────────────────────────────
@@ -160,6 +161,7 @@ export const BADGES: BadgeDefinition[] = [
     xpBonus: 3000,
     condition: '75問連続正解',
     conditionValue: 75,
+    hideConditionUntilUnlock: true,
   },
 
   // ── ✍️ 記述モード (4枚) ────────────────────────────────────────
@@ -214,6 +216,7 @@ export const BADGES: BadgeDefinition[] = [
     xpBonus: 1500,
     condition: '記述モードで全問正解（1周）',
     conditionValue: 0,
+    hideConditionUntilUnlock: true,
   },
 
   // ── 📊 踏破率 (5枚) ────────────────────────────────────────
@@ -281,6 +284,7 @@ export const BADGES: BadgeDefinition[] = [
     xpBonus: 2000,
     condition: '全問題を正解',
     conditionValue: 100,
+    hideConditionUntilUnlock: true,
   },
 
   // ── 🏆 習熟 (3枚 / 記述モード対象) ────────────────────────────────────────
@@ -363,6 +367,7 @@ export const BADGES: BadgeDefinition[] = [
     xpBonus: 2100,
     condition: '全カテゴリ達成（達成率80%超）',
     conditionValue: 999,
+    hideConditionUntilUnlock: true,
   },
 
   // ── 📝 午後問題演習 (5枚 / 取得前は条件を「？？？」表示) ────────────────────────────────────────

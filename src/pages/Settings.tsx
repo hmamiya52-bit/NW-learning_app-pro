@@ -5,6 +5,23 @@ import { questions } from '../data/questions'
 import { categories } from '../data/categories'
 import { VERSION_LABEL } from '../version'
 import { useAuth } from '../auth/useAuth'
+import { loadRecords } from '../lib/tracker'
+import { loadSyncMeta } from '../lib/sync/device'
+
+function formatLastSyncAt(value: string | undefined): string {
+  if (!value) return '----/--/-- --:--'
+  try {
+    return new Intl.DateTimeFormat('ja-JP', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(new Date(value))
+  } catch {
+    return value
+  }
+}
 
 export default function Settings() {
   const navigate = useNavigate()
@@ -22,17 +39,14 @@ export default function Settings() {
   const progress = getAllProgress()
   const records = getAnswerRecords()
   const sessions = getStudySessions()
+  const afternoonRecords = loadRecords()
+  const syncMeta = loadSyncMeta()
 
   const totalAttempts = records.length
   const totalCorrect = records.filter((r) => r.isCorrect).length
   const overallRate = totalAttempts > 0 ? Math.round((totalCorrect / totalAttempts) * 100) : 0
   const completedCategories = progress.filter((p) => p.totalAttempts > 0).length
-
-  // 重要問題の正解数
-  const importantQuestionIds = new Set(questions.filter((q) => q.isImportant).map((q) => q.id))
-  const importantCorrectCount = records.filter(
-    (r) => r.isCorrect && importantQuestionIds.has(r.questionId),
-  ).length
+  const lastSyncAt = formatLastSyncAt(syncMeta.lastImportedAt)
 
   const handleReset = () => {
     resetAllData()
@@ -70,7 +84,7 @@ export default function Settings() {
               <StatCell label="総合正答率" value={`${overallRate}%`} highlight />
               <StatCell label="学習済みカテゴリ" value={`${completedCategories} / ${categories.length}`} />
               <StatCell label="セッション数" value={`${sessions.length} 回`} />
-              <StatCell label="重要問題正解" value={`${importantCorrectCount} 問`} />
+              <StatCell label="午後問題演習回数" value={`${afternoonRecords.length} 回`} />
             </div>
           </div>
         </section>
@@ -83,6 +97,7 @@ export default function Settings() {
             <InfoRow label="問題数" value={`${questions.length} 問`} />
             <InfoRow label="データ保存" value="ブラウザ（LocalStorage）" />
             <InfoRow label="オフライン" value="対応（PWA）" />
+            <InfoRow label="PCとスマホの最終同期日時" value={lastSyncAt} />
           </div>
         </section>
 

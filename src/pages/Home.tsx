@@ -99,13 +99,6 @@ const MENU_CARDS: MenuCard[] = [
     icon: <IconBook className="w-6 h-6 text-teal-600" />,
   },
   {
-    to: '/quiz?mode=weakness',
-    title: '弱点克服モード',
-    description: '正答率の低い問題',
-    iconBg: 'bg-red-50',
-    icon: <IconChart className="w-6 h-6 text-red-500" />,
-  },
-  {
     to: '/afternoon',
     title: '午後問題演習補助',
     description: '問題一覧・過去問トラッカー',
@@ -119,7 +112,16 @@ const MENU_CARDS: MenuCard[] = [
     iconBg: 'bg-amber-50',
     icon: <IconPen className="w-6 h-6 text-amber-600" />,
   },
-  // プロトコル一覧は最後
+]
+
+const OTHER_CARDS: MenuCard[] = [
+  {
+    to: '/quiz?mode=weakness',
+    title: '弱点克服モード',
+    description: '正答率の低い問題',
+    iconBg: 'bg-red-50',
+    icon: <IconChart className="w-6 h-6 text-red-500" />,
+  },
   {
     to: '/protocols',
     title: 'プロトコル一覧',
@@ -127,7 +129,59 @@ const MENU_CARDS: MenuCard[] = [
     iconBg: 'bg-purple-50',
     icon: <IconList className="w-6 h-6 text-purple-600" />,
   },
+  {
+    to: '/sync',
+    title: 'PC・スマホ同期',
+    description: '学習データを合流',
+    iconBg: 'bg-blue-50',
+    icon: <IconSync className="w-6 h-6 text-blue-700" />,
+  },
 ]
+
+function MenuCardGrid({ cards, studiedCount }: { cards: MenuCard[]; studiedCount: number }) {
+  return (
+    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+      {cards.map((card) => {
+        const isWeakness = card.to === '/quiz?mode=weakness'
+        const weaknessDisabled = isWeakness && studiedCount === 0
+        return weaknessDisabled ? (
+          <div
+            key={card.to}
+            className="flex items-center gap-1.5 sm:gap-3 bg-slate-50 rounded-xl border border-slate-200 px-2.5 py-2 sm:px-3 sm:py-2.5 opacity-60 cursor-not-allowed"
+          >
+            <div className={`w-6 h-6 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${card.iconBg}`}>
+              <span className="[&>svg]:w-4 [&>svg]:h-4 sm:[&>svg]:w-6 sm:[&>svg]:h-6 flex">
+                {card.icon}
+              </span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-[11px] sm:text-sm font-bold text-slate-500 leading-tight truncate">{card.title}</p>
+              <p className="text-[9px] sm:text-[11px] text-slate-400 leading-tight truncate">問題を解くと使えます</p>
+            </div>
+          </div>
+        ) : (
+          <Link
+            key={card.to}
+            to={card.to}
+            className="group relative flex items-center gap-1.5 sm:gap-3 bg-white rounded-xl border border-slate-200 px-2.5 py-2 sm:px-3 sm:py-2.5 hover:border-blue-400 hover:shadow-md transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+          >
+            <div className={`w-6 h-6 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${card.iconBg}`}>
+              <span className="[&>svg]:w-4 [&>svg]:h-4 sm:[&>svg]:w-6 sm:[&>svg]:h-6 flex">
+                {card.icon}
+              </span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-[11px] sm:text-sm font-bold text-slate-800 leading-tight group-hover:text-blue-700 transition-colors truncate">
+                {card.title}
+              </p>
+              <p className="text-[9px] sm:text-[11px] text-slate-400 leading-tight truncate">{card.description}</p>
+            </div>
+          </Link>
+        )
+      })}
+    </div>
+  )
+}
 
 // ----------------------------------------------------------------
 // Home
@@ -268,46 +322,7 @@ export default function Home() {
           >
             学習メニュー
           </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-            {MENU_CARDS.map((card) => {
-              const isWeakness = card.to === '/quiz?mode=weakness'
-              const weaknessDisabled = isWeakness && studiedCount === 0
-              return weaknessDisabled ? (
-                <div
-                  key={card.to}
-                  className="flex items-center gap-1.5 sm:gap-3 bg-slate-50 rounded-xl border border-slate-200 px-2.5 py-2 sm:px-3 sm:py-2.5 opacity-60 cursor-not-allowed"
-                >
-                  <div className={`w-6 h-6 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${card.iconBg}`}>
-                    <span className="[&>svg]:w-4 [&>svg]:h-4 sm:[&>svg]:w-6 sm:[&>svg]:h-6 flex">
-                      {card.icon}
-                    </span>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[11px] sm:text-sm font-bold text-slate-500 leading-tight truncate">{card.title}</p>
-                    <p className="text-[9px] sm:text-[11px] text-slate-400 leading-tight truncate">問題を解くと使えます</p>
-                  </div>
-                </div>
-              ) : (
-                <Link
-                  key={card.to}
-                  to={card.to}
-                  className="group relative flex items-center gap-1.5 sm:gap-3 bg-white rounded-xl border border-slate-200 px-2.5 py-2 sm:px-3 sm:py-2.5 hover:border-blue-400 hover:shadow-md transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                >
-                  <div className={`w-6 h-6 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${card.iconBg}`}>
-                    <span className="[&>svg]:w-4 [&>svg]:h-4 sm:[&>svg]:w-6 sm:[&>svg]:h-6 flex">
-                      {card.icon}
-                    </span>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[11px] sm:text-sm font-bold text-slate-800 leading-tight group-hover:text-blue-700 transition-colors truncate">
-                      {card.title}
-                    </p>
-                    <p className="text-[9px] sm:text-[11px] text-slate-400 leading-tight truncate">{card.description}</p>
-                  </div>
-                </Link>
-              )
-            })}
-          </div>
+          <MenuCardGrid cards={MENU_CARDS} studiedCount={studiedCount} />
         </section>
 
         {/* ===== 全体の学習進捗 ===== */}
@@ -422,25 +437,15 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ===== PC・スマホ同期 ===== */}
-        <section aria-labelledby="sync-heading">
-          <Link
-            to="/sync"
-            className="group flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm hover:border-blue-300 hover:shadow-md transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+        {/* ===== その他機能 ===== */}
+        <section aria-labelledby="other-heading">
+          <h2
+            id="other-heading"
+            className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3"
           >
-            <span className="w-10 h-10 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center flex-shrink-0">
-              <IconSync className="w-5 h-5" />
-            </span>
-            <span className="flex-1 min-w-0">
-              <span id="sync-heading" className="block text-sm font-bold text-slate-800 group-hover:text-blue-700 transition-colors">
-                PC・スマホ同期
-              </span>
-              <span className="block text-xs text-slate-400 mt-0.5">
-                QRコードまたは同期文字列で学習データを合流
-              </span>
-            </span>
-            <span className="text-slate-300 group-hover:text-blue-400 transition-colors" aria-hidden="true">›</span>
-          </Link>
+            その他機能
+          </h2>
+          <MenuCardGrid cards={OTHER_CARDS} studiedCount={studiedCount} />
         </section>
 
         {/* ===== 学習履歴 ===== */}

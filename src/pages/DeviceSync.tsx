@@ -461,6 +461,11 @@ function IntroSection({ lastSyncAt }: { lastSyncAt: string | undefined }) {
         <p className="text-xs font-bold text-slate-500 mb-2">
           最終同期日時：{formatLastSyncAt(lastSyncAt)}
         </p>
+        {!lastSyncAt && (
+          <p className="text-xs font-bold text-red-500 mb-2">
+            初回のQRコードは非常に読み取りづらいので、文字列コピペを推奨。二回目から多少読み取りやすくなります。
+          </p>
+        )}
         <h1 className="text-xl font-bold text-slate-900">PC＆スマホの学習記録連携</h1>
         <p className="text-sm text-slate-500 mt-2 leading-relaxed">
           PC版アプリとスマホ版アプリのそれぞれの学習状況を、QRコードまたは同期文字列で統合します。

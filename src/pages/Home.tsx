@@ -73,6 +73,14 @@ function IconPen({ className }: { className?: string }) {
   )
 }
 
+function IconSync({ className }: { className?: string }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className ?? 'w-6 h-6'} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m0 0A7.5 7.5 0 0118.5 6M4.582 9H9m11 11v-5h-.581m0 0A7.5 7.5 0 015.5 18m13.919-3H15" />
+    </svg>
+  )
+}
+
 const MENU_CARDS: MenuCard[] = [
   // 左上：アプリの使い方（別ページ）
   {
@@ -404,6 +412,27 @@ export default function Home() {
               />
             ))}
           </div>
+        </section>
+
+        {/* ===== PC・スマホ同期 ===== */}
+        <section aria-labelledby="sync-heading">
+          <Link
+            to="/sync"
+            className="group flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm hover:border-blue-300 hover:shadow-md transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+          >
+            <span className="w-10 h-10 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center flex-shrink-0">
+              <IconSync className="w-5 h-5" />
+            </span>
+            <span className="flex-1 min-w-0">
+              <span id="sync-heading" className="block text-sm font-bold text-slate-800 group-hover:text-blue-700 transition-colors">
+                PC・スマホ同期
+              </span>
+              <span className="block text-xs text-slate-400 mt-0.5">
+                QRコードまたは同期文字列で学習データを合流
+              </span>
+            </span>
+            <span className="text-slate-300 group-hover:text-blue-400 transition-colors" aria-hidden="true">›</span>
+          </Link>
         </section>
 
         {/* ===== 学習履歴 ===== */}

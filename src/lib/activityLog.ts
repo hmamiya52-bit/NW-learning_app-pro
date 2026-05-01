@@ -47,6 +47,7 @@ export interface DaySummary {
   date: string
   totalXp: number
   events: ActivityEvent[]
+  syncedOnlyXp?: number
 }
 
 // ----------------------------------------------------------------
@@ -54,7 +55,15 @@ export interface DaySummary {
 // ----------------------------------------------------------------
 
 const KEY = 'nwsp:activityLog'
+const DAILY_XP_LEDGER_KEY = 'nwsp:sync:daily_xp_ledger'
+const SYNC_META_KEY = 'nwsp:sync:meta'
 const MAX_EVENTS = 500
+
+type DailyXpLedger = Record<string, Record<string, number>>
+
+interface StoredSyncMeta {
+  deviceId?: unknown
+}
 
 export function loadActivityLog(): ActivityEvent[] {
   try {
@@ -107,6 +116,74 @@ export function upsertQuizSessionEvent(
 // Aggregation
 // ----------------------------------------------------------------
 
+function loadDailyXpLedger(): DailyXpLedger {
+  try {
+    const raw = localStorage.getItem(DAILY_XP_LEDGER_KEY)
+    if (!raw) return {}
+    const parsed = JSON.parse(raw)
+    if (!parsed || typeof parsed !== 'object') return {}
+    const ledger: DailyXpLedger = {}
+    for (const [deviceId, daily] of Object.entries(parsed as Record<string, unknown>)) {
+      if (!daily || typeof daily !== 'object') continue
+      for (const [date, xp] of Object.entries(daily as Record<string, unknown>)) {
+        if (typeof xp !== 'number' || !Number.isFinite(xp) || xp <= 0) continue
+        ledger[deviceId] ??= {}
+        ledger[deviceId][date] = Math.round(xp)
+      }
+    }
+    return ledger
+  } catch {
+    return {}
+  }
+}
+
+function loadLocalDeviceId(): string | null {
+  try {
+    const raw = localStorage.getItem(SYNC_META_KEY)
+    if (!raw) return null
+    const parsed = JSON.parse(raw) as StoredSyncMeta
+    return typeof parsed.deviceId === 'string' ? parsed.deviceId : null
+  } catch {
+    return null
+  }
+}
+
+function getLedgerXpForDate(
+  ledger: DailyXpLedger,
+  date: string,
+  localDeviceId: string | null,
+  localEventXp: number,
+): { totalXp: number; syncedOnlyXp: number } {
+  let ledgerTotal = 0
+  let localLedgerXp = 0
+  let otherDeviceXp = 0
+
+  for (const [deviceId, daily] of Object.entries(ledger)) {
+    const xp = daily[date] ?? 0
+    if (xp <= 0) continue
+    ledgerTotal += xp
+    if (localDeviceId && deviceId === localDeviceId) {
+      localLedgerXp += xp
+    } else {
+      otherDeviceXp += xp
+    }
+  }
+
+  if (!localDeviceId) {
+    const totalXp = Math.max(localEventXp, ledgerTotal)
+    return {
+      totalXp,
+      syncedOnlyXp: Math.max(0, totalXp - localEventXp),
+    }
+  }
+
+  const totalXp = otherDeviceXp + Math.max(localLedgerXp, localEventXp)
+  return {
+    totalXp,
+    syncedOnlyXp: Math.max(0, otherDeviceXp + Math.max(0, localLedgerXp - localEventXp)),
+  }
+}
+
 export function getDaySummaries(events: ActivityEvent[]): DaySummary[] {
   const map = new Map<string, ActivityEvent[]>()
   for (const e of events) {
@@ -114,12 +191,27 @@ export function getDaySummaries(events: ActivityEvent[]): DaySummary[] {
     arr.push(e)
     map.set(e.date, arr)
   }
-  return Array.from(map.entries())
-    .map(([date, evts]) => ({
-      date,
-      totalXp: evts.reduce((s, e) => s + e.xp, 0),
-      events: evts.sort((a, b) => a.createdAt.localeCompare(b.createdAt)),
-    }))
+  const ledger = loadDailyXpLedger()
+  const localDeviceId = loadLocalDeviceId()
+  const dates = new Set(map.keys())
+  for (const daily of Object.values(ledger)) {
+    for (const date of Object.keys(daily)) {
+      dates.add(date)
+    }
+  }
+
+  return Array.from(dates)
+    .map((date) => {
+      const evts = map.get(date) ?? []
+      const localEventXp = evts.reduce((s, e) => s + e.xp, 0)
+      const ledgerXp = getLedgerXpForDate(ledger, date, localDeviceId, localEventXp)
+      return {
+        date,
+        totalXp: ledgerXp.totalXp,
+        syncedOnlyXp: ledgerXp.syncedOnlyXp,
+        events: evts.sort((a, b) => a.createdAt.localeCompare(b.createdAt)),
+      }
+    })
     .sort((a, b) => b.date.localeCompare(a.date))
 }
 

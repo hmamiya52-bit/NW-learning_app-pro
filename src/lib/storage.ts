@@ -1,4 +1,5 @@
 import type { AnswerRecord, AnswerMode, UserProgress, StudySession, Bookmark } from '../types'
+import { touchNoteUnderstandingSyncMeta } from './sync/adapters'
 
 export type MasteryState = 'consecutive' | 'correct' | 'incorrect'
 type MasteryMap = Record<string, MasteryState>
@@ -232,4 +233,5 @@ export function setNoteUnderstanding(
     map[key] = level
   }
   save(NOTE_UNDERSTANDING_KEY, map)
+  touchNoteUnderstandingSyncMeta(categoryId, sectionIndex)
 }

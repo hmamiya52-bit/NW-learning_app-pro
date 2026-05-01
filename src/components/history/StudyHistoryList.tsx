@@ -27,6 +27,7 @@ function buildSummaryText(day: DaySummary): string {
   if (afternoonCount > 0) parts.push(`午後${afternoonCount}回`)
   if (badgeCount > 0) parts.push(`バッジ${badgeCount}個`)
   if (noteCount > 0) parts.push(`ノート${noteCount}項目`)
+  if ((day.syncedOnlyXp ?? 0) > 0) parts.push(`同期XP +${day.syncedOnlyXp}XP`)
   return parts.join(' / ') || '活動あり'
 }
 
@@ -51,6 +52,20 @@ const TIER_LABELS: Record<string, string> = {
 function XpBadge({ xp }: { xp: number }) {
   if (xp <= 0) return null
   return <span className="text-[10px] font-bold text-amber-500 flex-shrink-0">+{xp} XP</span>
+}
+
+function SyncedXpItem({ xp }: { xp: number }) {
+  if (xp <= 0) return null
+  return (
+    <div className="flex items-center gap-2.5 py-2">
+      <span className="text-sm flex-shrink-0">↔</span>
+      <div className="flex-1 min-w-0">
+        <p className="text-[12px] text-slate-700 leading-snug">別端末の学習記録を同期</p>
+        <p className="text-[10px] text-slate-400 mt-0.5">詳細な操作履歴は同期対象外です</p>
+      </div>
+      <XpBadge xp={xp} />
+    </div>
+  )
 }
 
 function ActivityEventItem({ event }: { event: ActivityEvent }) {
@@ -160,6 +175,7 @@ function DaySummaryRow({ day }: { day: DaySummary }) {
       {open && (
         <div className="px-4 pb-1 border-t border-slate-100 divide-y divide-slate-50">
           {day.events.map(e => <ActivityEventItem key={e.id} event={e} />)}
+          <SyncedXpItem xp={day.syncedOnlyXp ?? 0} />
         </div>
       )}
     </div>

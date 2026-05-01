@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth'
-import { VERSION_LABEL } from '../version'
+import { APP_VERSION } from '../version'
 
 // ─────────────────────────────────────────────
 // 装飾用 SVG アイコン（絵文字を使わず洗練された印象に）
@@ -92,6 +92,8 @@ function IconAfternoon({ className }: { className?: string }) {
 
 // ─────────────────────────────────────────────
 
+const LOGIN_VERSION_LABEL = `v${APP_VERSION}(Update: 2026/05/01)`
+
 export default function Login() {
   const { isAuthenticated, login } = useAuth()
   const navigate = useNavigate()
@@ -135,7 +137,7 @@ export default function Login() {
           <h1 className="text-base sm:text-lg font-black" style={{ color: '#1a3a5c' }}>
             ネットワークスペシャリスト学習アプリ
           </h1>
-          <p className="text-xs text-slate-400 mt-1">{VERSION_LABEL}</p>
+          <p className="text-sm text-slate-400 mt-1">{LOGIN_VERSION_LABEL}</p>
         </div>
 
         {/* フォーム */}

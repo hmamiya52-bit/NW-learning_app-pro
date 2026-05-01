@@ -1,3 +1,5 @@
+import { touchAfternoonPlanSyncMeta } from './sync/adapters'
+
 export interface PracticeRecord {
   id: string
   problemId: string
@@ -86,12 +88,14 @@ export function setPlan(problemId: string, date: string): void {
   const plans = loadPlans()
   plans[problemId] = date
   savePlans(plans)
+  touchAfternoonPlanSyncMeta(problemId)
 }
 
 export function removePlan(problemId: string): void {
   const plans = loadPlans()
   delete plans[problemId]
   savePlans(plans)
+  touchAfternoonPlanSyncMeta(problemId)
 }
 
 export function getMaxScore(section: 'G1' | 'G2'): number {

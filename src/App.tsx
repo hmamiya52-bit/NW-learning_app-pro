@@ -16,6 +16,7 @@ import HowToUse from './pages/HowToUse'
 import ActivityHistory from './pages/ActivityHistory'
 import Login from './pages/Login'
 import AuthGuard from './auth/AuthGuard'
+import DeviceSync from './pages/DeviceSync'
 
 export default function App() {
   return (
@@ -58,6 +59,7 @@ export default function App() {
           <Route path="/column" element={<Column />} />
           <Route path="/how-to-use" element={<HowToUse />} />
           <Route path="/history" element={<ActivityHistory />} />
+          <Route path="/sync" element={<DeviceSync />} />
         </Route>
       </Routes>
     </BrowserRouter>

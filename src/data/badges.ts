@@ -312,7 +312,7 @@ export const BADGES: BadgeDefinition[] = [
   },
   {
     id: 'mastery-4',
-    name: 'パーフェクト',
+    name: '完全無欠',
     description: '記述モード直近20問をすべて正解',
     category: 'mastery',
     iconName: 'Gem',
@@ -442,15 +442,15 @@ export const BADGES: BadgeDefinition[] = [
     id: 'complete-1',
     name: 'ネットワークスペシャリスト',
     displayName: 'ネットワーク\nスペシャリスト',
-    description: '全30枚の勲章を獲得',
+    description: '全ての勲章を獲得',
     category: 'complete',
     iconName: 'Award',
     gradient: 'from-yellow-300 via-amber-400 to-orange-500',
     shadowColor: 'shadow-amber-400/80',
     tier: 'legendary',
     xpBonus: 10000,
-    condition: '全30枚の勲章を獲得',
-    conditionValue: 30,
+    condition: '全ての勲章を獲得',
+    conditionValue: 29,
   },
 ]
 

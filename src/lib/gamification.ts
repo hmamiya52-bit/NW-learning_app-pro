@@ -7,6 +7,7 @@ import { afternoonProblems } from '../data/afternoonProblems'
 import { loadRecords } from './tracker'
 
 const STORAGE_KEY = 'nwsp:gamification'
+const COMPLETE_BADGE_ID = 'complete-1'
 
 export interface GamificationState {
   xp: number
@@ -64,6 +65,25 @@ const DEFAULT_STATE: GamificationState = {
   recentResults: [],
   recentWrittenResults: [],
   unlockedBadgeIds: [],
+}
+
+function countUnlockedValidBadges(unlockedIds: string[]): number {
+  const validBadgeIds = new Set(BADGES.map((badge) => badge.id))
+  return new Set(unlockedIds.filter((id) => validBadgeIds.has(id))).size
+}
+
+function countUnlockedNonCompleteBadges(unlockedIds: string[]): number {
+  const validNonCompleteBadgeIds = new Set(
+    BADGES
+      .filter((badge) => badge.id !== COMPLETE_BADGE_ID)
+      .map((badge) => badge.id),
+  )
+  return new Set(unlockedIds.filter((id) => validNonCompleteBadgeIds.has(id))).size
+}
+
+function hasUnlockedAllNonCompleteBadges(unlockedIds: string[]): boolean {
+  const requiredCount = BADGES.filter((badge) => badge.id !== COMPLETE_BADGE_ID).length
+  return countUnlockedNonCompleteBadges(unlockedIds) >= requiredCount
 }
 
 export function loadGamification(): GamificationState {
@@ -225,7 +245,7 @@ function checkBadges(
       case 'afternoon-4': unlocked = afternoonStats.g2Over80 >= 5; break
       case 'afternoon-5': unlocked = afternoonStats.allClearedSixty; break
       // コンプリート（自分以外の全バッジ）
-      case 'complete-1': unlocked = state.unlockedBadgeIds.length >= BADGES.length - 1; break
+      case COMPLETE_BADGE_ID: unlocked = hasUnlockedAllNonCompleteBadges(state.unlockedBadgeIds); break
     }
 
     if (unlocked) newBadges.push(badge)
@@ -236,7 +256,7 @@ function checkBadges(
 
 /** 全勲章コンプ判定 */
 function isAllBadgesUnlocked(unlockedIds: string[]): boolean {
-  return unlockedIds.length >= BADGES.length
+  return countUnlockedValidBadges(unlockedIds) >= BADGES.length
 }
 
 /** 解答を記録して XP/バッジを更新する */
@@ -290,10 +310,10 @@ export function recordGamificationAnswer(event: AnswerEvent): AnswerGamification
     ]
     // complete-1 を再チェック
     const completeSet = new Set(newState.unlockedBadgeIds)
-    if (!completeSet.has('complete-1')) {
-      const completeBadge = BADGES.find((b) => b.id === 'complete-1')!
-      if (newState.unlockedBadgeIds.length >= BADGES.length - 1) {
-        newState.unlockedBadgeIds.push('complete-1')
+    if (!completeSet.has(COMPLETE_BADGE_ID)) {
+      const completeBadge = BADGES.find((b) => b.id === COMPLETE_BADGE_ID)!
+      if (hasUnlockedAllNonCompleteBadges(newState.unlockedBadgeIds)) {
+        newState.unlockedBadgeIds.push(COMPLETE_BADGE_ID)
         newBadges.push(completeBadge)
       }
     }
@@ -349,10 +369,10 @@ export function recordAfternoonXp(section: 'G1' | 'G2', score: number): Afternoo
     ]
     // complete-1 再チェック
     const completeSet = new Set(newState.unlockedBadgeIds)
-    if (!completeSet.has('complete-1')) {
-      const completeBadge = BADGES.find((b) => b.id === 'complete-1')!
-      if (newState.unlockedBadgeIds.length >= BADGES.length - 1) {
-        newState.unlockedBadgeIds.push('complete-1')
+    if (!completeSet.has(COMPLETE_BADGE_ID)) {
+      const completeBadge = BADGES.find((b) => b.id === COMPLETE_BADGE_ID)!
+      if (hasUnlockedAllNonCompleteBadges(newState.unlockedBadgeIds)) {
+        newState.unlockedBadgeIds.push(COMPLETE_BADGE_ID)
         newBadges.push(completeBadge)
       }
     }

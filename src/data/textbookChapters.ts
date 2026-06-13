@@ -313,13 +313,13 @@ const layerOneThreeScenario: PacketFlowScenario = {
     },
     {
       id: 'router-to-web',
-      title: 'ルータは宛先IPアドレスを見て次のネットワークへ送る',
+      title: 'ルータはIPを見て、次区間のL2フレームを作り直す',
       from: 'router',
       to: 'web',
       packetLabel: 'TCP SYN',
       explanation:
-        'ルータは受け取ったフレームからIPパケットを取り出し、[[blue:宛先IPアドレス]]を見て次の転送先を決めます。区間が変わるので、L2のMACアドレスは付け替わります。',
-      deviceFocus: 'ルータの判断材料は[[blue:宛先IPアドレス]]です。次の区間ではMACアドレスが変わります。',
+        'ルータは受け取ったフレームのL2ヘッダを外し、中のIPパケットを見ます。[[blue:宛先IPアドレス]]で次の転送先を決めたら、次区間で使う[[green:新しいL2フレーム]]に入れ直して送ります。',
+      deviceFocus: 'ルータは[[green:L2をデカプセル化]]し、[[blue:IPで経路判断]]し、次のリンク用に[[green:再カプセル化]]します。',
       headerFocus: {
         sourceMac: 'bb:bb:bb:bb:bb:01',
         destinationMac: 'cc:cc:cc:cc:cc:20',
@@ -374,22 +374,22 @@ const layerOneThreeChapter: TextbookChapter = {
           type: 'network-flow',
           title: 'PCからWebサーバまでの通り道',
           description:
-            'この図は、通信が複数の機器を経由して進むことを表しています。大切なのは、[[green:同じLAN内の転送]]と[[blue:別ネットワークへの転送]]を分けて見ることです。',
+            'この図は、通信が複数の機器を経由して進むことを表しています。各区間では[[green:L2フレーム]]として運ばれ、その中に[[blue:IPパケット]]が入っています。ルータを越えるときは、L2を外してIPを見て、次区間のL2に入れ直します。',
           points: [
-            'PCから見た最初の相手は、同じLAN内のL2SWやデフォルトゲートウェイです。',
-            'L2SWは[[green:同じVLAN内]]でフレームを転送します。',
-            'ルータは[[blue:別ネットワーク]]へ進むための経路を選びます。',
+            'どのリンクでも、物理的に流れる単位は[[green:L2フレーム]]です。',
+            'フレームの中の[[blue:IPパケット]]は、最終目的地のWebサーバを示し続けます。',
+            'ルータは[[green:L2を外す]]、[[blue:IPを見る]]、[[green:次区間のL2を作る]]という処理をします。',
           ],
           nodes: [
             { id: 'pc', label: 'PC', caption: '通信の出発点', role: 'pc' },
             { id: 'switch', label: 'L2SW', caption: '同じLAN内で転送', role: 'switch' },
-            { id: 'router', label: 'ルータ', caption: '別ネットワークへ中継', role: 'router' },
+            { id: 'router', label: 'ルータ', caption: 'IPを見てL2を作り直す', role: 'router' },
             { id: 'web', label: 'Webサーバ', caption: '通信の目的地', role: 'server' },
           ],
           links: [
             { from: 'pc', to: 'switch', label: 'L2フレーム' },
             { from: 'switch', to: 'router', label: 'L2フレーム' },
-            { from: 'router', to: 'web', label: 'IPパケット' },
+            { from: 'router', to: 'web', label: '新しいL2フレーム' },
           ],
         },
       ],
@@ -493,11 +493,11 @@ const layerOneThreeChapter: TextbookChapter = {
           type: 'packet-frame',
           title: 'フレームとパケットの入れ子',
           description:
-            'PCが別ネットワークへ通信するとき、[[blue:Webサーバ宛てのIPパケット]]を、[[green:ルータ宛てのイーサネットフレーム]]に入れて運びます。この入れ子構造が、L2とL3を分けて考える土台です。',
+            '送信側では、アプリケーションデータに[[amber:L4ヘッダ]]を付け、そこに[[blue:L3ヘッダ]]を付け、最後に[[green:L2ヘッダとトレーラ]]を付けます。PCが別ネットワークへ通信するときは、[[blue:Webサーバ宛てのIPパケット]]を[[green:ルータ宛てのイーサネットフレーム]]に入れて運びます。',
           points: [
-            '外側の[[green:Ethernetフレーム]]は、同じLAN内の次の相手へ届けるために使います。',
+            '外側の[[green:Ethernetフレーム]]は、同じリンク上の次の相手へ届けるために使います。',
             '内側の[[blue:IPパケット]]は、最終目的地のWebサーバを示し続けます。',
-            'ルータを越える区間では、外側のL2情報が付け替わります。',
+            'ルータでは外側のL2を外し、次のリンク用のL2を付け直します。',
           ],
           layers: [
             {
@@ -514,7 +514,7 @@ const layerOneThreeChapter: TextbookChapter = {
             },
             {
               title: 'TCPセグメント（L4）',
-              subtitle: 'アプリケーション通信を識別するさらに内側の情報',
+              subtitle: 'エンドホスト間の通信を識別するさらに内側の情報',
               accent: 'amber',
               fields: ['送信元ポート', '宛先ポート', '制御ビット', 'データ'],
             },
@@ -522,13 +522,51 @@ const layerOneThreeChapter: TextbookChapter = {
           notes: [
             {
               title: 'ここを見れば混ざらない',
-              body: '[[green:MACアドレス]]は外側、[[blue:IPアドレス]]は内側。どちらも同時に使いますが、見ている範囲が違います。',
+              body: '[[green:MACアドレス]]はリンクごとに使う外側の情報、[[blue:IPアドレス]]はエンドツーエンドの内側の情報です。どちらも同時に使いますが、見ている範囲が違います。',
               accent: 'slate',
             },
             {
               title: '午後問題で効く見方',
-              body: '「どの機器が、どのヘッダを見て判断したか」を問われたら、外側のL2情報か、内側のL3情報かを切り分けます。',
+              body: '「どの機器が、どのヘッダを見て判断したか」を問われたら、L2SWは外側のL2情報、ルータはL2を外した後のL3情報を見る、と切り分けます。',
               accent: 'blue',
+            },
+          ],
+        },
+        {
+          type: 'sequence',
+          title: 'カプセル化とデカプセル化の流れ',
+          description:
+            'この図は、ヘッダがどの順番で付くか、ルータでは何が外されて何が付け直されるかを表しています。[[red:別ネットワークだからIPパケットをむき出しで送る]]わけではありません。',
+          points: [
+            '送信側ではL4、L3、L2の順に外側へ包んでいきます。',
+            'ルータはL2を外してL3を見ますが、L4ヘッダを付け直す機器ではありません。',
+            '次のリンクへ出すときは、そのリンク用のL2フレームを新しく作ります。',
+          ],
+          steps: [
+            {
+              label: '1',
+              title: 'L4ヘッダを付ける',
+              body: 'PCのTCP処理が、送信元ポート、宛先ポート、シーケンス番号などを付けて[[amber:TCPセグメント]]を作る。',
+            },
+            {
+              label: '2',
+              title: 'L3ヘッダを付ける',
+              body: 'IP処理が、送信元IPと宛先IPを付けて[[blue:IPパケット]]を作る。宛先IPはWebサーバを示す。',
+            },
+            {
+              label: '3',
+              title: 'L2ヘッダとトレーラを付ける',
+              body: 'Ethernet処理が、次ホップの宛先MACを付けて[[green:L2フレーム]]を作る。別ネットワーク宛てなら、最初の宛先MACはデフォルトゲートウェイになる。',
+            },
+            {
+              label: '4',
+              title: 'ルータでL2を外してIPを見る',
+              body: 'ルータは受信したL2フレームをデカプセル化し、[[blue:宛先IPアドレス]]と経路表を見て次の出力インタフェースを決める。',
+            },
+            {
+              label: '5',
+              title: '次区間用のL2に入れ直す',
+              body: 'ルータは次のリンクで使う宛先MACと送信元MACを付けて、[[green:新しいL2フレーム]]として送り出す。IPパケットはTTLなど必要な値を更新して転送される。',
             },
           ],
         },

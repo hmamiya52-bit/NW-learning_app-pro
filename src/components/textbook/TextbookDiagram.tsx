@@ -185,9 +185,9 @@ function NetworkFlowDiagramView({ diagram }: { diagram: NetworkFlowDiagram }) {
           ))}
 
           <div className="absolute bottom-5 left-6 right-6 grid gap-2 text-[11px] font-bold text-slate-600 md:grid-cols-3">
-            <div className="rounded-lg bg-white/85 px-3 py-2 shadow-sm">PCは最初に同じLAN内の次の相手を探す</div>
-            <div className="rounded-lg bg-white/85 px-3 py-2 shadow-sm">L2SWはMACアドレスで同じVLAN内を転送する</div>
-            <div className="rounded-lg bg-white/85 px-3 py-2 shadow-sm">ルータから先は別ネットワークとして経路を選ぶ</div>
+            <div className="rounded-lg bg-white/85 px-3 py-2 shadow-sm">PCはIPパケットを次ホップ宛てL2フレームに入れる</div>
+            <div className="rounded-lg bg-white/85 px-3 py-2 shadow-sm">L2SWはフレームを同じVLAN内で転送する</div>
+            <div className="rounded-lg bg-white/85 px-3 py-2 shadow-sm">ルータはL2を外し、IPを見て、L2を作り直す</div>
           </div>
         </div>
       </div>

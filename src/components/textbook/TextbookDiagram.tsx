@@ -1,6 +1,7 @@
 import { ArrowRight, Cable, Check, Monitor, Network, Router, Server } from 'lucide-react'
 import type {
   ComparisonDiagram,
+  EncapsulationDiagram,
   LayerStackDiagram,
   NetworkFlowDiagram,
   PacketFrameDiagram,
@@ -329,6 +330,45 @@ function PacketFrameDiagramView({ diagram }: { diagram: PacketFrameDiagram }) {
   )
 }
 
+function EncapsulationDiagramView({ diagram }: { diagram: EncapsulationDiagram }) {
+  return (
+    <DiagramShell title={diagram.title} description={diagram.description} points={diagram.points}>
+      <div className="grid gap-3 md:grid-cols-4">
+        {diagram.stages.map((stage, index) => (
+          <div
+            key={stage.label}
+            className="textbook-encapsulation-stage rounded-lg border border-slate-200 bg-slate-50 px-3 py-3"
+            style={{ animationDelay: `${index * 160}ms` }}
+          >
+            <p className="text-xs font-black text-blue-700">{stage.label}</p>
+            <p className="mt-1 text-sm font-black text-slate-800">{stage.title}</p>
+            <p className="mt-1 text-xs leading-relaxed text-slate-600">
+              <TextbookRichText text={stage.description} />
+            </p>
+            <div className="mt-3 flex flex-wrap gap-1.5">
+              {stage.parts.map((part) => (
+                <span key={part.label} className={`rounded-md border px-2 py-1 text-[11px] font-black ${PACKET_FRAME_COLORS[part.accent]}`}>
+                  {part.label}
+                </span>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="mt-4 grid gap-2 md:grid-cols-2">
+        {diagram.routeNotes.map((note) => (
+          <div key={note.title} className={`rounded-lg border px-3 py-2 ${PACKET_FRAME_COLORS[note.accent]}`}>
+            <p className="text-xs font-black">{note.title}</p>
+            <p className="mt-1 text-xs leading-relaxed">
+              <TextbookRichText text={note.body} />
+            </p>
+          </div>
+        ))}
+      </div>
+    </DiagramShell>
+  )
+}
+
 export default function TextbookDiagram({ diagram }: TextbookDiagramProps) {
   if (diagram.type === 'layer-stack') return <LayerStackDiagramView diagram={diagram} />
   if (diagram.type === 'network-flow') return <NetworkFlowDiagramView diagram={diagram} />
@@ -336,6 +376,7 @@ export default function TextbookDiagram({ diagram }: TextbookDiagramProps) {
   if (diagram.type === 'sequence') return <SequenceDiagramView diagram={diagram} />
   if (diagram.type === 'segment') return <SegmentDiagramView diagram={diagram} />
   if (diagram.type === 'packet-frame') return <PacketFrameDiagramView diagram={diagram} />
+  if (diagram.type === 'encapsulation-flow') return <EncapsulationDiagramView diagram={diagram} />
   return (
     <PacketFlowVisualizer
       scenario={diagram.scenario}

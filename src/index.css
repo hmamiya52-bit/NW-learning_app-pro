@@ -60,8 +60,29 @@ samp,
   animation: textbook-packet-flow 700ms ease-in-out both;
 }
 
+@keyframes textbook-encapsulation-rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.textbook-encapsulation-stage {
+  opacity: 0;
+  animation: textbook-encapsulation-rise 520ms ease-out both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .textbook-packet {
+    animation: none;
+  }
+
+  .textbook-encapsulation-stage {
+    opacity: 1;
     animation: none;
   }
 }

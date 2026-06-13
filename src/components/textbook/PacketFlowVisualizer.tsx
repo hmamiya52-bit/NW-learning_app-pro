@@ -18,6 +18,7 @@ import type {
   PacketFlowScenario,
   PacketFlowStep,
 } from '../../data/textbookChapters'
+import TextbookRichText from './TextbookRichText'
 
 interface PacketFlowVisualizerProps {
   scenario: PacketFlowScenario
@@ -63,7 +64,7 @@ function isActivePath(step: PacketFlowStep, from: PacketFlowNode, to: PacketFlow
 
 export default function PacketFlowVisualizer({
   scenario,
-  title = 'Interactive Flow',
+  title = '動く図解',
   description,
   points = [],
 }: PacketFlowVisualizerProps) {
@@ -94,13 +95,14 @@ export default function PacketFlowVisualizer({
     return () => window.clearTimeout(timer)
   }, [isPlaying, scenario.steps.length, stepIndex])
 
-  const packetStartRatio = 0.18
-  const packetEndRatio = 0.82
+  const packetStartRatio = 0.32
+  const packetEndRatio = 0.68
+  const packetYOffset = currentFrom.y === currentTo.y ? -18 : 0
   const packetStyle = {
     '--packet-from-x': `${currentFrom.x + (currentTo.x - currentFrom.x) * packetStartRatio}%`,
-    '--packet-from-y': `${currentFrom.y + (currentTo.y - currentFrom.y) * packetStartRatio}%`,
+    '--packet-from-y': `${currentFrom.y + (currentTo.y - currentFrom.y) * packetStartRatio + packetYOffset}%`,
     '--packet-to-x': `${currentFrom.x + (currentTo.x - currentFrom.x) * packetEndRatio}%`,
-    '--packet-to-y': `${currentFrom.y + (currentTo.y - currentFrom.y) * packetEndRatio}%`,
+    '--packet-to-y': `${currentFrom.y + (currentTo.y - currentFrom.y) * packetEndRatio + packetYOffset}%`,
   } as CSSProperties
 
   const goPrevious = () => {
@@ -128,17 +130,21 @@ export default function PacketFlowVisualizer({
   return (
     <div className="scroll-mt-16 rounded-lg border border-slate-200 bg-white shadow-sm" data-testid="packet-flow-visualizer">
       <div className="border-b border-slate-200 px-4 py-3">
-        <p className="text-xs font-bold uppercase text-slate-400">{title}</p>
+        <p className="text-xs font-black text-blue-700">{title}</p>
         <h4 className="mt-0.5 text-base font-black text-slate-800">{scenario.title}</h4>
-        <p className="mt-1 text-sm leading-relaxed text-slate-600">{description ?? scenario.description}</p>
+        <p className="mt-1 text-sm leading-relaxed text-slate-600">
+          <TextbookRichText text={description ?? scenario.description} />
+        </p>
         {description && (
-          <p className="mt-1 text-xs leading-relaxed text-slate-500">{scenario.description}</p>
+          <p className="mt-1 text-xs leading-relaxed text-slate-500">
+            <TextbookRichText text={scenario.description} />
+          </p>
         )}
         {points.length > 0 && (
-          <ul className="mt-2 flex flex-wrap gap-1.5">
+          <ul className="mt-2 grid gap-1.5 sm:grid-cols-3">
             {points.map((point) => (
-              <li key={point} className="rounded-full bg-blue-50 px-2 py-1 text-[10px] font-bold text-blue-700">
-                {point}
+              <li key={point} className="rounded-md bg-blue-50 px-2 py-1 text-[10px] font-bold leading-relaxed text-blue-700">
+                <TextbookRichText text={point} />
               </li>
             ))}
           </ul>
@@ -147,7 +153,7 @@ export default function PacketFlowVisualizer({
 
       <div className="p-3 sm:p-4">
         <div
-          className="relative h-[330px] overflow-hidden rounded-lg border border-slate-200 bg-slate-50 sm:h-[390px]"
+          className="relative h-[180px] overflow-hidden rounded-lg border border-slate-200 bg-slate-50 sm:h-[220px]"
           aria-label={`${scenario.title}の通信フロー図`}
         >
           <svg className="absolute inset-0 h-full w-full" aria-hidden="true">
@@ -173,7 +179,7 @@ export default function PacketFlowVisualizer({
             <div
               key={node.id}
               className={[
-                'absolute w-[70px] -translate-x-1/2 -translate-y-1/2 rounded-lg border bg-white px-1.5 py-2 text-center shadow-sm transition-all sm:w-[116px] sm:px-2',
+                'absolute w-[58px] -translate-x-1/2 -translate-y-1/2 rounded-lg border bg-white px-1 py-2 text-center shadow-sm transition-all sm:w-[104px] sm:px-2',
                 node.id === currentStep.from || node.id === currentStep.to
                   ? 'border-blue-300 ring-2 ring-blue-100'
                   : 'border-slate-200',
@@ -184,7 +190,6 @@ export default function PacketFlowVisualizer({
                 <RoleIcon role={node.role} />
               </div>
               <p className="mt-1 text-[10px] font-black leading-tight text-slate-800 sm:text-xs">{node.label}</p>
-              <p className="mt-0.5 hidden text-[10px] leading-snug text-slate-500 sm:block">{node.hint}</p>
             </div>
           ))}
 
@@ -198,38 +203,6 @@ export default function PacketFlowVisualizer({
               {currentStep.packetLabel}
             </div>
           </div>
-        </div>
-
-        <div className="mt-3 grid gap-3 lg:grid-cols-[minmax(0,1fr)_260px]">
-          <section className="rounded-lg border border-slate-200 bg-white px-4 py-3" aria-live="polite">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="text-xs font-bold text-blue-600">
-                  STEP {stepIndex + 1} / {scenario.steps.length}
-                </p>
-                <h5 className="mt-1 text-sm font-black leading-snug text-slate-800">{currentStep.title}</h5>
-              </div>
-              <span className="rounded-full bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-500">
-                {currentStep.packetLabel}
-              </span>
-            </div>
-            <p className="mt-2 text-sm leading-relaxed text-slate-600">{currentStep.explanation}</p>
-            <p className="mt-2 rounded-lg bg-blue-50 px-3 py-2 text-xs font-bold leading-relaxed text-blue-800">
-              {currentStep.deviceFocus}
-            </p>
-          </section>
-
-          <section className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-3">
-            <h5 className="text-xs font-black text-slate-700">このステップで見るヘッダ</h5>
-            <dl className="mt-2 space-y-1.5">
-              {headerEntries.map(([key, value]) => (
-                <div key={key} className="grid grid-cols-[76px_minmax(0,1fr)] gap-2 text-[11px]">
-                  <dt className="font-bold text-slate-500">{HEADER_LABELS[key]}</dt>
-                  <dd className="min-w-0 break-all font-bold text-slate-800">{value}</dd>
-                </div>
-              ))}
-            </dl>
-          </section>
         </div>
 
         <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -271,6 +244,40 @@ export default function PacketFlowVisualizer({
             <RotateCcw className="h-4 w-4" aria-hidden="true" />
             最初から
           </button>
+        </div>
+
+        <div className="mt-3 grid gap-3 lg:grid-cols-[minmax(0,1fr)_260px]">
+          <section className="min-h-[178px] rounded-lg border border-slate-200 bg-white px-4 py-3" aria-live="polite">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="text-xs font-bold text-blue-600">
+                  STEP {stepIndex + 1} / {scenario.steps.length}
+                </p>
+                <h5 className="mt-1 text-sm font-black leading-snug text-slate-800">{currentStep.title}</h5>
+              </div>
+              <span className="rounded-full bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-500">
+                {currentStep.packetLabel}
+              </span>
+            </div>
+            <p className="mt-2 text-sm leading-relaxed text-slate-600">
+              <TextbookRichText text={currentStep.explanation} />
+            </p>
+            <p className="mt-2 rounded-lg bg-blue-50 px-3 py-2 text-xs font-bold leading-relaxed text-blue-800">
+              <TextbookRichText text={currentStep.deviceFocus} />
+            </p>
+          </section>
+
+          <section className="min-h-[178px] rounded-lg border border-slate-200 bg-slate-50 px-3 py-3">
+            <h5 className="text-xs font-black text-slate-700">このステップで見るヘッダ</h5>
+            <dl className="mt-2 space-y-1.5">
+              {headerEntries.map(([key, value]) => (
+                <div key={key} className="grid grid-cols-[76px_minmax(0,1fr)] gap-2 text-[11px]">
+                  <dt className="font-bold text-slate-500">{HEADER_LABELS[key]}</dt>
+                  <dd className="min-w-0 break-all font-bold text-slate-800">{value}</dd>
+                </div>
+              ))}
+            </dl>
+          </section>
         </div>
       </div>
     </div>

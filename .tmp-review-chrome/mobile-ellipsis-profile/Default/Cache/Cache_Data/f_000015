@@ -1,0 +1,440 @@
+import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/pages/HowToUse.tsx");import { Link } from "/node_modules/.vite/deps/react-router-dom.js?v=be58479d";
+var _jsxFileName = "D:/Codex/nesupe-codex/src/pages/HowToUse.tsx";
+import __vite__cjsImport1_react_jsxDevRuntime from "/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=be58479d"; const _jsxDEV = __vite__cjsImport1_react_jsxDevRuntime["jsxDEV"];
+/**
+* アプリの使い方（独立ページ）
+*  - 学習メニューのボタンから遷移
+*  - 3セクション構成：ノートモード／問題演習／午後問題演習補助ツール
+*/
+export default function HowToUse() {
+	return /* @__PURE__ */ _jsxDEV("div", {
+		className: "min-h-screen",
+		style: { backgroundColor: "#f8fafc" },
+		children: /* @__PURE__ */ _jsxDEV("div", {
+			className: "max-w-3xl mx-auto px-4 pt-6 pb-16",
+			children: [
+				/* @__PURE__ */ _jsxDEV("div", {
+					className: "flex items-center gap-3 mb-6",
+					children: [/* @__PURE__ */ _jsxDEV("span", {
+						className: "w-10 h-10 rounded-xl flex items-center justify-center text-lg flex-shrink-0",
+						style: {
+							backgroundColor: "#dbeafe",
+							color: "#1d4ed8"
+						},
+						"aria-hidden": "true",
+						children: "📘"
+					}, void 0, false, {
+						fileName: _jsxFileName,
+						lineNumber: 14,
+						columnNumber: 11
+					}, this), /* @__PURE__ */ _jsxDEV("div", { children: [/* @__PURE__ */ _jsxDEV("h1", {
+						className: "text-xl font-black text-slate-800 leading-tight",
+						children: "アプリの使い方"
+					}, void 0, false, {
+						fileName: _jsxFileName,
+						lineNumber: 22,
+						columnNumber: 13
+					}, this), /* @__PURE__ */ _jsxDEV("p", {
+						className: "text-xs text-slate-400 mt-0.5",
+						children: "3つのモードを使い分けて効率的に学習しましょう"
+					}, void 0, false, {
+						fileName: _jsxFileName,
+						lineNumber: 23,
+						columnNumber: 13
+					}, this)] }, void 0, true, {
+						fileName: _jsxFileName,
+						lineNumber: 21,
+						columnNumber: 11
+					}, this)]
+				}, void 0, true, {
+					fileName: _jsxFileName,
+					lineNumber: 13,
+					columnNumber: 9
+				}, this),
+				/* @__PURE__ */ _jsxDEV("div", {
+					className: "bg-white rounded-2xl border border-slate-200 shadow-sm px-5 py-5 space-y-6 text-sm text-slate-700 leading-relaxed",
+					children: [
+						/* @__PURE__ */ _jsxDEV("section", { children: [
+							/* @__PURE__ */ _jsxDEV("h2", {
+								className: "text-base font-bold text-slate-800 mb-2 flex items-center gap-2",
+								children: [/* @__PURE__ */ _jsxDEV("span", {
+									className: "inline-block w-7 h-7 rounded-md text-center leading-7 text-sm font-bold",
+									style: {
+										backgroundColor: "#ccfbf1",
+										color: "#0f766e"
+									},
+									children: "📖"
+								}, void 0, false, {
+									fileName: _jsxFileName,
+									lineNumber: 31,
+									columnNumber: 15
+								}, this), "① ノートモード"]
+							}, void 0, true, {
+								fileName: _jsxFileName,
+								lineNumber: 30,
+								columnNumber: 13
+							}, this),
+							/* @__PURE__ */ _jsxDEV("p", {
+								className: "text-[13px] text-slate-600",
+								children: [
+									"各分野の重要知識を 1 ページで一気に確認できる暗記ノートです。著者の",
+									/* @__PURE__ */ _jsxDEV("strong", {
+										className: "text-slate-800",
+										children: "復習ノート"
+									}, void 0, false, {
+										fileName: _jsxFileName,
+										lineNumber: 41,
+										columnNumber: 15
+									}, this),
+									"に準拠した内容を整理しています。"
+								]
+							}, void 0, true, {
+								fileName: _jsxFileName,
+								lineNumber: 39,
+								columnNumber: 13
+							}, this),
+							/* @__PURE__ */ _jsxDEV("ul", {
+								className: "mt-3 ml-5 space-y-1.5 text-[13px] text-slate-600 list-disc",
+								children: [
+									/* @__PURE__ */ _jsxDEV("li", { children: [
+										/* @__PURE__ */ _jsxDEV("strong", {
+											className: "text-red-600",
+											children: "赤字"
+										}, void 0, false, {
+											fileName: _jsxFileName,
+											lineNumber: 45,
+											columnNumber: 17
+										}, this),
+										"は重要キーワード。画面下の「",
+										/* @__PURE__ */ _jsxDEV("strong", { children: "赤字を隠す" }, void 0, false, {
+											fileName: _jsxFileName,
+											lineNumber: 46,
+											columnNumber: 17
+										}, this),
+										"」ボタンで一括マスクし、暗記テストとして使えます。"
+									] }, void 0, true, {
+										fileName: _jsxFileName,
+										lineNumber: 44,
+										columnNumber: 15
+									}, this),
+									/* @__PURE__ */ _jsxDEV("li", { children: [
+										"マスク中は",
+										/* @__PURE__ */ _jsxDEV("strong", {
+											className: "text-slate-800",
+											children: "赤いブロックをタップ"
+										}, void 0, false, {
+											fileName: _jsxFileName,
+											lineNumber: 49,
+											columnNumber: 22
+										}, this),
+										"すると一時的に表示。 もう一度タップで再び隠れます。"
+									] }, void 0, true, {
+										fileName: _jsxFileName,
+										lineNumber: 48,
+										columnNumber: 15
+									}, this),
+									/* @__PURE__ */ _jsxDEV("li", { children: [/* @__PURE__ */ _jsxDEV("strong", {
+										style: { color: "#1a3a5c" },
+										children: "ネイビーの太字"
+									}, void 0, false, {
+										fileName: _jsxFileName,
+										lineNumber: 53,
+										columnNumber: 17
+									}, this), "は復習ノートに無い補足情報 （試験対策プラスα）です。隠れません。"] }, void 0, true, {
+										fileName: _jsxFileName,
+										lineNumber: 52,
+										columnNumber: 15
+									}, this),
+									/* @__PURE__ */ _jsxDEV("li", { children: [
+										"ノート一覧の上部にある",
+										/* @__PURE__ */ _jsxDEV("strong", { children: "検索ボックス" }, void 0, false, {
+											fileName: _jsxFileName,
+											lineNumber: 57,
+											columnNumber: 28
+										}, this),
+										"からセクション見出しを直接ジャンプできます。"
+									] }, void 0, true, {
+										fileName: _jsxFileName,
+										lineNumber: 56,
+										columnNumber: 15
+									}, this),
+									/* @__PURE__ */ _jsxDEV("li", { children: [
+										"問題演習の解答モード選択画面から、該当カテゴリのノートに",
+										/* @__PURE__ */ _jsxDEV("strong", { children: "ワンタップで遷移" }, void 0, false, {
+											fileName: _jsxFileName,
+											lineNumber: 61,
+											columnNumber: 17
+										}, this),
+										"できます（解く前の確認に活用）。"
+									] }, void 0, true, {
+										fileName: _jsxFileName,
+										lineNumber: 59,
+										columnNumber: 15
+									}, this)
+								]
+							}, void 0, true, {
+								fileName: _jsxFileName,
+								lineNumber: 43,
+								columnNumber: 13
+							}, this)
+						] }, void 0, true, {
+							fileName: _jsxFileName,
+							lineNumber: 29,
+							columnNumber: 11
+						}, this),
+						/* @__PURE__ */ _jsxDEV("section", { children: [
+							/* @__PURE__ */ _jsxDEV("h2", {
+								className: "text-base font-bold text-slate-800 mb-2 flex items-center gap-2",
+								children: [/* @__PURE__ */ _jsxDEV("span", {
+									className: "inline-block w-7 h-7 rounded-md text-center leading-7 text-sm font-bold",
+									style: {
+										backgroundColor: "#dbeafe",
+										color: "#1d4ed8"
+									},
+									children: "✍"
+								}, void 0, false, {
+									fileName: _jsxFileName,
+									lineNumber: 69,
+									columnNumber: 15
+								}, this), "② 問題演習"]
+							}, void 0, true, {
+								fileName: _jsxFileName,
+								lineNumber: 68,
+								columnNumber: 13
+							}, this),
+							/* @__PURE__ */ _jsxDEV("p", {
+								className: "text-[13px] text-slate-600",
+								children: "穴埋め形式の問題を 4 択 ／ 記述の 2 モードで解けます。同じ問題データを両モードで利用するため、 4 択で慣れたら記述に挑戦できます。"
+							}, void 0, false, {
+								fileName: _jsxFileName,
+								lineNumber: 77,
+								columnNumber: 13
+							}, this),
+							/* @__PURE__ */ _jsxDEV("ul", {
+								className: "mt-3 ml-5 space-y-1.5 text-[13px] text-slate-600 list-disc",
+								children: [
+									/* @__PURE__ */ _jsxDEV("li", { children: [/* @__PURE__ */ _jsxDEV("strong", { children: "4 択モード" }, void 0, false, {
+										fileName: _jsxFileName,
+										lineNumber: 83,
+										columnNumber: 17
+									}, this), "：選択肢から選ぶだけ、即時に正誤判定。最初はこちら。"] }, void 0, true, {
+										fileName: _jsxFileName,
+										lineNumber: 82,
+										columnNumber: 15
+									}, this),
+									/* @__PURE__ */ _jsxDEV("li", { children: [/* @__PURE__ */ _jsxDEV("strong", { children: "記述モード" }, void 0, false, {
+										fileName: _jsxFileName,
+										lineNumber: 86,
+										columnNumber: 17
+									}, this), "：自分でタイプして正解と見比べ、◯／✕ を自己採点。 入力が完全一致した場合は自動で正解になります。"] }, void 0, true, {
+										fileName: _jsxFileName,
+										lineNumber: 85,
+										columnNumber: 15
+									}, this),
+									/* @__PURE__ */ _jsxDEV("li", { children: [
+										"正答率と回答数は",
+										/* @__PURE__ */ _jsxDEV("strong", { children: "4 択／記述で別々に集計" }, void 0, false, {
+											fileName: _jsxFileName,
+											lineNumber: 90,
+											columnNumber: 25
+										}, this),
+										"されます。ホーム画面の進捗ゲージは 全体・各カテゴリで 2 本ずつ表示。"
+									] }, void 0, true, {
+										fileName: _jsxFileName,
+										lineNumber: 89,
+										columnNumber: 15
+									}, this),
+									/* @__PURE__ */ _jsxDEV("li", { children: [
+										"解答モード選択画面で",
+										/* @__PURE__ */ _jsxDEV("strong", { children: "「重要問題のみを出題」" }, void 0, false, {
+											fileName: _jsxFileName,
+											lineNumber: 94,
+											columnNumber: 27
+										}, this),
+										"のチェックボックスを ON にすると、 重要マークが付いた問題のみに絞り込まれます。"
+									] }, void 0, true, {
+										fileName: _jsxFileName,
+										lineNumber: 93,
+										columnNumber: 15
+									}, this),
+									/* @__PURE__ */ _jsxDEV("li", { children: [
+										/* @__PURE__ */ _jsxDEV("strong", { children: "弱点克服モード" }, void 0, false, {
+											fileName: _jsxFileName,
+											lineNumber: 98,
+											columnNumber: 17
+										}, this),
+										"では誤答した問題から優先的に出題されます。",
+										/* @__PURE__ */ _jsxDEV("strong", { children: "ランダム出題" }, void 0, false, {
+											fileName: _jsxFileName,
+											lineNumber: 99,
+											columnNumber: 17
+										}, this),
+										"は学習進捗パネル右上のボタンから利用できます。"
+									] }, void 0, true, {
+										fileName: _jsxFileName,
+										lineNumber: 97,
+										columnNumber: 15
+									}, this),
+									/* @__PURE__ */ _jsxDEV("li", { children: "解いた問題はバッジ・経験値（XP）にも反映され、継続学習でレベルアップやバッジ獲得が狙えます。" }, void 0, false, {
+										fileName: _jsxFileName,
+										lineNumber: 101,
+										columnNumber: 15
+									}, this)
+								]
+							}, void 0, true, {
+								fileName: _jsxFileName,
+								lineNumber: 81,
+								columnNumber: 13
+							}, this)
+						] }, void 0, true, {
+							fileName: _jsxFileName,
+							lineNumber: 67,
+							columnNumber: 11
+						}, this),
+						/* @__PURE__ */ _jsxDEV("section", { children: [
+							/* @__PURE__ */ _jsxDEV("h2", {
+								className: "text-base font-bold text-slate-800 mb-2 flex items-center gap-2",
+								children: [/* @__PURE__ */ _jsxDEV("span", {
+									className: "inline-block w-7 h-7 rounded-md text-center leading-7 text-sm font-bold",
+									style: {
+										backgroundColor: "#ede9fe",
+										color: "#6d28d9"
+									},
+									children: "📝"
+								}, void 0, false, {
+									fileName: _jsxFileName,
+									lineNumber: 110,
+									columnNumber: 15
+								}, this), "③ 午後問題演習補助ツール"]
+							}, void 0, true, {
+								fileName: _jsxFileName,
+								lineNumber: 109,
+								columnNumber: 13
+							}, this),
+							/* @__PURE__ */ _jsxDEV("p", {
+								className: "text-[13px] text-slate-600",
+								children: "ネスペ午後（大問形式）の演習をサポートするツール群です。 市販過去問集と組み合わせて使うことを想定しています。"
+							}, void 0, false, {
+								fileName: _jsxFileName,
+								lineNumber: 118,
+								columnNumber: 13
+							}, this),
+							/* @__PURE__ */ _jsxDEV("ul", {
+								className: "mt-3 ml-5 space-y-1.5 text-[13px] text-slate-600 list-disc",
+								children: [
+									/* @__PURE__ */ _jsxDEV("li", { children: [/* @__PURE__ */ _jsxDEV("strong", { children: "過去問の解答記録" }, void 0, false, {
+										fileName: _jsxFileName,
+										lineNumber: 124,
+										columnNumber: 17
+									}, this), "：自分の解答を入力／保存し、模範解答と並べて確認できます。"] }, void 0, true, {
+										fileName: _jsxFileName,
+										lineNumber: 123,
+										columnNumber: 15
+									}, this),
+									/* @__PURE__ */ _jsxDEV("li", { children: [/* @__PURE__ */ _jsxDEV("strong", { children: "解説の閲覧" }, void 0, false, {
+										fileName: _jsxFileName,
+										lineNumber: 127,
+										columnNumber: 17
+									}, this), "：問題ごとに解説ページが用意されています（収録済みのもの）。"] }, void 0, true, {
+										fileName: _jsxFileName,
+										lineNumber: 126,
+										columnNumber: 15
+									}, this),
+									/* @__PURE__ */ _jsxDEV("li", { children: [
+										"ホーム画面の「",
+										/* @__PURE__ */ _jsxDEV("strong", { children: "午後問題演習補助" }, void 0, false, {
+											fileName: _jsxFileName,
+											lineNumber: 130,
+											columnNumber: 24
+										}, this),
+										"」ボタンから各種機能にアクセスできます。"
+									] }, void 0, true, {
+										fileName: _jsxFileName,
+										lineNumber: 129,
+										columnNumber: 15
+									}, this),
+									/* @__PURE__ */ _jsxDEV("li", { children: "まずは午前演習で基礎力を固め、その後この補助ツールで午後対策を進める流れがおすすめです。" }, void 0, false, {
+										fileName: _jsxFileName,
+										lineNumber: 132,
+										columnNumber: 15
+									}, this)
+								]
+							}, void 0, true, {
+								fileName: _jsxFileName,
+								lineNumber: 122,
+								columnNumber: 13
+							}, this)
+						] }, void 0, true, {
+							fileName: _jsxFileName,
+							lineNumber: 108,
+							columnNumber: 11
+						}, this),
+						/* @__PURE__ */ _jsxDEV("p", {
+							className: "text-[11px] text-slate-400 leading-relaxed border-t border-slate-100 pt-4",
+							children: "※ ご不明点・不具合は、LINE でお知らせください。"
+						}, void 0, false, {
+							fileName: _jsxFileName,
+							lineNumber: 139,
+							columnNumber: 11
+						}, this)
+					]
+				}, void 0, true, {
+					fileName: _jsxFileName,
+					lineNumber: 27,
+					columnNumber: 9
+				}, this),
+				/* @__PURE__ */ _jsxDEV("div", {
+					className: "mt-6",
+					children: /* @__PURE__ */ _jsxDEV(Link, {
+						to: "/",
+						className: "inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-600 hover:border-blue-400 hover:text-blue-700 transition-colors",
+						children: "← ホームへ戻る"
+					}, void 0, false, {
+						fileName: _jsxFileName,
+						lineNumber: 146,
+						columnNumber: 11
+					}, this)
+				}, void 0, false, {
+					fileName: _jsxFileName,
+					lineNumber: 145,
+					columnNumber: 9
+				}, this)
+			]
+		}, void 0, true, {
+			fileName: _jsxFileName,
+			lineNumber: 11,
+			columnNumber: 7
+		}, this)
+	}, void 0, false, {
+		fileName: _jsxFileName,
+		lineNumber: 10,
+		columnNumber: 5
+	}, this);
+}
+_c = HowToUse;
+var _c;
+$RefreshReg$(_c, "HowToUse");
+import * as RefreshRuntime from "/@react-refresh";
+const inWebWorker = typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScope;
+import * as __vite_react_currentExports from "/src/pages/HowToUse.tsx";
+if (import.meta.hot && !inWebWorker) {
+  if (!window.$RefreshReg$) {
+    throw new Error(
+      "@vitejs/plugin-react can't detect preamble. Something is wrong."
+    );
+  }
+
+  const currentExports = __vite_react_currentExports;
+  queueMicrotask(() => {
+    RefreshRuntime.registerExportsForReactRefresh("D:/Codex/nesupe-codex/src/pages/HowToUse.tsx", currentExports);
+    import.meta.hot.accept((nextExports) => {
+      if (!nextExports) return;
+      const invalidateMessage = RefreshRuntime.validateRefreshBoundaryAndEnqueueUpdate("D:/Codex/nesupe-codex/src/pages/HowToUse.tsx", currentExports, nextExports);
+      if (invalidateMessage) import.meta.hot.invalidate(invalidateMessage);
+    });
+  });
+}
+function $RefreshReg$(type, id) { return RefreshRuntime.register(type, "D:/Codex/nesupe-codex/src/pages/HowToUse.tsx" + ' ' + id); }
+function $RefreshSig$() { return RefreshRuntime.createSignatureFunctionForTransform(); }
+
+//# sourceMappingURL=data:application/json;base64,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RUo7Ozs7OztPQUNMLHdCQUFDLEtBQUQ7UUFBRyxXQUFVO2tCQUE2QjtRQUd0Qzs7Ozs7T0FDSix3QkFBQyxNQUFEO1FBQUksV0FBVTtrQkFBZDtTQUNFLHdCQUFDLE1BQUQsYUFDRSx3QkFBQyxVQUFELFlBQVEsWUFBaUI7Ozs7bURBQ3RCOzs7OztTQUNMLHdCQUFDLE1BQUQsYUFDRSx3QkFBQyxVQUFELFlBQVEsU0FBYzs7OztvREFDbkI7Ozs7O1NBQ0wsd0JBQUMsTUFBRDtVQUFJO1VBQ0ssd0JBQUMsVUFBRCxZQUFRLFlBQWlCOzs7Ozs7VUFDN0I7Ozs7O1NBQ0wsd0JBQUMsTUFBRCxZQUFJLGdEQUVDOzs7OztTQUNGOzs7Ozs7T0FDRzs7Ozs7TUFHVix3QkFBQyxLQUFEO09BQUcsV0FBVTtpQkFBNEU7T0FFckY7Ozs7O01BQ0E7Ozs7OztJQUdOLHdCQUFDLE9BQUQ7S0FBSyxXQUFVO2VBQ2Isd0JBQUMsTUFBRDtNQUNFLElBQUc7TUFDSCxXQUFVO2dCQUNYO01BRU07Ozs7O0tBQ0g7Ozs7O0lBQ0Y7Ozs7OztFQUNGIiwibmFtZXMiOltdLCJzb3VyY2VzIjpbIkhvd1RvVXNlLnRzeCJdLCJ2ZXJzaW9uIjozLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgeyBMaW5rIH0gZnJvbSAncmVhY3Qtcm91dGVyLWRvbSdcclxuXHJcbi8qKlxyXG4gKiDjgqLjg5fjg6rjga7kvb/jgYTmlrnvvIjni6znq4vjg5rjg7zjgrjvvIlcclxuICogIC0g5a2m57+S44Oh44OL44Ol44O844Gu44Oc44K/44Oz44GL44KJ6YG356e7XHJcbiAqICAtIDPjgrvjgq/jgrfjg6fjg7Pmp4vmiJDvvJrjg47jg7zjg4jjg6Ljg7zjg4nvvI/llY/poYzmvJTnv5LvvI/ljYjlvozllY/poYzmvJTnv5Loo5zliqnjg4Tjg7zjg6tcclxuICovXHJcbmV4cG9ydCBkZWZhdWx0IGZ1bmN0aW9uIEhvd1RvVXNlKCkge1xyXG4gIHJldHVybiAoXHJcbiAgICA8ZGl2IGNsYXNzTmFtZT1cIm1pbi1oLXNjcmVlblwiIHN0eWxlPXt7IGJhY2tncm91bmRDb2xvcjogJyNmOGZhZmMnIH19PlxyXG4gICAgICA8ZGl2IGNsYXNzTmFtZT1cIm1heC13LTN4bCBteC1hdXRvIHB4LTQgcHQtNiBwYi0xNlwiPlxyXG4gICAgICAgIHsvKiDjg5jjg4Pjg4AgKi99XHJcbiAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJmbGV4IGl0ZW1zLWNlbnRlciBnYXAtMyBtYi02XCI+XHJcbiAgICAgICAgICA8c3BhblxyXG4gICAgICAgICAgICBjbGFzc05hbWU9XCJ3LTEwIGgtMTAgcm91bmRlZC14bCBmbGV4IGl0ZW1zLWNlbnRlciBqdXN0aWZ5LWNlbnRlciB0ZXh0LWxnIGZsZXgtc2hyaW5rLTBcIlxyXG4gICAgICAgICAgICBzdHlsZT17eyBiYWNrZ3JvdW5kQ29sb3I6ICcjZGJlYWZlJywgY29sb3I6ICcjMWQ0ZWQ4JyB9fVxyXG4gICAgICAgICAgICBhcmlhLWhpZGRlbj1cInRydWVcIlxyXG4gICAgICAgICAgPlxyXG4gICAgICAgICAgICDwn5OYXHJcbiAgICAgICAgICA8L3NwYW4+XHJcbiAgICAgICAgICA8ZGl2PlxyXG4gICAgICAgICAgICA8aDEgY2xhc3NOYW1lPVwidGV4dC14bCBmb250LWJsYWNrIHRleHQtc2xhdGUtODAwIGxlYWRpbmctdGlnaHRcIj7jgqLjg5fjg6rjga7kvb/jgYTmlrk8L2gxPlxyXG4gICAgICAgICAgICA8cCBjbGFzc05hbWU9XCJ0ZXh0LXhzIHRleHQtc2xhdGUtNDAwIG10LTAuNVwiPjPjgaTjga7jg6Ljg7zjg4njgpLkvb/jgYTliIbjgZHjgablirnnjofnmoTjgavlrabnv5LjgZfjgb7jgZfjgofjgYY8L3A+XHJcbiAgICAgICAgICA8L2Rpdj5cclxuICAgICAgICA8L2Rpdj5cclxuXHJcbiAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJiZy13aGl0ZSByb3VuZGVkLTJ4bCBib3JkZXIgYm9yZGVyLXNsYXRlLTIwMCBzaGFkb3ctc20gcHgtNSBweS01IHNwYWNlLXktNiB0ZXh0LXNtIHRleHQtc2xhdGUtNzAwIGxlYWRpbmctcmVsYXhlZFwiPlxyXG4gICAgICAgICAgey8qID09PT09IOKRoCDjg47jg7zjg4jjg6Ljg7zjg4kgPT09PT0gKi99XHJcbiAgICAgICAgICA8c2VjdGlvbj5cclxuICAgICAgICAgICAgPGgyIGNsYXNzTmFtZT1cInRleHQtYmFzZSBmb250LWJvbGQgdGV4dC1zbGF0ZS04MDAgbWItMiBmbGV4IGl0ZW1zLWNlbnRlciBnYXAtMlwiPlxyXG4gICAgICAgICAgICAgIDxzcGFuXHJcbiAgICAgICAgICAgICAgICBjbGFzc05hbWU9XCJpbmxpbmUtYmxvY2sgdy03IGgtNyByb3VuZGVkLW1kIHRleHQtY2VudGVyIGxlYWRpbmctNyB0ZXh0LXNtIGZvbnQtYm9sZFwiXHJcbiAgICAgICAgICAgICAgICBzdHlsZT17eyBiYWNrZ3JvdW5kQ29sb3I6ICcjY2NmYmYxJywgY29sb3I6ICcjMGY3NjZlJyB9fVxyXG4gICAgICAgICAgICAgID5cclxuICAgICAgICAgICAgICAgIPCfk5ZcclxuICAgICAgICAgICAgICA8L3NwYW4+XHJcbiAgICAgICAgICAgICAg4pGgIOODjuODvOODiOODouODvOODiVxyXG4gICAgICAgICAgICA8L2gyPlxyXG4gICAgICAgICAgICA8cCBjbGFzc05hbWU9XCJ0ZXh0LVsxM3B4XSB0ZXh0LXNsYXRlLTYwMFwiPlxyXG4gICAgICAgICAgICAgIOWQhOWIhumHjuOBrumHjeimgeefpeitmOOCkiAxIOODmuODvOOCuOOBp+S4gOawl+OBq+eiuuiqjeOBp+OBjeOCi+aal+iomOODjuODvOODiOOBp+OBmeOAguiRl+iAheOBrlxyXG4gICAgICAgICAgICAgIDxzdHJvbmcgY2xhc3NOYW1lPVwidGV4dC1zbGF0ZS04MDBcIj7lvqnnv5Ljg47jg7zjg4g8L3N0cm9uZz7jgavmupbmi6DjgZfjgZ/lhoXlrrnjgpLmlbTnkIbjgZfjgabjgYTjgb7jgZnjgIJcclxuICAgICAgICAgICAgPC9wPlxyXG4gICAgICAgICAgICA8dWwgY2xhc3NOYW1lPVwibXQtMyBtbC01IHNwYWNlLXktMS41IHRleHQtWzEzcHhdIHRleHQtc2xhdGUtNjAwIGxpc3QtZGlzY1wiPlxyXG4gICAgICAgICAgICAgIDxsaT5cclxuICAgICAgICAgICAgICAgIDxzdHJvbmcgY2xhc3NOYW1lPVwidGV4dC1yZWQtNjAwXCI+6LWk5a2XPC9zdHJvbmc+44Gv6YeN6KaB44Kt44O844Ov44O844OJ44CC55S76Z2i5LiL44Gu44CMXHJcbiAgICAgICAgICAgICAgICA8c3Ryb25nPui1pOWtl+OCkumaoOOBmTwvc3Ryb25nPuOAjeODnOOCv+ODs+OBp+S4gOaLrOODnuOCueOCr+OBl+OAgeaal+iomOODhuOCueODiOOBqOOBl+OBpuS9v+OBiOOBvuOBmeOAglxyXG4gICAgICAgICAgICAgIDwvbGk+XHJcbiAgICAgICAgICAgICAgPGxpPlxyXG4gICAgICAgICAgICAgICAg44Oe44K544Kv5Lit44GvPHN0cm9uZyBjbGFzc05hbWU9XCJ0ZXh0LXNsYXRlLTgwMFwiPui1pOOBhOODluODreODg+OCr+OCkuOCv+ODg+ODlzwvc3Ryb25nPuOBmeOCi+OBqOS4gOaZgueahOOBq+ihqOekuuOAglxyXG4gICAgICAgICAgICAgICAg44KC44GG5LiA5bqm44K/44OD44OX44Gn5YaN44Gz6Zqg44KM44G+44GZ44CCXHJcbiAgICAgICAgICAgICAgPC9saT5cclxuICAgICAgICAgICAgICA8bGk+XHJcbiAgICAgICAgICAgICAgICA8c3Ryb25nIHN0eWxlPXt7IGNvbG9yOiAnIzFhM2E1YycgfX0+44ON44Kk44OT44O844Gu5aSq5a2XPC9zdHJvbmc+44Gv5b6p57+S44OO44O844OI44Gr54Sh44GE6KOc6Laz5oOF5aCxXHJcbiAgICAgICAgICAgICAgICDvvIjoqabpqJPlr77nrZbjg5fjg6njgrnOse+8ieOBp+OBmeOAgumaoOOCjOOBvuOBm+OCk+OAglxyXG4gICAgICAgICAgICAgIDwvbGk+XHJcbiAgICAgICAgICAgICAgPGxpPlxyXG4gICAgICAgICAgICAgICAg44OO44O844OI5LiA6Kan44Gu5LiK6YOo44Gr44GC44KLPHN0cm9uZz7mpJzntKLjg5zjg4Pjgq/jgrk8L3N0cm9uZz7jgYvjgonjgrvjgq/jgrfjg6fjg7Popovlh7rjgZfjgpLnm7TmjqXjgrjjg6Pjg7Pjg5fjgafjgY3jgb7jgZnjgIJcclxuICAgICAgICAgICAgICA8L2xpPlxyXG4gICAgICAgICAgICAgIDxsaT5cclxuICAgICAgICAgICAgICAgIOWVj+mhjOa8lOe/kuOBruino+etlOODouODvOODiemBuOaKnueUu+mdouOBi+OCieOAgeipsuW9k+OCq+ODhuOCtOODquOBruODjuODvOODiOOBq1xyXG4gICAgICAgICAgICAgICAgPHN0cm9uZz7jg6/jg7Pjgr/jg4Pjg5fjgafpgbfnp7s8L3N0cm9uZz7jgafjgY3jgb7jgZnvvIjop6PjgY/liY3jga7norroqo3jgavmtLvnlKjvvInjgIJcclxuICAgICAgICAgICAgICA8L2xpPlxyXG4gICAgICAgICAgICA8L3VsPlxyXG4gICAgICAgICAgPC9zZWN0aW9uPlxyXG5cclxuICAgICAgICAgIHsvKiA9PT09PSDikaEg5ZWP6aGM5ryU57+SID09PT09ICovfVxyXG4gICAgICAgICAgPHNlY3Rpb24+XHJcbiAgICAgICAgICAgIDxoMiBjbGFzc05hbWU9XCJ0ZXh0LWJhc2UgZm9udC1ib2xkIHRleHQtc2xhdGUtODAwIG1iLTIgZmxleCBpdGVtcy1jZW50ZXIgZ2FwLTJcIj5cclxuICAgICAgICAgICAgICA8c3BhblxyXG4gICAgICAgICAgICAgICAgY2xhc3NOYW1lPVwiaW5saW5lLWJsb2NrIHctNyBoLTcgcm91bmRlZC1tZCB0ZXh0LWNlbnRlciBsZWFkaW5nLTcgdGV4dC1zbSBmb250LWJvbGRcIlxyXG4gICAgICAgICAgICAgICAgc3R5bGU9e3sgYmFja2dyb3VuZENvbG9yOiAnI2RiZWFmZScsIGNvbG9yOiAnIzFkNGVkOCcgfX1cclxuICAgICAgICAgICAgICA+XHJcbiAgICAgICAgICAgICAgICDinI1cclxuICAgICAgICAgICAgICA8L3NwYW4+XHJcbiAgICAgICAgICAgICAg4pGhIOWVj+mhjOa8lOe/klxyXG4gICAgICAgICAgICA8L2gyPlxyXG4gICAgICAgICAgICA8cCBjbGFzc05hbWU9XCJ0ZXh0LVsxM3B4XSB0ZXh0LXNsYXRlLTYwMFwiPlxyXG4gICAgICAgICAgICAgIOeptOWfi+OCgeW9ouW8j+OBruWVj+mhjOOCkiA0IOaKniDvvI8g6KiY6L+w44GuIDIg44Oi44O844OJ44Gn6Kej44GR44G+44GZ44CC5ZCM44GY5ZWP6aGM44OH44O844K/44KS5Lih44Oi44O844OJ44Gn5Yip55So44GZ44KL44Gf44KB44CBXHJcbiAgICAgICAgICAgICAgNCDmip7jgafmhaPjgozjgZ/jgonoqJjov7DjgavmjJHmiKbjgafjgY3jgb7jgZnjgIJcclxuICAgICAgICAgICAgPC9wPlxyXG4gICAgICAgICAgICA8dWwgY2xhc3NOYW1lPVwibXQtMyBtbC01IHNwYWNlLXktMS41IHRleHQtWzEzcHhdIHRleHQtc2xhdGUtNjAwIGxpc3QtZGlzY1wiPlxyXG4gICAgICAgICAgICAgIDxsaT5cclxuICAgICAgICAgICAgICAgIDxzdHJvbmc+NCDmip7jg6Ljg7zjg4k8L3N0cm9uZz7vvJrpgbjmip7ogqLjgYvjgonpgbjjgbbjgaDjgZHjgIHljbPmmYLjgavmraPoqqTliKTlrprjgILmnIDliJ3jga/jgZPjgaHjgonjgIJcclxuICAgICAgICAgICAgICA8L2xpPlxyXG4gICAgICAgICAgICAgIDxsaT5cclxuICAgICAgICAgICAgICAgIDxzdHJvbmc+6KiY6L+w44Oi44O844OJPC9zdHJvbmc+77ya6Ieq5YiG44Gn44K/44Kk44OX44GX44Gm5q2j6Kej44Go6KaL5q+U44G544CB4pev77yP4pyVIOOCkuiHquW3seaOoeeCueOAglxyXG4gICAgICAgICAgICAgICAg5YWl5Yqb44GM5a6M5YWo5LiA6Ie044GX44Gf5aC05ZCI44Gv6Ieq5YuV44Gn5q2j6Kej44Gr44Gq44KK44G+44GZ44CCXHJcbiAgICAgICAgICAgICAgPC9saT5cclxuICAgICAgICAgICAgICA8bGk+XHJcbiAgICAgICAgICAgICAgICDmraPnrZTnjofjgajlm57nrZTmlbDjga88c3Ryb25nPjQg5oqe77yP6KiY6L+w44Gn5Yil44CF44Gr6ZuG6KiIPC9zdHJvbmc+44GV44KM44G+44GZ44CC44Ob44O844Og55S76Z2i44Gu6YCy5o2X44Ky44O844K444GvXHJcbiAgICAgICAgICAgICAgICDlhajkvZPjg7vlkITjgqvjg4bjgrTjg6rjgacgMiDmnKzjgZrjgaTooajnpLrjgIJcclxuICAgICAgICAgICAgICA8L2xpPlxyXG4gICAgICAgICAgICAgIDxsaT5cclxuICAgICAgICAgICAgICAgIOino+etlOODouODvOODiemBuOaKnueUu+mdouOBpzxzdHJvbmc+44CM6YeN6KaB5ZWP6aGM44Gu44G/44KS5Ye66aGM44CNPC9zdHJvbmc+44Gu44OB44Kn44OD44Kv44Oc44OD44Kv44K544KSIE9OIOOBq+OBmeOCi+OBqOOAgVxyXG4gICAgICAgICAgICAgICAg6YeN6KaB44Oe44O844Kv44GM5LuY44GE44Gf5ZWP6aGM44Gu44G/44Gr57We44KK6L6844G+44KM44G+44GZ44CCXHJcbiAgICAgICAgICAgICAgPC9saT5cclxuICAgICAgICAgICAgICA8bGk+XHJcbiAgICAgICAgICAgICAgICA8c3Ryb25nPuW8seeCueWFi+acjeODouODvOODiTwvc3Ryb25nPuOBp+OBr+iqpOetlOOBl+OBn+WVj+mhjOOBi+OCieWEquWFiOeahOOBq+WHuumhjOOBleOCjOOBvuOBmeOAglxyXG4gICAgICAgICAgICAgICAgPHN0cm9uZz7jg6njg7Pjg4Djg6Dlh7rpoYw8L3N0cm9uZz7jga/lrabnv5LpgLLmjZfjg5Hjg43jg6vlj7PkuIrjga7jg5zjgr/jg7PjgYvjgonliKnnlKjjgafjgY3jgb7jgZnjgIJcclxuICAgICAgICAgICAgICA8L2xpPlxyXG4gICAgICAgICAgICAgIDxsaT5cclxuICAgICAgICAgICAgICAgIOino+OBhOOBn+WVj+mhjOOBr+ODkOODg+OCuOODu+e1jOmok+WApO+8iFhQ77yJ44Gr44KC5Y+N5pig44GV44KM44CB57aZ57aa5a2m57+S44Gn44Os44OZ44Or44Ki44OD44OX44KE44OQ44OD44K4542y5b6X44GM54uZ44GI44G+44GZ44CCXHJcbiAgICAgICAgICAgICAgPC9saT5cclxuICAgICAgICAgICAgPC91bD5cclxuICAgICAgICAgIDwvc2VjdGlvbj5cclxuXHJcbiAgICAgICAgICB7LyogPT09PT0g4pGiIOWNiOW+jOWVj+mhjOa8lOe/kuijnOWKqeODhOODvOODqyA9PT09PSAqL31cclxuICAgICAgICAgIDxzZWN0aW9uPlxyXG4gICAgICAgICAgICA8aDIgY2xhc3NOYW1lPVwidGV4dC1iYXNlIGZvbnQtYm9sZCB0ZXh0LXNsYXRlLTgwMCBtYi0yIGZsZXggaXRlbXMtY2VudGVyIGdhcC0yXCI+XHJcbiAgICAgICAgICAgICAgPHNwYW5cclxuICAgICAgICAgICAgICAgIGNsYXNzTmFtZT1cImlubGluZS1ibG9jayB3LTcgaC03IHJvdW5kZWQtbWQgdGV4dC1jZW50ZXIgbGVhZGluZy03IHRleHQtc20gZm9udC1ib2xkXCJcclxuICAgICAgICAgICAgICAgIHN0eWxlPXt7IGJhY2tncm91bmRDb2xvcjogJyNlZGU5ZmUnLCBjb2xvcjogJyM2ZDI4ZDknIH19XHJcbiAgICAgICAgICAgICAgPlxyXG4gICAgICAgICAgICAgICAg8J+TnVxyXG4gICAgICAgICAgICAgIDwvc3Bhbj5cclxuICAgICAgICAgICAgICDikaIg5Y2I5b6M5ZWP6aGM5ryU57+S6KOc5Yqp44OE44O844OrXHJcbiAgICAgICAgICAgIDwvaDI+XHJcbiAgICAgICAgICAgIDxwIGNsYXNzTmFtZT1cInRleHQtWzEzcHhdIHRleHQtc2xhdGUtNjAwXCI+XHJcbiAgICAgICAgICAgICAg44ON44K544Oa5Y2I5b6M77yI5aSn5ZWP5b2i5byP77yJ44Gu5ryU57+S44KS44K144Od44O844OI44GZ44KL44OE44O844Or576k44Gn44GZ44CCXHJcbiAgICAgICAgICAgICAg5biC6LKp6YGO5Y675ZWP6ZuG44Go57WE44G/5ZCI44KP44Gb44Gm5L2/44GG44GT44Go44KS5oOz5a6a44GX44Gm44GE44G+44GZ44CCXHJcbiAgICAgICAgICAgIDwvcD5cclxuICAgICAgICAgICAgPHVsIGNsYXNzTmFtZT1cIm10LTMgbWwtNSBzcGFjZS15LTEuNSB0ZXh0LVsxM3B4XSB0ZXh0LXNsYXRlLTYwMCBsaXN0LWRpc2NcIj5cclxuICAgICAgICAgICAgICA8bGk+XHJcbiAgICAgICAgICAgICAgICA8c3Ryb25nPumBjuWOu+WVj+OBruino+etlOiomOmMsjwvc3Ryb25nPu+8muiHquWIhuOBruino+etlOOCkuWFpeWKm++8j+S/neWtmOOBl+OAgeaooeevhOino+etlOOBqOS4puOBueOBpueiuuiqjeOBp+OBjeOBvuOBmeOAglxyXG4gICAgICAgICAgICAgIDwvbGk+XHJcbiAgICAgICAgICAgICAgPGxpPlxyXG4gICAgICAgICAgICAgICAgPHN0cm9uZz7op6Poqqzjga7plrLopqc8L3N0cm9uZz7vvJrllY/poYzjgZTjgajjgavop6Poqqzjg5rjg7zjgrjjgYznlKjmhI/jgZXjgozjgabjgYTjgb7jgZnvvIjlj47pjLLmuIjjgb/jga7jgoLjga7vvInjgIJcclxuICAgICAgICAgICAgICA8L2xpPlxyXG4gICAgICAgICAgICAgIDxsaT5cclxuICAgICAgICAgICAgICAgIOODm+ODvOODoOeUu+mdouOBruOAjDxzdHJvbmc+5Y2I5b6M5ZWP6aGM5ryU57+S6KOc5YqpPC9zdHJvbmc+44CN44Oc44K/44Oz44GL44KJ5ZCE56iu5qmf6IO944Gr44Ki44Kv44K744K544Gn44GN44G+44GZ44CCXHJcbiAgICAgICAgICAgICAgPC9saT5cclxuICAgICAgICAgICAgICA8bGk+XHJcbiAgICAgICAgICAgICAgICDjgb7jgZrjga/ljYjliY3mvJTnv5Ljgafln7rnpI7lipvjgpLlm7rjgoHjgIHjgZ3jga7lvozjgZPjga7oo5zliqnjg4Tjg7zjg6vjgafljYjlvozlr77nrZbjgpLpgLLjgoHjgovmtYHjgozjgYzjgYrjgZnjgZnjgoHjgafjgZnjgIJcclxuICAgICAgICAgICAgICA8L2xpPlxyXG4gICAgICAgICAgICA8L3VsPlxyXG4gICAgICAgICAgPC9zZWN0aW9uPlxyXG5cclxuICAgICAgICAgIHsvKiDoo5zotrPms6joqJggKi99XHJcbiAgICAgICAgICA8cCBjbGFzc05hbWU9XCJ0ZXh0LVsxMXB4XSB0ZXh0LXNsYXRlLTQwMCBsZWFkaW5nLXJlbGF4ZWQgYm9yZGVyLXQgYm9yZGVyLXNsYXRlLTEwMCBwdC00XCI+XHJcbiAgICAgICAgICAgIOKAuyDjgZTkuI3mmI7ngrnjg7vkuI3lhbflkIjjga/jgIFMSU5FIOOBp+OBiuefpeOCieOBm+OBj+OBoOOBleOBhOOAglxyXG4gICAgICAgICAgPC9wPlxyXG4gICAgICAgIDwvZGl2PlxyXG5cclxuICAgICAgICB7Lyog44Ob44O844Og44G45oi744KLICovfVxyXG4gICAgICAgIDxkaXYgY2xhc3NOYW1lPVwibXQtNlwiPlxyXG4gICAgICAgICAgPExpbmtcclxuICAgICAgICAgICAgdG89XCIvXCJcclxuICAgICAgICAgICAgY2xhc3NOYW1lPVwiaW5saW5lLWZsZXggaXRlbXMtY2VudGVyIGdhcC0yIHB4LTQgcHktMi41IHJvdW5kZWQteGwgYm9yZGVyIGJvcmRlci1zbGF0ZS0yMDAgYmctd2hpdGUgdGV4dC1zbSBmb250LXNlbWlib2xkIHRleHQtc2xhdGUtNjAwIGhvdmVyOmJvcmRlci1ibHVlLTQwMCBob3Zlcjp0ZXh0LWJsdWUtNzAwIHRyYW5zaXRpb24tY29sb3JzXCJcclxuICAgICAgICAgID5cclxuICAgICAgICAgICAg4oaQIOODm+ODvOODoOOBuOaIu+OCi1xyXG4gICAgICAgICAgPC9MaW5rPlxyXG4gICAgICAgIDwvZGl2PlxyXG4gICAgICA8L2Rpdj5cclxuICAgIDwvZGl2PlxyXG4gIClcclxufVxyXG4iXX0=

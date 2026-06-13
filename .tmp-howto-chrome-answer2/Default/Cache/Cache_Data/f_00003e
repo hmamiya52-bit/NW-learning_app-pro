@@ -1,0 +1,155 @@
+export const vrrpQuestions = [
+	{
+		id: "q-120",
+		topicId: "vrrp",
+		questionText: "VRRPで複数の物理ルータをまとめて1台のルータとして見せる仮想的な存在を{{blank}}という。",
+		correctAnswer: "仮想ルータ（Virtual Router）",
+		choices: [
+			"仮想ルータ（Virtual Router）",
+			"マスタールータ",
+			"バックアップルータ",
+			"アクティブルータ"
+		],
+		isImportant: true,
+		explanation: "VRRPでは複数の物理ルータをグループ化し、仮想IPアドレスと仮想MACアドレスを持つ「仮想ルータ」として動作させる。クライアントはこの仮想IPをデフォルトゲートウェイとして設定することで、物理ルータの切り替えを意識せずに通信を継続できる。",
+		difficulty: 1
+	},
+	{
+		id: "q-121",
+		topicId: "vrrp",
+		questionText: "VRRPグループ内で実際にパケットを転送する役割を持つルータを{{blank}}という。",
+		correctAnswer: "マスタールータ",
+		choices: [
+			"マスタールータ",
+			"バックアップルータ",
+			"アクティブルータ",
+			"スタンバイルータ"
+		],
+		isImportant: true,
+		explanation: "VRRPではプライオリティが最も高いルータがマスタールータとなり、仮想IPアドレスへの通信を実際に処理する。それ以外のルータはバックアップルータとしてマスタールータの障害を監視し、障害時に引き継ぐ。",
+		difficulty: 1
+	},
+	{
+		id: "q-122",
+		topicId: "vrrp",
+		questionText: "VRRPのプライオリティ値の範囲は{{blank}}で、デフォルト値は{{blank}}である。",
+		correctAnswer: "1〜254・100",
+		choices: [
+			"1〜254・100",
+			"0〜255・128",
+			"1〜255・100",
+			"0〜254・110"
+		],
+		isImportant: true,
+		explanation: "VRRPプライオリティは1〜254の範囲で設定できる（0と255は予約済み）。デフォルト値は100。値が大きいほど優先度が高く、マスタールータに選出される。仮想IPを自身に設定したルータは自動的にプライオリティ255となる。",
+		difficulty: 2,
+		excludeFromWritten: true
+	},
+	{
+		id: "q-123",
+		topicId: "vrrp",
+		questionText: "マスタールータがバックアップルータに向けて定期的に送信し、自身の稼働を知らせるメッセージを{{blank}}という。",
+		correctAnswer: "VRRP Advertisement",
+		choices: [
+			"VRRP Advertisement",
+			"VRRP Hello",
+			"VRRP Keepalive",
+			"VRRP Announce"
+		],
+		isImportant: true,
+		explanation: "マスタールータはデフォルト1秒間隔でVRRP Advertisementをマルチキャスト（224.0.0.18）送信する。バックアップルータはこのAdvertisementが途絶えた場合（Master Down Interval経過後）にマスター選出を行う。",
+		difficulty: 2
+	},
+	{
+		id: "q-124",
+		topicId: "vrrp",
+		questionText: "VRRPのバックアップルータがマスタールータの障害を検知するまでの待機時間は、Advertisement Intervalと{{blank}}で計算される。",
+		correctAnswer: "Skew Time（プライオリティに基づくオフセット）",
+		choices: [
+			"Skew Time（プライオリティに基づくオフセット）",
+			"固定で3秒",
+			"Advertisement Intervalの2倍",
+			"プライオリティ値を秒数に換算した時間"
+		],
+		isImportant: false,
+		explanation: "Master Down Interval = 3 × Advertisement Interval + Skew Time。Skew Timeは（256 − Priority）/ 256 秒で算出され、プライオリティが低いほど待機時間が長くなる。これにより複数のバックアップルータが同時にマスターに立候補することを防ぐ。",
+		difficulty: 3
+	},
+	{
+		id: "q-125",
+		topicId: "vrrp",
+		questionText: "VRRPにおいて、障害から復旧したルータが自動的にマスターの地位を奪い返す機能を{{blank}}という。",
+		correctAnswer: "プリエンプト（Preempt）",
+		choices: [
+			"プリエンプト（Preempt）",
+			"フェイルバック",
+			"フェイルオーバー",
+			"オートリカバリ"
+		],
+		isImportant: true,
+		explanation: "プリエンプトが有効（デフォルト有効）の場合、より高いプライオリティのルータが復旧するとマスターを引き継ぐ。無効にすると復旧後もバックアップルータのままとなり、意図しない切り替えを防げる。冗長構成の運用設計で重要な設定項目。",
+		difficulty: 2
+	},
+	{
+		id: "q-126",
+		topicId: "vrrp",
+		questionText: "VRRPが使用する仮想MACアドレスの形式は{{blank}}である（グループID=1の場合）。",
+		correctAnswer: "00-00-5E-00-01-01",
+		choices: [
+			"00-00-5E-00-01-01",
+			"00-00-0C-07-AC-01",
+			"01-00-5E-00-00-12",
+			"00-00-5E-00-02-01"
+		],
+		isImportant: false,
+		explanation: "VRRPの仮想MACアドレスは「00-00-5E-00-01-{VRID}」の形式（IPv4）。VRIDはVRRPグループID（1〜255）。IPv6の場合は「00-00-5E-00-02-{VRID}」となる。なお00-00-0C-07-AC-xxはCiscoのHSRP（Hot Standby Router Protocol）で使用される仮想MACアドレス。",
+		difficulty: 3
+	},
+	{
+		id: "q-127",
+		topicId: "vrrp",
+		questionText: "VRRPv2はIPv4のみ対応だが、VRRPv3は{{blank}}にも対応している。",
+		correctAnswer: "IPv6",
+		choices: [
+			"IPv6",
+			"IPv5",
+			"MPLS",
+			"マルチキャストのみ"
+		],
+		isImportant: true,
+		explanation: "RFC 5798で定義されたVRRPv3はIPv4とIPv6の両方をサポートする。Advertisement Intervalの精度もVRRPv2の1秒単位からセンチ秒（10ms単位）に向上した。現在の実装ではVRRPv3が推奨される。",
+		difficulty: 2
+	},
+	{
+		id: "q-128",
+		topicId: "vrrp",
+		questionText: "VRRP Advertisement パケットはIPマルチキャストアドレス{{blank}}宛に送信される。",
+		correctAnswer: "224.0.0.18",
+		choices: [
+			"224.0.0.18",
+			"224.0.0.1",
+			"224.0.0.5",
+			"239.255.255.250"
+		],
+		isImportant: false,
+		explanation: "224.0.0.18はVRRP専用のIANAリンクローカルマルチキャストアドレス（TTL=255）。同一セグメントのVRRPルータのみが受信する。224.0.0.5はOSPF Hello、224.0.0.1は全ホスト、239.x.x.xはSSDPなどで使用される。",
+		difficulty: 3
+	},
+	{
+		id: "q-129",
+		topicId: "vrrp",
+		questionText: "VRRPトラッキングで監視対象インターフェースがダウンした場合、マスタールータのプライオリティを下げることで{{blank}}を促す。",
+		correctAnswer: "フェイルオーバー（バックアップへの切り替え）",
+		choices: [
+			"フェイルオーバー（バックアップへの切り替え）",
+			"セッションの再確立",
+			"Advertisement Intervalの短縮",
+			"仮想MACアドレスの変更"
+		],
+		isImportant: true,
+		explanation: "VRRPトラッキングは上流インターフェースやルートの状態を監視し、障害時にマスタールータのプライオリティを一定値だけ減算する。減算後のプライオリティがバックアップルータを下回ると、プリエンプトが発動してフェイルオーバーが起きる。上流障害を下流クライアントに伝搬させる仕組み。",
+		difficulty: 2
+	}
+];
+
+//# sourceMappingURL=data:application/json;base64,eyJtYXBwaW5ncyI6IkFBRUEsT0FBTyxNQUFNLGdCQUE0QjtDQUN2QztFQUNFLElBQUk7RUFDSixTQUFTO0VBQ1QsY0FBYztFQUNkLGVBQWU7RUFDZixTQUFTO0dBQUM7R0FBeUI7R0FBVztHQUFhO0dBQVc7RUFDdEUsYUFBYTtFQUNiLGFBQWE7RUFDYixZQUFZO0VBQ2I7Q0FDRDtFQUNFLElBQUk7RUFDSixTQUFTO0VBQ1QsY0FBYztFQUNkLGVBQWU7RUFDZixTQUFTO0dBQUM7R0FBVztHQUFhO0dBQVk7R0FBVztFQUN6RCxhQUFhO0VBQ2IsYUFBYTtFQUNiLFlBQVk7RUFDYjtDQUNEO0VBQ0UsSUFBSTtFQUNKLFNBQVM7RUFDVCxjQUFjO0VBQ2QsZUFBZTtFQUNmLFNBQVM7R0FBQztHQUFhO0dBQWE7R0FBYTtHQUFZO0VBQzdELGFBQWE7RUFDYixhQUFhO0VBQ2IsWUFBWTtFQUNaLG9CQUFvQjtFQUNyQjtDQUNEO0VBQ0UsSUFBSTtFQUNKLFNBQVM7RUFDVCxjQUFjO0VBQ2QsZUFBZTtFQUNmLFNBQVM7R0FBQztHQUFzQjtHQUFjO0dBQWtCO0dBQWdCO0VBQ2hGLGFBQWE7RUFDYixhQUFhO0VBQ2IsWUFBWTtFQUNiO0NBQ0Q7RUFDRSxJQUFJO0VBQ0osU0FBUztFQUNULGNBQWM7RUFDZCxlQUFlO0VBQ2YsU0FBUztHQUNQO0dBQ0E7R0FDQTtHQUNBO0dBQ0Q7RUFDRCxhQUFhO0VBQ2IsYUFBYTtFQUNiLFlBQVk7RUFDYjtDQUNEO0VBQ0UsSUFBSTtFQUNKLFNBQVM7RUFDVCxjQUFjO0VBQ2QsZUFBZTtFQUNmLFNBQVM7R0FBQztHQUFtQjtHQUFXO0dBQVk7R0FBVTtFQUM5RCxhQUFhO0VBQ2IsYUFBYTtFQUNiLFlBQVk7RUFDYjtDQUNEO0VBQ0UsSUFBSTtFQUNKLFNBQVM7RUFDVCxjQUFjO0VBQ2QsZUFBZTtFQUNmLFNBQVM7R0FBQztHQUFxQjtHQUFxQjtHQUFxQjtHQUFvQjtFQUM3RixhQUFhO0VBQ2IsYUFBYTtFQUNiLFlBQVk7RUFDYjtDQUNEO0VBQ0UsSUFBSTtFQUNKLFNBQVM7RUFDVCxjQUFjO0VBQ2QsZUFBZTtFQUNmLFNBQVM7R0FBQztHQUFRO0dBQVE7R0FBUTtHQUFZO0VBQzlDLGFBQWE7RUFDYixhQUFhO0VBQ2IsWUFBWTtFQUNiO0NBQ0Q7RUFDRSxJQUFJO0VBQ0osU0FBUztFQUNULGNBQWM7RUFDZCxlQUFlO0VBQ2YsU0FBUztHQUFDO0dBQWM7R0FBYTtHQUFhO0dBQWtCO0VBQ3BFLGFBQWE7RUFDYixhQUFhO0VBQ2IsWUFBWTtFQUNiO0NBQ0Q7RUFDRSxJQUFJO0VBQ0osU0FBUztFQUNULGNBQWM7RUFDZCxlQUFlO0VBQ2YsU0FBUztHQUNQO0dBQ0E7R0FDQTtHQUNBO0dBQ0Q7RUFDRCxhQUFhO0VBQ2IsYUFBYTtFQUNiLFlBQVk7RUFDYjtDQUNGIiwibmFtZXMiOltdLCJzb3VyY2VzIjpbInZycnAudHMiXSwidmVyc2lvbiI6Mywic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHR5cGUgeyBRdWVzdGlvbiB9IGZyb20gJy4uLy4uL3R5cGVzJ1xyXG5cclxuZXhwb3J0IGNvbnN0IHZycnBRdWVzdGlvbnM6IFF1ZXN0aW9uW10gPSBbXHJcbiAge1xyXG4gICAgaWQ6ICdxLTEyMCcsXHJcbiAgICB0b3BpY0lkOiAndnJycCcsXHJcbiAgICBxdWVzdGlvblRleHQ6ICdWUlJQ44Gn6KSH5pWw44Gu54mp55CG44Or44O844K/44KS44G+44Go44KB44GmMeWPsOOBruODq+ODvOOCv+OBqOOBl+OBpuimi+OBm+OCi+S7ruaDs+eahOOBquWtmOWcqOOCknt7Ymxhbmt9feOBqOOBhOOBhuOAgicsXHJcbiAgICBjb3JyZWN0QW5zd2VyOiAn5Luu5oOz44Or44O844K/77yIVmlydHVhbCBSb3V0ZXLvvIknLFxyXG4gICAgY2hvaWNlczogWyfku67mg7Pjg6vjg7zjgr/vvIhWaXJ0dWFsIFJvdXRlcu+8iScsICfjg57jgrnjgr/jg7zjg6vjg7zjgr8nLCAn44OQ44OD44Kv44Ki44OD44OX44Or44O844K/JywgJ+OCouOCr+ODhuOCo+ODluODq+ODvOOCvyddLFxyXG4gICAgaXNJbXBvcnRhbnQ6IHRydWUsXHJcbiAgICBleHBsYW5hdGlvbjogJ1ZSUlDjgafjga/opIfmlbDjga7niannkIbjg6vjg7zjgr/jgpLjgrDjg6vjg7zjg5fljJbjgZfjgIHku67mg7NJUOOCouODieODrOOCueOBqOS7ruaDs01BQ+OCouODieODrOOCueOCkuaMgeOBpOOAjOS7ruaDs+ODq+ODvOOCv+OAjeOBqOOBl+OBpuWLleS9nOOBleOBm+OCi+OAguOCr+ODqeOCpOOCouODs+ODiOOBr+OBk+OBruS7ruaDs0lQ44KS44OH44OV44Kp44Or44OI44Ky44O844OI44Km44Kn44Kk44Go44GX44Gm6Kit5a6a44GZ44KL44GT44Go44Gn44CB54mp55CG44Or44O844K/44Gu5YiH44KK5pu/44GI44KS5oSP6K2Y44Gb44Ga44Gr6YCa5L+h44KS57aZ57aa44Gn44GN44KL44CCJyxcclxuICAgIGRpZmZpY3VsdHk6IDEsXHJcbiAgfSxcclxuICB7XHJcbiAgICBpZDogJ3EtMTIxJyxcclxuICAgIHRvcGljSWQ6ICd2cnJwJyxcclxuICAgIHF1ZXN0aW9uVGV4dDogJ1ZSUlDjgrDjg6vjg7zjg5flhoXjgaflrp/pmpvjgavjg5HjgrHjg4Pjg4jjgpLou6LpgIHjgZnjgovlvbnlibLjgpLmjIHjgaTjg6vjg7zjgr/jgpJ7e2JsYW5rfX3jgajjgYTjgYbjgIInLFxyXG4gICAgY29ycmVjdEFuc3dlcjogJ+ODnuOCueOCv+ODvOODq+ODvOOCvycsXHJcbiAgICBjaG9pY2VzOiBbJ+ODnuOCueOCv+ODvOODq+ODvOOCvycsICfjg5Djg4Pjgq/jgqLjg4Pjg5fjg6vjg7zjgr8nLCAn44Ki44Kv44OG44Kj44OW44Or44O844K/JywgJ+OCueOCv+ODs+ODkOOCpOODq+ODvOOCvyddLFxyXG4gICAgaXNJbXBvcnRhbnQ6IHRydWUsXHJcbiAgICBleHBsYW5hdGlvbjogJ1ZSUlDjgafjga/jg5fjg6njgqTjgqrjg6rjg4bjgqPjgYzmnIDjgoLpq5jjgYTjg6vjg7zjgr/jgYzjg57jgrnjgr/jg7zjg6vjg7zjgr/jgajjgarjgorjgIHku67mg7NJUOOCouODieODrOOCueOBuOOBrumAmuS/oeOCkuWun+mam+OBq+WHpueQhuOBmeOCi+OAguOBneOCjOS7peWkluOBruODq+ODvOOCv+OBr+ODkOODg+OCr+OCouODg+ODl+ODq+ODvOOCv+OBqOOBl+OBpuODnuOCueOCv+ODvOODq+ODvOOCv+OBrumanOWus+OCkuebo+imluOBl+OAgemanOWus+aZguOBq+W8leOBjee2meOBkOOAgicsXHJcbiAgICBkaWZmaWN1bHR5OiAxLFxyXG4gIH0sXHJcbiAge1xyXG4gICAgaWQ6ICdxLTEyMicsXHJcbiAgICB0b3BpY0lkOiAndnJycCcsXHJcbiAgICBxdWVzdGlvblRleHQ6ICdWUlJQ44Gu44OX44Op44Kk44Kq44Oq44OG44Kj5YCk44Gu56+E5Zuy44Gve3tibGFua31944Gn44CB44OH44OV44Kp44Or44OI5YCk44Gve3tibGFua31944Gn44GC44KL44CCJyxcclxuICAgIGNvcnJlY3RBbnN3ZXI6ICcx44CcMjU044O7MTAwJyxcclxuICAgIGNob2ljZXM6IFsnMeOAnDI1NOODuzEwMCcsICcw44CcMjU144O7MTI4JywgJzHjgJwyNTXjg7sxMDAnLCAnMOOAnDI1NOODuzExMCddLFxyXG4gICAgaXNJbXBvcnRhbnQ6IHRydWUsXHJcbiAgICBleHBsYW5hdGlvbjogJ1ZSUlDjg5fjg6njgqTjgqrjg6rjg4bjgqPjga8x44CcMjU044Gu56+E5Zuy44Gn6Kit5a6a44Gn44GN44KL77yIMOOBqDI1NeOBr+S6iOe0hOa4iOOBv++8ieOAguODh+ODleOCqeODq+ODiOWApOOBrzEwMOOAguWApOOBjOWkp+OBjeOBhOOBu+OBqeWEquWFiOW6puOBjOmrmOOBj+OAgeODnuOCueOCv+ODvOODq+ODvOOCv+OBq+mBuOWHuuOBleOCjOOCi+OAguS7ruaDs0lQ44KS6Ieq6Lqr44Gr6Kit5a6a44GX44Gf44Or44O844K/44Gv6Ieq5YuV55qE44Gr44OX44Op44Kk44Kq44Oq44OG44KjMjU144Go44Gq44KL44CCJyxcclxuICAgIGRpZmZpY3VsdHk6IDIsXHJcbiAgICBleGNsdWRlRnJvbVdyaXR0ZW46IHRydWUsXHJcbiAgfSxcclxuICB7XHJcbiAgICBpZDogJ3EtMTIzJyxcclxuICAgIHRvcGljSWQ6ICd2cnJwJyxcclxuICAgIHF1ZXN0aW9uVGV4dDogJ+ODnuOCueOCv+ODvOODq+ODvOOCv+OBjOODkOODg+OCr+OCouODg+ODl+ODq+ODvOOCv+OBq+WQkeOBkeOBpuWumuacn+eahOOBq+mAgeS/oeOBl+OAgeiHqui6q+OBrueovOWDjeOCkuefpeOCieOBm+OCi+ODoeODg+OCu+ODvOOCuOOCknt7Ymxhbmt9feOBqOOBhOOBhuOAgicsXHJcbiAgICBjb3JyZWN0QW5zd2VyOiAnVlJSUCBBZHZlcnRpc2VtZW50JyxcclxuICAgIGNob2ljZXM6IFsnVlJSUCBBZHZlcnRpc2VtZW50JywgJ1ZSUlAgSGVsbG8nLCAnVlJSUCBLZWVwYWxpdmUnLCAnVlJSUCBBbm5vdW5jZSddLFxyXG4gICAgaXNJbXBvcnRhbnQ6IHRydWUsXHJcbiAgICBleHBsYW5hdGlvbjogJ+ODnuOCueOCv+ODvOODq+ODvOOCv+OBr+ODh+ODleOCqeODq+ODiDHnp5LplpPpmpTjgadWUlJQIEFkdmVydGlzZW1lbnTjgpLjg57jg6vjg4Hjgq3jg6Pjgrnjg4jvvIgyMjQuMC4wLjE477yJ6YCB5L+h44GZ44KL44CC44OQ44OD44Kv44Ki44OD44OX44Or44O844K/44Gv44GT44GuQWR2ZXJ0aXNlbWVudOOBjOmAlOe1tuOBiOOBn+WgtOWQiO+8iE1hc3RlciBEb3duIEludGVydmFs57WM6YGO5b6M77yJ44Gr44Oe44K544K/44O86YG45Ye644KS6KGM44GG44CCJyxcclxuICAgIGRpZmZpY3VsdHk6IDIsXHJcbiAgfSxcclxuICB7XHJcbiAgICBpZDogJ3EtMTI0JyxcclxuICAgIHRvcGljSWQ6ICd2cnJwJyxcclxuICAgIHF1ZXN0aW9uVGV4dDogJ1ZSUlDjga7jg5Djg4Pjgq/jgqLjg4Pjg5fjg6vjg7zjgr/jgYzjg57jgrnjgr/jg7zjg6vjg7zjgr/jga7pmpzlrrPjgpLmpJznn6XjgZnjgovjgb7jgafjga7lvoXmqZ/mmYLplpPjga/jgIFBZHZlcnRpc2VtZW50IEludGVydmFs44Goe3tibGFua31944Gn6KiI566X44GV44KM44KL44CCJyxcclxuICAgIGNvcnJlY3RBbnN3ZXI6ICdTa2V3IFRpbWXvvIjjg5fjg6njgqTjgqrjg6rjg4bjgqPjgavln7rjgaXjgY/jgqrjg5Xjgrvjg4Pjg4jvvIknLFxyXG4gICAgY2hvaWNlczogW1xyXG4gICAgICAnU2tldyBUaW1l77yI44OX44Op44Kk44Kq44Oq44OG44Kj44Gr5Z+644Gl44GP44Kq44OV44K744OD44OI77yJJyxcclxuICAgICAgJ+WbuuWumuOBpzPnp5InLFxyXG4gICAgICAnQWR2ZXJ0aXNlbWVudCBJbnRlcnZhbOOBrjLlgI0nLFxyXG4gICAgICAn44OX44Op44Kk44Kq44Oq44OG44Kj5YCk44KS56eS5pWw44Gr5o+b566X44GX44Gf5pmC6ZaTJyxcclxuICAgIF0sXHJcbiAgICBpc0ltcG9ydGFudDogZmFsc2UsXHJcbiAgICBleHBsYW5hdGlvbjogJ01hc3RlciBEb3duIEludGVydmFsID0gMyDDlyBBZHZlcnRpc2VtZW50IEludGVydmFsICsgU2tldyBUaW1l44CCU2tldyBUaW1l44Gv77yIMjU2IOKIkiBQcmlvcml0ee+8iS8gMjU2IOenkuOBp+eul+WHuuOBleOCjOOAgeODl+ODqeOCpOOCquODquODhuOCo+OBjOS9juOBhOOBu+OBqeW+heapn+aZgumWk+OBjOmVt+OBj+OBquOCi+OAguOBk+OCjOOBq+OCiOOCiuikh+aVsOOBruODkOODg+OCr+OCouODg+ODl+ODq+ODvOOCv+OBjOWQjOaZguOBq+ODnuOCueOCv+ODvOOBq+eri+WAmeijnOOBmeOCi+OBk+OBqOOCkumYsuOBkOOAgicsXHJcbiAgICBkaWZmaWN1bHR5OiAzLFxyXG4gIH0sXHJcbiAge1xyXG4gICAgaWQ6ICdxLTEyNScsXHJcbiAgICB0b3BpY0lkOiAndnJycCcsXHJcbiAgICBxdWVzdGlvblRleHQ6ICdWUlJQ44Gr44GK44GE44Gm44CB6Zqc5a6z44GL44KJ5b6p5pen44GX44Gf44Or44O844K/44GM6Ieq5YuV55qE44Gr44Oe44K544K/44O844Gu5Zyw5L2N44KS5aWq44GE6L+U44GZ5qmf6IO944KSe3tibGFua31944Go44GE44GG44CCJyxcclxuICAgIGNvcnJlY3RBbnN3ZXI6ICfjg5fjg6rjgqjjg7Pjg5fjg4jvvIhQcmVlbXB077yJJyxcclxuICAgIGNob2ljZXM6IFsn44OX44Oq44Ko44Oz44OX44OI77yIUHJlZW1wdO+8iScsICfjg5XjgqfjgqTjg6vjg5Djg4Pjgq8nLCAn44OV44Kn44Kk44Or44Kq44O844OQ44O8JywgJ+OCquODvOODiOODquOCq+ODkOODqiddLFxyXG4gICAgaXNJbXBvcnRhbnQ6IHRydWUsXHJcbiAgICBleHBsYW5hdGlvbjogJ+ODl+ODquOCqOODs+ODl+ODiOOBjOacieWKue+8iOODh+ODleOCqeODq+ODiOacieWKue+8ieOBruWgtOWQiOOAgeOCiOOCiumrmOOBhOODl+ODqeOCpOOCquODquODhuOCo+OBruODq+ODvOOCv+OBjOW+qeaXp+OBmeOCi+OBqOODnuOCueOCv+ODvOOCkuW8leOBjee2meOBkOOAgueEoeWKueOBq+OBmeOCi+OBqOW+qeaXp+W+jOOCguODkOODg+OCr+OCouODg+ODl+ODq+ODvOOCv+OBruOBvuOBvuOBqOOBquOCiuOAgeaEj+Wbs+OBl+OBquOBhOWIh+OCiuabv+OBiOOCkumYsuOBkuOCi+OAguWGl+mVt+ani+aIkOOBrumBi+eUqOioreioiOOBp+mHjeimgeOBquioreWumumgheebruOAgicsXHJcbiAgICBkaWZmaWN1bHR5OiAyLFxyXG4gIH0sXHJcbiAge1xyXG4gICAgaWQ6ICdxLTEyNicsXHJcbiAgICB0b3BpY0lkOiAndnJycCcsXHJcbiAgICBxdWVzdGlvblRleHQ6ICdWUlJQ44GM5L2/55So44GZ44KL5Luu5oOzTUFD44Ki44OJ44Os44K544Gu5b2i5byP44Gve3tibGFua31944Gn44GC44KL77yI44Kw44Or44O844OXSUQ9MeOBruWgtOWQiO+8ieOAgicsXHJcbiAgICBjb3JyZWN0QW5zd2VyOiAnMDAtMDAtNUUtMDAtMDEtMDEnLFxyXG4gICAgY2hvaWNlczogWycwMC0wMC01RS0wMC0wMS0wMScsICcwMC0wMC0wQy0wNy1BQy0wMScsICcwMS0wMC01RS0wMC0wMC0xMicsICcwMC0wMC01RS0wMC0wMi0wMSddLFxyXG4gICAgaXNJbXBvcnRhbnQ6IGZhbHNlLFxyXG4gICAgZXhwbGFuYXRpb246ICdWUlJQ44Gu5Luu5oOzTUFD44Ki44OJ44Os44K544Gv44CMMDAtMDAtNUUtMDAtMDEte1ZSSUR944CN44Gu5b2i5byP77yISVB2NO+8ieOAglZSSUTjga9WUlJQ44Kw44Or44O844OXSUTvvIgx44CcMjU177yJ44CCSVB2NuOBruWgtOWQiOOBr+OAjDAwLTAwLTVFLTAwLTAyLXtWUklEfeOAjeOBqOOBquOCi+OAguOBquOBijAwLTAwLTBDLTA3LUFDLXh444GvQ2lzY2/jga5IU1JQ77yISG90IFN0YW5kYnkgUm91dGVyIFByb3RvY29s77yJ44Gn5L2/55So44GV44KM44KL5Luu5oOzTUFD44Ki44OJ44Os44K544CCJyxcclxuICAgIGRpZmZpY3VsdHk6IDMsXHJcbiAgfSxcclxuICB7XHJcbiAgICBpZDogJ3EtMTI3JyxcclxuICAgIHRvcGljSWQ6ICd2cnJwJyxcclxuICAgIHF1ZXN0aW9uVGV4dDogJ1ZSUlB2MuOBr0lQdjTjga7jgb/lr77lv5zjgaDjgYzjgIFWUlJQdjPjga97e2JsYW5rfX3jgavjgoLlr77lv5zjgZfjgabjgYTjgovjgIInLFxyXG4gICAgY29ycmVjdEFuc3dlcjogJ0lQdjYnLFxyXG4gICAgY2hvaWNlczogWydJUHY2JywgJ0lQdjUnLCAnTVBMUycsICfjg57jg6vjg4Hjgq3jg6Pjgrnjg4jjga7jgb8nXSxcclxuICAgIGlzSW1wb3J0YW50OiB0cnVlLFxyXG4gICAgZXhwbGFuYXRpb246ICdSRkMgNTc5OOOBp+Wumue+qeOBleOCjOOBn1ZSUlB2M+OBr0lQdjTjgahJUHY244Gu5Lih5pa544KS44K144Od44O844OI44GZ44KL44CCQWR2ZXJ0aXNlbWVudCBJbnRlcnZhbOOBrueyvuW6puOCglZSUlB2MuOBrjHnp5LljZjkvY3jgYvjgonjgrvjg7Pjg4Hnp5LvvIgxMG1z5Y2Y5L2N77yJ44Gr5ZCR5LiK44GX44Gf44CC54++5Zyo44Gu5a6f6KOF44Gn44GvVlJSUHYz44GM5o6o5aWo44GV44KM44KL44CCJyxcclxuICAgIGRpZmZpY3VsdHk6IDIsXHJcbiAgfSxcclxuICB7XHJcbiAgICBpZDogJ3EtMTI4JyxcclxuICAgIHRvcGljSWQ6ICd2cnJwJyxcclxuICAgIHF1ZXN0aW9uVGV4dDogJ1ZSUlAgQWR2ZXJ0aXNlbWVudCDjg5HjgrHjg4Pjg4jjga9JUOODnuODq+ODgeOCreODo+OCueODiOOCouODieODrOOCuXt7Ymxhbmt9feWum+OBq+mAgeS/oeOBleOCjOOCi+OAgicsXHJcbiAgICBjb3JyZWN0QW5zd2VyOiAnMjI0LjAuMC4xOCcsXHJcbiAgICBjaG9pY2VzOiBbJzIyNC4wLjAuMTgnLCAnMjI0LjAuMC4xJywgJzIyNC4wLjAuNScsICcyMzkuMjU1LjI1NS4yNTAnXSxcclxuICAgIGlzSW1wb3J0YW50OiBmYWxzZSxcclxuICAgIGV4cGxhbmF0aW9uOiAnMjI0LjAuMC4xOOOBr1ZSUlDlsILnlKjjga5JQU5B44Oq44Oz44Kv44Ot44O844Kr44Or44Oe44Or44OB44Kt44Oj44K544OI44Ki44OJ44Os44K577yIVFRMPTI1Ne+8ieOAguWQjOS4gOOCu+OCsOODoeODs+ODiOOBrlZSUlDjg6vjg7zjgr/jga7jgb/jgYzlj5fkv6HjgZnjgovjgIIyMjQuMC4wLjXjga9PU1BGIEhlbGxv44CBMjI0LjAuMC4x44Gv5YWo44Ob44K544OI44CBMjM5LngueC5444GvU1NEUOOBquOBqeOBp+S9v+eUqOOBleOCjOOCi+OAgicsXHJcbiAgICBkaWZmaWN1bHR5OiAzLFxyXG4gIH0sXHJcbiAge1xyXG4gICAgaWQ6ICdxLTEyOScsXHJcbiAgICB0b3BpY0lkOiAndnJycCcsXHJcbiAgICBxdWVzdGlvblRleHQ6ICdWUlJQ44OI44Op44OD44Kt44Oz44Kw44Gn55uj6KaW5a++6LGh44Kk44Oz44K/44O844OV44Kn44O844K544GM44OA44Km44Oz44GX44Gf5aC05ZCI44CB44Oe44K544K/44O844Or44O844K/44Gu44OX44Op44Kk44Kq44Oq44OG44Kj44KS5LiL44GS44KL44GT44Go44Gne3tibGFua31944KS5L+D44GZ44CCJyxcclxuICAgIGNvcnJlY3RBbnN3ZXI6ICfjg5XjgqfjgqTjg6vjgqrjg7zjg5Djg7zvvIjjg5Djg4Pjgq/jgqLjg4Pjg5fjgbjjga7liIfjgormm7/jgYjvvIknLFxyXG4gICAgY2hvaWNlczogW1xyXG4gICAgICAn44OV44Kn44Kk44Or44Kq44O844OQ44O877yI44OQ44OD44Kv44Ki44OD44OX44G444Gu5YiH44KK5pu/44GI77yJJyxcclxuICAgICAgJ+OCu+ODg+OCt+ODp+ODs+OBruWGjeeiuueriycsXHJcbiAgICAgICdBZHZlcnRpc2VtZW50IEludGVydmFs44Gu55+t57iuJyxcclxuICAgICAgJ+S7ruaDs01BQ+OCouODieODrOOCueOBruWkieabtCcsXHJcbiAgICBdLFxyXG4gICAgaXNJbXBvcnRhbnQ6IHRydWUsXHJcbiAgICBleHBsYW5hdGlvbjogJ1ZSUlDjg4jjg6njg4Pjgq3jg7PjgrDjga/kuIrmtYHjgqTjg7Pjgr/jg7zjg5Xjgqfjg7zjgrnjgoTjg6vjg7zjg4jjga7nirbmhYvjgpLnm6PoppbjgZfjgIHpmpzlrrPmmYLjgavjg57jgrnjgr/jg7zjg6vjg7zjgr/jga7jg5fjg6njgqTjgqrjg6rjg4bjgqPjgpLkuIDlrprlgKTjgaDjgZHmuJvnrpfjgZnjgovjgILmuJvnrpflvozjga7jg5fjg6njgqTjgqrjg6rjg4bjgqPjgYzjg5Djg4Pjgq/jgqLjg4Pjg5fjg6vjg7zjgr/jgpLkuIvlm57jgovjgajjgIHjg5fjg6rjgqjjg7Pjg5fjg4jjgYznmbrli5XjgZfjgabjg5XjgqfjgqTjg6vjgqrjg7zjg5Djg7zjgYzotbfjgY3jgovjgILkuIrmtYHpmpzlrrPjgpLkuIvmtYHjgq/jg6njgqTjgqLjg7Pjg4jjgavkvJ3mkKzjgZXjgZvjgovku5XntYTjgb/jgIInLFxyXG4gICAgZGlmZmljdWx0eTogMixcclxuICB9LFxyXG5dXHJcbiJdfQ==

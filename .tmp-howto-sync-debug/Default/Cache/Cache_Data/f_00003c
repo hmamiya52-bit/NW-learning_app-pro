@@ -1,0 +1,236 @@
+export const ipv6Questions = [
+	{
+		id: "q-170",
+		topicId: "ipv6",
+		questionText: "IPv6のリンクローカルアドレスのプレフィックスは{{blank}}である。",
+		correctAnswer: "fe80::/10",
+		choices: [
+			"fe80::/10",
+			"fc00::/7",
+			"2000::/3",
+			"ff00::/8"
+		],
+		isImportant: true,
+		explanation: "fe80::/10はリンクローカルアドレスで同一リンク内通信に使われる。fc00::/7はユニークローカルアドレス（ULA）、2000::/3はグローバルユニキャスト、ff00::/8はマルチキャスト。",
+		difficulty: 2
+	},
+	{
+		id: "q-171",
+		topicId: "ipv6",
+		questionText: "IPv6においてARPに相当する機能を提供し、近隣のMACアドレスを解決するプロトコルを{{blank}}という。",
+		correctAnswer: "NDP（Neighbor Discovery Protocol）",
+		choices: [
+			"NDP（Neighbor Discovery Protocol）",
+			"ICMPv6",
+			"GARP",
+			"RARP"
+		],
+		isImportant: true,
+		explanation: "NDP（RFC 4861）はICMPv6を使いIPv6ノードがMACアドレス解決（NS/NA）、デフォルトルータ発見（RS/RA）、重複アドレス検出（DAD）を行う。ARPより機能豊富。",
+		difficulty: 2
+	},
+	{
+		id: "q-172",
+		topicId: "ipv6",
+		questionText: "IPv6でルータがRA（Router Advertisement）を送信してホストが自律的にアドレスを生成する仕組みを{{blank}}という。",
+		correctAnswer: "SLAAC（Stateless Address Autoconfiguration）",
+		choices: [
+			"SLAAC（Stateless Address Autoconfiguration）",
+			"DHCPv6",
+			"RADVD",
+			"NDP-RA"
+		],
+		isImportant: true,
+		explanation: "SLAACはルータが送信するRAのプレフィックス情報とインタフェースのEUI-64またはランダムIDを組み合わせてIPv6アドレスを自動設定する仕組み。DHCPサーバ不要で設定が簡便。",
+		difficulty: 2
+	},
+	{
+		id: "q-173",
+		topicId: "ipv6",
+		questionText: "IPv4アドレス空間にIPv6パケットをカプセル化して転送するIPv6移行技術を{{blank}}という。",
+		correctAnswer: "6in4トンネリング（または6to4）",
+		choices: [
+			"6in4トンネリング（または6to4）",
+			"NAT64",
+			"DS-Lite",
+			"Teredo"
+		],
+		isImportant: false,
+		explanation: "6in4はIPv6パケットをIPv4でカプセル化してIPv4ネットワーク越えを実現する。6to4（RFC 3056）は自動設定の一種。NAT64はIPv6のみのクライアントがIPv4サーバに接続するための変換技術。",
+		difficulty: 3
+	},
+	{
+		id: "q-174",
+		topicId: "ipv6",
+		questionText: "IPv6の128ビットアドレスを省略記法で書く際、連続するゼロのグループを置換できる表記を{{blank}}という。",
+		correctAnswer: "「::」（ダブルコロン）",
+		choices: [
+			"「::」（ダブルコロン）",
+			"「:0:」",
+			"「/0」",
+			"「0x」"
+		],
+		isImportant: false,
+		explanation: "IPv6の省略規則：①各グループの先頭ゼロを省略（0db8→db8）②連続するゼログループを「::」で一箇所だけ置換（2001:0db8:0000:0000:0000:0000:0000:0001→2001:db8::1）。",
+		difficulty: 1
+	},
+	(
+	// R7年 IPv6問題
+	{
+		id: "q-r7-001",
+		topicId: "ipv6",
+		questionText: "IPv6においてノードが自身にアドレスを割り当てる前に、同一リンク内で重複がないか確認する仕組みを{{blank}}という。",
+		correctAnswer: "DAD（Duplicate Address Detection：重複アドレス検出）",
+		choices: [
+			"DAD（Duplicate Address Detection：重複アドレス検出）",
+			"SLAAC",
+			"NDP",
+			"RA（Router Advertisement）"
+		],
+		isImportant: true,
+		explanation: "DAD（重複アドレス検出）はICMPv6の近隣要請（NS）を使って、設定予定のアドレスが既にリンク上に存在しないかを確認する。応答がなければ正式アドレスとして使用する。LLA・GUAの両方でDADを実施する。",
+		difficulty: 2
+	}),
+	{
+		id: "q-r7-002",
+		topicId: "ipv6",
+		questionText: "IPv6において組織への割り当てに標準的に使われるプレフィックス長は{{blank}}、サブネットには{{blank}}が使われる。",
+		correctAnswer: "/48・/64",
+		choices: [
+			"/48・/64",
+			"/32・/48",
+			"/64・/128",
+			"/56・/64"
+		],
+		isImportant: true,
+		explanation: "IPv6アドレス割り当ての標準的な階層：ISPが/32を受け取り、組織（企業）に/48を割り当て、組織内のサブネットは/64を使用する。/64はEUI-64インタフェースIDとの組み合わせや、SLAACに必要なプレフィックス長。",
+		difficulty: 2,
+		excludeFromWritten: true
+	},
+	(
+	// ── R7 午後II-1 IPv6移行・運用 ──────────────────────────────────
+	{
+		id: "q-380",
+		topicId: "ipv6",
+		questionText: "IPv4とIPv6を同時に動作させ、IPv4とIPv6どちらのトラフィックも処理できる機器の動作方式を{{blank}}という。",
+		correctAnswer: "デュアルスタック",
+		choices: [
+			"デュアルスタック",
+			"6in4トンネリング",
+			"NAT64",
+			"DS-Lite"
+		],
+		isImportant: true,
+		explanation: "デュアルスタックはIPv4とIPv6を同時に動かす移行方式。機器にIPv4とIPv6の両アドレスを付与しどちらの通信にも対応する。移行期の主流方式。ただし両プロトコルスタックを管理するコストがかかる。R7午後II-1で移行技術が出題。",
+		difficulty: 1
+	}),
+	{
+		id: "q-381",
+		topicId: "ipv6",
+		questionText: "IPv6のみのクライアントがIPv4サーバに接続するために使われる、IPv6→IPv4アドレス変換技術を{{blank}}という。",
+		correctAnswer: "NAT64",
+		choices: [
+			"NAT64",
+			"6in4",
+			"DS-Lite",
+			"SIIT"
+		],
+		isImportant: true,
+		explanation: "NAT64はIPv6クライアントのパケットをIPv4に変換してIPv4サーバに届ける技術。通常DNS64（IPv4アドレスをIPv6にマッピングして返すDNS）と組み合わせて使う。モバイルネットワークのIPv6移行で使われる。R7午後II-1で関連内容が出題。",
+		difficulty: 2
+	},
+	{
+		id: "q-382",
+		topicId: "ipv6",
+		questionText: "IPv6のステートレスアドレス自動設定（SLAAC）でEUI-64方式を使う場合、インタフェースIDを導出するためにMACアドレスの何ビット目を反転させるか。",
+		correctAnswer: "第7ビット（U/Lビット）",
+		choices: [
+			"第7ビット（U/Lビット）",
+			"第1ビット",
+			"第8ビット（I/Gビット）",
+			"全ビット"
+		],
+		isImportant: false,
+		explanation: "EUI-64はMACアドレス（48ビット）の中央にFFFF FEを挿入して64ビットにし、先頭から7ビット目のU/L（Universal/Local）ビットを反転させてIPv6インタフェースIDを作る。ただしプライバシー問題からランダムIDを使うプライバシー拡張（RFC 8981）が広く普及している。",
+		difficulty: 3
+	},
+	{
+		id: "q-383",
+		topicId: "ipv6",
+		questionText: "IPv6のステートフルアドレス自動設定で使用され、IPv6アドレス・デフォルトゲートウェイ・DNSサーバなどをDHCPサーバから払い出す仕組みを{{blank}}という。",
+		correctAnswer: "DHCPv6",
+		choices: [
+			"DHCPv6",
+			"SLAAC",
+			"NDP",
+			"RA"
+		],
+		isImportant: true,
+		explanation: "DHCPv6はIPv6向けのDHCPプロトコル（RFC 8415）。SLAACと異なりDHCPサーバが管理するため、アドレス割り当ての追跡や細かな制御が可能。RAのM（Managed）フラグが1の場合はDHCPv6でアドレス取得、O（Other）フラグが1の場合はDHCPv6でDNS等の情報のみ取得する。注意：IPv6ではデフォルトゲートウェイ（既定ルータ）はDHCPv6では通知されず、ルータ自身が送信するRA（Router Advertisement）で通知される。これはIPv4のDHCPがゲートウェイも一緒に配るのと異なるポイント。",
+		difficulty: 2
+	},
+	(
+	// ── 復習ノートからの追補（IPv6基礎） ─────────────────────────
+	{
+		id: "q-ipv6-n1",
+		topicId: "ipv6",
+		questionText: "IPv6にはブロードキャストが存在せず、その代わりに{{blank}}が用いられる。",
+		correctAnswer: "マルチキャスト",
+		choices: [
+			"マルチキャスト",
+			"エニーキャスト",
+			"ユニキャスト",
+			"ブロードキャスト（範囲限定）"
+		],
+		isImportant: true,
+		explanation: "IPv6 では IPv4 のブロードキャストは廃止され、代わりにマルチキャストを使う。リンク全ノードは ff02::1、リンク全ルータは ff02::2、OSPFv3 は ff02::5。NDP（NS/NA、RS/RA）もマルチキャストで動作する。",
+		difficulty: 1
+	}),
+	{
+		id: "q-ipv6-n2",
+		topicId: "ipv6",
+		questionText: "IPv6ヘッダの大きさは{{blank}}バイト固定長である（IPv4の可変長と異なる）。",
+		correctAnswer: "40",
+		choices: [
+			"40",
+			"20",
+			"60",
+			"64"
+		],
+		isImportant: true,
+		explanation: "IPv6 の基本ヘッダは 40 バイト固定長。可変長オプションは拡張ヘッダで実現する。IPv4 ヘッダが最小20〜最大60バイトの可変長なのに比べ、ルータのヘッダ処理が高速化されるメリットがある。",
+		difficulty: 2
+	},
+	{
+		id: "q-ipv6-n3",
+		topicId: "ipv6",
+		questionText: "IPv6ヘッダにはIPv4ヘッダにあった{{blank}}が廃止されている。理由は L2／L4 で検査が行われるため、ルータ毎の再計算負荷を削減するためである。",
+		correctAnswer: "チェックサム",
+		choices: [
+			"チェックサム",
+			"送信元アドレス",
+			"TTL",
+			"プロトコル番号"
+		],
+		isImportant: false,
+		explanation: "IPv6 ヘッダにはチェックサムが無い（イーサネットFCSや TCP/UDP チェックサムで代替）。フラグメント化はルータでは行わずに送信元のみが行う（パスMTU探索）等、IPv4 から運用効率を上げる設計変更が多数。",
+		difficulty: 2
+	},
+	{
+		id: "q-ipv6-n4",
+		topicId: "ipv6",
+		questionText: "IPv4 と IPv6 のアドレス体系は互換性が無いため、両プロトコルを同一ホストで併用する移行方式である{{blank}}が広く採用されている。",
+		correctAnswer: "デュアルスタック",
+		choices: [
+			"デュアルスタック",
+			"NAT64",
+			"トンネリング（6to4）",
+			"DS-Lite"
+		],
+		isImportant: true,
+		explanation: "IPv4 ⇔ IPv6 の互換性は無いため、移行期は両方のスタックを動かすデュアルスタックが基本。NAT64／DNS64 は IPv6 only クライアントから IPv4 サーバへアクセスさせる変換、トンネリングは IPv4 網越しの IPv6 通信。",
+		difficulty: 1
+	}
+];
+
+//# sourceMappingURL=data:application/json;base64,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RUFDYjtDQUNGIiwibmFtZXMiOltdLCJzb3VyY2VzIjpbImlwdjYudHMiXSwidmVyc2lvbiI6Mywic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHR5cGUgeyBRdWVzdGlvbiB9IGZyb20gJy4uLy4uL3R5cGVzJ1xyXG5cclxuZXhwb3J0IGNvbnN0IGlwdjZRdWVzdGlvbnM6IFF1ZXN0aW9uW10gPSBbXHJcbiAge1xyXG4gICAgaWQ6ICdxLTE3MCcsXHJcbiAgICB0b3BpY0lkOiAnaXB2NicsXHJcbiAgICBxdWVzdGlvblRleHQ6ICdJUHY244Gu44Oq44Oz44Kv44Ot44O844Kr44Or44Ki44OJ44Os44K544Gu44OX44Os44OV44Kj44OD44Kv44K544Gve3tibGFua31944Gn44GC44KL44CCJyxcclxuICAgIGNvcnJlY3RBbnN3ZXI6ICdmZTgwOjovMTAnLFxyXG4gICAgY2hvaWNlczogWydmZTgwOjovMTAnLCAnZmMwMDo6LzcnLCAnMjAwMDo6LzMnLCAnZmYwMDo6LzgnXSxcclxuICAgIGlzSW1wb3J0YW50OiB0cnVlLFxyXG4gICAgZXhwbGFuYXRpb246ICdmZTgwOjovMTDjga/jg6rjg7Pjgq/jg63jg7zjgqvjg6vjgqLjg4njg6zjgrnjgaflkIzkuIDjg6rjg7Pjgq/lhoXpgJrkv6Hjgavkvb/jgo/jgozjgovjgIJmYzAwOjovN+OBr+ODpuODi+ODvOOCr+ODreODvOOCq+ODq+OCouODieODrOOCue+8iFVMQe+8ieOAgTIwMDA6Oi8z44Gv44Kw44Ot44O844OQ44Or44Om44OL44Kt44Oj44K544OI44CBZmYwMDo6Lzjjga/jg57jg6vjg4Hjgq3jg6Pjgrnjg4jjgIInLFxyXG4gICAgZGlmZmljdWx0eTogMixcclxuICB9LFxyXG4gIHtcclxuICAgIGlkOiAncS0xNzEnLFxyXG4gICAgdG9waWNJZDogJ2lwdjYnLFxyXG4gICAgcXVlc3Rpb25UZXh0OiAnSVB2NuOBq+OBiuOBhOOBpkFSUOOBq+ebuOW9k+OBmeOCi+apn+iDveOCkuaPkOS+m+OBl+OAgei/kemao+OBrk1BQ+OCouODieODrOOCueOCkuino+axuuOBmeOCi+ODl+ODreODiOOCs+ODq+OCknt7Ymxhbmt9feOBqOOBhOOBhuOAgicsXHJcbiAgICBjb3JyZWN0QW5zd2VyOiAnTkRQ77yITmVpZ2hib3IgRGlzY292ZXJ5IFByb3RvY29s77yJJyxcclxuICAgIGNob2ljZXM6IFsnTkRQ77yITmVpZ2hib3IgRGlzY292ZXJ5IFByb3RvY29s77yJJywgJ0lDTVB2NicsICdHQVJQJywgJ1JBUlAnXSxcclxuICAgIGlzSW1wb3J0YW50OiB0cnVlLFxyXG4gICAgZXhwbGFuYXRpb246ICdORFDvvIhSRkMgNDg2Me+8ieOBr0lDTVB2NuOCkuS9v+OBhElQdjbjg47jg7zjg4njgYxNQUPjgqLjg4njg6zjgrnop6PmsbrvvIhOUy9OQe+8ieOAgeODh+ODleOCqeODq+ODiOODq+ODvOOCv+eZuuimi++8iFJTL1JB77yJ44CB6YeN6KSH44Ki44OJ44Os44K55qSc5Ye677yIREFE77yJ44KS6KGM44GG44CCQVJQ44KI44KK5qmf6IO96LGK5a+M44CCJyxcclxuICAgIGRpZmZpY3VsdHk6IDIsXHJcbiAgfSxcclxuICB7XHJcbiAgICBpZDogJ3EtMTcyJyxcclxuICAgIHRvcGljSWQ6ICdpcHY2JyxcclxuICAgIHF1ZXN0aW9uVGV4dDogJ0lQdjbjgafjg6vjg7zjgr/jgYxSQe+8iFJvdXRlciBBZHZlcnRpc2VtZW5077yJ44KS6YCB5L+h44GX44Gm44Ob44K544OI44GM6Ieq5b6L55qE44Gr44Ki44OJ44Os44K544KS55Sf5oiQ44GZ44KL5LuV57WE44G/44KSe3tibGFua31944Go44GE44GG44CCJyxcclxuICAgIGNvcnJlY3RBbnN3ZXI6ICdTTEFBQ++8iFN0YXRlbGVzcyBBZGRyZXNzIEF1dG9jb25maWd1cmF0aW9u77yJJyxcclxuICAgIGNob2ljZXM6IFsnU0xBQUPvvIhTdGF0ZWxlc3MgQWRkcmVzcyBBdXRvY29uZmlndXJhdGlvbu+8iScsICdESENQdjYnLCAnUkFEVkQnLCAnTkRQLVJBJ10sXHJcbiAgICBpc0ltcG9ydGFudDogdHJ1ZSxcclxuICAgIGV4cGxhbmF0aW9uOiAnU0xBQUPjga/jg6vjg7zjgr/jgYzpgIHkv6HjgZnjgotSQeOBruODl+ODrOODleOCo+ODg+OCr+OCueaDheWgseOBqOOCpOODs+OCv+ODleOCp+ODvOOCueOBrkVVSS02NOOBvuOBn+OBr+ODqeODs+ODgOODoElE44KS57WE44G/5ZCI44KP44Gb44GmSVB2NuOCouODieODrOOCueOCkuiHquWLleioreWumuOBmeOCi+S7lee1hOOBv+OAgkRIQ1DjgrXjg7zjg5DkuI3opoHjgafoqK3lrprjgYznsKHkvr/jgIInLFxyXG4gICAgZGlmZmljdWx0eTogMixcclxuICB9LFxyXG4gIHtcclxuICAgIGlkOiAncS0xNzMnLFxyXG4gICAgdG9waWNJZDogJ2lwdjYnLFxyXG4gICAgcXVlc3Rpb25UZXh0OiAnSVB2NOOCouODieODrOOCueepuumWk+OBq0lQdjbjg5HjgrHjg4Pjg4jjgpLjgqvjg5fjgrvjg6vljJbjgZfjgabou6LpgIHjgZnjgotJUHY256e76KGM5oqA6KGT44KSe3tibGFua31944Go44GE44GG44CCJyxcclxuICAgIGNvcnJlY3RBbnN3ZXI6ICc2aW4044OI44Oz44ON44Oq44Oz44Kw77yI44G+44Gf44GvNnRvNO+8iScsXHJcbiAgICBjaG9pY2VzOiBbJzZpbjTjg4jjg7Pjg43jg6rjg7PjgrDvvIjjgb7jgZ/jga82dG8077yJJywgJ05BVDY0JywgJ0RTLUxpdGUnLCAnVGVyZWRvJ10sXHJcbiAgICBpc0ltcG9ydGFudDogZmFsc2UsXHJcbiAgICBleHBsYW5hdGlvbjogJzZpbjTjga9JUHY244OR44Kx44OD44OI44KSSVB2NOOBp+OCq+ODl+OCu+ODq+WMluOBl+OBpklQdjTjg43jg4Pjg4jjg6/jg7zjgq/otorjgYjjgpLlrp/nj77jgZnjgovjgII2dG8077yIUkZDIDMwNTbvvInjga/oh6rli5XoqK3lrprjga7kuIDnqK7jgIJOQVQ2NOOBr0lQdjbjga7jgb/jga7jgq/jg6njgqTjgqLjg7Pjg4jjgYxJUHY044K144O844OQ44Gr5o6l57aa44GZ44KL44Gf44KB44Gu5aSJ5o+b5oqA6KGT44CCJyxcclxuICAgIGRpZmZpY3VsdHk6IDMsXHJcbiAgfSxcclxuICB7XHJcbiAgICBpZDogJ3EtMTc0JyxcclxuICAgIHRvcGljSWQ6ICdpcHY2JyxcclxuICAgIHF1ZXN0aW9uVGV4dDogJ0lQdjbjga4xMjjjg5Pjg4Pjg4jjgqLjg4njg6zjgrnjgpLnnIHnlaXoqJjms5Xjgafmm7jjgY/pmpvjgIHpgKPntprjgZnjgovjgrzjg63jga7jgrDjg6vjg7zjg5fjgpLnva7mj5vjgafjgY3jgovooajoqJjjgpJ7e2JsYW5rfX3jgajjgYTjgYbjgIInLFxyXG4gICAgY29ycmVjdEFuc3dlcjogJ+OAjDo644CN77yI44OA44OW44Or44Kz44Ot44Oz77yJJyxcclxuICAgIGNob2ljZXM6IFsn44CMOjrjgI3vvIjjg4Djg5bjg6vjgrPjg63jg7PvvIknLCAn44CMOjA644CNJywgJ+OAjC8w44CNJywgJ+OAjDB444CNJ10sXHJcbiAgICBpc0ltcG9ydGFudDogZmFsc2UsXHJcbiAgICBleHBsYW5hdGlvbjogJ0lQdjbjga7nnIHnlaXopo/liYfvvJrikaDlkITjgrDjg6vjg7zjg5fjga7lhYjpoK3jgrzjg63jgpLnnIHnlaXvvIgwZGI44oaSZGI477yJ4pGh6YCj57aa44GZ44KL44K844Ot44Kw44Or44O844OX44KS44CMOjrjgI3jgafkuIDnrofmiYDjgaDjgZHnva7mj5vvvIgyMDAxOjBkYjg6MDAwMDowMDAwOjAwMDA6MDAwMDowMDAwOjAwMDHihpIyMDAxOmRiODo6Me+8ieOAgicsXHJcbiAgICBkaWZmaWN1bHR5OiAxLFxyXG4gIH0sXHJcbiAgLy8gUjflubQgSVB2NuWVj+mhjFxyXG4gIHtcclxuICAgIGlkOiAncS1yNy0wMDEnLFxyXG4gICAgdG9waWNJZDogJ2lwdjYnLFxyXG4gICAgcXVlc3Rpb25UZXh0OiAnSVB2NuOBq+OBiuOBhOOBpuODjuODvOODieOBjOiHqui6q+OBq+OCouODieODrOOCueOCkuWJsuOCiuW9k+OBpuOCi+WJjeOBq+OAgeWQjOS4gOODquODs+OCr+WGheOBp+mHjeikh+OBjOOBquOBhOOBi+eiuuiqjeOBmeOCi+S7lee1hOOBv+OCknt7Ymxhbmt9feOBqOOBhOOBhuOAgicsXHJcbiAgICBjb3JyZWN0QW5zd2VyOiAnREFE77yIRHVwbGljYXRlIEFkZHJlc3MgRGV0ZWN0aW9u77ya6YeN6KSH44Ki44OJ44Os44K55qSc5Ye677yJJyxcclxuICAgIGNob2ljZXM6IFsnREFE77yIRHVwbGljYXRlIEFkZHJlc3MgRGV0ZWN0aW9u77ya6YeN6KSH44Ki44OJ44Os44K55qSc5Ye677yJJywgJ1NMQUFDJywgJ05EUCcsICdSQe+8iFJvdXRlciBBZHZlcnRpc2VtZW5077yJJ10sXHJcbiAgICBpc0ltcG9ydGFudDogdHJ1ZSxcclxuICAgIGV4cGxhbmF0aW9uOiAnREFE77yI6YeN6KSH44Ki44OJ44Os44K55qSc5Ye677yJ44GvSUNNUHY244Gu6L+R6Zqj6KaB6KuL77yITlPvvInjgpLkvb/jgaPjgabjgIHoqK3lrprkuojlrprjga7jgqLjg4njg6zjgrnjgYzml6Ljgavjg6rjg7Pjgq/kuIrjgavlrZjlnKjjgZfjgarjgYTjgYvjgpLnorroqo3jgZnjgovjgILlv5znrZTjgYzjgarjgZHjgozjgbDmraPlvI/jgqLjg4njg6zjgrnjgajjgZfjgabkvb/nlKjjgZnjgovjgIJMTEHjg7tHVUHjga7kuKHmlrnjgadEQUTjgpLlrp/mlr3jgZnjgovjgIInLFxyXG4gICAgZGlmZmljdWx0eTogMixcclxuICB9LFxyXG4gIHtcclxuICAgIGlkOiAncS1yNy0wMDInLFxyXG4gICAgdG9waWNJZDogJ2lwdjYnLFxyXG4gICAgcXVlc3Rpb25UZXh0OiAnSVB2NuOBq+OBiuOBhOOBpue1hOe5lOOBuOOBruWJsuOCiuW9k+OBpuOBq+aomea6lueahOOBq+S9v+OCj+OCjOOCi+ODl+ODrOODleOCo+ODg+OCr+OCuemVt+OBr3t7Ymxhbmt9feOAgeOCteODluODjeODg+ODiOOBq+OBr3t7Ymxhbmt9feOBjOS9v+OCj+OCjOOCi+OAgicsXHJcbiAgICBjb3JyZWN0QW5zd2VyOiAnLzQ444O7LzY0JyxcclxuICAgIGNob2ljZXM6IFsnLzQ444O7LzY0JywgJy8zMuODuy80OCcsICcvNjTjg7svMTI4JywgJy81NuODuy82NCddLFxyXG4gICAgaXNJbXBvcnRhbnQ6IHRydWUsXHJcbiAgICBleHBsYW5hdGlvbjogJ0lQdjbjgqLjg4njg6zjgrnlibLjgorlvZPjgabjga7mqJnmupbnmoTjgarpmo7lsaTvvJpJU1DjgYwvMzLjgpLlj5fjgZHlj5bjgorjgIHntYTnuZTvvIjkvIHmpa3vvInjgasvNDjjgpLlibLjgorlvZPjgabjgIHntYTnuZTlhoXjga7jgrXjg5bjg43jg4Pjg4jjga8vNjTjgpLkvb/nlKjjgZnjgovjgIIvNjTjga9FVUktNjTjgqTjg7Pjgr/jg5Xjgqfjg7zjgrlJROOBqOOBrue1hOOBv+WQiOOCj+OBm+OChOOAgVNMQUFD44Gr5b+F6KaB44Gq44OX44Os44OV44Kj44OD44Kv44K56ZW344CCJyxcclxuICAgIGRpZmZpY3VsdHk6IDIsXHJcbiAgICBleGNsdWRlRnJvbVdyaXR0ZW46IHRydWUsXHJcbiAgfSxcclxuICAvLyDilIDilIAgUjcg5Y2I5b6MSUktMSBJUHY256e76KGM44O76YGL55SoIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgFxyXG4gIHtcclxuICAgIGlkOiAncS0zODAnLFxyXG4gICAgdG9waWNJZDogJ2lwdjYnLFxyXG4gICAgcXVlc3Rpb25UZXh0OiAnSVB2NOOBqElQdjbjgpLlkIzmmYLjgavli5XkvZzjgZXjgZvjgIFJUHY044GoSVB2NuOBqeOBoeOCieOBruODiOODqeODleOCo+ODg+OCr+OCguWHpueQhuOBp+OBjeOCi+apn+WZqOOBruWLleS9nOaWueW8j+OCknt7Ymxhbmt9feOBqOOBhOOBhuOAgicsXHJcbiAgICBjb3JyZWN0QW5zd2VyOiAn44OH44Ol44Ki44Or44K544K/44OD44KvJyxcclxuICAgIGNob2ljZXM6IFsn44OH44Ol44Ki44Or44K544K/44OD44KvJywgJzZpbjTjg4jjg7Pjg43jg6rjg7PjgrAnLCAnTkFUNjQnLCAnRFMtTGl0ZSddLFxyXG4gICAgaXNJbXBvcnRhbnQ6IHRydWUsXHJcbiAgICBleHBsYW5hdGlvbjogJ+ODh+ODpeOCouODq+OCueOCv+ODg+OCr+OBr0lQdjTjgahJUHY244KS5ZCM5pmC44Gr5YuV44GL44GZ56e76KGM5pa55byP44CC5qmf5Zmo44GrSVB2NOOBqElQdjbjga7kuKHjgqLjg4njg6zjgrnjgpLku5jkuI7jgZfjganjgaHjgonjga7pgJrkv6HjgavjgoLlr77lv5zjgZnjgovjgILnp7vooYzmnJ/jga7kuLvmtYHmlrnlvI/jgILjgZ/jgaDjgZfkuKHjg5fjg63jg4jjgrPjg6vjgrnjgr/jg4Pjgq/jgpLnrqHnkIbjgZnjgovjgrPjgrnjg4jjgYzjgYvjgYvjgovjgIJSN+WNiOW+jElJLTHjgafnp7vooYzmioDooZPjgYzlh7rpoYzjgIInLFxyXG4gICAgZGlmZmljdWx0eTogMSxcclxuICB9LFxyXG4gIHtcclxuICAgIGlkOiAncS0zODEnLFxyXG4gICAgdG9waWNJZDogJ2lwdjYnLFxyXG4gICAgcXVlc3Rpb25UZXh0OiAnSVB2NuOBruOBv+OBruOCr+ODqeOCpOOCouODs+ODiOOBjElQdjTjgrXjg7zjg5DjgavmjqXntprjgZnjgovjgZ/jgoHjgavkvb/jgo/jgozjgovjgIFJUHY24oaSSVB2NOOCouODieODrOOCueWkieaPm+aKgOihk+OCknt7Ymxhbmt9feOBqOOBhOOBhuOAgicsXHJcbiAgICBjb3JyZWN0QW5zd2VyOiAnTkFUNjQnLFxyXG4gICAgY2hvaWNlczogWydOQVQ2NCcsICc2aW40JywgJ0RTLUxpdGUnLCAnU0lJVCddLFxyXG4gICAgaXNJbXBvcnRhbnQ6IHRydWUsXHJcbiAgICBleHBsYW5hdGlvbjogJ05BVDY044GvSVB2NuOCr+ODqeOCpOOCouODs+ODiOOBruODkeOCseODg+ODiOOCkklQdjTjgavlpInmj5vjgZfjgaZJUHY044K144O844OQ44Gr5bGK44GR44KL5oqA6KGT44CC6YCa5bi4RE5TNjTvvIhJUHY044Ki44OJ44Os44K544KSSVB2NuOBq+ODnuODg+ODlOODs+OCsOOBl+OBpui/lOOBmUROU++8ieOBqOe1hOOBv+WQiOOCj+OBm+OBpuS9v+OBhuOAguODouODkOOCpOODq+ODjeODg+ODiOODr+ODvOOCr+OBrklQdjbnp7vooYzjgafkvb/jgo/jgozjgovjgIJSN+WNiOW+jElJLTHjgafplqLpgKPlhoXlrrnjgYzlh7rpoYzjgIInLFxyXG4gICAgZGlmZmljdWx0eTogMixcclxuICB9LFxyXG4gIHtcclxuICAgIGlkOiAncS0zODInLFxyXG4gICAgdG9waWNJZDogJ2lwdjYnLFxyXG4gICAgcXVlc3Rpb25UZXh0OiAnSVB2NuOBruOCueODhuODvOODiOODrOOCueOCouODieODrOOCueiHquWLleioreWumu+8iFNMQUFD77yJ44GnRVVJLTY05pa55byP44KS5L2/44GG5aC05ZCI44CB44Kk44Oz44K/44OV44Kn44O844K5SUTjgpLlsI7lh7rjgZnjgovjgZ/jgoHjgatNQUPjgqLjg4njg6zjgrnjga7kvZXjg5Pjg4Pjg4jnm67jgpLlj43ou6LjgZXjgZvjgovjgYvjgIInLFxyXG4gICAgY29ycmVjdEFuc3dlcjogJ+esrDfjg5Pjg4Pjg4jvvIhVL0zjg5Pjg4Pjg4jvvIknLFxyXG4gICAgY2hvaWNlczogWyfnrKw344OT44OD44OI77yIVS9M44OT44OD44OI77yJJywgJ+esrDHjg5Pjg4Pjg4gnLCAn56ysOOODk+ODg+ODiO+8iEkvR+ODk+ODg+ODiO+8iScsICflhajjg5Pjg4Pjg4gnXSxcclxuICAgIGlzSW1wb3J0YW50OiBmYWxzZSxcclxuICAgIGV4cGxhbmF0aW9uOiAnRVVJLTY044GvTUFD44Ki44OJ44Os44K577yINDjjg5Pjg4Pjg4jvvInjga7kuK3lpK7jgatGRkZGIEZF44KS5oy/5YWl44GX44GmNjTjg5Pjg4Pjg4jjgavjgZfjgIHlhYjpoK3jgYvjgok344OT44OD44OI55uu44GuVS9M77yIVW5pdmVyc2FsL0xvY2Fs77yJ44OT44OD44OI44KS5Y+N6Lui44GV44Gb44GmSVB2NuOCpOODs+OCv+ODleOCp+ODvOOCuUlE44KS5L2c44KL44CC44Gf44Gg44GX44OX44Op44Kk44OQ44K344O85ZWP6aGM44GL44KJ44Op44Oz44OA44OgSUTjgpLkvb/jgYbjg5fjg6njgqTjg5Djgrfjg7zmi6HlvLXvvIhSRkMgODk4Me+8ieOBjOW6g+OBj+aZruWPiuOBl+OBpuOBhOOCi+OAgicsXHJcbiAgICBkaWZmaWN1bHR5OiAzLFxyXG4gIH0sXHJcbiAge1xyXG4gICAgaWQ6ICdxLTM4MycsXHJcbiAgICB0b3BpY0lkOiAnaXB2NicsXHJcbiAgICBxdWVzdGlvblRleHQ6ICdJUHY244Gu44K544OG44O844OI44OV44Or44Ki44OJ44Os44K56Ieq5YuV6Kit5a6a44Gn5L2/55So44GV44KM44CBSVB2NuOCouODieODrOOCueODu+ODh+ODleOCqeODq+ODiOOCsuODvOODiOOCpuOCp+OCpOODu0ROU+OCteODvOODkOOBquOBqeOCkkRIQ1DjgrXjg7zjg5DjgYvjgonmiZXjgYTlh7rjgZnku5XntYTjgb/jgpJ7e2JsYW5rfX3jgajjgYTjgYbjgIInLFxyXG4gICAgY29ycmVjdEFuc3dlcjogJ0RIQ1B2NicsXHJcbiAgICBjaG9pY2VzOiBbJ0RIQ1B2NicsICdTTEFBQycsICdORFAnLCAnUkEnXSxcclxuICAgIGlzSW1wb3J0YW50OiB0cnVlLFxyXG4gICAgZXhwbGFuYXRpb246ICdESENQdjbjga9JUHY25ZCR44GR44GuREhDUOODl+ODreODiOOCs+ODq++8iFJGQyA4NDE177yJ44CCU0xBQUPjgajnlbDjgarjgopESENQ44K144O844OQ44GM566h55CG44GZ44KL44Gf44KB44CB44Ki44OJ44Os44K55Ymy44KK5b2T44Gm44Gu6L+96Leh44KE57Sw44GL44Gq5Yi25b6h44GM5Y+v6IO944CCUkHjga5N77yITWFuYWdlZO+8ieODleODqeOCsOOBjDHjga7loLTlkIjjga9ESENQdjbjgafjgqLjg4njg6zjgrnlj5blvpfjgIFP77yIT3RoZXLvvInjg5Xjg6njgrDjgYwx44Gu5aC05ZCI44GvREhDUHY244GnRE5T562J44Gu5oOF5aCx44Gu44G/5Y+W5b6X44GZ44KL44CC5rOo5oSP77yaSVB2NuOBp+OBr+ODh+ODleOCqeODq+ODiOOCsuODvOODiOOCpuOCp+OCpO+8iOaXouWumuODq+ODvOOCv++8ieOBr0RIQ1B2NuOBp+OBr+mAmuefpeOBleOCjOOBmuOAgeODq+ODvOOCv+iHqui6q+OBjOmAgeS/oeOBmeOCi1JB77yIUm91dGVyIEFkdmVydGlzZW1lbnTvvInjgafpgJrnn6XjgZXjgozjgovjgILjgZPjgozjga9JUHY044GuREhDUOOBjOOCsuODvOODiOOCpuOCp+OCpOOCguS4gOe3kuOBq+mFjeOCi+OBruOBqOeVsOOBquOCi+ODneOCpOODs+ODiOOAgicsXHJcbiAgICBkaWZmaWN1bHR5OiAyLFxyXG4gIH0sXHJcbiAgLy8g4pSA4pSAIOW+qee/kuODjuODvOODiOOBi+OCieOBrui/veijnO+8iElQdjbln7rnpI7vvIkg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSAXHJcbiAge1xyXG4gICAgaWQ6ICdxLWlwdjYtbjEnLFxyXG4gICAgdG9waWNJZDogJ2lwdjYnLFxyXG4gICAgcXVlc3Rpb25UZXh0OiAnSVB2NuOBq+OBr+ODluODreODvOODieOCreODo+OCueODiOOBjOWtmOWcqOOBm+OBmuOAgeOBneOBruS7o+OCj+OCiuOBq3t7Ymxhbmt9feOBjOeUqOOBhOOCieOCjOOCi+OAgicsXHJcbiAgICBjb3JyZWN0QW5zd2VyOiAn44Oe44Or44OB44Kt44Oj44K544OIJyxcclxuICAgIGNob2ljZXM6IFsn44Oe44Or44OB44Kt44Oj44K544OIJywgJ+OCqOODi+ODvOOCreODo+OCueODiCcsICfjg6bjg4vjgq3jg6Pjgrnjg4gnLCAn44OW44Ot44O844OJ44Kt44Oj44K544OI77yI56+E5Zuy6ZmQ5a6a77yJJ10sXHJcbiAgICBpc0ltcG9ydGFudDogdHJ1ZSxcclxuICAgIGV4cGxhbmF0aW9uOiAnSVB2NiDjgafjga8gSVB2NCDjga7jg5bjg63jg7zjg4njgq3jg6Pjgrnjg4jjga/lu4PmraLjgZXjgozjgIHku6Pjgo/jgorjgavjg57jg6vjg4Hjgq3jg6Pjgrnjg4jjgpLkvb/jgYbjgILjg6rjg7Pjgq/lhajjg47jg7zjg4njga8gZmYwMjo6MeOAgeODquODs+OCr+WFqOODq+ODvOOCv+OBryBmZjAyOjoy44CBT1NQRnYzIOOBryBmZjAyOjo144CCTkRQ77yITlMvTkHjgIFSUy9SQe+8ieOCguODnuODq+ODgeOCreODo+OCueODiOOBp+WLleS9nOOBmeOCi+OAgicsXHJcbiAgICBkaWZmaWN1bHR5OiAxLFxyXG4gIH0sXHJcbiAge1xyXG4gICAgaWQ6ICdxLWlwdjYtbjInLFxyXG4gICAgdG9waWNJZDogJ2lwdjYnLFxyXG4gICAgcXVlc3Rpb25UZXh0OiAnSVB2NuODmOODg+ODgOOBruWkp+OBjeOBleOBr3t7Ymxhbmt9feODkOOCpOODiOWbuuWumumVt+OBp+OBguOCi++8iElQdjTjga7lj6/lpInplbfjgajnlbDjgarjgovvvInjgIInLFxyXG4gICAgY29ycmVjdEFuc3dlcjogJzQwJyxcclxuICAgIGNob2ljZXM6IFsnNDAnLCAnMjAnLCAnNjAnLCAnNjQnXSxcclxuICAgIGlzSW1wb3J0YW50OiB0cnVlLFxyXG4gICAgZXhwbGFuYXRpb246ICdJUHY2IOOBruWfuuacrOODmOODg+ODgOOBryA0MCDjg5DjgqTjg4jlm7rlrprplbfjgILlj6/lpInplbfjgqrjg5fjgrfjg6fjg7Pjga/mi6HlvLXjg5jjg4Pjg4Djgaflrp/nj77jgZnjgovjgIJJUHY0IOODmOODg+ODgOOBjOacgOWwjzIw44Cc5pyA5aSnNjDjg5DjgqTjg4jjga7lj6/lpInplbfjgarjga7jgavmr5TjgbnjgIHjg6vjg7zjgr/jga7jg5jjg4Pjg4Dlh6bnkIbjgYzpq5jpgJ/ljJbjgZXjgozjgovjg6Hjg6rjg4Pjg4jjgYzjgYLjgovjgIInLFxyXG4gICAgZGlmZmljdWx0eTogMixcclxuICB9LFxyXG4gIHtcclxuICAgIGlkOiAncS1pcHY2LW4zJyxcclxuICAgIHRvcGljSWQ6ICdpcHY2JyxcclxuICAgIHF1ZXN0aW9uVGV4dDogJ0lQdjbjg5jjg4Pjg4Djgavjga9JUHY044OY44OD44OA44Gr44GC44Gj44Gfe3tibGFua31944GM5buD5q2i44GV44KM44Gm44GE44KL44CC55CG55Sx44GvIEwy77yPTDQg44Gn5qSc5p+744GM6KGM44KP44KM44KL44Gf44KB44CB44Or44O844K/5q+O44Gu5YaN6KiI566X6LKg6I2344KS5YmK5rib44GZ44KL44Gf44KB44Gn44GC44KL44CCJyxcclxuICAgIGNvcnJlY3RBbnN3ZXI6ICfjg4Hjgqfjg4Pjgq/jgrXjg6AnLFxyXG4gICAgY2hvaWNlczogWyfjg4Hjgqfjg4Pjgq/jgrXjg6AnLCAn6YCB5L+h5YWD44Ki44OJ44Os44K5JywgJ1RUTCcsICfjg5fjg63jg4jjgrPjg6vnlarlj7cnXSxcclxuICAgIGlzSW1wb3J0YW50OiBmYWxzZSxcclxuICAgIGV4cGxhbmF0aW9uOiAnSVB2NiDjg5jjg4Pjg4Djgavjga/jg4Hjgqfjg4Pjgq/jgrXjg6DjgYznhKHjgYTvvIjjgqTjg7zjgrXjg43jg4Pjg4hGQ1PjgoQgVENQL1VEUCDjg4Hjgqfjg4Pjgq/jgrXjg6Djgafku6Pmm7/vvInjgILjg5Xjg6njgrDjg6Hjg7Pjg4jljJbjga/jg6vjg7zjgr/jgafjga/ooYzjgo/jgZrjgavpgIHkv6HlhYPjga7jgb/jgYzooYzjgYbvvIjjg5HjgrlNVFXmjqLntKLvvInnrYnjgIFJUHY0IOOBi+OCiemBi+eUqOWKueeOh+OCkuS4iuOBkuOCi+ioreioiOWkieabtOOBjOWkmuaVsOOAgicsXHJcbiAgICBkaWZmaWN1bHR5OiAyLFxyXG4gIH0sXHJcbiAge1xyXG4gICAgaWQ6ICdxLWlwdjYtbjQnLFxyXG4gICAgdG9waWNJZDogJ2lwdjYnLFxyXG4gICAgcXVlc3Rpb25UZXh0OiAnSVB2NCDjgaggSVB2NiDjga7jgqLjg4njg6zjgrnkvZPns7vjga/kupLmj5vmgKfjgYznhKHjgYTjgZ/jgoHjgIHkuKHjg5fjg63jg4jjgrPjg6vjgpLlkIzkuIDjg5vjgrnjg4jjgafkvbXnlKjjgZnjgovnp7vooYzmlrnlvI/jgafjgYLjgot7e2JsYW5rfX3jgYzluoPjgY/mjqHnlKjjgZXjgozjgabjgYTjgovjgIInLFxyXG4gICAgY29ycmVjdEFuc3dlcjogJ+ODh+ODpeOCouODq+OCueOCv+ODg+OCrycsXHJcbiAgICBjaG9pY2VzOiBbJ+ODh+ODpeOCouODq+OCueOCv+ODg+OCrycsICdOQVQ2NCcsICfjg4jjg7Pjg43jg6rjg7PjgrDvvIg2dG8077yJJywgJ0RTLUxpdGUnXSxcclxuICAgIGlzSW1wb3J0YW50OiB0cnVlLFxyXG4gICAgZXhwbGFuYXRpb246ICdJUHY0IOKHlCBJUHY2IOOBruS6kuaPm+aAp+OBr+eEoeOBhOOBn+OCgeOAgeenu+ihjOacn+OBr+S4oeaWueOBruOCueOCv+ODg+OCr+OCkuWLleOBi+OBmeODh+ODpeOCouODq+OCueOCv+ODg+OCr+OBjOWfuuacrOOAgk5BVDY077yPRE5TNjQg44GvIElQdjYgb25seSDjgq/jg6njgqTjgqLjg7Pjg4jjgYvjgokgSVB2NCDjgrXjg7zjg5DjgbjjgqLjgq/jgrvjgrnjgZXjgZvjgovlpInmj5vjgIHjg4jjg7Pjg43jg6rjg7PjgrDjga8gSVB2NCDntrLotorjgZfjga4gSVB2NiDpgJrkv6HjgIInLFxyXG4gICAgZGlmZmljdWx0eTogMSxcclxuICB9LFxyXG5dXHJcbiJdfQ==

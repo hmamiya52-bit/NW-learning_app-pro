@@ -1,0 +1,4609 @@
+{
+  "viewport": "360x800 mobile emulation",
+  "routeCount": 179,
+  "issueCount": 95,
+  "results": [
+    {
+      "route": {
+        "label": "????",
+        "path": "/login",
+        "auth": false
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???",
+        "path": "/",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/"
+      },
+      "issues": [
+        {
+          "text": "午後問題演習補助",
+          "tag": "p",
+          "className": "text-[13px] sm:text-sm font-bold text-slate-800 leading-tight group-hover:text-blue-700 transition-colors truncate",
+          "selector": "section > div.grid.grid-cols-2.sm:grid-cols-3 > a.group.relative.flex > div.flex-1.min-w-0 > p.text-[13px].sm:text-sm.font-bold",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 231,
+            "y": 326,
+            "w": 102,
+            "h": 16
+          },
+          "client": {
+            "w": 102,
+            "h": 16,
+            "sw": 104,
+            "sh": 16
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        },
+        {
+          "text": "問題一覧・過去問トラッカー",
+          "tag": "p",
+          "className": "text-[10px] sm:text-[11px] text-slate-400 leading-tight truncate",
+          "selector": "section > div.grid.grid-cols-2.sm:grid-cols-3 > a.group.relative.flex > div.flex-1.min-w-0 > p.text-[10px].sm:text-[11px].text-slate-400",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 231,
+            "y": 342,
+            "w": 102,
+            "h": 13
+          },
+          "client": {
+            "w": 102,
+            "h": 13,
+            "sw": 110,
+            "sh": 13
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        },
+        {
+          "text": "コラム：間宮塾勉強論",
+          "tag": "p",
+          "className": "text-[13px] sm:text-sm font-bold text-slate-800 leading-tight group-hover:text-blue-700 transition-colors truncate",
+          "selector": "section > div.grid.grid-cols-2.sm:grid-cols-3 > a.group.relative.flex > div.flex-1.min-w-0 > p.text-[13px].sm:text-sm.font-bold",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 63,
+            "y": 381,
+            "w": 102,
+            "h": 16
+          },
+          "client": {
+            "w": 102,
+            "h": 16,
+            "sw": 122,
+            "sh": 16
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        },
+        {
+          "text": "ネスペ合格への道筋と心構え",
+          "tag": "p",
+          "className": "text-[10px] sm:text-[11px] text-slate-400 leading-tight truncate",
+          "selector": "section > div.grid.grid-cols-2.sm:grid-cols-3 > a.group.relative.flex > div.flex-1.min-w-0 > p.text-[10px].sm:text-[11px].text-slate-400",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 63,
+            "y": 397,
+            "w": 102,
+            "h": 13
+          },
+          "client": {
+            "w": 102,
+            "h": 13,
+            "sw": 114,
+            "sh": 13
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        },
+        {
+          "text": "負荷分散装置（LB）",
+          "tag": "p",
+          "className": "font-semibold text-[13px] sm:text-sm leading-tight truncate text-slate-800 group-hover:text-blue-700 transition-colors",
+          "selector": "section#categories > div.grid.grid-cols-2.sm:grid-cols-2 > a.group.relative.flex > div.pr-8 > p.font-semibold.text-[13px].sm:text-sm",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 197,
+            "y": 1002,
+            "w": 102,
+            "h": 16
+          },
+          "client": {
+            "w": 102,
+            "h": 16,
+            "sw": 121,
+            "sh": 16
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        },
+        {
+          "text": "IoT（令和7年補足）",
+          "tag": "p",
+          "className": "font-semibold text-[13px] sm:text-sm leading-tight truncate text-slate-800 group-hover:text-blue-700 transition-colors",
+          "selector": "section#categories > div.grid.grid-cols-2.sm:grid-cols-2 > a.group.relative.flex > div.pr-8 > p.font-semibold.text-[13px].sm:text-sm",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 197,
+            "y": 1696,
+            "w": 102,
+            "h": 16
+          },
+          "client": {
+            "w": 102,
+            "h": 16,
+            "sw": 123,
+            "sh": 16
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "?????",
+        "path": "/protocols",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/protocols"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "??",
+        "path": "/search",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/search"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "??",
+        "path": "/settings",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/settings"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???????",
+        "path": "/notes",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/notes"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "??",
+        "path": "/badges",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/badges"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "????",
+        "path": "/afternoon",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???",
+        "path": "/column",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/column"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???",
+        "path": "/how-to-use",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/how-to-use"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "??",
+        "path": "/history",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/history"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???:?????",
+        "path": "/quiz",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/quiz"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???:????",
+        "path": "/quiz?mode=random",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/quiz?mode=random"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???:????",
+        "path": "/quiz?mode=weakness",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/quiz?mode=weakness"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???:????",
+        "path": "/quiz?mode=important",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/quiz?mode=important"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???????:レイヤ1〜3基礎",
+        "path": "/notes/layer1-3",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/notes/layer1-3"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???????:レイヤ4,7基礎",
+        "path": "/notes/layer4-7",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/notes/layer4-7"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???????:ファイアウォール",
+        "path": "/notes/firewall",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/notes/firewall"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???????:無線LAN",
+        "path": "/notes/wireless",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/notes/wireless"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???????:ルーティング",
+        "path": "/notes/routing",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/notes/routing"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???????:VRRP",
+        "path": "/notes/vrrp",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/notes/vrrp"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???????:WAN",
+        "path": "/notes/wan",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/notes/wan"
+      },
+      "issues": [
+        {
+          "text": "負荷分散装置（LB）",
+          "tag": "span",
+          "className": "truncate",
+          "selector": "div.min-h-screen > div.max-w-3xl.mx-auto.px-4 > div.mt-6.flex.gap-3 > a.flex-1.flex.items-center > span.truncate",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 203,
+            "y": 2544,
+            "w": 102,
+            "h": 20
+          },
+          "client": {
+            "w": 102,
+            "h": 20,
+            "sw": 129,
+            "sh": 20
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "???????:負荷分散装置（LB）",
+        "path": "/notes/load-balancer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/notes/load-balancer"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???????:DHCP",
+        "path": "/notes/dhcp",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/notes/dhcp"
+      },
+      "issues": [
+        {
+          "text": "負荷分散装置（LB）",
+          "tag": "span",
+          "className": "truncate",
+          "selector": "div.min-h-screen > div.max-w-3xl.mx-auto.px-4 > div.mt-6.flex.gap-3 > a.flex-1.flex.items-center > span.truncate",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 55,
+            "y": 1967,
+            "w": 102,
+            "h": 20
+          },
+          "client": {
+            "w": 102,
+            "h": 20,
+            "sw": 129,
+            "sh": 20
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "???????:DNS",
+        "path": "/notes/dns",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/notes/dns"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???????:メール",
+        "path": "/notes/mail",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/notes/mail"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???????:音声とVoIP",
+        "path": "/notes/voip",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/notes/voip"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???????:IPsecとGRE",
+        "path": "/notes/ipsec",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/notes/ipsec"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???????:SDN",
+        "path": "/notes/sdn",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/notes/sdn"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???????:SSL/TLS・PKI",
+        "path": "/notes/ssl-tls",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/notes/ssl-tls"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???????:セキュリティ",
+        "path": "/notes/security",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/notes/security"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???????:脅威・攻撃手法",
+        "path": "/notes/threat",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/notes/threat"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???????:IPv6",
+        "path": "/notes/ipv6",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/notes/ipv6"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???????:プロキシサーバ",
+        "path": "/notes/proxy",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/notes/proxy"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???????:ネットワーク管理",
+        "path": "/notes/network-mgmt",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/notes/network-mgmt"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???????:プロトコル総復習",
+        "path": "/notes/protocol-review",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/notes/protocol-review"
+      },
+      "issues": [
+        {
+          "text": "IoT（令和7年補足）",
+          "tag": "span",
+          "className": "truncate",
+          "selector": "div.min-h-screen > div.max-w-3xl.mx-auto.px-4 > div.mt-6.flex.gap-3 > a.flex-1.flex.items-center > span.truncate",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 203,
+            "y": 7676,
+            "w": 102,
+            "h": 20
+          },
+          "client": {
+            "w": 102,
+            "h": 20,
+            "sw": 129,
+            "sh": 20
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "???????:IoT（令和7年補足）",
+        "path": "/notes/iot",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/notes/iot"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???????:レイヤ1〜3基礎",
+        "path": "/quiz?mode=topic&category=layer1-3",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/quiz?mode=topic&category=layer1-3"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???????:レイヤ4,7基礎",
+        "path": "/quiz?mode=topic&category=layer4-7",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/quiz?mode=topic&category=layer4-7"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???????:ファイアウォール",
+        "path": "/quiz?mode=topic&category=firewall",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/quiz?mode=topic&category=firewall"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???????:無線LAN",
+        "path": "/quiz?mode=topic&category=wireless",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/quiz?mode=topic&category=wireless"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???????:ルーティング",
+        "path": "/quiz?mode=topic&category=routing",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/quiz?mode=topic&category=routing"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???????:VRRP",
+        "path": "/quiz?mode=topic&category=vrrp",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/quiz?mode=topic&category=vrrp"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???????:WAN",
+        "path": "/quiz?mode=topic&category=wan",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/quiz?mode=topic&category=wan"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???????:負荷分散装置（LB）",
+        "path": "/quiz?mode=topic&category=load-balancer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/quiz?mode=topic&category=load-balancer"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???????:DHCP",
+        "path": "/quiz?mode=topic&category=dhcp",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/quiz?mode=topic&category=dhcp"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???????:DNS",
+        "path": "/quiz?mode=topic&category=dns",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/quiz?mode=topic&category=dns"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???????:メール",
+        "path": "/quiz?mode=topic&category=mail",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/quiz?mode=topic&category=mail"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???????:音声とVoIP",
+        "path": "/quiz?mode=topic&category=voip",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/quiz?mode=topic&category=voip"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???????:IPsecとGRE",
+        "path": "/quiz?mode=topic&category=ipsec",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/quiz?mode=topic&category=ipsec"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???????:SDN",
+        "path": "/quiz?mode=topic&category=sdn",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/quiz?mode=topic&category=sdn"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???????:SSL/TLS・PKI",
+        "path": "/quiz?mode=topic&category=ssl-tls",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/quiz?mode=topic&category=ssl-tls"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???????:セキュリティ",
+        "path": "/quiz?mode=topic&category=security",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/quiz?mode=topic&category=security"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???????:脅威・攻撃手法",
+        "path": "/quiz?mode=topic&category=threat",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/quiz?mode=topic&category=threat"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???????:IPv6",
+        "path": "/quiz?mode=topic&category=ipv6",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/quiz?mode=topic&category=ipv6"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???????:プロキシサーバ",
+        "path": "/quiz?mode=topic&category=proxy",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/quiz?mode=topic&category=proxy"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???????:ネットワーク管理",
+        "path": "/quiz?mode=topic&category=network-mgmt",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/quiz?mode=topic&category=network-mgmt"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???????:プロトコル総復習",
+        "path": "/quiz?mode=topic&category=protocol-review",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/quiz?mode=topic&category=protocol-review"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???????:IoT（令和7年補足）",
+        "path": "/quiz?mode=topic&category=iot",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/quiz?mode=topic&category=iot"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "????:R7-G1-1",
+        "path": "/afternoon/answers/R7-G1-1",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R7-G1-1"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "?????:R7-G1-1",
+        "path": "/afternoon/answers/R7-G1-1/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R7-G1-1/myAnswer"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "????:R7-G1-2",
+        "path": "/afternoon/answers/R7-G1-2",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R7-G1-2"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "?????:R7-G1-2",
+        "path": "/afternoon/answers/R7-G1-2/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R7-G1-2/myAnswer"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "????:R7-G1-3",
+        "path": "/afternoon/answers/R7-G1-3",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R7-G1-3"
+      },
+      "issues": [
+        {
+          "text": "セキュアWebゲートウェイの導入",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-indigo-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 151,
+            "y": 77,
+            "w": 127,
+            "h": 19
+          },
+          "client": {
+            "w": 127,
+            "h": 19,
+            "sw": 184,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "?????:R7-G1-3",
+        "path": "/afternoon/answers/R7-G1-3/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R7-G1-3/myAnswer"
+      },
+      "issues": [
+        {
+          "text": "セキュアWebゲートウェイの導入",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-teal-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 151,
+            "y": 77,
+            "w": 127,
+            "h": 19
+          },
+          "client": {
+            "w": 127,
+            "h": 19,
+            "sw": 184,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "????:R7-G2-1",
+        "path": "/afternoon/answers/R7-G2-1",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R7-G2-1"
+      },
+      "issues": [
+        {
+          "text": "社内ネットワークのIPv6対応",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-indigo-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 151,
+            "y": 77,
+            "w": 127,
+            "h": 19
+          },
+          "client": {
+            "w": 127,
+            "h": 19,
+            "sw": 170,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "?????:R7-G2-1",
+        "path": "/afternoon/answers/R7-G2-1/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R7-G2-1/myAnswer"
+      },
+      "issues": [
+        {
+          "text": "社内ネットワークのIPv6対応",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-teal-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 151,
+            "y": 77,
+            "w": 127,
+            "h": 19
+          },
+          "client": {
+            "w": 127,
+            "h": 19,
+            "sw": 170,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "????:R7-G2-2",
+        "path": "/afternoon/answers/R7-G2-2",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R7-G2-2"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "?????:R7-G2-2",
+        "path": "/afternoon/answers/R7-G2-2/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R7-G2-2/myAnswer"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "????:R6-G1-1",
+        "path": "/afternoon/answers/R6-G1-1",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R6-G1-1"
+      },
+      "issues": [
+        {
+          "text": "コンテンツ配信ネットワーク",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-indigo-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 151,
+            "y": 77,
+            "w": 127,
+            "h": 19
+          },
+          "client": {
+            "w": 127,
+            "h": 19,
+            "sw": 149,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "?????:R6-G1-1",
+        "path": "/afternoon/answers/R6-G1-1/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R6-G1-1/myAnswer"
+      },
+      "issues": [
+        {
+          "text": "コンテンツ配信ネットワーク",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-teal-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 151,
+            "y": 77,
+            "w": 127,
+            "h": 19
+          },
+          "client": {
+            "w": 127,
+            "h": 19,
+            "sw": 149,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "????:R6-G1-2",
+        "path": "/afternoon/answers/R6-G1-2",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R6-G1-2"
+      },
+      "issues": [
+        {
+          "text": "SD-WANによる拠点接続",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-indigo-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 151,
+            "y": 77,
+            "w": 127,
+            "h": 19
+          },
+          "client": {
+            "w": 127,
+            "h": 19,
+            "sw": 153,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "?????:R6-G1-2",
+        "path": "/afternoon/answers/R6-G1-2/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R6-G1-2/myAnswer"
+      },
+      "issues": [
+        {
+          "text": "SD-WANによる拠点接続",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-teal-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 151,
+            "y": 77,
+            "w": 127,
+            "h": 19
+          },
+          "client": {
+            "w": 127,
+            "h": 19,
+            "sw": 153,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "????:R6-G1-3",
+        "path": "/afternoon/answers/R6-G1-3",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R6-G1-3"
+      },
+      "issues": [
+        {
+          "text": "ローカルブレイクアウトによる負荷軽減",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-indigo-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 151,
+            "y": 77,
+            "w": 127,
+            "h": 19
+          },
+          "client": {
+            "w": 127,
+            "h": 19,
+            "sw": 217,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "?????:R6-G1-3",
+        "path": "/afternoon/answers/R6-G1-3/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R6-G1-3/myAnswer"
+      },
+      "issues": [
+        {
+          "text": "ローカルブレイクアウトによる負荷軽減",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-teal-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 151,
+            "y": 77,
+            "w": 127,
+            "h": 19
+          },
+          "client": {
+            "w": 127,
+            "h": 19,
+            "sw": 217,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "????:R6-G2-1",
+        "path": "/afternoon/answers/R6-G2-1",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R6-G2-1"
+      },
+      "issues": [
+        {
+          "text": "データセンターのネットワークの検討",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-indigo-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 151,
+            "y": 77,
+            "w": 127,
+            "h": 19
+          },
+          "client": {
+            "w": 127,
+            "h": 19,
+            "sw": 201,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "?????:R6-G2-1",
+        "path": "/afternoon/answers/R6-G2-1/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R6-G2-1/myAnswer"
+      },
+      "issues": [
+        {
+          "text": "データセンターのネットワークの検討",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-teal-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 151,
+            "y": 77,
+            "w": 127,
+            "h": 19
+          },
+          "client": {
+            "w": 127,
+            "h": 19,
+            "sw": 201,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "????:R6-G2-2",
+        "path": "/afternoon/answers/R6-G2-2",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R6-G2-2"
+      },
+      "issues": [
+        {
+          "text": "電子メールを用いた製品サポート",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-indigo-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 151,
+            "y": 77,
+            "w": 127,
+            "h": 19
+          },
+          "client": {
+            "w": 127,
+            "h": 19,
+            "sw": 187,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "?????:R6-G2-2",
+        "path": "/afternoon/answers/R6-G2-2/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R6-G2-2/myAnswer"
+      },
+      "issues": [
+        {
+          "text": "電子メールを用いた製品サポート",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-teal-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 151,
+            "y": 77,
+            "w": 127,
+            "h": 19
+          },
+          "client": {
+            "w": 127,
+            "h": 19,
+            "sw": 187,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "????:R5-G1-1",
+        "path": "/afternoon/answers/R5-G1-1",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R5-G1-1"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "?????:R5-G1-1",
+        "path": "/afternoon/answers/R5-G1-1/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R5-G1-1/myAnswer"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "????:R5-G1-2",
+        "path": "/afternoon/answers/R5-G1-2",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R5-G1-2"
+      },
+      "issues": [
+        {
+          "text": "IPマルチキャストによる映像配信の導入",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-indigo-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 151,
+            "y": 77,
+            "w": 127,
+            "h": 19
+          },
+          "client": {
+            "w": 127,
+            "h": 19,
+            "sw": 225,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "?????:R5-G1-2",
+        "path": "/afternoon/answers/R5-G1-2/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R5-G1-2/myAnswer"
+      },
+      "issues": [
+        {
+          "text": "IPマルチキャストによる映像配信の導入",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-teal-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 151,
+            "y": 77,
+            "w": 127,
+            "h": 19
+          },
+          "client": {
+            "w": 127,
+            "h": 19,
+            "sw": 225,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "????:R5-G1-3",
+        "path": "/afternoon/answers/R5-G1-3",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R5-G1-3"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "?????:R5-G1-3",
+        "path": "/afternoon/answers/R5-G1-3/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R5-G1-3/myAnswer"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "????:R5-G2-1",
+        "path": "/afternoon/answers/R5-G2-1",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R5-G2-1"
+      },
+      "issues": [
+        {
+          "text": "マルチクラウド利用による可用性の向上",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-indigo-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 151,
+            "y": 77,
+            "w": 127,
+            "h": 19
+          },
+          "client": {
+            "w": 127,
+            "h": 19,
+            "sw": 224,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "?????:R5-G2-1",
+        "path": "/afternoon/answers/R5-G2-1/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R5-G2-1/myAnswer"
+      },
+      "issues": [
+        {
+          "text": "マルチクラウド利用による可用性の向上",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-teal-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 151,
+            "y": 77,
+            "w": 127,
+            "h": 19
+          },
+          "client": {
+            "w": 127,
+            "h": 19,
+            "sw": 224,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "????:R5-G2-2",
+        "path": "/afternoon/answers/R5-G2-2",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R5-G2-2"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "?????:R5-G2-2",
+        "path": "/afternoon/answers/R5-G2-2/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R5-G2-2/myAnswer"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "????:R4-G1-1",
+        "path": "/afternoon/answers/R4-G1-1",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R4-G1-1"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "?????:R4-G1-1",
+        "path": "/afternoon/answers/R4-G1-1/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R4-G1-1/myAnswer"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "????:R4-G1-2",
+        "path": "/afternoon/answers/R4-G1-2",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R4-G1-2"
+      },
+      "issues": [
+        {
+          "text": "セキュアゲートウェイサービスの導入",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-indigo-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 151,
+            "y": 77,
+            "w": 127,
+            "h": 19
+          },
+          "client": {
+            "w": 127,
+            "h": 19,
+            "sw": 198,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "?????:R4-G1-2",
+        "path": "/afternoon/answers/R4-G1-2/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R4-G1-2/myAnswer"
+      },
+      "issues": [
+        {
+          "text": "セキュアゲートウェイサービスの導入",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-teal-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 151,
+            "y": 77,
+            "w": 127,
+            "h": 19
+          },
+          "client": {
+            "w": 127,
+            "h": 19,
+            "sw": 198,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "????:R4-G1-3",
+        "path": "/afternoon/answers/R4-G1-3",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R4-G1-3"
+      },
+      "issues": [
+        {
+          "text": "シングルサインオンの導入",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-indigo-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 151,
+            "y": 77,
+            "w": 127,
+            "h": 19
+          },
+          "client": {
+            "w": 127,
+            "h": 19,
+            "sw": 143,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "?????:R4-G1-3",
+        "path": "/afternoon/answers/R4-G1-3/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R4-G1-3/myAnswer"
+      },
+      "issues": [
+        {
+          "text": "シングルサインオンの導入",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-teal-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 151,
+            "y": 77,
+            "w": 127,
+            "h": 19
+          },
+          "client": {
+            "w": 127,
+            "h": 19,
+            "sw": 143,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "????:R4-G2-1",
+        "path": "/afternoon/answers/R4-G2-1",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R4-G2-1"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "?????:R4-G2-1",
+        "path": "/afternoon/answers/R4-G2-1/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R4-G2-1/myAnswer"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "????:R4-G2-2",
+        "path": "/afternoon/answers/R4-G2-2",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R4-G2-2"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "?????:R4-G2-2",
+        "path": "/afternoon/answers/R4-G2-2/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R4-G2-2/myAnswer"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "????:R3-G1-1",
+        "path": "/afternoon/answers/R3-G1-1",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R3-G1-1"
+      },
+      "issues": [
+        {
+          "text": "ネットワーク運用管理の自動化",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-indigo-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 151,
+            "y": 77,
+            "w": 127,
+            "h": 19
+          },
+          "client": {
+            "w": 127,
+            "h": 19,
+            "sw": 177,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "?????:R3-G1-1",
+        "path": "/afternoon/answers/R3-G1-1/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R3-G1-1/myAnswer"
+      },
+      "issues": [
+        {
+          "text": "ネットワーク運用管理の自動化",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-teal-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 151,
+            "y": 77,
+            "w": 127,
+            "h": 19
+          },
+          "client": {
+            "w": 127,
+            "h": 19,
+            "sw": 177,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "????:R3-G1-2",
+        "path": "/afternoon/answers/R3-G1-2",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R3-G1-2"
+      },
+      "issues": [
+        {
+          "text": "企業ネットワークの統合",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-indigo-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 151,
+            "y": 77,
+            "w": 127,
+            "h": 19
+          },
+          "client": {
+            "w": 127,
+            "h": 19,
+            "sw": 135,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "?????:R3-G1-2",
+        "path": "/afternoon/answers/R3-G1-2/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R3-G1-2/myAnswer"
+      },
+      "issues": [
+        {
+          "text": "企業ネットワークの統合",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-teal-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 151,
+            "y": 77,
+            "w": 127,
+            "h": 19
+          },
+          "client": {
+            "w": 127,
+            "h": 19,
+            "sw": 135,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "????:R3-G1-3",
+        "path": "/afternoon/answers/R3-G1-3",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R3-G1-3"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "?????:R3-G1-3",
+        "path": "/afternoon/answers/R3-G1-3/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R3-G1-3/myAnswer"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "????:R3-G2-1",
+        "path": "/afternoon/answers/R3-G2-1",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R3-G2-1"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "?????:R3-G2-1",
+        "path": "/afternoon/answers/R3-G2-1/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R3-G2-1/myAnswer"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "????:R3-G2-2",
+        "path": "/afternoon/answers/R3-G2-2",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R3-G2-2"
+      },
+      "issues": [
+        {
+          "text": "インターネット接続環境の更改",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-indigo-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 151,
+            "y": 77,
+            "w": 127,
+            "h": 19
+          },
+          "client": {
+            "w": 127,
+            "h": 19,
+            "sw": 174,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "?????:R3-G2-2",
+        "path": "/afternoon/answers/R3-G2-2/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R3-G2-2/myAnswer"
+      },
+      "issues": [
+        {
+          "text": "インターネット接続環境の更改",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-teal-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 151,
+            "y": 77,
+            "w": 127,
+            "h": 19
+          },
+          "client": {
+            "w": 127,
+            "h": 19,
+            "sw": 174,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "????:R1-G1-1",
+        "path": "/afternoon/answers/R1-G1-1",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R1-G1-1"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "?????:R1-G1-1",
+        "path": "/afternoon/answers/R1-G1-1/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R1-G1-1/myAnswer"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "????:R1-G1-2",
+        "path": "/afternoon/answers/R1-G1-2",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R1-G1-2"
+      },
+      "issues": [
+        {
+          "text": "Webシステムの構成変更",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-indigo-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 151,
+            "y": 77,
+            "w": 127,
+            "h": 19
+          },
+          "client": {
+            "w": 127,
+            "h": 19,
+            "sw": 146,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "?????:R1-G1-2",
+        "path": "/afternoon/answers/R1-G1-2/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R1-G1-2/myAnswer"
+      },
+      "issues": [
+        {
+          "text": "Webシステムの構成変更",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-teal-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 151,
+            "y": 77,
+            "w": 127,
+            "h": 19
+          },
+          "client": {
+            "w": 127,
+            "h": 19,
+            "sw": 146,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "????:R1-G1-3",
+        "path": "/afternoon/answers/R1-G1-3",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R1-G1-3"
+      },
+      "issues": [
+        {
+          "text": "LANのセキュリティ対策",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-indigo-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 151,
+            "y": 77,
+            "w": 127,
+            "h": 19
+          },
+          "client": {
+            "w": 127,
+            "h": 19,
+            "sw": 134,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "?????:R1-G1-3",
+        "path": "/afternoon/answers/R1-G1-3/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R1-G1-3/myAnswer"
+      },
+      "issues": [
+        {
+          "text": "LANのセキュリティ対策",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-teal-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 151,
+            "y": 77,
+            "w": 127,
+            "h": 19
+          },
+          "client": {
+            "w": 127,
+            "h": 19,
+            "sw": 134,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "????:R1-G2-1",
+        "path": "/afternoon/answers/R1-G2-1",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R1-G2-1"
+      },
+      "issues": [
+        {
+          "text": "クラウドサービスへの移行",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-indigo-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 151,
+            "y": 77,
+            "w": 127,
+            "h": 19
+          },
+          "client": {
+            "w": 127,
+            "h": 19,
+            "sw": 142,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "?????:R1-G2-1",
+        "path": "/afternoon/answers/R1-G2-1/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R1-G2-1/myAnswer"
+      },
+      "issues": [
+        {
+          "text": "クラウドサービスへの移行",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-teal-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 151,
+            "y": 77,
+            "w": 127,
+            "h": 19
+          },
+          "client": {
+            "w": 127,
+            "h": 19,
+            "sw": 142,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "????:R1-G2-2",
+        "path": "/afternoon/answers/R1-G2-2",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R1-G2-2"
+      },
+      "issues": [
+        {
+          "text": "ネットワークのセキュリティ対策",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-indigo-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 151,
+            "y": 77,
+            "w": 127,
+            "h": 19
+          },
+          "client": {
+            "w": 127,
+            "h": 19,
+            "sw": 171,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "?????:R1-G2-2",
+        "path": "/afternoon/answers/R1-G2-2/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/R1-G2-2/myAnswer"
+      },
+      "issues": [
+        {
+          "text": "ネットワークのセキュリティ対策",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-teal-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 151,
+            "y": 77,
+            "w": 127,
+            "h": 19
+          },
+          "client": {
+            "w": 127,
+            "h": 19,
+            "sw": 171,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "????:H26-G1-1",
+        "path": "/afternoon/answers/H26-G1-1",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H26-G1-1"
+      },
+      "issues": [
+        {
+          "text": "ネットワーク構成の見直し",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-indigo-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 159,
+            "y": 77,
+            "w": 119,
+            "h": 19
+          },
+          "client": {
+            "w": 119,
+            "h": 19,
+            "sw": 146,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "?????:H26-G1-1",
+        "path": "/afternoon/answers/H26-G1-1/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H26-G1-1/myAnswer"
+      },
+      "issues": [
+        {
+          "text": "ネットワーク構成の見直し",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-teal-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 159,
+            "y": 77,
+            "w": 119,
+            "h": 19
+          },
+          "client": {
+            "w": 119,
+            "h": 19,
+            "sw": 146,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "????:H26-G1-2",
+        "path": "/afternoon/answers/H26-G1-2",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H26-G1-2"
+      },
+      "issues": [
+        {
+          "text": "ファイアウォールの障害対応",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-indigo-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 159,
+            "y": 77,
+            "w": 119,
+            "h": 19
+          },
+          "client": {
+            "w": 119,
+            "h": 19,
+            "sw": 157,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "?????:H26-G1-2",
+        "path": "/afternoon/answers/H26-G1-2/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H26-G1-2/myAnswer"
+      },
+      "issues": [
+        {
+          "text": "ファイアウォールの障害対応",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-teal-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 159,
+            "y": 77,
+            "w": 119,
+            "h": 19
+          },
+          "client": {
+            "w": 119,
+            "h": 19,
+            "sw": 157,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "????:H26-G1-3",
+        "path": "/afternoon/answers/H26-G1-3",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H26-G1-3"
+      },
+      "issues": [
+        {
+          "text": "ネットワークのセキュリティ対策",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-indigo-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 159,
+            "y": 77,
+            "w": 119,
+            "h": 19
+          },
+          "client": {
+            "w": 119,
+            "h": 19,
+            "sw": 171,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "?????:H26-G1-3",
+        "path": "/afternoon/answers/H26-G1-3/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H26-G1-3/myAnswer"
+      },
+      "issues": [
+        {
+          "text": "ネットワークのセキュリティ対策",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-teal-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 159,
+            "y": 77,
+            "w": 119,
+            "h": 19
+          },
+          "client": {
+            "w": 119,
+            "h": 19,
+            "sw": 171,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "????:H26-G2-1",
+        "path": "/afternoon/answers/H26-G2-1",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H26-G2-1"
+      },
+      "issues": [
+        {
+          "text": "標的型メール攻撃への対策",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-indigo-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 159,
+            "y": 77,
+            "w": 119,
+            "h": 19
+          },
+          "client": {
+            "w": 119,
+            "h": 19,
+            "sw": 158,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "?????:H26-G2-1",
+        "path": "/afternoon/answers/H26-G2-1/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H26-G2-1/myAnswer"
+      },
+      "issues": [
+        {
+          "text": "標的型メール攻撃への対策",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-teal-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 159,
+            "y": 77,
+            "w": 119,
+            "h": 19
+          },
+          "client": {
+            "w": 119,
+            "h": 19,
+            "sw": 158,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "????:H26-G2-2",
+        "path": "/afternoon/answers/H26-G2-2",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H26-G2-2"
+      },
+      "issues": [
+        {
+          "text": "IPテレフォニーシステムの導入",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-indigo-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 159,
+            "y": 77,
+            "w": 119,
+            "h": 19
+          },
+          "client": {
+            "w": 119,
+            "h": 19,
+            "sw": 168,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "?????:H26-G2-2",
+        "path": "/afternoon/answers/H26-G2-2/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H26-G2-2/myAnswer"
+      },
+      "issues": [
+        {
+          "text": "IPテレフォニーシステムの導入",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-teal-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 159,
+            "y": 77,
+            "w": 119,
+            "h": 19
+          },
+          "client": {
+            "w": 119,
+            "h": 19,
+            "sw": 168,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "????:H25-G1-1",
+        "path": "/afternoon/answers/H25-G1-1",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H25-G1-1"
+      },
+      "issues": [
+        {
+          "text": "リモート接続ネットワークの検討",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-indigo-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 159,
+            "y": 77,
+            "w": 119,
+            "h": 19
+          },
+          "client": {
+            "w": 119,
+            "h": 19,
+            "sw": 179,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "?????:H25-G1-1",
+        "path": "/afternoon/answers/H25-G1-1/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H25-G1-1/myAnswer"
+      },
+      "issues": [
+        {
+          "text": "リモート接続ネットワークの検討",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-teal-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 159,
+            "y": 77,
+            "w": 119,
+            "h": 19
+          },
+          "client": {
+            "w": 119,
+            "h": 19,
+            "sw": 179,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "????:H25-G1-2",
+        "path": "/afternoon/answers/H25-G1-2",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H25-G1-2"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "?????:H25-G1-2",
+        "path": "/afternoon/answers/H25-G1-2/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H25-G1-2/myAnswer"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "????:H25-G1-3",
+        "path": "/afternoon/answers/H25-G1-3",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H25-G1-3"
+      },
+      "issues": [
+        {
+          "text": "ネットワークの再構築",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-indigo-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 159,
+            "y": 77,
+            "w": 119,
+            "h": 19
+          },
+          "client": {
+            "w": 119,
+            "h": 19,
+            "sw": 121,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "?????:H25-G1-3",
+        "path": "/afternoon/answers/H25-G1-3/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H25-G1-3/myAnswer"
+      },
+      "issues": [
+        {
+          "text": "ネットワークの再構築",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-teal-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 159,
+            "y": 77,
+            "w": 119,
+            "h": 19
+          },
+          "client": {
+            "w": 119,
+            "h": 19,
+            "sw": 121,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "????:H25-G2-1",
+        "path": "/afternoon/answers/H25-G2-1",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H25-G2-1"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "?????:H25-G2-1",
+        "path": "/afternoon/answers/H25-G2-1/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H25-G2-1/myAnswer"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "????:H25-G2-2",
+        "path": "/afternoon/answers/H25-G2-2",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H25-G2-2"
+      },
+      "issues": [
+        {
+          "text": "開発システムの再構築",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-indigo-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 159,
+            "y": 77,
+            "w": 119,
+            "h": 19
+          },
+          "client": {
+            "w": 119,
+            "h": 19,
+            "sw": 128,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "?????:H25-G2-2",
+        "path": "/afternoon/answers/H25-G2-2/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H25-G2-2/myAnswer"
+      },
+      "issues": [
+        {
+          "text": "開発システムの再構築",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-teal-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 159,
+            "y": 77,
+            "w": 119,
+            "h": 19
+          },
+          "client": {
+            "w": 119,
+            "h": 19,
+            "sw": 128,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "????:H30-G1-1",
+        "path": "/afternoon/answers/H30-G1-1",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H30-G1-1"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "?????:H30-G1-1",
+        "path": "/afternoon/answers/H30-G1-1/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H30-G1-1/myAnswer"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "????:H30-G1-2",
+        "path": "/afternoon/answers/H30-G1-2",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H30-G1-2"
+      },
+      "issues": [
+        {
+          "text": "ネットワーク監視の改善",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-indigo-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 159,
+            "y": 77,
+            "w": 119,
+            "h": 19
+          },
+          "client": {
+            "w": 119,
+            "h": 19,
+            "sw": 135,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "?????:H30-G1-2",
+        "path": "/afternoon/answers/H30-G1-2/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H30-G1-2/myAnswer"
+      },
+      "issues": [
+        {
+          "text": "ネットワーク監視の改善",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-teal-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 159,
+            "y": 77,
+            "w": 119,
+            "h": 19
+          },
+          "client": {
+            "w": 119,
+            "h": 19,
+            "sw": 135,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "????:H30-G1-3",
+        "path": "/afternoon/answers/H30-G1-3",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H30-G1-3"
+      },
+      "issues": [
+        {
+          "text": "企業内ネットワーク再構築",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-indigo-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 159,
+            "y": 77,
+            "w": 119,
+            "h": 19
+          },
+          "client": {
+            "w": 119,
+            "h": 19,
+            "sw": 150,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "?????:H30-G1-3",
+        "path": "/afternoon/answers/H30-G1-3/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H30-G1-3/myAnswer"
+      },
+      "issues": [
+        {
+          "text": "企業内ネットワーク再構築",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-teal-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 159,
+            "y": 77,
+            "w": 119,
+            "h": 19
+          },
+          "client": {
+            "w": 119,
+            "h": 19,
+            "sw": 150,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "????:H30-G2-1",
+        "path": "/afternoon/answers/H30-G2-1",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H30-G2-1"
+      },
+      "issues": [
+        {
+          "text": "ネットワークシステムの設計",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-indigo-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 159,
+            "y": 77,
+            "w": 119,
+            "h": 19
+          },
+          "client": {
+            "w": 119,
+            "h": 19,
+            "sw": 153,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "?????:H30-G2-1",
+        "path": "/afternoon/answers/H30-G2-1/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H30-G2-1/myAnswer"
+      },
+      "issues": [
+        {
+          "text": "ネットワークシステムの設計",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-teal-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 159,
+            "y": 77,
+            "w": 119,
+            "h": 19
+          },
+          "client": {
+            "w": 119,
+            "h": 19,
+            "sw": 153,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "????:H30-G2-2",
+        "path": "/afternoon/answers/H30-G2-2",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H30-G2-2"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "?????:H30-G2-2",
+        "path": "/afternoon/answers/H30-G2-2/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H30-G2-2/myAnswer"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "????:H29-G1-1",
+        "path": "/afternoon/answers/H29-G1-1",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H29-G1-1"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "?????:H29-G1-1",
+        "path": "/afternoon/answers/H29-G1-1/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H29-G1-1/myAnswer"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "????:H29-G1-2",
+        "path": "/afternoon/answers/H29-G1-2",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H29-G1-2"
+      },
+      "issues": [
+        {
+          "text": "仮想デスクトップ基盤の導入",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-indigo-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 159,
+            "y": 77,
+            "w": 119,
+            "h": 19
+          },
+          "client": {
+            "w": 119,
+            "h": 19,
+            "sw": 163,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "?????:H29-G1-2",
+        "path": "/afternoon/answers/H29-G1-2/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H29-G1-2/myAnswer"
+      },
+      "issues": [
+        {
+          "text": "仮想デスクトップ基盤の導入",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-teal-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 159,
+            "y": 77,
+            "w": 119,
+            "h": 19
+          },
+          "client": {
+            "w": 119,
+            "h": 19,
+            "sw": 163,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "????:H29-G1-3",
+        "path": "/afternoon/answers/H29-G1-3",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H29-G1-3"
+      },
+      "issues": [
+        {
+          "text": "社内ネットワークとクラウドとの接続",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-indigo-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 159,
+            "y": 77,
+            "w": 119,
+            "h": 19
+          },
+          "client": {
+            "w": 119,
+            "h": 19,
+            "sw": 199,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "?????:H29-G1-3",
+        "path": "/afternoon/answers/H29-G1-3/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H29-G1-3/myAnswer"
+      },
+      "issues": [
+        {
+          "text": "社内ネットワークとクラウドとの接続",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-teal-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 159,
+            "y": 77,
+            "w": 119,
+            "h": 19
+          },
+          "client": {
+            "w": 119,
+            "h": 19,
+            "sw": 199,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "????:H29-G2-1",
+        "path": "/afternoon/answers/H29-G2-1",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H29-G2-1"
+      },
+      "issues": [
+        {
+          "text": "SDNとクラウドの活用",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-indigo-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 159,
+            "y": 77,
+            "w": 119,
+            "h": 19
+          },
+          "client": {
+            "w": 119,
+            "h": 19,
+            "sw": 127,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "?????:H29-G2-1",
+        "path": "/afternoon/answers/H29-G2-1/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H29-G2-1/myAnswer"
+      },
+      "issues": [
+        {
+          "text": "SDNとクラウドの活用",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-teal-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 159,
+            "y": 77,
+            "w": 119,
+            "h": 19
+          },
+          "client": {
+            "w": 119,
+            "h": 19,
+            "sw": 127,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "????:H29-G2-2",
+        "path": "/afternoon/answers/H29-G2-2",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H29-G2-2"
+      },
+      "issues": [
+        {
+          "text": "無線LANシステムの導入",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-indigo-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 159,
+            "y": 77,
+            "w": 119,
+            "h": 19
+          },
+          "client": {
+            "w": 119,
+            "h": 19,
+            "sw": 144,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "?????:H29-G2-2",
+        "path": "/afternoon/answers/H29-G2-2/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H29-G2-2/myAnswer"
+      },
+      "issues": [
+        {
+          "text": "無線LANシステムの導入",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-teal-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 159,
+            "y": 77,
+            "w": 119,
+            "h": 19
+          },
+          "client": {
+            "w": 119,
+            "h": 19,
+            "sw": 144,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "????:H28-G1-1",
+        "path": "/afternoon/answers/H28-G1-1",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H28-G1-1"
+      },
+      "issues": [
+        {
+          "text": "IP電話システムの再構築",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-indigo-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 159,
+            "y": 77,
+            "w": 119,
+            "h": 19
+          },
+          "client": {
+            "w": 119,
+            "h": 19,
+            "sw": 145,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "?????:H28-G1-1",
+        "path": "/afternoon/answers/H28-G1-1/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H28-G1-1/myAnswer"
+      },
+      "issues": [
+        {
+          "text": "IP電話システムの再構築",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-teal-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 159,
+            "y": 77,
+            "w": 119,
+            "h": 19
+          },
+          "client": {
+            "w": 119,
+            "h": 19,
+            "sw": 145,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "????:H28-G1-2",
+        "path": "/afternoon/answers/H28-G1-2",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H28-G1-2"
+      },
+      "issues": [
+        {
+          "text": "インターネット接続の見直し",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-indigo-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 159,
+            "y": 77,
+            "w": 119,
+            "h": 19
+          },
+          "client": {
+            "w": 119,
+            "h": 19,
+            "sw": 156,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "?????:H28-G1-2",
+        "path": "/afternoon/answers/H28-G1-2/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H28-G1-2/myAnswer"
+      },
+      "issues": [
+        {
+          "text": "インターネット接続の見直し",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-teal-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 159,
+            "y": 77,
+            "w": 119,
+            "h": 19
+          },
+          "client": {
+            "w": 119,
+            "h": 19,
+            "sw": 156,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "????:H28-G1-3",
+        "path": "/afternoon/answers/H28-G1-3",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H28-G1-3"
+      },
+      "issues": [
+        {
+          "text": "ネットワーク運用管理",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-indigo-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 159,
+            "y": 77,
+            "w": 119,
+            "h": 19
+          },
+          "client": {
+            "w": 119,
+            "h": 19,
+            "sw": 122,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "?????:H28-G1-3",
+        "path": "/afternoon/answers/H28-G1-3/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H28-G1-3/myAnswer"
+      },
+      "issues": [
+        {
+          "text": "ネットワーク運用管理",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-teal-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 159,
+            "y": 77,
+            "w": 119,
+            "h": 19
+          },
+          "client": {
+            "w": 119,
+            "h": 19,
+            "sw": 122,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "????:H28-G2-1",
+        "path": "/afternoon/answers/H28-G2-1",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H28-G2-1"
+      },
+      "issues": [
+        {
+          "text": "企業ネットワークの拡張",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-indigo-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 159,
+            "y": 77,
+            "w": 119,
+            "h": 19
+          },
+          "client": {
+            "w": 119,
+            "h": 19,
+            "sw": 135,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "?????:H28-G2-1",
+        "path": "/afternoon/answers/H28-G2-1/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H28-G2-1/myAnswer"
+      },
+      "issues": [
+        {
+          "text": "企業ネットワークの拡張",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-teal-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 159,
+            "y": 77,
+            "w": 119,
+            "h": 19
+          },
+          "client": {
+            "w": 119,
+            "h": 19,
+            "sw": 135,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "????:H28-G2-2",
+        "path": "/afternoon/answers/H28-G2-2",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H28-G2-2"
+      },
+      "issues": [
+        {
+          "text": "データセンタのネットワーク設計",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-indigo-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 159,
+            "y": 77,
+            "w": 119,
+            "h": 19
+          },
+          "client": {
+            "w": 119,
+            "h": 19,
+            "sw": 176,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "?????:H28-G2-2",
+        "path": "/afternoon/answers/H28-G2-2/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H28-G2-2/myAnswer"
+      },
+      "issues": [
+        {
+          "text": "データセンタのネットワーク設計",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-teal-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 159,
+            "y": 77,
+            "w": 119,
+            "h": 19
+          },
+          "client": {
+            "w": 119,
+            "h": 19,
+            "sw": 176,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "????:H27-G1-1",
+        "path": "/afternoon/answers/H27-G1-1",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H27-G1-1"
+      },
+      "issues": [
+        {
+          "text": "シングルサインオンの導入",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-indigo-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 159,
+            "y": 77,
+            "w": 119,
+            "h": 19
+          },
+          "client": {
+            "w": 119,
+            "h": 19,
+            "sw": 143,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "?????:H27-G1-1",
+        "path": "/afternoon/answers/H27-G1-1/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H27-G1-1/myAnswer"
+      },
+      "issues": [
+        {
+          "text": "シングルサインオンの導入",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-teal-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 159,
+            "y": 77,
+            "w": 119,
+            "h": 19
+          },
+          "client": {
+            "w": 119,
+            "h": 19,
+            "sw": 143,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "????:H27-G1-2",
+        "path": "/afternoon/answers/H27-G1-2",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H27-G1-2"
+      },
+      "issues": [
+        {
+          "text": "ファイアウォールの負荷分散",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-indigo-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 159,
+            "y": 77,
+            "w": 119,
+            "h": 19
+          },
+          "client": {
+            "w": 119,
+            "h": 19,
+            "sw": 157,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "?????:H27-G1-2",
+        "path": "/afternoon/answers/H27-G1-2/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H27-G1-2/myAnswer"
+      },
+      "issues": [
+        {
+          "text": "ファイアウォールの負荷分散",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-teal-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 159,
+            "y": 77,
+            "w": 119,
+            "h": 19
+          },
+          "client": {
+            "w": 119,
+            "h": 19,
+            "sw": 157,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "????:H27-G1-3",
+        "path": "/afternoon/answers/H27-G1-3",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H27-G1-3"
+      },
+      "issues": [
+        {
+          "text": "侵入検知・防御システムの導入",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-indigo-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 159,
+            "y": 77,
+            "w": 119,
+            "h": 19
+          },
+          "client": {
+            "w": 119,
+            "h": 19,
+            "sw": 177,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "?????:H27-G1-3",
+        "path": "/afternoon/answers/H27-G1-3/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H27-G1-3/myAnswer"
+      },
+      "issues": [
+        {
+          "text": "侵入検知・防御システムの導入",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-teal-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 159,
+            "y": 77,
+            "w": 119,
+            "h": 19
+          },
+          "client": {
+            "w": 119,
+            "h": 19,
+            "sw": 177,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "????:H27-G2-1",
+        "path": "/afternoon/answers/H27-G2-1",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H27-G2-1"
+      },
+      "issues": [
+        {
+          "text": "NAT444を用いたISPサービス",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-indigo-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 159,
+            "y": 77,
+            "w": 119,
+            "h": 19
+          },
+          "client": {
+            "w": 119,
+            "h": 19,
+            "sw": 179,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "?????:H27-G2-1",
+        "path": "/afternoon/answers/H27-G2-1/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H27-G2-1/myAnswer"
+      },
+      "issues": [
+        {
+          "text": "NAT444を用いたISPサービス",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-teal-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 159,
+            "y": 77,
+            "w": 119,
+            "h": 19
+          },
+          "client": {
+            "w": 119,
+            "h": 19,
+            "sw": 179,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "????:H27-G2-2",
+        "path": "/afternoon/answers/H27-G2-2",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H27-G2-2"
+      },
+      "issues": [
+        {
+          "text": "無線LANセキュリティの強化",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-indigo-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 159,
+            "y": 77,
+            "w": 119,
+            "h": 19
+          },
+          "client": {
+            "w": 119,
+            "h": 19,
+            "sw": 162,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    },
+    {
+      "route": {
+        "label": "?????:H27-G2-2",
+        "path": "/afternoon/answers/H27-G2-2/myAnswer",
+        "auth": true
+      },
+      "viewport": {
+        "width": 360,
+        "height": 800,
+        "path": "/afternoon/answers/H27-G2-2/myAnswer"
+      },
+      "issues": [
+        {
+          "text": "無線LANセキュリティの強化",
+          "tag": "h1",
+          "className": "text-sm font-black leading-snug truncate",
+          "selector": "div.max-w-4xl.mx-auto.px-4 > section > div.rounded-xl.bg-teal-700.text-white > div.flex.items-center.gap-2 > h1.text-sm.font-black.leading-snug",
+          "reason": "single-line ellipsis",
+          "classHint": true,
+          "rect": {
+            "x": 159,
+            "y": 77,
+            "w": 119,
+            "h": 19
+          },
+          "client": {
+            "w": 119,
+            "h": 19,
+            "sw": 162,
+            "sh": 19
+          },
+          "textOverflow": "ellipsis",
+          "whiteSpace": "nowrap",
+          "webkitLineClamp": "none"
+        }
+      ]
+    }
+  ]
+}

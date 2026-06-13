@@ -93,27 +93,42 @@ function ChapterCard({ chapter, isRead }: { chapter: TextbookChapter; isRead: bo
 
 export default function Textbook() {
   const [readState] = useState(() => getTextbookReadState())
+  const publishedCount = textbookChapters.filter((chapter) => chapter.status === 'published').length
 
   return (
     <div className="min-h-screen bg-slate-50">
       <div className="mx-auto max-w-5xl px-4 pb-16 pt-6">
-        <header className="mb-5">
-          <div className="flex items-center gap-2">
-            <BookOpenText className="h-6 w-6 text-blue-600" aria-hidden="true" />
-            <h1 className="text-2xl font-black text-slate-800">教科書モード</h1>
+        <header className="mb-5 rounded-lg border border-slate-200 bg-white px-5 py-5 shadow-sm">
+          <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+            <div className="min-w-0">
+              <div className="flex items-center gap-2">
+                <BookOpenText className="h-6 w-6 text-blue-600" aria-hidden="true" />
+                <h1 className="text-2xl font-black text-slate-800">図解で学ぶ教科書</h1>
+              </div>
+              <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600">
+                ネスペ学習の入口として、通信の流れを図で追いながら基礎を固めます。暗記に入る前に、MAC/IP、L2/L3、ARP、VLANがどうつながるかをつかむための読み物です。
+              </p>
+            </div>
+            <div className="grid grid-cols-2 gap-2 text-center md:w-52">
+              <div className="rounded-lg border border-blue-100 bg-blue-50 px-3 py-2">
+                <p className="text-lg font-black text-blue-700">{publishedCount}</p>
+                <p className="text-[11px] font-bold text-blue-800">公開中</p>
+              </div>
+              <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
+                <p className="text-lg font-black text-slate-700">{textbookChapters.length}</p>
+                <p className="text-[11px] font-bold text-slate-500">全章</p>
+              </div>
+            </div>
           </div>
-          <p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600">
-            ネスペ学習の最初に読むための、図解中心の入門テキストです。ノートモードの前に、通信の流れと設計の考え方をつかみます。
-          </p>
         </header>
 
         <section className="mb-5 rounded-lg border border-blue-100 bg-blue-50 px-4 py-3">
           <div className="flex gap-3">
             <Sparkles className="mt-0.5 h-5 w-5 flex-shrink-0 text-blue-600" aria-hidden="true" />
             <div className="min-w-0">
-              <h2 className="text-sm font-black text-blue-900">紙の教科書では見えないところも動かして見る</h2>
+              <h2 className="text-sm font-black text-blue-900">第1章は、通信の流れを「見える形」にして読みます</h2>
               <p className="mt-1 text-sm leading-relaxed text-blue-800">
-                第1章では、ARP要求、L2SW転送、ルータ転送をステップ再生できるパケットフローを入れています。
+                PCからWebサーバへ届くまでを、構成図、フレーム/パケットの入れ子、動く図解で確認します。紙面だけでは追いにくい「次の一歩」を、ステップごとに見られるようにしました。
               </p>
             </div>
           </div>
@@ -123,9 +138,9 @@ export default function Textbook() {
           <div className="mb-3 flex items-end justify-between gap-3">
             <div>
               <h2 id="chapter-list-heading" className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                Chapters
+                章一覧
               </h2>
-              <p className="mt-1 text-xs text-slate-400">章はノートモードの構成に合わせて、順番に追加します。</p>
+              <p className="mt-1 text-xs text-slate-400">ノートモードと近い構成で、初学者向けの読み物として順番に追加します。</p>
             </div>
           </div>
 

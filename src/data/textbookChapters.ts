@@ -19,6 +19,7 @@ export type TextbookDiagram =
   | ComparisonDiagram
   | SequenceDiagram
   | SegmentDiagram
+  | PacketFrameDiagram
   | InteractiveFlowDiagram
 
 export interface TextbookChapter {
@@ -104,6 +105,21 @@ export interface SegmentDiagram extends DiagramBase {
   }[]
 }
 
+export interface PacketFrameDiagram extends DiagramBase {
+  type: 'packet-frame'
+  layers: {
+    title: string
+    subtitle: string
+    fields: string[]
+    accent: 'emerald' | 'blue' | 'amber' | 'slate'
+  }[]
+  notes: {
+    title: string
+    body: string
+    accent: 'emerald' | 'blue' | 'amber' | 'slate'
+  }[]
+}
+
 export interface InteractiveFlowDiagram extends DiagramBase {
   type: 'interactive-flow'
   scenario: PacketFlowScenario
@@ -157,7 +173,7 @@ const layerOneThreeScenario: PacketFlowScenario = {
   id: 'pc-to-web-layer1-3',
   title: 'PCがWebサーバへアクセスするまで',
   description:
-    '同じLAN内の一歩目はMACアドレスで進み、別ネットワークへの判断はIPアドレスで進む。この違いを、パケットの動きとして追いかけます。',
+    '同じLAN内の一歩目は[[green:MACアドレス]]で進み、別ネットワークへ出る判断は[[blue:IPアドレス]]で進みます。この違いを、フレームとパケットの動きで追いかけます。',
   nodes: [
     {
       id: 'pc',
@@ -200,8 +216,8 @@ const layerOneThreeScenario: PacketFlowScenario = {
       to: 'switch',
       packetLabel: 'ARP要求',
       explanation:
-        'PCはWebサーバが別ネットワークにいると判断し、最初の送り先をデフォルトゲートウェイに決めます。ただし、同じLAN内で届けるにはルータのMACアドレスが必要なので、ARP要求をブロードキャストします。',
-      deviceFocus: 'PCは「192.168.1.1を持っている機器は誰ですか」と同じLAN全体へ聞いている。',
+        'PCは、Webサーバが自分とは別ネットワークにいると判断します。そこで最初の送り先を[[amber:デフォルトゲートウェイ]]に決めますが、同じLAN内で届けるには相手の[[green:MACアドレス]]が必要です。そのため、ARP要求をブロードキャストします。',
+      deviceFocus: 'PCは「192.168.1.1を持っている機器はいますか」と同じLAN全体へ聞いています。',
       headerFocus: {
         destinationMac: 'ff:ff:ff:ff:ff:ff',
         sourceIp: '192.168.1.10',
@@ -216,8 +232,8 @@ const layerOneThreeScenario: PacketFlowScenario = {
       to: 'router',
       packetLabel: 'ARP要求',
       explanation:
-        'L2SWはARP要求の宛先MACアドレスがブロードキャストであることを見て、同じVLAN内のポートへ広げます。この時点では、L2SWはIPアドレスでルーティングしているわけではありません。',
-      deviceFocus: 'L2SWが見ている主役はMACアドレス。IPの経路判断はしていない。',
+        'L2SWは、ARP要求の宛先MACアドレスがブロードキャストであることを見て、同じVLAN内のポートへ広げます。この時点でL2SWは[[blue:IPアドレスで経路選択しているわけではありません]]。',
+      deviceFocus: 'L2SWが見ている主役は[[green:MACアドレス]]です。IPの経路判断はしていません。',
       headerFocus: {
         destinationMac: 'ff:ff:ff:ff:ff:ff',
         sourceIp: '192.168.1.10',
@@ -232,8 +248,8 @@ const layerOneThreeScenario: PacketFlowScenario = {
       to: 'switch',
       packetLabel: 'ARP応答',
       explanation:
-        'ルータは「192.168.1.1は自分です」と応答します。これでPCは、別ネットワークへ向かう最初の一歩をどのMACアドレス宛てに送ればよいか分かります。',
-      deviceFocus: 'ルータはデフォルトゲートウェイとして、同じLAN側インタフェースのMACアドレスを返す。',
+        'ルータは「192.168.1.1は自分です」と応答します。これでPCは、別ネットワークへ向かう最初の一歩を、どの[[green:MACアドレス]]宛てに送ればよいか分かります。',
+      deviceFocus: 'ルータはデフォルトゲートウェイとして、同じLAN側インタフェースのMACアドレスを返します。',
       headerFocus: {
         sourceMac: 'aa:aa:aa:aa:aa:01',
         destinationMac: '00:11:22:33:44:55',
@@ -249,8 +265,8 @@ const layerOneThreeScenario: PacketFlowScenario = {
       to: 'pc',
       packetLabel: 'ARP応答',
       explanation:
-        'L2SWはPC側へARP応答を転送します。PCのARPテーブルには、デフォルトゲートウェイのIPアドレスとMACアドレスの対応が入ります。',
-      deviceFocus: '次からPCはルータ宛てにフレームを送れる。',
+        'L2SWはPC側へARP応答を転送します。PCのARPテーブルには、デフォルトゲートウェイの[[blue:IPアドレス]]と[[green:MACアドレス]]の対応が入ります。',
+      deviceFocus: '次からPCは、ルータ宛てのイーサネットフレームを作れます。',
       headerFocus: {
         sourceMac: 'aa:aa:aa:aa:aa:01',
         destinationMac: '00:11:22:33:44:55',
@@ -266,8 +282,8 @@ const layerOneThreeScenario: PacketFlowScenario = {
       to: 'switch',
       packetLabel: 'TCP SYN',
       explanation:
-        'ここが初学者の山場です。IPの宛先はWebサーバのままですが、イーサネットフレームの宛先MACアドレスはルータになります。遠くの目的地と、次の一歩の相手は別です。',
-      deviceFocus: 'PCは「最終目的地はWebサーバ、次の一歩はルータ」と考えている。',
+        'ここが最重要です。[[blue:IPの宛先はWebサーバのまま]]ですが、[[green:イーサネットフレームの宛先MACアドレスはルータ]]になります。遠くの目的地と、次の一歩の相手は別です。',
+      deviceFocus: 'PCは「最終目的地はWebサーバ、次の一歩はルータ」と分けて考えています。',
       headerFocus: {
         sourceMac: '00:11:22:33:44:55',
         destinationMac: 'aa:aa:aa:aa:aa:01',
@@ -284,8 +300,8 @@ const layerOneThreeScenario: PacketFlowScenario = {
       to: 'router',
       packetLabel: 'TCP SYN',
       explanation:
-        'L2SWはフレームの宛先MACアドレスを見て、ルータが接続されているポートへ転送します。ここでも、L2SWが見ている中心はMACアドレスです。',
-      deviceFocus: 'L2SWの判断材料は宛先MACアドレス。',
+        'L2SWはフレームの[[green:宛先MACアドレス]]を見て、ルータが接続されているポートへ転送します。ここでも、L2SWが見ている中心はMACアドレスです。',
+      deviceFocus: 'L2SWの判断材料は[[green:宛先MACアドレス]]です。',
       headerFocus: {
         sourceMac: '00:11:22:33:44:55',
         destinationMac: 'aa:aa:aa:aa:aa:01',
@@ -302,8 +318,8 @@ const layerOneThreeScenario: PacketFlowScenario = {
       to: 'web',
       packetLabel: 'TCP SYN',
       explanation:
-        'ルータは受け取ったフレームからIPパケットを取り出し、宛先IPアドレスを見て次の転送先を決めます。区間が変わるので、L2のMACアドレスは付け替わります。',
-      deviceFocus: 'ルータの判断材料は宛先IPアドレス。次の区間ではMACアドレスが変わる。',
+        'ルータは受け取ったフレームからIPパケットを取り出し、[[blue:宛先IPアドレス]]を見て次の転送先を決めます。区間が変わるので、L2のMACアドレスは付け替わります。',
+      deviceFocus: 'ルータの判断材料は[[blue:宛先IPアドレス]]です。次の区間ではMACアドレスが変わります。',
       headerFocus: {
         sourceMac: 'bb:bb:bb:bb:bb:01',
         destinationMac: 'cc:cc:cc:cc:cc:20',
@@ -320,8 +336,8 @@ const layerOneThreeScenario: PacketFlowScenario = {
       to: 'router',
       packetLabel: 'HTTP応答',
       explanation:
-        'Webサーバからの応答も同じ考え方で戻ります。最終宛先IPアドレスはPCですが、各区間では次の機器へ届けるためのMACアドレスが使われます。',
-      deviceFocus: '戻り道でも、L3の目的地とL2の次の一歩を分けて見る。',
+        'Webサーバからの応答も同じ考え方で戻ります。[[blue:最終宛先IPアドレスはPC]]ですが、各区間では次の機器へ届けるための[[green:MACアドレス]]が使われます。',
+      deviceFocus: '戻り道でも、L3の目的地とL2の次の一歩を分けて見ます。',
       headerFocus: {
         sourceMac: 'cc:cc:cc:cc:cc:20',
         destinationMac: 'bb:bb:bb:bb:bb:01',
@@ -338,31 +354,31 @@ const layerOneThreeChapter: TextbookChapter = {
   id: 'layer1-3',
   order: 1,
   title: 'レイヤ1〜3基礎',
-  description: '通信の通り道、MACアドレス、IPアドレス、スイッチ、ルータ、ARP、VLANを最初の地図としてつかむ',
+  description: '通信の通り道、MACアドレス、IPアドレス、スイッチ、ルータ、ARP、VLANを「最初の地図」としてつかむ',
   status: 'published',
   estimatedMinutes: 18,
   intro: [
-    'ネットワークを学び始めたとき、最初に難しく感じるのは、用語そのものよりも「どの話がどの範囲の話なのか」が見えにくいことです。',
-    'この章では、通信を「近くへ届ける」と「遠くへ届ける」に分けて眺めます。ここが見えると、MACアドレス、IPアドレス、スイッチ、ルータ、ARP、VLANが、ばらばらの暗記事項ではなく一つの流れとしてつながります。',
+    'ネットワークを学び始めたときに難しく感じるのは、用語の数そのものよりも「どの話が、どの範囲の話なのか」が見えにくいことです。',
+    'この章では、通信を[[green:近くへ届ける]]話と、[[blue:遠くへ届ける]]話に分けて眺めます。ここが見えると、MACアドレス、IPアドレス、スイッチ、ルータ、ARP、VLANが、ばらばらの暗記事項ではなく一つの流れとしてつながります。',
   ],
   sections: [
     {
       heading: '通信は一気に届くのではなく、隣へ隣へ運ばれる',
       body: [
-        'PCでWebサイトを開くと、画面には一瞬でページが表示されます。でもネットワークの中では、PCからWebサーバへ一直線に飛んでいるわけではありません。',
-        '実際には、PCからスイッチへ、スイッチからルータへ、ルータから次のネットワークへ、というように、近くの相手へ渡す小さな配送を何度も繰り返しています。',
-        'ネスペ午後の構成図を読むときも、この「次の一歩」を追えるかどうかが大事です。いきなり最終目的地だけを見るのではなく、今この機器は次にどこへ渡そうとしているのかを見ます。',
+        'PCでWebサイトを開くと、画面には一瞬でページが表示されます。けれども、ネットワークの中でPCからWebサーバへ一直線の線が引かれているわけではありません。',
+        '実際には、PCからスイッチへ、スイッチからルータへ、ルータから次のネットワークへ、というように、[[amber:近くの相手へ手渡す動作]]を何度も繰り返しています。',
+        'ネスペ午後の構成図を読むときも、この[[amber:次の一歩]]を追えるかどうかが大事です。最終目的地だけを見るのではなく、「今この機器は次にどこへ渡そうとしているのか」を見ます。',
       ],
       diagrams: [
         {
           type: 'network-flow',
-          title: 'PCからWebサーバまでのざっくりした通り道',
+          title: 'PCからWebサーバまでの通り道',
           description:
-            'この図は、通信が複数の機器を経由して進むことを表しています。ポイントは、PCがWebサーバへ直接ケーブルでつながっているわけではなく、途中の機器が少しずつ中継していることです。',
+            'この図は、通信が複数の機器を経由して進むことを表しています。大切なのは、[[green:同じLAN内の転送]]と[[blue:別ネットワークへの転送]]を分けて見ることです。',
           points: [
-            'PCから見た最初の相手は、たいてい同じLAN内のスイッチやデフォルトゲートウェイです。',
-            'スイッチは同じLAN内の転送を助けます。',
-            'ルータは別ネットワークへ出ていく判断をします。',
+            'PCから見た最初の相手は、同じLAN内のL2SWやデフォルトゲートウェイです。',
+            'L2SWは[[green:同じVLAN内]]でフレームを転送します。',
+            'ルータは[[blue:別ネットワーク]]へ進むための経路を選びます。',
           ],
           nodes: [
             { id: 'pc', label: 'PC', caption: '通信の出発点', role: 'pc' },
@@ -371,9 +387,9 @@ const layerOneThreeChapter: TextbookChapter = {
             { id: 'web', label: 'Webサーバ', caption: '通信の目的地', role: 'server' },
           ],
           links: [
-            { from: 'pc', to: 'switch', label: 'フレーム' },
-            { from: 'switch', to: 'router', label: 'フレーム' },
-            { from: 'router', to: 'web', label: 'パケット' },
+            { from: 'pc', to: 'switch', label: 'L2フレーム' },
+            { from: 'switch', to: 'router', label: 'L2フレーム' },
+            { from: 'router', to: 'web', label: 'IPパケット' },
           ],
         },
       ],
@@ -382,7 +398,7 @@ const layerOneThreeChapter: TextbookChapter = {
           type: 'analogy',
           title: '住所と配達員で考える',
           body: [
-            'IPアドレスは最終的な住所に近く、MACアドレスは次に手渡す相手の名札に近いです。遠くの住所を知っていても、まずは目の前の配送担当へ渡せないと荷物は進みません。',
+            '[[blue:IPアドレス]]は最終的な住所、[[green:MACアドレス]]は次に手渡す相手の名札に近い情報です。遠くの住所を知っていても、まず目の前の配送担当へ渡せなければ荷物は進みません。',
           ],
         },
       ],
@@ -390,8 +406,8 @@ const layerOneThreeChapter: TextbookChapter = {
     {
       heading: 'L1、L2、L3は何を分担しているか',
       body: [
-        'レイヤという言葉は抽象的ですが、まずは役割分担として見れば十分です。L1は信号を運ぶ土台、L2は同じネットワーク内で届ける仕組み、L3は別ネットワークへ届ける仕組みです。',
-        '試験では「どのレイヤの情報を見て判断しているか」がよく効きます。L2SWならMACアドレス、ルータならIPアドレス、という対応を丸暗記するより、なぜそうなるかを流れで理解しましょう。',
+        'レイヤという言葉は抽象的ですが、最初は役割分担として見れば十分です。[[amber:L1]]は信号を運ぶ土台、[[green:L2]]は同じネットワーク内で届ける仕組み、[[blue:L3]]は別ネットワークへ届ける仕組みです。',
+        '試験では「どのレイヤの情報を見て判断しているか」がよく効きます。L2SWなら[[green:MACアドレス]]、ルータなら[[blue:IPアドレス]]という対応を、丸暗記ではなく通信の流れで理解しましょう。',
       ],
       diagrams: [
         {
@@ -400,22 +416,22 @@ const layerOneThreeChapter: TextbookChapter = {
           description:
             'この図は、低いレイヤほど物理的な運び方に近く、高いレイヤほどネットワークをまたいだ届け方に近づくことを表しています。',
           points: [
-            'L1はビットを信号として運ぶための土台です。',
-            'L2は同じLAN内でフレームを届けます。',
-            'L3はIPアドレスを使って別ネットワークへパケットを届けます。',
+            '[[amber:L1]]はビットを信号として運ぶための土台です。',
+            '[[green:L2]]は同じLAN内でフレームを届けます。',
+            '[[blue:L3]]はIPアドレスを使って別ネットワークへパケットを届けます。',
           ],
           layers: [
             {
               label: 'L3',
               title: 'ネットワーク層',
-              description: 'IPアドレスを見て、別ネットワークへ進む道を決める',
+              description: '[[blue:IPアドレス]]を見て、別ネットワークへ進む道を決める',
               example: 'IP、ルーティング、ルータ',
               color: 'blue',
             },
             {
               label: 'L2',
               title: 'データリンク層',
-              description: '同じLAN内で、MACアドレスを使ってフレームを届ける',
+              description: '同じLAN内で、[[green:MACアドレス]]を使ってフレームを届ける',
               example: 'Ethernet、MAC、L2SW、VLAN、ARP',
               color: 'green',
             },
@@ -434,19 +450,19 @@ const layerOneThreeChapter: TextbookChapter = {
       heading: 'MACアドレスとIPアドレスは役割が違う',
       body: [
         'MACアドレスとIPアドレスは、どちらも通信相手を表す情報なので混ざりやすいです。ただし、見ている範囲が違います。',
-        'MACアドレスは、同じLAN内で次に届ける相手を示します。IPアドレスは、最終的にどのネットワーク上のどの相手へ届けたいかを示します。',
-        '別ネットワークへ通信するとき、宛先IPアドレスはWebサーバのままですが、宛先MACアドレスはまずデフォルトゲートウェイになります。この感覚がつかめると、構成図の読み方が一段楽になります。',
+        '[[green:MACアドレス]]は、同じLAN内で次に届ける相手を示します。[[blue:IPアドレス]]は、最終的にどのネットワーク上のどの相手へ届けたいかを示します。',
+        '別ネットワークへ通信するとき、[[blue:宛先IPアドレスはWebサーバのまま]]ですが、[[green:宛先MACアドレスはまずデフォルトゲートウェイ]]になります。この感覚がつかめると、構成図の読み方がかなり楽になります。',
       ],
       diagrams: [
         {
           type: 'comparison',
           title: 'MACアドレスとIPアドレスの見ている範囲',
           description:
-            'この比較では、MACアドレスを「次の一歩」、IPアドレスを「最終目的地」として見ます。実際の通信では両方が同時に使われます。',
+            'この比較では、[[green:MACアドレス]]を「次の一歩」、[[blue:IPアドレス]]を「最終目的地」として見ます。実際の通信では両方が同時に使われます。',
           points: [
-            '同じLAN内ではMACアドレスが配送の中心になります。',
-            'ネットワークをまたぐ判断ではIPアドレスが中心になります。',
-            '別ネットワーク宛てでも、IPの宛先は最終目的地のままです。',
+            '同じLAN内では[[green:MACアドレス]]が配送の中心になります。',
+            'ネットワークをまたぐ判断では[[blue:IPアドレス]]が中心になります。',
+            '別ネットワーク宛てでも、[[blue:IPの宛先は最終目的地のまま]]です。',
           ],
           columns: [
             {
@@ -455,8 +471,8 @@ const layerOneThreeChapter: TextbookChapter = {
               accent: 'teal',
               items: [
                 '同じLAN内で使う',
-                'イーサネットフレームに入る',
-                'L2SWが主に見る',
+                '[[green:イーサネットフレーム]]に入る',
+                '[[green:L2SW]]が主に見る',
                 '区間が変わると付け替わる',
               ],
             },
@@ -466,10 +482,53 @@ const layerOneThreeChapter: TextbookChapter = {
               accent: 'indigo',
               items: [
                 'ネットワークをまたいで使う',
-                'IPパケットに入る',
-                'ルータが主に見る',
+                '[[blue:IPパケット]]に入る',
+                '[[blue:ルータ]]が主に見る',
                 '基本的に最終宛先のまま進む',
               ],
+            },
+          ],
+        },
+        {
+          type: 'packet-frame',
+          title: 'フレームとパケットの入れ子',
+          description:
+            'PCが別ネットワークへ通信するとき、[[blue:Webサーバ宛てのIPパケット]]を、[[green:ルータ宛てのイーサネットフレーム]]に入れて運びます。この入れ子構造が、L2とL3を分けて考える土台です。',
+          points: [
+            '外側の[[green:Ethernetフレーム]]は、同じLAN内の次の相手へ届けるために使います。',
+            '内側の[[blue:IPパケット]]は、最終目的地のWebサーバを示し続けます。',
+            'ルータを越える区間では、外側のL2情報が付け替わります。',
+          ],
+          layers: [
+            {
+              title: 'Ethernetフレーム（L2）',
+              subtitle: '同じLAN内で次の相手へ届ける外側の箱',
+              accent: 'emerald',
+              fields: ['宛先MAC', '送信元MAC', 'タイプ', '中身: IPパケット', 'FCS'],
+            },
+            {
+              title: 'IPパケット（L3）',
+              subtitle: '最終目的地まで運ぶ内側の箱',
+              accent: 'blue',
+              fields: ['送信元IP', '宛先IP', 'TTL', '中身: TCPセグメント'],
+            },
+            {
+              title: 'TCPセグメント（L4）',
+              subtitle: 'アプリケーション通信を識別するさらに内側の情報',
+              accent: 'amber',
+              fields: ['送信元ポート', '宛先ポート', '制御ビット', 'データ'],
+            },
+          ],
+          notes: [
+            {
+              title: 'ここを見れば混ざらない',
+              body: '[[green:MACアドレス]]は外側、[[blue:IPアドレス]]は内側。どちらも同時に使いますが、見ている範囲が違います。',
+              accent: 'slate',
+            },
+            {
+              title: '午後問題で効く見方',
+              body: '「どの機器が、どのヘッダを見て判断したか」を問われたら、外側のL2情報か、内側のL3情報かを切り分けます。',
+              accent: 'blue',
             },
           ],
         },
@@ -479,7 +538,7 @@ const layerOneThreeChapter: TextbookChapter = {
           type: 'pitfall',
           title: '「WebサーバのMACアドレス宛てに送る」はたいてい違う',
           body: [
-            'PCとWebサーバが別ネットワークにいる場合、PCが最初に送るフレームの宛先MACアドレスはWebサーバではなくデフォルトゲートウェイです。ここは午後問題でも説明文の根拠になりやすいポイントです。',
+            'PCとWebサーバが別ネットワークにいる場合、PCが最初に送るフレームの[[green:宛先MACアドレス]]はWebサーバではなく[[amber:デフォルトゲートウェイ]]です。ここは午後問題でも説明文の根拠になりやすいポイントです。',
           ],
         },
       ],
@@ -488,8 +547,8 @@ const layerOneThreeChapter: TextbookChapter = {
       heading: 'スイッチは同じネットワーク内、ルータは別ネットワークへ進める',
       body: [
         'スイッチとルータは、どちらも通信を中継する機器です。ただし、見ている情報と責任範囲が違います。',
-        'L2SWは、フレームの宛先MACアドレスを見て、どのポートへ出すかを決めます。ルータは、IPパケットの宛先IPアドレスを見て、どのネットワークへ送るかを決めます。',
-        'この違いを押さえると、障害問題で「どこまでは届いていて、どこから届いていないのか」を切り分けやすくなります。',
+        'L2SWは、フレームの[[green:宛先MACアドレス]]を見て、どのポートへ出すかを決めます。ルータは、IPパケットの[[blue:宛先IPアドレス]]を見て、どのネットワークへ送るかを決めます。',
+        'この違いを押さえると、障害対応でも「同じLAN内で詰まっているのか」「ルータを越えた先で詰まっているのか」を切り分けやすくなります。',
       ],
       diagrams: [
         {
@@ -498,8 +557,8 @@ const layerOneThreeChapter: TextbookChapter = {
           description:
             'この図は、同じ「中継する機器」でも、L2SWとルータでは判断材料が違うことを表しています。',
           points: [
-            'L2SWはMACアドレスとポート対応を学習します。',
-            'ルータは宛先IPアドレスと経路情報を見ます。',
+            'L2SWは[[green:MACアドレス]]とポート対応を学習します。',
+            'ルータは[[blue:宛先IPアドレス]]と経路情報を見ます。',
             '午後問題では、どの機器でどの情報が使われるかを見ます。',
           ],
           columns: [
@@ -508,7 +567,7 @@ const layerOneThreeChapter: TextbookChapter = {
               subtitle: '同じLANの中で届ける',
               accent: 'teal',
               items: [
-                '主にMACアドレスを見る',
+                '主に[[green:MACアドレス]]を見る',
                 'フレームを転送する',
                 'VLANで論理的にLANを分ける',
                 'ブロードキャストを同じVLAN内へ広げる',
@@ -519,7 +578,7 @@ const layerOneThreeChapter: TextbookChapter = {
               subtitle: '別ネットワークへ届ける',
               accent: 'indigo',
               items: [
-                '主にIPアドレスを見る',
+                '主に[[blue:IPアドレス]]を見る',
                 'パケットを転送する',
                 '経路表を使って次の転送先を決める',
                 'ブロードキャストを通常は越えさせない',
@@ -532,9 +591,9 @@ const layerOneThreeChapter: TextbookChapter = {
     {
       heading: 'ARPはIPアドレスからMACアドレスを知る仕組み',
       body: [
-        'PCは宛先IPアドレスを知っていても、それだけでは同じLAN内にフレームを流せません。イーサネットで届けるには、次に渡す相手のMACアドレスが必要です。',
-        'そこでARPが登場します。ARPは「このIPアドレスを持っている人は、自分のMACアドレスを教えてください」と同じLAN内に問い合わせる仕組みです。',
-        '別ネットワーク宛ての場合、PCがARPで探すのは最終宛先のWebサーバではなく、デフォルトゲートウェイのMACアドレスです。',
+        'PCは[[blue:宛先IPアドレス]]を知っていても、それだけでは同じLAN内にフレームを流せません。イーサネットで届けるには、次に渡す相手の[[green:MACアドレス]]が必要です。',
+        'そこでARPが登場します。ARPは「このIPアドレスを持っている機器は、自分のMACアドレスを教えてください」と同じLAN内に問い合わせる仕組みです。',
+        '別ネットワーク宛ての場合、PCがARPで探すのは最終宛先のWebサーバではなく、[[amber:デフォルトゲートウェイのMACアドレス]]です。',
       ],
       diagrams: [
         {
@@ -545,28 +604,28 @@ const layerOneThreeChapter: TextbookChapter = {
           points: [
             'ARP要求は同じLAN内に広がります。',
             '該当するIPアドレスを持つ機器だけが応答します。',
-            'PCは得られた対応をARPテーブルに一定時間保存します。',
+            'PCは得られた対応を[[amber:ARPテーブル]]に一定時間保存します。',
           ],
           steps: [
             {
               label: '1',
               title: 'PCがARP要求を送る',
-              body: '192.168.1.1のMACアドレスを知っている機器はいますか、と同じLANへ問い合わせる。',
+              body: '192.168.1.1の[[green:MACアドレス]]を知っている機器はいますか、と同じLANへ問い合わせる。',
             },
             {
               label: '2',
               title: 'L2SWが同じVLAN内へ広げる',
-              body: '宛先MACアドレスがブロードキャストなので、該当VLANのポートへ転送する。',
+              body: '[[green:宛先MACアドレス]]がブロードキャストなので、該当VLANのポートへ転送する。',
             },
             {
               label: '3',
               title: 'ルータがARP応答を返す',
-              body: '192.168.1.1は自分です。このMACアドレスへ送ってください、とPCへ返す。',
+              body: '192.168.1.1は自分です。この[[green:MACアドレス]]へ送ってください、とPCへ返す。',
             },
             {
               label: '4',
               title: 'PCがARPテーブルに覚える',
-              body: '次からはデフォルトゲートウェイ宛てのフレームを作れる。',
+              body: '次からは[[amber:デフォルトゲートウェイ]]宛てのフレームを作れる。',
             },
           ],
         },
@@ -575,19 +634,19 @@ const layerOneThreeChapter: TextbookChapter = {
     {
       heading: '動きで見ると、L2とL3の境目が見えてくる',
       body: [
-        'ここまでの話は、文字だけだと少し固く感じます。そこで、PCがWebサーバへアクセスするまでの流れを、パケットの動きとして見てみましょう。',
-        '見るポイントは一つです。IPアドレスは最終目的地を示し続けますが、MACアドレスは次の一歩に合わせて変わります。',
+        'ここまでの話は、文字だけだと少し固く感じます。そこで、PCがWebサーバへアクセスするまでの流れを、動く図解で見てみましょう。',
+        '見るポイントは一つです。[[blue:IPアドレスは最終目的地を示し続ける]]一方で、[[green:MACアドレスは次の一歩に合わせて変わります]]。',
       ],
       diagrams: [
         {
           type: 'interactive-flow',
-          title: 'パケットフロービジュアライザ',
+          title: '動く図解',
           description:
             '再生すると、ARPで次の一歩を調べてから、Webサーバ宛ての通信が進む様子を追えます。ステップごとの説明とヘッダの注目点を合わせて見てください。',
           points: [
-            'ARPはデフォルトゲートウェイのMACアドレスを知るために使われます。',
-            'L2SWはMACアドレスを見て転送します。',
-            'ルータはIPアドレスを見て別ネットワークへ転送します。',
+            'ARPは[[amber:デフォルトゲートウェイのMACアドレス]]を知るために使われます。',
+            'L2SWは[[green:MACアドレス]]を見て転送します。',
+            'ルータは[[blue:IPアドレス]]を見て別ネットワークへ転送します。',
           ],
           scenario: layerOneThreeScenario,
         },
@@ -595,9 +654,9 @@ const layerOneThreeChapter: TextbookChapter = {
       callouts: [
         {
           type: 'important',
-          title: '動きの中で一番おいしいところ',
+          title: 'ここが重要: IPパケットをL2フレームに入れて運ぶ',
           body: [
-            'Webサーバ宛てのIPパケットを、ルータ宛てのイーサネットフレームに入れて送るところです。この二重構造が見えると、L2とL3の理解がぐっと楽になります。',
+            '[[blue:Webサーバ宛てのIPパケット]]を、[[green:ルータ宛てのイーサネットフレーム]]に入れて送ります。この二重構造が見えると、L2とL3の理解がぐっと楽になります。',
           ],
         },
       ],
@@ -605,9 +664,9 @@ const layerOneThreeChapter: TextbookChapter = {
     {
       heading: 'VLANは1台のスイッチを論理的に分ける考え方',
       body: [
-        'VLANは、1台のスイッチの中に複数の論理的なLANを作る技術です。物理的には同じスイッチにつながっていても、VLANが違えば同じブロードキャストドメインではありません。',
+        'VLANは、1台のスイッチの中に複数の論理的なLANを作る技術です。物理的には同じスイッチにつながっていても、[[green:VLANが違えば同じブロードキャストドメインではありません]]。',
         'これは、部署ごとにネットワークを分けたい、音声用と業務PC用を分けたい、検証環境を本番環境から分けたい、といった場面でよく使われます。',
-        'ネスペ午後では、VLAN ID、アクセスポート、トランクポート、L3SWによるVLAN間ルーティングがつながって出てきます。まずは「VLANはL2の範囲を論理的に分けるもの」と押さえましょう。',
+        'ネスペ午後では、VLAN ID、アクセスポート、トランクポート、L3SWによるVLAN間ルーティングがつながって出てきます。まずは「[[green:VLANはL2の範囲を論理的に分けるもの]]」と押さえましょう。',
       ],
       diagrams: [
         {
@@ -616,9 +675,9 @@ const layerOneThreeChapter: TextbookChapter = {
           description:
             'この図は、同じスイッチ上でもVLANが違えばブロードキャストが届く範囲が分かれることを表しています。',
           points: [
-            'VLAN 10のブロードキャストはVLAN 10内に閉じます。',
-            'VLAN 20の端末へ通信するには、L3の中継が必要です。',
-            'トランクポートではVLANタグを使って複数VLANを運びます。',
+            'VLAN 10のブロードキャストは[[green:VLAN 10内]]に閉じます。',
+            'VLAN 20の端末へ通信するには、[[blue:L3の中継]]が必要です。',
+            'トランクポートでは[[amber:VLANタグ]]を使って複数VLANを運びます。',
           ],
           domains: [
             {
@@ -646,28 +705,28 @@ const layerOneThreeChapter: TextbookChapter = {
     {
       heading: 'ネスペ午後では、構成図の境目を読む',
       body: [
-        '午後問題の構成図は、ただの絵ではありません。どこが同じセグメントか、どこからルーティングが発生するか、どこでMACアドレスの話からIPアドレスの話へ切り替わるかを読むための地図です。',
+        '午後問題の構成図は、ただの絵ではありません。どこが同じセグメントか、どこからルーティングが発生するか、どこで[[green:MACアドレス]]の話から[[blue:IPアドレス]]の話へ切り替わるかを読むための地図です。',
         '問題文で「同一セグメント」「デフォルトゲートウェイ」「ARP」「VLAN」「L3SW」といった言葉が出たら、今どのレイヤの話をしているのかを確認します。',
-        '最初から全てのプロトコルを完璧に覚える必要はありません。まずは、L2の話なのか、L3の話なのかを見分ける。これだけで、午後問題の文章はかなり読みやすくなります。',
+        '最初から全てのプロトコルを完璧に覚える必要はありません。まずは、[[green:L2の話]]なのか、[[blue:L3の話]]なのかを見分ける。これだけで、午後問題の文章はかなり読みやすくなります。',
       ],
       callouts: [
         {
           type: 'exam',
           title: '午後問題での見方',
           body: [
-            '構成図を見たら、端末、L2SW、L3SW、ルータの位置を確認します。そのうえで、同じVLAN内の通信なのか、別ネットワークへの通信なのかを分けて読むと、設問の根拠を探しやすくなります。',
+            '構成図を見たら、端末、L2SW、L3SW、ルータの位置を確認します。そのうえで、[[green:同じVLAN内の通信]]なのか、[[blue:別ネットワークへの通信]]なのかを分けて読むと、設問の根拠を探しやすくなります。',
           ],
         },
       ],
     },
   ],
   examFocus: [
-    'L2SWはMACアドレス、ルータはIPアドレスを見るという役割分担を説明できる',
-    '別ネットワーク宛て通信で、最初の宛先MACアドレスがデフォルトゲートウェイになる理由を説明できる',
-    'VLANによってブロードキャストドメインが分かれることを構成図上で読める',
+    'L2SWは[[green:MACアドレス]]、ルータは[[blue:IPアドレス]]を見るという役割分担を説明できる',
+    '別ネットワーク宛て通信で、最初の[[green:宛先MACアドレス]]がデフォルトゲートウェイになる理由を説明できる',
+    'VLANによって[[green:ブロードキャストドメイン]]が分かれることを構成図上で読める',
   ],
   practicalFocus: [
-    '障害切り分けでは、まず同一セグメント内で届くのか、デフォルトゲートウェイを越えた先で詰まっているのかを見る',
+    '障害切り分けでは、まず[[green:同一セグメント内]]で届くのか、[[blue:デフォルトゲートウェイを越えた先]]で詰まっているのかを見る',
     'L2の問題とL3の問題を分けるだけで、調査の順番がかなり整理される',
     'VLAN設計は、物理配線ではなく論理的な分離として扱える',
   ],
@@ -677,11 +736,11 @@ const layerOneThreeChapter: TextbookChapter = {
     '同じスイッチにつながっていれば必ず同じセグメントだと思ってしまう',
   ],
   summary: [
-    'L1は信号を運ぶ土台、L2は同じLAN内で届ける仕組み、L3は別ネットワークへ届ける仕組みです。',
-    'MACアドレスは次の一歩、IPアドレスは最終目的地を見るための情報です。',
-    'L2SWはMACアドレスを見てフレームを転送し、ルータはIPアドレスを見てパケットを転送します。',
-    'ARPは、同じLAN内で次に届ける相手のMACアドレスを知るために使います。',
-    'VLANは、L2の範囲を論理的に分ける技術です。',
+    'L1は信号を運ぶ土台、[[green:L2]]は同じLAN内で届ける仕組み、[[blue:L3]]は別ネットワークへ届ける仕組みです。',
+    '[[green:MACアドレス]]は次の一歩、[[blue:IPアドレス]]は最終目的地を見るための情報です。',
+    'L2SWは[[green:MACアドレス]]を見てフレームを転送し、ルータは[[blue:IPアドレス]]を見てパケットを転送します。',
+    'ARPは、同じLAN内で次に届ける相手の[[green:MACアドレス]]を知るために使います。',
+    'VLANは、[[green:L2の範囲]]を論理的に分ける技術です。',
   ],
 }
 
@@ -728,8 +787,6 @@ export const textbookChapters: TextbookChapter[] = [
   draftChapter('ipv6', 18, 'IPv6', 'IPv6アドレス、NDP、SLAAC、移行技術をIPv4との違いで理解する'),
   draftChapter('proxy', 19, 'プロキシサーバ', '代理通信、PAC、CONNECT、HTTPS復号の動きを理解する'),
   draftChapter('network-mgmt', 20, 'ネットワーク管理', 'ping、syslog、SNMP、監視、障害切り分けの考え方を学ぶ'),
-  draftChapter('protocol-review', 21, 'プロトコル総復習', '主要プロトコルをレイヤ、ポート、用途の地図として整理する'),
-  draftChapter('iot', 22, 'IoT+補足', 'CoAP、MQTT、LPWA、指数再送など近年出題テーマを補う'),
 ]
 
 export function getTextbookChapter(chapterId: string | undefined): TextbookChapter | undefined {

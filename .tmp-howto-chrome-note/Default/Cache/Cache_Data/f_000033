@@ -1,0 +1,266 @@
+export const sslTlsQuestions = [
+	{
+		id: "q-060",
+		topicId: "ssl-tls",
+		questionText: "TLSハンドシェイクにおいて、マスタシークレットから導出され実際の暗号化・MAC処理に使うキー群を{{blank}}という。",
+		correctAnswer: "セッション鍵",
+		choices: [
+			"セッション鍵",
+			"公開鍵",
+			"秘密鍵",
+			"プリマスタシークレット"
+		],
+		isImportant: false,
+		explanation: "TLS の鍵導出の流れ：プリマスタシークレット → マスタシークレット → セッション鍵（暗号化鍵・MACキー・IV）。セッション鍵はセッションごとに異なる対称鍵で実際の通信を暗号化する。マスタシークレットはセッション鍵を導出するための中間値であり別物。",
+		difficulty: 3
+	},
+	{
+		id: "q-061",
+		topicId: "ssl-tls",
+		questionText: "TLS 1.3では廃止されたが、それ以前のTLSで使われていた鍵交換方式で、サーバの証明書中の公開鍵で暗号化してプリマスタシークレットを送る方式を{{blank}}という。",
+		correctAnswer: "RSA鍵交換",
+		choices: [
+			"RSA鍵交換",
+			"ECDHE",
+			"DHE",
+			"PSK"
+		],
+		isImportant: false,
+		explanation: "RSA鍵交換は過去セッションのパケットをキャプチャしておき、後に秘密鍵を入手した攻撃者に復号されるリスクがある（前方秘匿性なし）。TLS 1.3はECDHEのみをサポートし前方秘匿性を保証する。",
+		difficulty: 3
+	},
+	{
+		id: "q-062",
+		topicId: "ssl-tls",
+		questionText: "TLSにおいて、WebブラウザがHTTPSサイトを今後常にHTTPSで接続するよう指示するHTTPヘッダを{{blank}}という。",
+		correctAnswer: "HSTS（HTTP Strict Transport Security）",
+		choices: [
+			"HSTS（HTTP Strict Transport Security）",
+			"CSP",
+			"X-Frame-Options",
+			"OCSP Stapling"
+		],
+		isImportant: false,
+		explanation: "HSTSはサーバが「Strict-Transport-Security」ヘッダで指定した期間、ブラウザがHTTP接続を自動的にHTTPSにアップグレードする。HTTPダウングレード攻撃を防止する。",
+		difficulty: 2
+	},
+	{
+		id: "q-063",
+		topicId: "ssl-tls",
+		questionText: "PKIにおいてサーバ証明書に署名する機関を{{blank}}、そのさらに上位に位置し最終的な信頼の起点となる機関を{{blank}}という。",
+		correctAnswer: "中間CA・ルートCA",
+		choices: [
+			"中間CA・ルートCA",
+			"ルートCA・中間CA",
+			"RA・CA",
+			"CA・VA"
+		],
+		isImportant: true,
+		explanation: "証明書チェーンはサーバ証明書→中間CA証明書→ルートCA証明書と連なる。ルートCA証明書はOSやブラウザに組み込まれている。中間CAを使うことでルートCA秘密鍵の漏洩リスクを限定する。",
+		difficulty: 2,
+		excludeFromWritten: true
+	},
+	{
+		id: "q-064",
+		topicId: "ssl-tls",
+		questionText: "TLS通信においてセッション再開を高速化するための仕組みとして、TLS 1.3で採用されたのは{{blank}}である。",
+		correctAnswer: "0-RTTモード（セッションチケット）",
+		choices: [
+			"0-RTTモード（セッションチケット）",
+			"セッションID",
+			"クライアント証明書",
+			"OCSPステープリング"
+		],
+		isImportant: false,
+		explanation: "TLS 1.3の0-RTT（ゼロラウンドトリップタイム）はセッションチケットを使って過去のセッション情報を再利用し、ハンドシェイクを省略してアプリケーションデータをすぐに送信できる。ただしリプレイ攻撃のリスクがある。",
+		difficulty: 3
+	},
+	(
+	// ── TLS 1.3 詳細・PKI（R4 午後II-1 頻出）──────────────────────
+	{
+		id: "q-370",
+		topicId: "ssl-tls",
+		questionText: "TLS 1.3 で暗号スイートとして必須採用された、AES-GCMなど認証付き暗号化方式の総称を{{blank}}という。",
+		correctAnswer: "AEAD（Authenticated Encryption with Associated Data）",
+		choices: [
+			"AEAD（Authenticated Encryption with Associated Data）",
+			"HMAC-SHA256",
+			"CBC-MAC",
+			"AES-CCM"
+		],
+		isImportant: true,
+		explanation: "AEAD（認証付き暗号化）は暗号化と認証（改ざん検知）を1つのアルゴリズムで実現する。TLS 1.3はAEAD専用となりAES-128-GCMやChaCha20-Poly1305が使われる。TLS 1.2以前のCBC+HMACの組み合わせは廃止された。R4午後II-1で出題。",
+		difficulty: 2
+	}),
+	{
+		id: "q-371",
+		topicId: "ssl-tls",
+		questionText: "TLS 1.3ではハンドシェイクが短縮され、通常のフルハンドシェイクで必要なラウンドトリップ数は{{blank}}RTTである。",
+		correctAnswer: "1-RTT",
+		choices: [
+			"1-RTT",
+			"2-RTT",
+			"3-RTT",
+			"0-RTT"
+		],
+		isImportant: true,
+		explanation: "TLS 1.3のフルハンドシェイクは1-RTT（1往復）で完了する。TLS 1.2は2-RTT必要だった。再接続時の0-RTTモードでは往復ゼロでデータ送信が可能だがリプレイ攻撃リスクがある。1-RTTの実現はClientHelloにKE（鍵共有）パラメータを含めることで達成している。",
+		difficulty: 2
+	},
+	{
+		id: "q-372",
+		topicId: "ssl-tls",
+		questionText: "TLSのサーバ証明書のSAN（Subject Alternative Name）フィールドに記載できる識別子として正しいものを選べ。",
+		correctAnswer: "DNSホスト名・IPアドレス・メールアドレス",
+		choices: [
+			"DNSホスト名・IPアドレス・メールアドレス",
+			"MACアドレスのみ",
+			"ASN番号のみ",
+			"ポート番号のみ"
+		],
+		isImportant: false,
+		explanation: "SAN（Subject Alternative Name）はX.509証明書の拡張フィールドで、証明書が有効なDNS名・IPアドレス・メールアドレスなどを列挙できる。現在はCN（Common Name）より SANが優先される。ワイルドカード（*.example.com）もSANに記載される。",
+		difficulty: 2
+	},
+	{
+		id: "q-373",
+		topicId: "ssl-tls",
+		questionText: "TLSサーバ証明書の失効情報をCAのOCSPレスポンダに問い合わせる代わりに、サーバ自身がキャッシュした応答をTLSハンドシェイク中に提示する仕組みを{{blank}}という。",
+		correctAnswer: "OCSP Stapling（OCSPステープリング）",
+		choices: [
+			"OCSP Stapling（OCSPステープリング）",
+			"OCSP Must-Staple",
+			"CRL配布",
+			"CT（Certificate Transparency）"
+		],
+		isImportant: true,
+		explanation: "OCSP Staplingはサーバが事前にCAのOCSPレスポンスを取得してキャッシュし、TLSハンドシェイク中にクライアントへ提示する。クライアントがCAに直接問い合わせる必要がなくなりプライバシーとパフォーマンスが向上する。R4午後II-1関連で出題。",
+		difficulty: 3
+	},
+	(
+	// ── R6〜R7 PKI・証明書管理 ────────────────────────────────────────
+	{
+		id: "q-374",
+		topicId: "ssl-tls",
+		questionText: "CAが発行した証明書のシリアル番号と失効日時をリストとして公開し、失効した証明書を検証する仕組みを{{blank}}という。",
+		correctAnswer: "CRL（Certificate Revocation List）",
+		choices: [
+			"CRL（Certificate Revocation List）",
+			"OCSP",
+			"CT（Certificate Transparency）",
+			"HSTS"
+		],
+		isImportant: true,
+		explanation: "CRL（証明書失効リスト）はCAが定期的に発行し、失効した証明書のシリアル番号一覧を含む。クライアントはCRL配布ポイント（CDP）からダウンロードして検証する。OCSPに比べてリアルタイム性が低くファイルサイズが大きいが、オフライン検証が可能。",
+		difficulty: 2
+	}),
+	{
+		id: "q-375",
+		topicId: "ssl-tls",
+		questionText: "CAが発行する全証明書を公開ログに記録し、不正発行を検出できるようにする仕組みを{{blank}}という。",
+		correctAnswer: "CT（Certificate Transparency）",
+		choices: [
+			"CT（Certificate Transparency）",
+			"CAA",
+			"OCSP Stapling",
+			"DANE"
+		],
+		isImportant: false,
+		explanation: "CT（Certificate Transparency、RFC 6962）は証明書の発行ログを公開の追記専用ログサーバに記録する仕組み。ブラウザはTLSハンドシェイク時にSCT（署名付き証明書タイムスタンプ）を確認し、ログ未記載の証明書を拒否できる。不正なCA発行証明書を早期発見する効果がある。",
+		difficulty: 3
+	},
+	{
+		id: "q-376",
+		topicId: "ssl-tls",
+		questionText: "DNSレコードを使ってドメインオーナーが証明書の発行を許可するCAを指定できる仕組みを{{blank}}という。",
+		correctAnswer: "CAA（Certification Authority Authorization）",
+		choices: [
+			"CAA（Certification Authority Authorization）",
+			"DANE",
+			"DNSSEC",
+			"CT"
+		],
+		isImportant: false,
+		explanation: "CAA（RFC 8659）はDNSのCAAレコードにそのドメインの証明書を発行できるCAを指定する。不正なCAによる証明書発行を防ぐ。例: `example.com. CAA 0 issue \"letsencrypt.org\"` でLet's Encrypt以外からの発行を禁止できる。",
+		difficulty: 3
+	},
+	(
+	// ── 復習ノートからの追補（SSL/TLS基礎・SSL-VPN3方式） ─────────────
+	{
+		id: "q-ssl-n1",
+		topicId: "ssl-tls",
+		questionText: "SSL/TLSにおいて、クライアントからサーバへ最初に送られ、利用可能な暗号化アルゴリズムの一覧を伝えるメッセージを{{blank}}という。",
+		correctAnswer: "Client Hello",
+		choices: [
+			"Client Hello",
+			"Server Hello",
+			"ClientKeyExchange",
+			"Finished"
+		],
+		isImportant: true,
+		explanation: "TLSハンドシェイクの最初は Client Hello（クライアント→サーバ）。続いてサーバが Server Hello を返し使用するアルゴリズムを通知する。Client Hello / Server Hello の順序は必須の暗記事項。",
+		difficulty: 1
+	}),
+	{
+		id: "q-ssl-n2",
+		topicId: "ssl-tls",
+		questionText: "HTTPS（HTTP over SSL/TLS）が使用するTCPポート番号は{{blank}}である。",
+		correctAnswer: "443",
+		choices: [
+			"443",
+			"80",
+			"8443",
+			"21"
+		],
+		isImportant: true,
+		explanation: "HTTPSはHTTPをSSL/TLSで保護したもので、ポート番号はTCP 443。HTTPの80と区別する。SSL-VPN もHTTPS と同じTCP 443を使う。",
+		difficulty: 1
+	},
+	{
+		id: "q-ssl-n3",
+		topicId: "ssl-tls",
+		questionText: "SSL-VPNの3方式のうち、SSL-VPN装置で接続先サーバのIPアドレスとポート番号を事前に定義しておくが、通信中に動的にポートが変化するアプリケーションには使えない方式を{{blank}}という。",
+		correctAnswer: "ポートフォワーディング",
+		choices: [
+			"ポートフォワーディング",
+			"リバースプロキシ",
+			"L2フォワーディング",
+			"IPsecトンネル"
+		],
+		isImportant: true,
+		explanation: "SSL-VPNは3方式：①リバースプロキシ（HTTP/HTTPSのみ・改ざん防止が主目的）②ポートフォワーディング（IP+ポートを静的定義／動的ポートのアプリ不可）③L2フォワーディング（クライアントに専用ソフト・仮想IP払出し・全プロトコル対応）。",
+		difficulty: 2
+	},
+	{
+		id: "q-ssl-n4",
+		topicId: "ssl-tls",
+		questionText: "IPsec はESPを用いてレイヤ{{blank}}で通信する。一方、SSL-VPNはTCP 443番（HTTPS）を用いたレイヤ4通信である。",
+		correctAnswer: "3",
+		choices: [
+			"3",
+			"2",
+			"4",
+			"7"
+		],
+		isImportant: true,
+		explanation: "IPsec はネットワーク層（L3）で動作するVPN（ESP/AH）。SSL-VPN はトランスポート層（L4）の HTTPS を使う。通信レイヤの違いは混同されやすい頻出論点。",
+		difficulty: 2
+	},
+	{
+		id: "q-ssl-n5",
+		topicId: "ssl-tls",
+		questionText: "クライアント証明書をPCに配布する際、PC側でデータの暗号化を可能にするために必要となる情報は{{blank}}である。",
+		correctAnswer: "クライアントの秘密鍵",
+		choices: [
+			"クライアントの秘密鍵",
+			"CAのルート証明書",
+			"サーバ証明書のCN",
+			"プリマスタシークレット"
+		],
+		isImportant: true,
+		explanation: "クライアント証明書には公開鍵が記載されているが、暗号化／署名処理にはセットになる秘密鍵がPC側に必要。「クライアント証明書」ときたら「秘密鍵」が必要、と覚える頻出パターン。",
+		difficulty: 2
+	}
+];
+
+//# sourceMappingURL=data:application/json;base64,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QVk7RUFDYjtDQUNEO0VBQ0UsSUFBSTtFQUNKLFNBQVM7RUFDVCxjQUFjO0VBQ2QsZUFBZTtFQUNmLFNBQVM7R0FBQztHQUFLO0dBQUs7R0FBSztHQUFJO0VBQzdCLGFBQWE7RUFDYixhQUFhO0VBQ2IsWUFBWTtFQUNiO0NBQ0Q7RUFDRSxJQUFJO0VBQ0osU0FBUztFQUNULGNBQWM7RUFDZCxlQUFlO0VBQ2YsU0FBUztHQUFDO0dBQWM7R0FBYTtHQUFhO0dBQWM7RUFDaEUsYUFBYTtFQUNiLGFBQWE7RUFDYixZQUFZO0VBQ2I7Q0FDRiIsIm5hbWVzIjpbXSwic291cmNlcyI6WyJzc2wtdGxzLnRzIl0sInZlcnNpb24iOjMsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB0eXBlIHsgUXVlc3Rpb24gfSBmcm9tICcuLi8uLi90eXBlcydcclxuXHJcbmV4cG9ydCBjb25zdCBzc2xUbHNRdWVzdGlvbnM6IFF1ZXN0aW9uW10gPSBbXHJcbiAge1xyXG4gICAgaWQ6ICdxLTA2MCcsXHJcbiAgICB0b3BpY0lkOiAnc3NsLXRscycsXHJcbiAgICBxdWVzdGlvblRleHQ6ICdUTFPjg4/jg7Pjg4njgrfjgqfjgqTjgq/jgavjgYrjgYTjgabjgIHjg57jgrnjgr/jgrfjg7zjgq/jg6zjg4Pjg4jjgYvjgonlsI7lh7rjgZXjgozlrp/pmpvjga7mmpflj7fljJbjg7tNQUPlh6bnkIbjgavkvb/jgYbjgq3jg7znvqTjgpJ7e2JsYW5rfX3jgajjgYTjgYbjgIInLFxyXG4gICAgY29ycmVjdEFuc3dlcjogJ+OCu+ODg+OCt+ODp+ODs+mNtScsXHJcbiAgICBjaG9pY2VzOiBbJ+OCu+ODg+OCt+ODp+ODs+mNtScsICflhazplovpjbUnLCAn56eY5a+G6Y21JywgJ+ODl+ODquODnuOCueOCv+OCt+ODvOOCr+ODrOODg+ODiCddLFxyXG4gICAgaXNJbXBvcnRhbnQ6IGZhbHNlLFxyXG4gICAgZXhwbGFuYXRpb246ICdUTFMg44Gu6Y215bCO5Ye644Gu5rWB44KM77ya44OX44Oq44Oe44K544K/44K344O844Kv44Os44OD44OIIOKGkiDjg57jgrnjgr/jgrfjg7zjgq/jg6zjg4Pjg4gg4oaSIOOCu+ODg+OCt+ODp+ODs+mNte+8iOaal+WPt+WMlumNteODu01BQ+OCreODvOODu0lW77yJ44CC44K744OD44K344On44Oz6Y2144Gv44K744OD44K344On44Oz44GU44Go44Gr55Ww44Gq44KL5a++56ew6Y2144Gn5a6f6Zqb44Gu6YCa5L+h44KS5pqX5Y+35YyW44GZ44KL44CC44Oe44K544K/44K344O844Kv44Os44OD44OI44Gv44K744OD44K344On44Oz6Y2144KS5bCO5Ye644GZ44KL44Gf44KB44Gu5Lit6ZaT5YCk44Gn44GC44KK5Yil54mp44CCJyxcclxuICAgIGRpZmZpY3VsdHk6IDMsXHJcbiAgfSxcclxuICB7XHJcbiAgICBpZDogJ3EtMDYxJyxcclxuICAgIHRvcGljSWQ6ICdzc2wtdGxzJyxcclxuICAgIHF1ZXN0aW9uVGV4dDogJ1RMUyAxLjPjgafjga/lu4PmraLjgZXjgozjgZ/jgYzjgIHjgZ3jgozku6XliY3jga5UTFPjgafkvb/jgo/jgozjgabjgYTjgZ/pjbXkuqTmj5vmlrnlvI/jgafjgIHjgrXjg7zjg5Djga7oqLzmmI7mm7jkuK3jga7lhazplovpjbXjgafmmpflj7fljJbjgZfjgabjg5fjg6rjg57jgrnjgr/jgrfjg7zjgq/jg6zjg4Pjg4jjgpLpgIHjgovmlrnlvI/jgpJ7e2JsYW5rfX3jgajjgYTjgYbjgIInLFxyXG4gICAgY29ycmVjdEFuc3dlcjogJ1JTQemNteS6pOaPmycsXHJcbiAgICBjaG9pY2VzOiBbJ1JTQemNteS6pOaPmycsICdFQ0RIRScsICdESEUnLCAnUFNLJ10sXHJcbiAgICBpc0ltcG9ydGFudDogZmFsc2UsXHJcbiAgICBleHBsYW5hdGlvbjogJ1JTQemNteS6pOaPm+OBr+mBjuWOu+OCu+ODg+OCt+ODp+ODs+OBruODkeOCseODg+ODiOOCkuOCreODo+ODl+ODgeODo+OBl+OBpuOBiuOBjeOAgeW+jOOBq+enmOWvhumNteOCkuWFpeaJi+OBl+OBn+aUu+aSg+iAheOBq+W+qeWPt+OBleOCjOOCi+ODquOCueOCr+OBjOOBguOCi++8iOWJjeaWueenmOWMv+aAp+OBquOBl++8ieOAglRMUyAxLjPjga9FQ0RIReOBruOBv+OCkuOCteODneODvOODiOOBl+WJjeaWueenmOWMv+aAp+OCkuS/neiovOOBmeOCi+OAgicsXHJcbiAgICBkaWZmaWN1bHR5OiAzLFxyXG4gIH0sXHJcbiAge1xyXG4gICAgaWQ6ICdxLTA2MicsXHJcbiAgICB0b3BpY0lkOiAnc3NsLXRscycsXHJcbiAgICBxdWVzdGlvblRleHQ6ICdUTFPjgavjgYrjgYTjgabjgIFXZWLjg5bjg6njgqbjgrbjgYxIVFRQU+OCteOCpOODiOOCkuS7iuW+jOW4uOOBq0hUVFBT44Gn5o6l57aa44GZ44KL44KI44GG5oyH56S644GZ44KLSFRUUOODmOODg+ODgOOCknt7Ymxhbmt9feOBqOOBhOOBhuOAgicsXHJcbiAgICBjb3JyZWN0QW5zd2VyOiAnSFNUU++8iEhUVFAgU3RyaWN0IFRyYW5zcG9ydCBTZWN1cml0ee+8iScsXHJcbiAgICBjaG9pY2VzOiBbJ0hTVFPvvIhIVFRQIFN0cmljdCBUcmFuc3BvcnQgU2VjdXJpdHnvvIknLCAnQ1NQJywgJ1gtRnJhbWUtT3B0aW9ucycsICdPQ1NQIFN0YXBsaW5nJ10sXHJcbiAgICBpc0ltcG9ydGFudDogZmFsc2UsXHJcbiAgICBleHBsYW5hdGlvbjogJ0hTVFPjga/jgrXjg7zjg5DjgYzjgIxTdHJpY3QtVHJhbnNwb3J0LVNlY3VyaXR544CN44OY44OD44OA44Gn5oyH5a6a44GX44Gf5pyf6ZaT44CB44OW44Op44Km44K244GMSFRUUOaOpee2muOCkuiHquWLleeahOOBq0hUVFBT44Gr44Ki44OD44OX44Kw44Os44O844OJ44GZ44KL44CCSFRUUOODgOOCpuODs+OCsOODrOODvOODieaUu+aSg+OCkumYsuatouOBmeOCi+OAgicsXHJcbiAgICBkaWZmaWN1bHR5OiAyLFxyXG4gIH0sXHJcbiAge1xyXG4gICAgaWQ6ICdxLTA2MycsXHJcbiAgICB0b3BpY0lkOiAnc3NsLXRscycsXHJcbiAgICBxdWVzdGlvblRleHQ6ICdQS0njgavjgYrjgYTjgabjgrXjg7zjg5DoqLzmmI7mm7jjgavnvbLlkI3jgZnjgovmqZ/plqLjgpJ7e2JsYW5rfX3jgIHjgZ3jga7jgZXjgonjgavkuIrkvY3jgavkvY3nva7jgZfmnIDntYLnmoTjgarkv6HpoLzjga7otbfngrnjgajjgarjgovmqZ/plqLjgpJ7e2JsYW5rfX3jgajjgYTjgYbjgIInLFxyXG4gICAgY29ycmVjdEFuc3dlcjogJ+S4remWk0NB44O744Or44O844OIQ0EnLFxyXG4gICAgY2hvaWNlczogWyfkuK3plpNDQeODu+ODq+ODvOODiENBJywgJ+ODq+ODvOODiENB44O75Lit6ZaTQ0EnLCAnUkHjg7tDQScsICdDQeODu1ZBJ10sXHJcbiAgICBpc0ltcG9ydGFudDogdHJ1ZSxcclxuICAgIGV4cGxhbmF0aW9uOiAn6Ki85piO5pu444OB44Kn44O844Oz44Gv44K144O844OQ6Ki85piO5pu44oaS5Lit6ZaTQ0HoqLzmmI7mm7jihpLjg6vjg7zjg4hDQeiovOaYjuabuOOBqOmAo+OBquOCi+OAguODq+ODvOODiENB6Ki85piO5pu444GvT1PjgoTjg5bjg6njgqbjgrbjgavntYTjgb/ovrzjgb7jgozjgabjgYTjgovjgILkuK3plpNDQeOCkuS9v+OBhuOBk+OBqOOBp+ODq+ODvOODiENB56eY5a+G6Y2144Gu5ryP5rSp44Oq44K544Kv44KS6ZmQ5a6a44GZ44KL44CCJyxcclxuICAgIGRpZmZpY3VsdHk6IDIsXHJcbiAgICBleGNsdWRlRnJvbVdyaXR0ZW46IHRydWUsXHJcbiAgfSxcclxuICB7XHJcbiAgICBpZDogJ3EtMDY0JyxcclxuICAgIHRvcGljSWQ6ICdzc2wtdGxzJyxcclxuICAgIHF1ZXN0aW9uVGV4dDogJ1RMU+mAmuS/oeOBq+OBiuOBhOOBpuOCu+ODg+OCt+ODp+ODs+WGjemWi+OCkumrmOmAn+WMluOBmeOCi+OBn+OCgeOBruS7lee1hOOBv+OBqOOBl+OBpuOAgVRMUyAxLjPjgafmjqHnlKjjgZXjgozjgZ/jga7jga97e2JsYW5rfX3jgafjgYLjgovjgIInLFxyXG4gICAgY29ycmVjdEFuc3dlcjogJzAtUlRU44Oi44O844OJ77yI44K744OD44K344On44Oz44OB44Kx44OD44OI77yJJyxcclxuICAgIGNob2ljZXM6IFsnMC1SVFTjg6Ljg7zjg4nvvIjjgrvjg4Pjgrfjg6fjg7Pjg4HjgrHjg4Pjg4jvvIknLCAn44K744OD44K344On44OzSUQnLCAn44Kv44Op44Kk44Ki44Oz44OI6Ki85piO5pu4JywgJ09DU1Djgrnjg4bjg7zjg5fjg6rjg7PjgrAnXSxcclxuICAgIGlzSW1wb3J0YW50OiBmYWxzZSxcclxuICAgIGV4cGxhbmF0aW9uOiAnVExTIDEuM+OBrjAtUlRU77yI44K844Ot44Op44Km44Oz44OJ44OI44Oq44OD44OX44K/44Kk44Og77yJ44Gv44K744OD44K344On44Oz44OB44Kx44OD44OI44KS5L2/44Gj44Gm6YGO5Y6744Gu44K744OD44K344On44Oz5oOF5aCx44KS5YaN5Yip55So44GX44CB44OP44Oz44OJ44K344Kn44Kk44Kv44KS55yB55Wl44GX44Gm44Ki44OX44Oq44Kx44O844K344On44Oz44OH44O844K/44KS44GZ44GQ44Gr6YCB5L+h44Gn44GN44KL44CC44Gf44Gg44GX44Oq44OX44Os44Kk5pS75pKD44Gu44Oq44K544Kv44GM44GC44KL44CCJyxcclxuICAgIGRpZmZpY3VsdHk6IDMsXHJcbiAgfSxcclxuICAvLyDilIDilIAgVExTIDEuMyDoqbPntLDjg7tQS0nvvIhSNCDljYjlvoxJSS0xIOmgu+WHuu+8ieKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgFxyXG4gIHtcclxuICAgIGlkOiAncS0zNzAnLFxyXG4gICAgdG9waWNJZDogJ3NzbC10bHMnLFxyXG4gICAgcXVlc3Rpb25UZXh0OiAnVExTIDEuMyDjgafmmpflj7fjgrnjgqTjg7zjg4jjgajjgZfjgablv4XpoIjmjqHnlKjjgZXjgozjgZ/jgIFBRVMtR0NN44Gq44Gp6KqN6Ki85LuY44GN5pqX5Y+35YyW5pa55byP44Gu57eP56ew44KSe3tibGFua31944Go44GE44GG44CCJyxcclxuICAgIGNvcnJlY3RBbnN3ZXI6ICdBRUFE77yIQXV0aGVudGljYXRlZCBFbmNyeXB0aW9uIHdpdGggQXNzb2NpYXRlZCBEYXRh77yJJyxcclxuICAgIGNob2ljZXM6IFtcclxuICAgICAgJ0FFQUTvvIhBdXRoZW50aWNhdGVkIEVuY3J5cHRpb24gd2l0aCBBc3NvY2lhdGVkIERhdGHvvIknLFxyXG4gICAgICAnSE1BQy1TSEEyNTYnLFxyXG4gICAgICAnQ0JDLU1BQycsXHJcbiAgICAgICdBRVMtQ0NNJyxcclxuICAgIF0sXHJcbiAgICBpc0ltcG9ydGFudDogdHJ1ZSxcclxuICAgIGV4cGxhbmF0aW9uOiAnQUVBRO+8iOiqjeiovOS7mOOBjeaal+WPt+WMlu+8ieOBr+aal+WPt+WMluOBqOiqjeiovO+8iOaUueOBluOCk+aknOefpe+8ieOCkjHjgaTjga7jgqLjg6vjgrTjg6rjgrrjg6Djgaflrp/nj77jgZnjgovjgIJUTFMgMS4z44GvQUVBROWwgueUqOOBqOOBquOCikFFUy0xMjgtR0NN44KEQ2hhQ2hhMjAtUG9seTEzMDXjgYzkvb/jgo/jgozjgovjgIJUTFMgMS4y5Lul5YmN44GuQ0JDK0hNQUPjga7ntYTjgb/lkIjjgo/jgZvjga/lu4PmraLjgZXjgozjgZ/jgIJSNOWNiOW+jElJLTHjgaflh7rpoYzjgIInLFxyXG4gICAgZGlmZmljdWx0eTogMixcclxuICB9LFxyXG4gIHtcclxuICAgIGlkOiAncS0zNzEnLFxyXG4gICAgdG9waWNJZDogJ3NzbC10bHMnLFxyXG4gICAgcXVlc3Rpb25UZXh0OiAnVExTIDEuM+OBp+OBr+ODj+ODs+ODieOCt+OCp+OCpOOCr+OBjOefree4ruOBleOCjOOAgemAmuW4uOOBruODleODq+ODj+ODs+ODieOCt+OCp+OCpOOCr+OBp+W/heimgeOBquODqeOCpuODs+ODieODiOODquODg+ODl+aVsOOBr3t7Ymxhbmt9fVJUVOOBp+OBguOCi+OAgicsXHJcbiAgICBjb3JyZWN0QW5zd2VyOiAnMS1SVFQnLFxyXG4gICAgY2hvaWNlczogWycxLVJUVCcsICcyLVJUVCcsICczLVJUVCcsICcwLVJUVCddLFxyXG4gICAgaXNJbXBvcnRhbnQ6IHRydWUsXHJcbiAgICBleHBsYW5hdGlvbjogJ1RMUyAxLjPjga7jg5Xjg6vjg4/jg7Pjg4njgrfjgqfjgqTjgq/jga8xLVJUVO+8iDHlvoDlvqnvvInjgaflrozkuobjgZnjgovjgIJUTFMgMS4y44GvMi1SVFTlv4XopoHjgaDjgaPjgZ/jgILlho3mjqXntprmmYLjga4wLVJUVOODouODvOODieOBp+OBr+W+gOW+qeOCvOODreOBp+ODh+ODvOOCv+mAgeS/oeOBjOWPr+iDveOBoOOBjOODquODl+ODrOOCpOaUu+aSg+ODquOCueOCr+OBjOOBguOCi+OAgjEtUlRU44Gu5a6f54++44GvQ2xpZW50SGVsbG/jgatLRe+8iOmNteWFseacie+8ieODkeODqeODoeODvOOCv+OCkuWQq+OCgeOCi+OBk+OBqOOBp+mBlOaIkOOBl+OBpuOBhOOCi+OAgicsXHJcbiAgICBkaWZmaWN1bHR5OiAyLFxyXG4gIH0sXHJcbiAge1xyXG4gICAgaWQ6ICdxLTM3MicsXHJcbiAgICB0b3BpY0lkOiAnc3NsLXRscycsXHJcbiAgICBxdWVzdGlvblRleHQ6ICdUTFPjga7jgrXjg7zjg5DoqLzmmI7mm7jjga5TQU7vvIhTdWJqZWN0IEFsdGVybmF0aXZlIE5hbWXvvInjg5XjgqPjg7zjg6vjg4njgavoqJjovInjgafjgY3jgovorZjliKXlrZDjgajjgZfjgabmraPjgZfjgYTjgoLjga7jgpLpgbjjgbnjgIInLFxyXG4gICAgY29ycmVjdEFuc3dlcjogJ0ROU+ODm+OCueODiOWQjeODu0lQ44Ki44OJ44Os44K544O744Oh44O844Or44Ki44OJ44Os44K5JyxcclxuICAgIGNob2ljZXM6IFtcclxuICAgICAgJ0ROU+ODm+OCueODiOWQjeODu0lQ44Ki44OJ44Os44K544O744Oh44O844Or44Ki44OJ44Os44K5JyxcclxuICAgICAgJ01BQ+OCouODieODrOOCueOBruOBvycsXHJcbiAgICAgICdBU07nlarlj7fjga7jgb8nLFxyXG4gICAgICAn44Od44O844OI55Wq5Y+344Gu44G/JyxcclxuICAgIF0sXHJcbiAgICBpc0ltcG9ydGFudDogZmFsc2UsXHJcbiAgICBleHBsYW5hdGlvbjogJ1NBTu+8iFN1YmplY3QgQWx0ZXJuYXRpdmUgTmFtZe+8ieOBr1guNTA56Ki85piO5pu444Gu5ouh5by144OV44Kj44O844Or44OJ44Gn44CB6Ki85piO5pu444GM5pyJ5Yq544GqRE5T5ZCN44O7SVDjgqLjg4njg6zjgrnjg7vjg6Hjg7zjg6vjgqLjg4njg6zjgrnjgarjganjgpLliJfmjJnjgafjgY3jgovjgILnj77lnKjjga9DTu+8iENvbW1vbiBOYW1l77yJ44KI44KKIFNBTuOBjOWEquWFiOOBleOCjOOCi+OAguODr+OCpOODq+ODieOCq+ODvOODie+8iCouZXhhbXBsZS5jb23vvInjgoJTQU7jgavoqJjovInjgZXjgozjgovjgIInLFxyXG4gICAgZGlmZmljdWx0eTogMixcclxuICB9LFxyXG4gIHtcclxuICAgIGlkOiAncS0zNzMnLFxyXG4gICAgdG9waWNJZDogJ3NzbC10bHMnLFxyXG4gICAgcXVlc3Rpb25UZXh0OiAnVExT44K144O844OQ6Ki85piO5pu444Gu5aSx5Yq55oOF5aCx44KSQ0Hjga5PQ1NQ44Os44K544Od44Oz44OA44Gr5ZWP44GE5ZCI44KP44Gb44KL5Luj44KP44KK44Gr44CB44K144O844OQ6Ieq6Lqr44GM44Kt44Oj44OD44K344Ol44GX44Gf5b+c562U44KSVExT44OP44Oz44OJ44K344Kn44Kk44Kv5Lit44Gr5o+Q56S644GZ44KL5LuV57WE44G/44KSe3tibGFua31944Go44GE44GG44CCJyxcclxuICAgIGNvcnJlY3RBbnN3ZXI6ICdPQ1NQIFN0YXBsaW5n77yIT0NTUOOCueODhuODvOODl+ODquODs+OCsO+8iScsXHJcbiAgICBjaG9pY2VzOiBbJ09DU1AgU3RhcGxpbmfvvIhPQ1NQ44K544OG44O844OX44Oq44Oz44Kw77yJJywgJ09DU1AgTXVzdC1TdGFwbGUnLCAnQ1JM6YWN5biDJywgJ0NU77yIQ2VydGlmaWNhdGUgVHJhbnNwYXJlbmN577yJJ10sXHJcbiAgICBpc0ltcG9ydGFudDogdHJ1ZSxcclxuICAgIGV4cGxhbmF0aW9uOiAnT0NTUCBTdGFwbGluZ+OBr+OCteODvOODkOOBjOS6i+WJjeOBq0NB44GuT0NTUOODrOOCueODneODs+OCueOCkuWPluW+l+OBl+OBpuOCreODo+ODg+OCt+ODpeOBl+OAgVRMU+ODj+ODs+ODieOCt+OCp+OCpOOCr+S4reOBq+OCr+ODqeOCpOOCouODs+ODiOOBuOaPkOekuuOBmeOCi+OAguOCr+ODqeOCpOOCouODs+ODiOOBjENB44Gr55u05o6l5ZWP44GE5ZCI44KP44Gb44KL5b+F6KaB44GM44Gq44GP44Gq44KK44OX44Op44Kk44OQ44K344O844Go44OR44OV44Kp44O844Oe44Oz44K544GM5ZCR5LiK44GZ44KL44CCUjTljYjlvoxJSS0x6Zai6YCj44Gn5Ye66aGM44CCJyxcclxuICAgIGRpZmZpY3VsdHk6IDMsXHJcbiAgfSxcclxuICAvLyDilIDilIAgUjbjgJxSNyBQS0njg7voqLzmmI7mm7jnrqHnkIYg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSAXHJcbiAge1xyXG4gICAgaWQ6ICdxLTM3NCcsXHJcbiAgICB0b3BpY0lkOiAnc3NsLXRscycsXHJcbiAgICBxdWVzdGlvblRleHQ6ICdDQeOBjOeZuuihjOOBl+OBn+iovOaYjuabuOOBruOCt+ODquOCouODq+eVquWPt+OBqOWkseWKueaXpeaZguOCkuODquOCueODiOOBqOOBl+OBpuWFrOmWi+OBl+OAgeWkseWKueOBl+OBn+iovOaYjuabuOOCkuaknOiovOOBmeOCi+S7lee1hOOBv+OCknt7Ymxhbmt9feOBqOOBhOOBhuOAgicsXHJcbiAgICBjb3JyZWN0QW5zd2VyOiAnQ1JM77yIQ2VydGlmaWNhdGUgUmV2b2NhdGlvbiBMaXN077yJJyxcclxuICAgIGNob2ljZXM6IFsnQ1JM77yIQ2VydGlmaWNhdGUgUmV2b2NhdGlvbiBMaXN077yJJywgJ09DU1AnLCAnQ1TvvIhDZXJ0aWZpY2F0ZSBUcmFuc3BhcmVuY3nvvIknLCAnSFNUUyddLFxyXG4gICAgaXNJbXBvcnRhbnQ6IHRydWUsXHJcbiAgICBleHBsYW5hdGlvbjogJ0NSTO+8iOiovOaYjuabuOWkseWKueODquOCueODiO+8ieOBr0NB44GM5a6a5pyf55qE44Gr55m66KGM44GX44CB5aSx5Yq544GX44Gf6Ki85piO5pu444Gu44K344Oq44Ki44Or55Wq5Y+35LiA6Kan44KS5ZCr44KA44CC44Kv44Op44Kk44Ki44Oz44OI44GvQ1JM6YWN5biD44Od44Kk44Oz44OI77yIQ0RQ77yJ44GL44KJ44OA44Km44Oz44Ot44O844OJ44GX44Gm5qSc6Ki844GZ44KL44CCT0NTUOOBq+avlOOBueOBpuODquOCouODq+OCv+OCpOODoOaAp+OBjOS9juOBj+ODleOCoeOCpOODq+OCteOCpOOCuuOBjOWkp+OBjeOBhOOBjOOAgeOCquODleODqeOCpOODs+aknOiovOOBjOWPr+iDveOAgicsXHJcbiAgICBkaWZmaWN1bHR5OiAyLFxyXG4gIH0sXHJcbiAge1xyXG4gICAgaWQ6ICdxLTM3NScsXHJcbiAgICB0b3BpY0lkOiAnc3NsLXRscycsXHJcbiAgICBxdWVzdGlvblRleHQ6ICdDQeOBjOeZuuihjOOBmeOCi+WFqOiovOaYjuabuOOCkuWFrOmWi+ODreOCsOOBq+iomOmMsuOBl+OAgeS4jeato+eZuuihjOOCkuaknOWHuuOBp+OBjeOCi+OCiOOBhuOBq+OBmeOCi+S7lee1hOOBv+OCknt7Ymxhbmt9feOBqOOBhOOBhuOAgicsXHJcbiAgICBjb3JyZWN0QW5zd2VyOiAnQ1TvvIhDZXJ0aWZpY2F0ZSBUcmFuc3BhcmVuY3nvvIknLFxyXG4gICAgY2hvaWNlczogWydDVO+8iENlcnRpZmljYXRlIFRyYW5zcGFyZW5jee+8iScsICdDQUEnLCAnT0NTUCBTdGFwbGluZycsICdEQU5FJ10sXHJcbiAgICBpc0ltcG9ydGFudDogZmFsc2UsXHJcbiAgICBleHBsYW5hdGlvbjogJ0NU77yIQ2VydGlmaWNhdGUgVHJhbnNwYXJlbmN544CBUkZDIDY5NjLvvInjga/oqLzmmI7mm7jjga7nmbrooYzjg63jgrDjgpLlhazplovjga7ov73oqJjlsILnlKjjg63jgrDjgrXjg7zjg5DjgavoqJjpjLLjgZnjgovku5XntYTjgb/jgILjg5bjg6njgqbjgrbjga9UTFPjg4/jg7Pjg4njgrfjgqfjgqTjgq/mmYLjgatTQ1TvvIjnvbLlkI3ku5jjgY3oqLzmmI7mm7jjgr/jgqTjg6Djgrnjgr/jg7Pjg5fvvInjgpLnorroqo3jgZfjgIHjg63jgrDmnKroqJjovInjga7oqLzmmI7mm7jjgpLmi5LlkKbjgafjgY3jgovjgILkuI3mraPjgapDQeeZuuihjOiovOaYjuabuOOCkuaXqeacn+eZuuimi+OBmeOCi+WKueaenOOBjOOBguOCi+OAgicsXHJcbiAgICBkaWZmaWN1bHR5OiAzLFxyXG4gIH0sXHJcbiAge1xyXG4gICAgaWQ6ICdxLTM3NicsXHJcbiAgICB0b3BpY0lkOiAnc3NsLXRscycsXHJcbiAgICBxdWVzdGlvblRleHQ6ICdETlPjg6zjgrPjg7zjg4njgpLkvb/jgaPjgabjg4njg6HjgqTjg7Pjgqrjg7zjg4rjg7zjgYzoqLzmmI7mm7jjga7nmbrooYzjgpLoqLHlj6/jgZnjgotDQeOCkuaMh+WumuOBp+OBjeOCi+S7lee1hOOBv+OCknt7Ymxhbmt9feOBqOOBhOOBhuOAgicsXHJcbiAgICBjb3JyZWN0QW5zd2VyOiAnQ0FB77yIQ2VydGlmaWNhdGlvbiBBdXRob3JpdHkgQXV0aG9yaXphdGlvbu+8iScsXHJcbiAgICBjaG9pY2VzOiBbJ0NBQe+8iENlcnRpZmljYXRpb24gQXV0aG9yaXR5IEF1dGhvcml6YXRpb27vvIknLCAnREFORScsICdETlNTRUMnLCAnQ1QnXSxcclxuICAgIGlzSW1wb3J0YW50OiBmYWxzZSxcclxuICAgIGV4cGxhbmF0aW9uOiAnQ0FB77yIUkZDIDg2NTnvvInjga9ETlPjga5DQUHjg6zjgrPjg7zjg4njgavjgZ3jga7jg4njg6HjgqTjg7Pjga7oqLzmmI7mm7jjgpLnmbrooYzjgafjgY3jgotDQeOCkuaMh+WumuOBmeOCi+OAguS4jeato+OBqkNB44Gr44KI44KL6Ki85piO5pu455m66KGM44KS6Ziy44GQ44CC5L6LOiBgZXhhbXBsZS5jb20uIENBQSAwIGlzc3VlIFwibGV0c2VuY3J5cHQub3JnXCJgIOOBp0xldFxcJ3MgRW5jcnlwdOS7peWkluOBi+OCieOBrueZuuihjOOCkuemgeatouOBp+OBjeOCi+OAgicsXHJcbiAgICBkaWZmaWN1bHR5OiAzLFxyXG4gIH0sXHJcbiAgLy8g4pSA4pSAIOW+qee/kuODjuODvOODiOOBi+OCieOBrui/veijnO+8iFNTTC9UTFPln7rnpI7jg7tTU0wtVlBOM+aWueW8j++8iSDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIBcclxuICB7XHJcbiAgICBpZDogJ3Etc3NsLW4xJyxcclxuICAgIHRvcGljSWQ6ICdzc2wtdGxzJyxcclxuICAgIHF1ZXN0aW9uVGV4dDogJ1NTTC9UTFPjgavjgYrjgYTjgabjgIHjgq/jg6njgqTjgqLjg7Pjg4jjgYvjgonjgrXjg7zjg5DjgbjmnIDliJ3jgavpgIHjgonjgozjgIHliKnnlKjlj6/og73jgarmmpflj7fljJbjgqLjg6vjgrTjg6rjgrrjg6Djga7kuIDopqfjgpLkvJ3jgYjjgovjg6Hjg4Pjgrvjg7zjgrjjgpJ7e2JsYW5rfX3jgajjgYTjgYbjgIInLFxyXG4gICAgY29ycmVjdEFuc3dlcjogJ0NsaWVudCBIZWxsbycsXHJcbiAgICBjaG9pY2VzOiBbJ0NsaWVudCBIZWxsbycsICdTZXJ2ZXIgSGVsbG8nLCAnQ2xpZW50S2V5RXhjaGFuZ2UnLCAnRmluaXNoZWQnXSxcclxuICAgIGlzSW1wb3J0YW50OiB0cnVlLFxyXG4gICAgZXhwbGFuYXRpb246ICdUTFPjg4/jg7Pjg4njgrfjgqfjgqTjgq/jga7mnIDliJ3jga8gQ2xpZW50IEhlbGxv77yI44Kv44Op44Kk44Ki44Oz44OI4oaS44K144O844OQ77yJ44CC57aa44GE44Gm44K144O844OQ44GMIFNlcnZlciBIZWxsbyDjgpLov5TjgZfkvb/nlKjjgZnjgovjgqLjg6vjgrTjg6rjgrrjg6DjgpLpgJrnn6XjgZnjgovjgIJDbGllbnQgSGVsbG8gLyBTZXJ2ZXIgSGVsbG8g44Gu6aCG5bqP44Gv5b+F6aCI44Gu5pqX6KiY5LqL6aCF44CCJyxcclxuICAgIGRpZmZpY3VsdHk6IDEsXHJcbiAgfSxcclxuICB7XHJcbiAgICBpZDogJ3Etc3NsLW4yJyxcclxuICAgIHRvcGljSWQ6ICdzc2wtdGxzJyxcclxuICAgIHF1ZXN0aW9uVGV4dDogJ0hUVFBT77yISFRUUCBvdmVyIFNTTC9UTFPvvInjgYzkvb/nlKjjgZnjgotUQ1Djg53jg7zjg4jnlarlj7fjga97e2JsYW5rfX3jgafjgYLjgovjgIInLFxyXG4gICAgY29ycmVjdEFuc3dlcjogJzQ0MycsXHJcbiAgICBjaG9pY2VzOiBbJzQ0MycsICc4MCcsICc4NDQzJywgJzIxJ10sXHJcbiAgICBpc0ltcG9ydGFudDogdHJ1ZSxcclxuICAgIGV4cGxhbmF0aW9uOiAnSFRUUFPjga9IVFRQ44KSU1NML1RMU+OBp+S/neitt+OBl+OBn+OCguOBruOBp+OAgeODneODvOODiOeVquWPt+OBr1RDUCA0NDPjgIJIVFRQ44GuODDjgajljLrliKXjgZnjgovjgIJTU0wtVlBOIOOCgkhUVFBTIOOBqOWQjOOBmFRDUCA0NDPjgpLkvb/jgYbjgIInLFxyXG4gICAgZGlmZmljdWx0eTogMSxcclxuICB9LFxyXG4gIHtcclxuICAgIGlkOiAncS1zc2wtbjMnLFxyXG4gICAgdG9waWNJZDogJ3NzbC10bHMnLFxyXG4gICAgcXVlc3Rpb25UZXh0OiAnU1NMLVZQTuOBrjPmlrnlvI/jga7jgYbjgaHjgIFTU0wtVlBO6KOF572u44Gn5o6l57aa5YWI44K144O844OQ44GuSVDjgqLjg4njg6zjgrnjgajjg53jg7zjg4jnlarlj7fjgpLkuovliY3jgavlrprnvqnjgZfjgabjgYrjgY/jgYzjgIHpgJrkv6HkuK3jgavli5XnmoTjgavjg53jg7zjg4jjgYzlpInljJbjgZnjgovjgqLjg5fjg6rjgrHjg7zjgrfjg6fjg7Pjgavjga/kvb/jgYjjgarjgYTmlrnlvI/jgpJ7e2JsYW5rfX3jgajjgYTjgYbjgIInLFxyXG4gICAgY29ycmVjdEFuc3dlcjogJ+ODneODvOODiOODleOCqeODr+ODvOODh+OCo+ODs+OCsCcsXHJcbiAgICBjaG9pY2VzOiBbJ+ODneODvOODiOODleOCqeODr+ODvOODh+OCo+ODs+OCsCcsICfjg6rjg5Djg7zjgrnjg5fjg63jgq3jgrcnLCAnTDLjg5Xjgqnjg6/jg7zjg4fjgqPjg7PjgrAnLCAnSVBzZWPjg4jjg7Pjg43jg6snXSxcclxuICAgIGlzSW1wb3J0YW50OiB0cnVlLFxyXG4gICAgZXhwbGFuYXRpb246ICdTU0wtVlBO44GvM+aWueW8j++8muKRoOODquODkOODvOOCueODl+ODreOCreOCt++8iEhUVFAvSFRUUFPjga7jgb/jg7vmlLnjgZbjgpPpmLLmraLjgYzkuLvnm67nmoTvvInikaHjg53jg7zjg4jjg5Xjgqnjg6/jg7zjg4fjgqPjg7PjgrDvvIhJUCvjg53jg7zjg4jjgpLpnZnnmoTlrprnvqnvvI/li5XnmoTjg53jg7zjg4jjga7jgqLjg5fjg6rkuI3lj6/vvInikaJMMuODleOCqeODr+ODvOODh+OCo+ODs+OCsO+8iOOCr+ODqeOCpOOCouODs+ODiOOBq+WwgueUqOOCveODleODiOODu+S7ruaDs0lQ5omV5Ye644GX44O75YWo44OX44Ot44OI44Kz44Or5a++5b+c77yJ44CCJyxcclxuICAgIGRpZmZpY3VsdHk6IDIsXHJcbiAgfSxcclxuICB7XHJcbiAgICBpZDogJ3Etc3NsLW40JyxcclxuICAgIHRvcGljSWQ6ICdzc2wtdGxzJyxcclxuICAgIHF1ZXN0aW9uVGV4dDogJ0lQc2VjIOOBr0VTUOOCkueUqOOBhOOBpuODrOOCpOODpHt7Ymxhbmt9feOBp+mAmuS/oeOBmeOCi+OAguS4gOaWueOAgVNTTC1WUE7jga9UQ1AgNDQz55Wq77yISFRUUFPvvInjgpLnlKjjgYTjgZ/jg6zjgqTjg6Q06YCa5L+h44Gn44GC44KL44CCJyxcclxuICAgIGNvcnJlY3RBbnN3ZXI6ICczJyxcclxuICAgIGNob2ljZXM6IFsnMycsICcyJywgJzQnLCAnNyddLFxyXG4gICAgaXNJbXBvcnRhbnQ6IHRydWUsXHJcbiAgICBleHBsYW5hdGlvbjogJ0lQc2VjIOOBr+ODjeODg+ODiOODr+ODvOOCr+WxpO+8iEwz77yJ44Gn5YuV5L2c44GZ44KLVlBO77yIRVNQL0FI77yJ44CCU1NMLVZQTiDjga/jg4jjg6njg7Pjgrnjg53jg7zjg4jlsaTvvIhMNO+8ieOBriBIVFRQUyDjgpLkvb/jgYbjgILpgJrkv6Hjg6zjgqTjg6Tjga7pgZXjgYTjga/mt7flkIzjgZXjgozjgoTjgZnjgYTpoLvlh7roq5bngrnjgIInLFxyXG4gICAgZGlmZmljdWx0eTogMixcclxuICB9LFxyXG4gIHtcclxuICAgIGlkOiAncS1zc2wtbjUnLFxyXG4gICAgdG9waWNJZDogJ3NzbC10bHMnLFxyXG4gICAgcXVlc3Rpb25UZXh0OiAn44Kv44Op44Kk44Ki44Oz44OI6Ki85piO5pu444KSUEPjgavphY3luIPjgZnjgovpmpvjgIFQQ+WBtOOBp+ODh+ODvOOCv+OBruaal+WPt+WMluOCkuWPr+iDveOBq+OBmeOCi+OBn+OCgeOBq+W/heimgeOBqOOBquOCi+aDheWgseOBr3t7Ymxhbmt9feOBp+OBguOCi+OAgicsXHJcbiAgICBjb3JyZWN0QW5zd2VyOiAn44Kv44Op44Kk44Ki44Oz44OI44Gu56eY5a+G6Y21JyxcclxuICAgIGNob2ljZXM6IFsn44Kv44Op44Kk44Ki44Oz44OI44Gu56eY5a+G6Y21JywgJ0NB44Gu44Or44O844OI6Ki85piO5pu4JywgJ+OCteODvOODkOiovOaYjuabuOOBrkNOJywgJ+ODl+ODquODnuOCueOCv+OCt+ODvOOCr+ODrOODg+ODiCddLFxyXG4gICAgaXNJbXBvcnRhbnQ6IHRydWUsXHJcbiAgICBleHBsYW5hdGlvbjogJ+OCr+ODqeOCpOOCouODs+ODiOiovOaYjuabuOOBq+OBr+WFrOmWi+mNteOBjOiomOi8ieOBleOCjOOBpuOBhOOCi+OBjOOAgeaal+WPt+WMlu+8j+e9suWQjeWHpueQhuOBq+OBr+OCu+ODg+ODiOOBq+OBquOCi+enmOWvhumNteOBjFBD5YG044Gr5b+F6KaB44CC44CM44Kv44Op44Kk44Ki44Oz44OI6Ki85piO5pu444CN44Go44GN44Gf44KJ44CM56eY5a+G6Y2144CN44GM5b+F6KaB44CB44Go6Kaa44GI44KL6aC75Ye644OR44K/44O844Oz44CCJyxcclxuICAgIGRpZmZpY3VsdHk6IDIsXHJcbiAgfSxcclxuXVxyXG4iXX0=

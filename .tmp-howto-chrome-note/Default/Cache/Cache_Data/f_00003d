@@ -1,0 +1,174 @@
+export const iotQuestions = [
+	{
+		id: "q-180",
+		topicId: "iot",
+		questionText: "IoTデバイス向けの軽量メッセージングプロトコルで、Publish/Subscribeモデルを採用するものを{{blank}}という。",
+		correctAnswer: "MQTT（Message Queuing Telemetry Transport）",
+		choices: [
+			"MQTT（Message Queuing Telemetry Transport）",
+			"CoAP",
+			"AMQP",
+			"HTTP"
+		],
+		isImportant: true,
+		explanation: "MQTTはTCP上で動作する軽量プロトコル。デバイス（Publisher）がブローカーにメッセージをPublishし、興味のある機器（Subscriber）がBroker経由でデータを受信する。QoSレベル0/1/2を選択可能。",
+		difficulty: 2
+	},
+	{
+		id: "q-181",
+		topicId: "iot",
+		questionText: "制約のある組み込みデバイス向けのRESTfulプロトコルで、UDP上で動作するものを{{blank}}という。",
+		correctAnswer: "CoAP（Constrained Application Protocol）",
+		choices: [
+			"CoAP（Constrained Application Protocol）",
+			"MQTT",
+			"HTTP",
+			"AMQP"
+		],
+		isImportant: true,
+		explanation: "CoAP（RFC 7252）はHTTPと同様のRESTfulモデル（GET/POST/PUT/DELETE）をUDP上で実装した軽量プロトコル。マイコンや電池駆動デバイスでの使用を想定している。",
+		difficulty: 2
+	},
+	{
+		id: "q-182",
+		topicId: "iot",
+		questionText: "IoT向け広域ネットワーク技術のうち、長距離・省電力・低コストを特徴とするものの総称を{{blank}}という。",
+		correctAnswer: "LPWA（Low Power Wide Area）",
+		choices: [
+			"LPWA（Low Power Wide Area）",
+			"ZigBee",
+			"Bluetooth LE",
+			"5G NR"
+		],
+		isImportant: true,
+		explanation: "LPWAはLoRaWAN・Sigfox・NB-IoT・LTE-Mなどの総称。数km〜数十kmの長距離通信を低消費電力で実現するがデータレートは低い。スマートメーターや農業IoTなどに活用される。",
+		difficulty: 2
+	},
+	{
+		id: "q-183",
+		topicId: "iot",
+		questionText: "LPWAの一種で、免許不要帯を使いチャープ変調（CSS）によって長距離通信を実現する技術を{{blank}}という。",
+		correctAnswer: "LoRa / LoRaWAN",
+		choices: [
+			"LoRa / LoRaWAN",
+			"Sigfox",
+			"NB-IoT",
+			"Wi-SUN"
+		],
+		isImportant: false,
+		explanation: "LoRa（Long Range）はSemtech社の変調方式。LoRaWANはLoRaを使ったネットワーク仕様。920MHz帯（日本）を使用し数kmの通信が可能。ゲートウェイが複数基地局とクラウドを接続する。",
+		difficulty: 3
+	},
+	{
+		id: "q-184",
+		topicId: "iot",
+		questionText: "再送時の待機時間を指数的に増加させてネットワーク輻輳の緩和を図る仕組みを{{blank}}という。",
+		correctAnswer: "Exponential Backoff（指数バックオフ）",
+		choices: [
+			"Exponential Backoff（指数バックオフ）",
+			"スロースタート",
+			"ランダムバックオフ",
+			"リニアバックオフ"
+		],
+		isImportant: true,
+		explanation: "指数バックオフは再送のたびに待機時間を2倍（1→2→4→8秒…）に増加させる。CSMA/CAやHTTPリトライ・AWS SDKなどで広く使われ、輻輳崩壊を防止する効果がある。",
+		difficulty: 2
+	},
+	{
+		id: "q-185",
+		topicId: "iot",
+		questionText: "クラウドサービスのAPIをHTTPで操作するアーキテクチャスタイルで、ステートレス・リソース指向などを原則とするものを{{blank}}という。",
+		correctAnswer: "REST（Representational State Transfer）",
+		choices: [
+			"REST（Representational State Transfer）",
+			"SOAP",
+			"GraphQL",
+			"gRPC"
+		],
+		isImportant: true,
+		explanation: "RESTはRoy Fieldingが提唱したアーキテクチャ原則。①ステートレス②クライアント-サーバ③キャッシュ可能④統一インタフェース⑤階層化システム⑥コードオンデマンドの6制約からなる。WebAPIの設計原則として広く採用されている。",
+		difficulty: 2
+	},
+	{
+		id: "q-186",
+		topicId: "iot",
+		questionText: "クラウド上に配置され、従業員がインターネットにアクセスする際にマルウェア対策・URLフィルタリング・DLP機能を提供するセキュリティサービスを{{blank}}という。",
+		correctAnswer: "SWG（Secure Web Gateway）",
+		choices: [
+			"SWG（Secure Web Gateway）",
+			"CASB",
+			"NGFW",
+			"WAF"
+		],
+		isImportant: true,
+		explanation: "SWGはクラウド型プロキシとも言えるセキュリティサービス。HTTPS復号・マルウェアスキャン・URLカテゴリフィルタリング・データ漏洩防止（DLP）を行い、在宅・外出先でも社内同等のセキュリティを提供する。ZTNAと組み合わせてSASEを構成する場合が多い。",
+		difficulty: 3
+	},
+	(
+	// R7年 IoT問題
+	{
+		id: "q-r7-005",
+		topicId: "iot",
+		questionText: "CoAPにおいて、到達確認を行うメッセージタイプを{{blank}}、確認を行わないタイプを{{blank}}という。",
+		correctAnswer: "Confirmable・Non-confirmable",
+		choices: [
+			"Confirmable・Non-confirmable",
+			"Reliable・Unreliable",
+			"QoS1・QoS0",
+			"ACK・NON"
+		],
+		isImportant: true,
+		explanation: "CoAPはMQTTのQoSレベルに相当する仕組みとして、Confirmable（CON）とNon-confirmable（NON）の2種類を持つ。CONはACKが返るまで再送し信頼性を確保する。NONは再送なしで低オーバーヘッド通信に向く。",
+		difficulty: 2,
+		excludeFromWritten: true
+	}),
+	(
+	// R8年 SASE・ZTNA問題
+	{
+		id: "q-r8-005",
+		topicId: "iot",
+		questionText: "SD-WANやSWG・CASB・ZTNAなどのセキュリティ機能をクラウド上で統合提供するアーキテクチャを{{blank}}という。",
+		correctAnswer: "SASE（Secure Access Service Edge）",
+		choices: [
+			"SASE（Secure Access Service Edge）",
+			"ZTNA",
+			"CASB",
+			"SSE（Security Service Edge）"
+		],
+		isImportant: true,
+		explanation: "SASE（サシー）はGartnerが提唱したアーキテクチャ。WAN側のSD-WANとセキュリティ側のSWG・CASB・ZTNA・FWaaSをクラウドサービスとして統合する。在宅・モバイル環境でも一貫したセキュリティを適用できる。",
+		difficulty: 2
+	}),
+	{
+		id: "q-r8-006",
+		topicId: "iot",
+		questionText: "「境界内部は安全」という前提を排し、ユーザーとアプリを1対1で接続して常に認証・認可を行うアクセス制御モデルを{{blank}}という。",
+		correctAnswer: "ZTNA（Zero Trust Network Access）",
+		choices: [
+			"ZTNA（Zero Trust Network Access）",
+			"VPN",
+			"NAC（Network Access Control）",
+			"SAML SSO"
+		],
+		isImportant: true,
+		explanation: "ZTNAは「決して信頼せず、常に検証する（Never Trust, Always Verify）」というゼロトラスト原則に基づく。ユーザー・デバイス・コンテキストを常時検証し、アプリ単位で最小権限アクセスを付与する。SASEの中核コンポーネント。",
+		difficulty: 2
+	},
+	{
+		id: "q-r8-010",
+		topicId: "iot",
+		questionText: "令和8年度からネットワークスペシャリスト試験に導入される試験方式を{{blank}}という。",
+		correctAnswer: "CBT（Computer Based Testing）",
+		choices: [
+			"CBT（Computer Based Testing）",
+			"IBT（Internet Based Testing）",
+			"PBT（Paper Based Testing）",
+			"OBT（Online Based Testing）"
+		],
+		isImportant: true,
+		explanation: "CBT（Computer Based Testing）はコンピュータ画面で解答する試験方式。令和8年度からNWスペシャリスト試験に完全移行し、テストセンターでの受験に変更される。これに伴い科目A-2・科目B（B-1/B-2）に名称変更される。",
+		difficulty: 1
+	}
+];
+
+//# sourceMappingURL=data:application/json;base64,eyJtYXBwaW5ncyI6IkFBRUEsT0FBTyxNQUFNLGVBQTJCO0NBQ3RDO0VBQ0UsSUFBSTtFQUNKLFNBQVM7RUFDVCxjQUFjO0VBQ2QsZUFBZTtFQUNmLFNBQVM7R0FBQztHQUE2QztHQUFRO0dBQVE7R0FBTztFQUM5RSxhQUFhO0VBQ2IsYUFBYTtFQUNiLFlBQVk7RUFDYjtDQUNEO0VBQ0UsSUFBSTtFQUNKLFNBQVM7RUFDVCxjQUFjO0VBQ2QsZUFBZTtFQUNmLFNBQVM7R0FBQztHQUEwQztHQUFRO0dBQVE7R0FBTztFQUMzRSxhQUFhO0VBQ2IsYUFBYTtFQUNiLFlBQVk7RUFDYjtDQUNEO0VBQ0UsSUFBSTtFQUNKLFNBQVM7RUFDVCxjQUFjO0VBQ2QsZUFBZTtFQUNmLFNBQVM7R0FBQztHQUE2QjtHQUFVO0dBQWdCO0dBQVE7RUFDekUsYUFBYTtFQUNiLGFBQWE7RUFDYixZQUFZO0VBQ2I7Q0FDRDtFQUNFLElBQUk7RUFDSixTQUFTO0VBQ1QsY0FBYztFQUNkLGVBQWU7RUFDZixTQUFTO0dBQUM7R0FBa0I7R0FBVTtHQUFVO0dBQVM7RUFDekQsYUFBYTtFQUNiLGFBQWE7RUFDYixZQUFZO0VBQ2I7Q0FDRDtFQUNFLElBQUk7RUFDSixTQUFTO0VBQ1QsY0FBYztFQUNkLGVBQWU7RUFDZixTQUFTO0dBQUM7R0FBZ0M7R0FBVztHQUFhO0dBQVc7RUFDN0UsYUFBYTtFQUNiLGFBQWE7RUFDYixZQUFZO0VBQ2I7Q0FDRDtFQUNFLElBQUk7RUFDSixTQUFTO0VBQ1QsY0FBYztFQUNkLGVBQWU7RUFDZixTQUFTO0dBQUM7R0FBeUM7R0FBUTtHQUFXO0dBQU87RUFDN0UsYUFBYTtFQUNiLGFBQWE7RUFDYixZQUFZO0VBQ2I7Q0FDRDtFQUNFLElBQUk7RUFDSixTQUFTO0VBQ1QsY0FBYztFQUNkLGVBQWU7RUFDZixTQUFTO0dBQUM7R0FBMkI7R0FBUTtHQUFRO0dBQU07RUFDM0QsYUFBYTtFQUNiLGFBQWE7RUFDYixZQUFZO0VBQ2I7OztDQUVEO0VBQ0UsSUFBSTtFQUNKLFNBQVM7RUFDVCxjQUFjO0VBQ2QsZUFBZTtFQUNmLFNBQVM7R0FBQztHQUErQjtHQUF1QjtHQUFhO0dBQVU7RUFDdkYsYUFBYTtFQUNiLGFBQWE7RUFDYixZQUFZO0VBQ1osb0JBQW9CO0VBQ3JCOzs7Q0FFRDtFQUNFLElBQUk7RUFDSixTQUFTO0VBQ1QsY0FBYztFQUNkLGVBQWU7RUFDZixTQUFTO0dBQUM7R0FBb0M7R0FBUTtHQUFRO0dBQTZCO0VBQzNGLGFBQWE7RUFDYixhQUFhO0VBQ2IsWUFBWTtFQUNiO0NBQ0Q7RUFDRSxJQUFJO0VBQ0osU0FBUztFQUNULGNBQWM7RUFDZCxlQUFlO0VBQ2YsU0FBUztHQUFDO0dBQW1DO0dBQU87R0FBK0I7R0FBVztFQUM5RixhQUFhO0VBQ2IsYUFBYTtFQUNiLFlBQVk7RUFDYjtDQUNEO0VBQ0UsSUFBSTtFQUNKLFNBQVM7RUFDVCxjQUFjO0VBQ2QsZUFBZTtFQUNmLFNBQVM7R0FBQztHQUErQjtHQUErQjtHQUE0QjtHQUE0QjtFQUNoSSxhQUFhO0VBQ2IsYUFBYTtFQUNiLFlBQVk7RUFDYjtDQUNGIiwibmFtZXMiOltdLCJzb3VyY2VzIjpbImlvdC50cyJdLCJ2ZXJzaW9uIjozLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgdHlwZSB7IFF1ZXN0aW9uIH0gZnJvbSAnLi4vLi4vdHlwZXMnXHJcblxyXG5leHBvcnQgY29uc3QgaW90UXVlc3Rpb25zOiBRdWVzdGlvbltdID0gW1xyXG4gIHtcclxuICAgIGlkOiAncS0xODAnLFxyXG4gICAgdG9waWNJZDogJ2lvdCcsXHJcbiAgICBxdWVzdGlvblRleHQ6ICdJb1Tjg4fjg5DjgqTjgrnlkJHjgZHjga7ou73ph4/jg6Hjg4Pjgrvjg7zjgrjjg7PjgrDjg5fjg63jg4jjgrPjg6vjgafjgIFQdWJsaXNoL1N1YnNjcmliZeODouODh+ODq+OCkuaOoeeUqOOBmeOCi+OCguOBruOCknt7Ymxhbmt9feOBqOOBhOOBhuOAgicsXHJcbiAgICBjb3JyZWN0QW5zd2VyOiAnTVFUVO+8iE1lc3NhZ2UgUXVldWluZyBUZWxlbWV0cnkgVHJhbnNwb3J077yJJyxcclxuICAgIGNob2ljZXM6IFsnTVFUVO+8iE1lc3NhZ2UgUXVldWluZyBUZWxlbWV0cnkgVHJhbnNwb3J077yJJywgJ0NvQVAnLCAnQU1RUCcsICdIVFRQJ10sXHJcbiAgICBpc0ltcG9ydGFudDogdHJ1ZSxcclxuICAgIGV4cGxhbmF0aW9uOiAnTVFUVOOBr1RDUOS4iuOBp+WLleS9nOOBmeOCi+i7vemHj+ODl+ODreODiOOCs+ODq+OAguODh+ODkOOCpOOCue+8iFB1Ymxpc2hlcu+8ieOBjOODluODreODvOOCq+ODvOOBq+ODoeODg+OCu+ODvOOCuOOCklB1Ymxpc2jjgZfjgIHoiIjlkbPjga7jgYLjgovmqZ/lmajvvIhTdWJzY3JpYmVy77yJ44GMQnJva2Vy57WM55Sx44Gn44OH44O844K/44KS5Y+X5L+h44GZ44KL44CCUW9T44Os44OZ44OrMC8xLzLjgpLpgbjmip7lj6/og73jgIInLFxyXG4gICAgZGlmZmljdWx0eTogMixcclxuICB9LFxyXG4gIHtcclxuICAgIGlkOiAncS0xODEnLFxyXG4gICAgdG9waWNJZDogJ2lvdCcsXHJcbiAgICBxdWVzdGlvblRleHQ6ICfliLbntITjga7jgYLjgovntYTjgb/ovrzjgb/jg4fjg5DjgqTjgrnlkJHjgZHjga5SRVNUZnVs44OX44Ot44OI44Kz44Or44Gn44CBVURQ5LiK44Gn5YuV5L2c44GZ44KL44KC44Gu44KSe3tibGFua31944Go44GE44GG44CCJyxcclxuICAgIGNvcnJlY3RBbnN3ZXI6ICdDb0FQ77yIQ29uc3RyYWluZWQgQXBwbGljYXRpb24gUHJvdG9jb2zvvIknLFxyXG4gICAgY2hvaWNlczogWydDb0FQ77yIQ29uc3RyYWluZWQgQXBwbGljYXRpb24gUHJvdG9jb2zvvIknLCAnTVFUVCcsICdIVFRQJywgJ0FNUVAnXSxcclxuICAgIGlzSW1wb3J0YW50OiB0cnVlLFxyXG4gICAgZXhwbGFuYXRpb246ICdDb0FQ77yIUkZDIDcyNTLvvInjga9IVFRQ44Go5ZCM5qeY44GuUkVTVGZ1bOODouODh+ODq++8iEdFVC9QT1NUL1BVVC9ERUxFVEXvvInjgpJVRFDkuIrjgaflrp/oo4XjgZfjgZ/ou73ph4/jg5fjg63jg4jjgrPjg6vjgILjg57jgqTjgrPjg7PjgoTpm7vmsaDpp4bli5Xjg4fjg5DjgqTjgrnjgafjga7kvb/nlKjjgpLmg7PlrprjgZfjgabjgYTjgovjgIInLFxyXG4gICAgZGlmZmljdWx0eTogMixcclxuICB9LFxyXG4gIHtcclxuICAgIGlkOiAncS0xODInLFxyXG4gICAgdG9waWNJZDogJ2lvdCcsXHJcbiAgICBxdWVzdGlvblRleHQ6ICdJb1TlkJHjgZHluoPln5/jg43jg4Pjg4jjg6/jg7zjgq/mioDooZPjga7jgYbjgaHjgIHplbfot53pm6Ljg7vnnIHpm7vlipvjg7vkvY7jgrPjgrnjg4jjgpLnibnlvrTjgajjgZnjgovjgoLjga7jga7nt4/np7DjgpJ7e2JsYW5rfX3jgajjgYTjgYbjgIInLFxyXG4gICAgY29ycmVjdEFuc3dlcjogJ0xQV0HvvIhMb3cgUG93ZXIgV2lkZSBBcmVh77yJJyxcclxuICAgIGNob2ljZXM6IFsnTFBXQe+8iExvdyBQb3dlciBXaWRlIEFyZWHvvIknLCAnWmlnQmVlJywgJ0JsdWV0b290aCBMRScsICc1RyBOUiddLFxyXG4gICAgaXNJbXBvcnRhbnQ6IHRydWUsXHJcbiAgICBleHBsYW5hdGlvbjogJ0xQV0Hjga9Mb1JhV0FO44O7U2lnZm9444O7TkItSW9U44O7TFRFLU3jgarjganjga7nt4/np7DjgILmlbBrbeOAnOaVsOWNgWtt44Gu6ZW36Led6Zui6YCa5L+h44KS5L2O5raI6LK76Zu75Yqb44Gn5a6f54++44GZ44KL44GM44OH44O844K/44Os44O844OI44Gv5L2O44GE44CC44K544Oe44O844OI44Oh44O844K/44O844KE6L6y5qWtSW9U44Gq44Gp44Gr5rS755So44GV44KM44KL44CCJyxcclxuICAgIGRpZmZpY3VsdHk6IDIsXHJcbiAgfSxcclxuICB7XHJcbiAgICBpZDogJ3EtMTgzJyxcclxuICAgIHRvcGljSWQ6ICdpb3QnLFxyXG4gICAgcXVlc3Rpb25UZXh0OiAnTFBXQeOBruS4gOeoruOBp+OAgeWFjeioseS4jeimgeW4r+OCkuS9v+OBhOODgeODo+ODvOODl+Wkieiqv++8iENTU++8ieOBq+OCiOOBo+OBpumVt+i3nemboumAmuS/oeOCkuWun+ePvuOBmeOCi+aKgOihk+OCknt7Ymxhbmt9feOBqOOBhOOBhuOAgicsXHJcbiAgICBjb3JyZWN0QW5zd2VyOiAnTG9SYSAvIExvUmFXQU4nLFxyXG4gICAgY2hvaWNlczogWydMb1JhIC8gTG9SYVdBTicsICdTaWdmb3gnLCAnTkItSW9UJywgJ1dpLVNVTiddLFxyXG4gICAgaXNJbXBvcnRhbnQ6IGZhbHNlLFxyXG4gICAgZXhwbGFuYXRpb246ICdMb1Jh77yITG9uZyBSYW5nZe+8ieOBr1NlbXRlY2jnpL7jga7lpInoqr/mlrnlvI/jgIJMb1JhV0FO44GvTG9SYeOCkuS9v+OBo+OBn+ODjeODg+ODiOODr+ODvOOCr+S7leanmOOAgjkyME1IeuW4r++8iOaXpeacrO+8ieOCkuS9v+eUqOOBl+aVsGtt44Gu6YCa5L+h44GM5Y+v6IO944CC44Ky44O844OI44Km44Kn44Kk44GM6KSH5pWw5Z+65Zyw5bGA44Go44Kv44Op44Km44OJ44KS5o6l57aa44GZ44KL44CCJyxcclxuICAgIGRpZmZpY3VsdHk6IDMsXHJcbiAgfSxcclxuICB7XHJcbiAgICBpZDogJ3EtMTg0JyxcclxuICAgIHRvcGljSWQ6ICdpb3QnLFxyXG4gICAgcXVlc3Rpb25UZXh0OiAn5YaN6YCB5pmC44Gu5b6F5qmf5pmC6ZaT44KS5oyH5pWw55qE44Gr5aKX5Yqg44GV44Gb44Gm44ON44OD44OI44Ov44O844Kv6Ly76Lyz44Gu57ep5ZKM44KS5Zuz44KL5LuV57WE44G/44KSe3tibGFua31944Go44GE44GG44CCJyxcclxuICAgIGNvcnJlY3RBbnN3ZXI6ICdFeHBvbmVudGlhbCBCYWNrb2Zm77yI5oyH5pWw44OQ44OD44Kv44Kq44OV77yJJyxcclxuICAgIGNob2ljZXM6IFsnRXhwb25lbnRpYWwgQmFja29mZu+8iOaMh+aVsOODkOODg+OCr+OCquODle+8iScsICfjgrnjg63jg7zjgrnjgr/jg7zjg4gnLCAn44Op44Oz44OA44Og44OQ44OD44Kv44Kq44OVJywgJ+ODquODi+OCouODkOODg+OCr+OCquODlSddLFxyXG4gICAgaXNJbXBvcnRhbnQ6IHRydWUsXHJcbiAgICBleHBsYW5hdGlvbjogJ+aMh+aVsOODkOODg+OCr+OCquODleOBr+WGjemAgeOBruOBn+OBs+OBq+W+heapn+aZgumWk+OCkjLlgI3vvIgx4oaSMuKGkjTihpI456eS4oCm77yJ44Gr5aKX5Yqg44GV44Gb44KL44CCQ1NNQS9DQeOChEhUVFDjg6rjg4jjg6njgqTjg7tBV1MgU0RL44Gq44Gp44Gn5bqD44GP5L2/44KP44KM44CB6Ly76Lyz5bSp5aOK44KS6Ziy5q2i44GZ44KL5Yq55p6c44GM44GC44KL44CCJyxcclxuICAgIGRpZmZpY3VsdHk6IDIsXHJcbiAgfSxcclxuICB7XHJcbiAgICBpZDogJ3EtMTg1JyxcclxuICAgIHRvcGljSWQ6ICdpb3QnLFxyXG4gICAgcXVlc3Rpb25UZXh0OiAn44Kv44Op44Km44OJ44K144O844OT44K544GuQVBJ44KSSFRUUOOBp+aTjeS9nOOBmeOCi+OCouODvOOCreODhuOCr+ODgeODo+OCueOCv+OCpOODq+OBp+OAgeOCueODhuODvOODiOODrOOCueODu+ODquOCveODvOOCueaMh+WQkeOBquOBqeOCkuWOn+WJh+OBqOOBmeOCi+OCguOBruOCknt7Ymxhbmt9feOBqOOBhOOBhuOAgicsXHJcbiAgICBjb3JyZWN0QW5zd2VyOiAnUkVTVO+8iFJlcHJlc2VudGF0aW9uYWwgU3RhdGUgVHJhbnNmZXLvvIknLFxyXG4gICAgY2hvaWNlczogWydSRVNU77yIUmVwcmVzZW50YXRpb25hbCBTdGF0ZSBUcmFuc2Zlcu+8iScsICdTT0FQJywgJ0dyYXBoUUwnLCAnZ1JQQyddLFxyXG4gICAgaXNJbXBvcnRhbnQ6IHRydWUsXHJcbiAgICBleHBsYW5hdGlvbjogJ1JFU1Tjga9Sb3kgRmllbGRpbmfjgYzmj5DllLHjgZfjgZ/jgqLjg7zjgq3jg4bjgq/jg4Hjg6Pljp/liYfjgILikaDjgrnjg4bjg7zjg4jjg6zjgrnikaHjgq/jg6njgqTjgqLjg7Pjg4gt44K144O844OQ4pGi44Kt44Oj44OD44K344Ol5Y+v6IO94pGj57Wx5LiA44Kk44Oz44K/44OV44Kn44O844K54pGk6ZqO5bGk5YyW44K344K544OG44Og4pGl44Kz44O844OJ44Kq44Oz44OH44Oe44Oz44OJ44GuNuWItue0hOOBi+OCieOBquOCi+OAgldlYkFQSeOBruioreioiOWOn+WJh+OBqOOBl+OBpuW6g+OBj+aOoeeUqOOBleOCjOOBpuOBhOOCi+OAgicsXHJcbiAgICBkaWZmaWN1bHR5OiAyLFxyXG4gIH0sXHJcbiAge1xyXG4gICAgaWQ6ICdxLTE4NicsXHJcbiAgICB0b3BpY0lkOiAnaW90JyxcclxuICAgIHF1ZXN0aW9uVGV4dDogJ+OCr+ODqeOCpuODieS4iuOBq+mFjee9ruOBleOCjOOAgeW+k+alreWToeOBjOOCpOODs+OCv+ODvOODjeODg+ODiOOBq+OCouOCr+OCu+OCueOBmeOCi+mam+OBq+ODnuODq+OCpuOCp+OCouWvvuetluODu1VSTOODleOCo+ODq+OCv+ODquODs+OCsOODu0RMUOapn+iDveOCkuaPkOS+m+OBmeOCi+OCu+OCreODpeODquODhuOCo+OCteODvOODk+OCueOCknt7Ymxhbmt9feOBqOOBhOOBhuOAgicsXHJcbiAgICBjb3JyZWN0QW5zd2VyOiAnU1dH77yIU2VjdXJlIFdlYiBHYXRld2F577yJJyxcclxuICAgIGNob2ljZXM6IFsnU1dH77yIU2VjdXJlIFdlYiBHYXRld2F577yJJywgJ0NBU0InLCAnTkdGVycsICdXQUYnXSxcclxuICAgIGlzSW1wb3J0YW50OiB0cnVlLFxyXG4gICAgZXhwbGFuYXRpb246ICdTV0fjga/jgq/jg6njgqbjg4nlnovjg5fjg63jgq3jgrfjgajjgoLoqIDjgYjjgovjgrvjgq3jg6Xjg6rjg4bjgqPjgrXjg7zjg5PjgrnjgIJIVFRQU+W+qeWPt+ODu+ODnuODq+OCpuOCp+OCouOCueOCreODo+ODs+ODu1VSTOOCq+ODhuOCtOODquODleOCo+ODq+OCv+ODquODs+OCsOODu+ODh+ODvOOCv+a8j+a0qemYsuatou+8iERMUO+8ieOCkuihjOOBhOOAgeWcqOWuheODu+WkluWHuuWFiOOBp+OCguekvuWGheWQjOetieOBruOCu+OCreODpeODquODhuOCo+OCkuaPkOS+m+OBmeOCi+OAglpUTkHjgajntYTjgb/lkIjjgo/jgZvjgaZTQVNF44KS5qeL5oiQ44GZ44KL5aC05ZCI44GM5aSa44GE44CCJyxcclxuICAgIGRpZmZpY3VsdHk6IDMsXHJcbiAgfSxcclxuICAvLyBSN+W5tCBJb1TllY/poYxcclxuICB7XHJcbiAgICBpZDogJ3EtcjctMDA1JyxcclxuICAgIHRvcGljSWQ6ICdpb3QnLFxyXG4gICAgcXVlc3Rpb25UZXh0OiAnQ29BUOOBq+OBiuOBhOOBpuOAgeWIsOmBlOeiuuiqjeOCkuihjOOBhuODoeODg+OCu+ODvOOCuOOCv+OCpOODl+OCknt7Ymxhbmt9feOAgeeiuuiqjeOCkuihjOOCj+OBquOBhOOCv+OCpOODl+OCknt7Ymxhbmt9feOBqOOBhOOBhuOAgicsXHJcbiAgICBjb3JyZWN0QW5zd2VyOiAnQ29uZmlybWFibGXjg7tOb24tY29uZmlybWFibGUnLFxyXG4gICAgY2hvaWNlczogWydDb25maXJtYWJsZeODu05vbi1jb25maXJtYWJsZScsICdSZWxpYWJsZeODu1VucmVsaWFibGUnLCAnUW9TMeODu1FvUzAnLCAnQUNL44O7Tk9OJ10sXHJcbiAgICBpc0ltcG9ydGFudDogdHJ1ZSxcclxuICAgIGV4cGxhbmF0aW9uOiAnQ29BUOOBr01RVFTjga5Rb1Pjg6zjg5njg6vjgavnm7jlvZPjgZnjgovku5XntYTjgb/jgajjgZfjgabjgIFDb25maXJtYWJsZe+8iENPTu+8ieOBqE5vbi1jb25maXJtYWJsZe+8iE5PTu+8ieOBrjLnqK7poZ7jgpLmjIHjgaTjgIJDT07jga9BQ0vjgYzov5Tjgovjgb7jgaflho3pgIHjgZfkv6HpoLzmgKfjgpLnorrkv53jgZnjgovjgIJOT07jga/lho3pgIHjgarjgZfjgafkvY7jgqrjg7zjg5Djg7zjg5jjg4Pjg4npgJrkv6HjgavlkJHjgY/jgIInLFxyXG4gICAgZGlmZmljdWx0eTogMixcclxuICAgIGV4Y2x1ZGVGcm9tV3JpdHRlbjogdHJ1ZSxcclxuICB9LFxyXG4gIC8vIFI45bm0IFNBU0Xjg7taVE5B5ZWP6aGMXHJcbiAge1xyXG4gICAgaWQ6ICdxLXI4LTAwNScsXHJcbiAgICB0b3BpY0lkOiAnaW90JyxcclxuICAgIHF1ZXN0aW9uVGV4dDogJ1NELVdBTuOChFNXR+ODu0NBU0Ljg7taVE5B44Gq44Gp44Gu44K744Kt44Ol44Oq44OG44Kj5qmf6IO944KS44Kv44Op44Km44OJ5LiK44Gn57Wx5ZCI5o+Q5L6b44GZ44KL44Ki44O844Kt44OG44Kv44OB44Oj44KSe3tibGFua31944Go44GE44GG44CCJyxcclxuICAgIGNvcnJlY3RBbnN3ZXI6ICdTQVNF77yIU2VjdXJlIEFjY2VzcyBTZXJ2aWNlIEVkZ2XvvIknLFxyXG4gICAgY2hvaWNlczogWydTQVNF77yIU2VjdXJlIEFjY2VzcyBTZXJ2aWNlIEVkZ2XvvIknLCAnWlROQScsICdDQVNCJywgJ1NTRe+8iFNlY3VyaXR5IFNlcnZpY2UgRWRnZe+8iSddLFxyXG4gICAgaXNJbXBvcnRhbnQ6IHRydWUsXHJcbiAgICBleHBsYW5hdGlvbjogJ1NBU0XvvIjjgrXjgrfjg7zvvInjga9HYXJ0bmVy44GM5o+Q5ZSx44GX44Gf44Ki44O844Kt44OG44Kv44OB44Oj44CCV0FO5YG044GuU0QtV0FO44Go44K744Kt44Ol44Oq44OG44Kj5YG044GuU1dH44O7Q0FTQuODu1pUTkHjg7tGV2FhU+OCkuOCr+ODqeOCpuODieOCteODvOODk+OCueOBqOOBl+OBpue1seWQiOOBmeOCi+OAguWcqOWuheODu+ODouODkOOCpOODq+eSsOWig+OBp+OCguS4gOiyq+OBl+OBn+OCu+OCreODpeODquODhuOCo+OCkumBqeeUqOOBp+OBjeOCi+OAgicsXHJcbiAgICBkaWZmaWN1bHR5OiAyLFxyXG4gIH0sXHJcbiAge1xyXG4gICAgaWQ6ICdxLXI4LTAwNicsXHJcbiAgICB0b3BpY0lkOiAnaW90JyxcclxuICAgIHF1ZXN0aW9uVGV4dDogJ+OAjOWig+eVjOWGhemDqOOBr+WuieWFqOOAjeOBqOOBhOOBhuWJjeaPkOOCkuaOkuOBl+OAgeODpuODvOOCtuODvOOBqOOCouODl+ODquOCkjHlr74x44Gn5o6l57aa44GX44Gm5bi444Gr6KqN6Ki844O76KqN5Y+v44KS6KGM44GG44Ki44Kv44K744K55Yi25b6h44Oi44OH44Or44KSe3tibGFua31944Go44GE44GG44CCJyxcclxuICAgIGNvcnJlY3RBbnN3ZXI6ICdaVE5B77yIWmVybyBUcnVzdCBOZXR3b3JrIEFjY2Vzc++8iScsXHJcbiAgICBjaG9pY2VzOiBbJ1pUTkHvvIhaZXJvIFRydXN0IE5ldHdvcmsgQWNjZXNz77yJJywgJ1ZQTicsICdOQUPvvIhOZXR3b3JrIEFjY2VzcyBDb250cm9s77yJJywgJ1NBTUwgU1NPJ10sXHJcbiAgICBpc0ltcG9ydGFudDogdHJ1ZSxcclxuICAgIGV4cGxhbmF0aW9uOiAnWlROQeOBr+OAjOaxuuOBl+OBpuS/oemgvOOBm+OBmuOAgeW4uOOBq+aknOiovOOBmeOCi++8iE5ldmVyIFRydXN0LCBBbHdheXMgVmVyaWZ577yJ44CN44Go44GE44GG44K844Ot44OI44Op44K544OI5Y6f5YmH44Gr5Z+644Gl44GP44CC44Om44O844K244O844O744OH44OQ44Kk44K544O744Kz44Oz44OG44Kt44K544OI44KS5bi45pmC5qSc6Ki844GX44CB44Ki44OX44Oq5Y2Y5L2N44Gn5pyA5bCP5qip6ZmQ44Ki44Kv44K744K544KS5LuY5LiO44GZ44KL44CCU0FTReOBruS4reaguOOCs+ODs+ODneODvOODjeODs+ODiOOAgicsXHJcbiAgICBkaWZmaWN1bHR5OiAyLFxyXG4gIH0sXHJcbiAge1xyXG4gICAgaWQ6ICdxLXI4LTAxMCcsXHJcbiAgICB0b3BpY0lkOiAnaW90JyxcclxuICAgIHF1ZXN0aW9uVGV4dDogJ+S7pOWSjDjlubTluqbjgYvjgonjg43jg4Pjg4jjg6/jg7zjgq/jgrnjg5rjgrfjg6Pjg6rjgrnjg4joqabpqJPjgavlsI7lhaXjgZXjgozjgovoqabpqJPmlrnlvI/jgpJ7e2JsYW5rfX3jgajjgYTjgYbjgIInLFxyXG4gICAgY29ycmVjdEFuc3dlcjogJ0NCVO+8iENvbXB1dGVyIEJhc2VkIFRlc3RpbmfvvIknLFxyXG4gICAgY2hvaWNlczogWydDQlTvvIhDb21wdXRlciBCYXNlZCBUZXN0aW5n77yJJywgJ0lCVO+8iEludGVybmV0IEJhc2VkIFRlc3RpbmfvvIknLCAnUEJU77yIUGFwZXIgQmFzZWQgVGVzdGluZ++8iScsICdPQlTvvIhPbmxpbmUgQmFzZWQgVGVzdGluZ++8iSddLFxyXG4gICAgaXNJbXBvcnRhbnQ6IHRydWUsXHJcbiAgICBleHBsYW5hdGlvbjogJ0NCVO+8iENvbXB1dGVyIEJhc2VkIFRlc3RpbmfvvInjga/jgrPjg7Pjg5Tjg6Xjg7zjgr/nlLvpnaLjgafop6PnrZTjgZnjgovoqabpqJPmlrnlvI/jgILku6Tlkow45bm05bqm44GL44KJTlfjgrnjg5rjgrfjg6Pjg6rjgrnjg4joqabpqJPjgavlrozlhajnp7vooYzjgZfjgIHjg4bjgrnjg4jjgrvjg7Pjgr/jg7zjgafjga7lj5fpqJPjgavlpInmm7TjgZXjgozjgovjgILjgZPjgozjgavkvLTjgYTnp5Hnm65BLTLjg7vnp5Hnm65C77yIQi0xL0ItMu+8ieOBq+WQjeensOWkieabtOOBleOCjOOCi+OAgicsXHJcbiAgICBkaWZmaWN1bHR5OiAxLFxyXG4gIH0sXHJcbl1cclxuIl19

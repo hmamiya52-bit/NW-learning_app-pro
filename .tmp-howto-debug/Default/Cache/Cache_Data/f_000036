@@ -1,0 +1,280 @@
+export const wirelessQuestions = [
+	{
+		id: "q-100",
+		topicId: "wireless",
+		questionText: "IEEE 802.11acが使用する周波数帯は{{blank}}である。",
+		correctAnswer: "5GHz帯",
+		choices: [
+			"5GHz帯",
+			"2.4GHz帯",
+			"60GHz帯",
+			"900MHz帯"
+		],
+		isImportant: false,
+		explanation: "IEEE 802.11ac（Wi-Fi 5）は5GHz帯のみ対応。802.11n（Wi-Fi 4）は2.4/5GHz両対応。802.11ax（Wi-Fi 6）は2.4/5GHz対応（Wi-Fi 6Eは6GHz追加）。",
+		difficulty: 2
+	},
+	{
+		id: "q-101",
+		topicId: "wireless",
+		questionText: "WPA3で採用された、辞書攻撃に強い認証方式を{{blank}}という。",
+		correctAnswer: "SAE（Simultaneous Authentication of Equals）",
+		choices: [
+			"SAE（Simultaneous Authentication of Equals）",
+			"TKIP",
+			"CCMP",
+			"PSK"
+		],
+		isImportant: true,
+		explanation: "SAE（Dragonfly鍵交換とも呼ばれる）はWPA3-Personalで採用。事前共有鍵からセッション鍵を導出する際にオフライン辞書攻撃を困難にする。WPA2のPSKはパスワード推測攻撃に弱かった。",
+		difficulty: 2
+	},
+	{
+		id: "q-102",
+		topicId: "wireless",
+		questionText: "無線LANの暗号化方式のうち、AES-CCMPを使用する規格を{{blank}}という。",
+		correctAnswer: "WPA2",
+		choices: [
+			"WPA2",
+			"WPA",
+			"WEP",
+			"WPA3（WPA2との違いは鍵交換のみ）"
+		],
+		isImportant: true,
+		explanation: "WPA2はAES-CCMP（Counter mode CBC-MAC Protocol）を使用する。WPAはTKIP（Temporal Key Integrity Protocol）を使用。WEPは脆弱なRC4を使用しており使用禁止。",
+		difficulty: 2
+	},
+	{
+		id: "q-103",
+		topicId: "wireless",
+		questionText: "企業無線LANでRADIUSサーバを使った認証フレームワークを{{blank}}という。",
+		correctAnswer: "IEEE 802.1X",
+		choices: [
+			"IEEE 802.1X",
+			"IEEE 802.11i",
+			"EAP-TLS",
+			"WPA2-Enterprise"
+		],
+		isImportant: true,
+		explanation: "IEEE 802.1XはRADIUSによるポートベースのアクセス制御フレームワーク。AP（Authenticator）がサプリカント（端末）の認証要求をRADIUSサーバ（Authentication Server）に転送する。",
+		difficulty: 2
+	},
+	{
+		id: "q-104",
+		topicId: "wireless",
+		questionText: "無線LANで媒体アクセス制御の基本方式となるのは{{blank}}である。",
+		correctAnswer: "CSMA/CA（Collision Avoidance）",
+		choices: [
+			"CSMA/CA（Collision Avoidance）",
+			"CSMA/CD",
+			"TDMA",
+			"FDMA"
+		],
+		isImportant: false,
+		explanation: "CSMA/CA は無線LAN（IEEE 802.11）の基本的な媒体アクセス制御方式。電波は衝突検出が困難なため、送信前にキャリアセンスし、空いていればランダム時間（バックオフ）待機してから送信する「衝突回避型」である（有線LANのCSMA/CDとは異なる）。なお、互いの電波が直接届かない端末同士が同時送信して衝突する「隠れ端末問題」への対策としては、CSMA/CAに加えて RTS/CTS（送信権予約）を併用するのが定番。設問は基本方式を問うものなので CSMA/CA が正解。",
+		difficulty: 2
+	},
+	(
+	// R7-8年 Wi-Fi 7問題
+	{
+		id: "q-r8-001",
+		topicId: "wireless",
+		questionText: "Wi-Fi 7（IEEE 802.11be）で採用された、複数の周波数帯（2.4/5/6GHz）を同時または動的に使い低遅延・高スループットを実現する機能を{{blank}}という。",
+		correctAnswer: "MLO（Multi-Link Operation）",
+		choices: [
+			"MLO（Multi-Link Operation）",
+			"MU-MIMO",
+			"OFDMA",
+			"BSS Coloring"
+		],
+		isImportant: true,
+		explanation: "MLO（Multi-Link Operation）はWi-Fi 7の最大の特徴。複数バンドで同時にAssociationし、トラフィックを並列転送またはバンド切替することで超低遅延と高スループットを実現する。スキャンなしに高速ハンドオーバも可能。",
+		difficulty: 2
+	}),
+	{
+		id: "q-r8-002",
+		topicId: "wireless",
+		questionText: "Wi-Fi 7が採用する変調方式で、1シンボルで12ビットを伝送できるものを{{blank}}という。",
+		correctAnswer: "4096-QAM",
+		choices: [
+			"4096-QAM",
+			"1024-QAM",
+			"256-QAM",
+			"64-QAM"
+		],
+		isImportant: true,
+		explanation: "4096-QAM（12ビット/シンボル）はWi-Fi 7で採用。Wi-Fi 6の1024-QAM（10ビット）比で約20%の伝送効率向上。ただし信号品質が良好な近距離通信時のみ有効で、距離が増えると低い変調方式に切り替わる。",
+		difficulty: 2
+	},
+	{
+		id: "q-r8-003",
+		topicId: "wireless",
+		questionText: "Wi-Fi 7で最大帯域幅は{{blank}}MHzに拡張された（Wi-Fi 6比で2倍）。",
+		correctAnswer: "320",
+		choices: [
+			"320",
+			"160",
+			"80",
+			"40"
+		],
+		isImportant: true,
+		explanation: "Wi-Fi 7は6GHz帯をフル活用して最大320MHzのチャネル幅を実現（Wi-Fi 6/6Eは最大160MHz）。チャネル幅を2倍にすることで理論スループットを大幅に向上させる。",
+		difficulty: 2
+	},
+	{
+		id: "q-r8-004",
+		topicId: "wireless",
+		questionText: "Wi-Fi 7でチャネルの一部に干渉が存在する場合、干渉部分を除いて残りのクリーンな帯域を結合して通信する技術を{{blank}}という。",
+		correctAnswer: "プリアンブルパンクチャリング",
+		choices: [
+			"プリアンブルパンクチャリング",
+			"チャネルボンディング",
+			"DFS（Dynamic Frequency Selection）",
+			"TWT（Target Wake Time）"
+		],
+		isImportant: false,
+		explanation: "プリアンブルパンクチャリングは使用チャネル内の干渉帯域を「穴抜き」して除外し、残りのクリーンな帯域を結合して広帯域通信を実現する技術。干渉が多い環境でも高帯域を維持できる。",
+		difficulty: 3
+	},
+	{
+		id: "q-r8-011",
+		topicId: "wireless",
+		questionText: "Wi-Fi 7で空間ストリーム数は最大{{blank}}本まで拡張された（Wi-Fi 6の2倍）。",
+		correctAnswer: "16",
+		choices: [
+			"16",
+			"8",
+			"4",
+			"32"
+		],
+		isImportant: false,
+		explanation: "Wi-Fi 7は最大16空間ストリームをサポート（Wi-Fi 6は最大8本）。Multi-RU（マルチリソースユニット）と組み合わせることで周波数利用効率も向上し、理論物理伝送速度はWi-Fi 6比約2倍の46Gbpsを実現。",
+		difficulty: 3
+	},
+	(
+	// ── Wi-Fi 6 詳細・PoE++（R5 午後I-3 頻出）───────────────────────
+	{
+		id: "q-320",
+		topicId: "wireless",
+		questionText: "Wi-Fi 6（IEEE 802.11ax）で採用された、1つのチャネルを複数の小サブチャネルに分割して複数端末へ同時送受信する多重アクセス技術を{{blank}}という。",
+		correctAnswer: "OFDMA（Orthogonal Frequency Division Multiple Access）",
+		choices: [
+			"OFDMA（Orthogonal Frequency Division Multiple Access）",
+			"OFDM",
+			"MU-MIMO",
+			"CSMA/CA"
+		],
+		isImportant: true,
+		explanation: "OFDMAはWi-Fi 6の主要技術。Wi-Fi 5（802.11ac）まで使われていたOFDMは1端末がチャネル全体を占有したが、OFDMAはチャネルをRU（リソースユニット）に分割して複数端末に同時割り当て可能。スタジアム・駅など高密度環境での効率が大幅に向上する。",
+		difficulty: 2
+	}),
+	{
+		id: "q-321",
+		topicId: "wireless",
+		questionText: "Wi-Fi 6でOFDMAと組み合わせて導入され、複数の端末が同時にAPへ上り送信できるようにした技術を{{blank}}という。",
+		correctAnswer: "UL MU-MIMO（Uplink Multi-User MIMO）",
+		choices: [
+			"UL MU-MIMO（Uplink Multi-User MIMO）",
+			"DL MU-MIMO",
+			"SU-MIMO",
+			"MIMO-OFDM"
+		],
+		isImportant: false,
+		explanation: "Wi-Fi 5以前のMU-MIMOは下り（DL）のみ対応。Wi-Fi 6ではUL MU-MIMO（上り方向）も追加され、複数端末から同時にAPへ送信できるようになった。IoTデバイスや監視カメラなど上り通信が多い環境で特に有効。",
+		difficulty: 3
+	},
+	{
+		id: "q-322",
+		topicId: "wireless",
+		questionText: "Wi-Fi 6が導入した、フレームにカラー値を付与して空間的に近くても異なるBSSのフレームを無視して同時送信を許可する技術を{{blank}}という。",
+		correctAnswer: "BSS Coloring（空間再利用）",
+		choices: [
+			"BSS Coloring（空間再利用）",
+			"TWT",
+			"Target Wake Time",
+			"OFDMA"
+		],
+		isImportant: false,
+		explanation: "BSS Coloring（BSS着色）はWi-Fi 6の機能。各APのフレームに1〜63のカラー値を付加し、異なるBSSのフレームは電波が弱ければ無視して送信を継続できる。従来は他BSSのフレームも「チャネル使用中」として待機したため、BSS Coloringにより空間再利用率が向上する。",
+		difficulty: 3
+	},
+	{
+		id: "q-323",
+		topicId: "wireless",
+		questionText: "Wi-Fi 6で追加されたIoT端末向けの省電力機能で、APと端末間で送受信タイミングを事前にネゴシエーションする仕組みを{{blank}}という。",
+		correctAnswer: "TWT（Target Wake Time）",
+		choices: [
+			"TWT（Target Wake Time）",
+			"BSS Coloring",
+			"OFDMA",
+			"PMF"
+		],
+		isImportant: true,
+		explanation: "TWT（Target Wake Time）はAPと端末がWi-Fi通信を行う時間を事前に取り決める機能。端末は指定時間だけ起動して通信し、残りの時間はスリープできる。IoTセンサーや電池駆動デバイスの長寿命化に効果的で、Wi-Fi 6E/Wi-Fi 7でも継続採用されている。",
+		difficulty: 2
+	},
+	{
+		id: "q-324",
+		topicId: "wireless",
+		questionText: "IEEE 802.3btで規定されたPoEの上位規格で、最大90Wの給電が可能なものを{{blank}}という。",
+		correctAnswer: "PoE++（IEEE 802.3bt）",
+		choices: [
+			"PoE++（IEEE 802.3bt）",
+			"PoE+（IEEE 802.3at）",
+			"PoE（IEEE 802.3af）",
+			"UPoE"
+		],
+		isImportant: true,
+		explanation: "PoE規格の電力比較: PoE（802.3af）=最大15.4W, PoE+（802.3at）=最大30W, PoE++（802.3bt）=最大90W（Type 4）。Wi-Fi 6対応APや高性能IPカメラはPoE++が必要な場合がある。R5午後I-3でPoE++に関する出題があった。",
+		difficulty: 2
+	},
+	(
+	// ── R6〜R7 Wi-Fi 6E・WPA3・無線LAN詳細 ───────────────────────────
+	{
+		id: "q-325",
+		topicId: "wireless",
+		questionText: "Wi-Fi 6（802.11ax）をさらに6GHz帯（5.925〜7.125GHz）に拡張した規格を{{blank}}という。",
+		correctAnswer: "Wi-Fi 6E（IEEE 802.11ax 6GHz）",
+		choices: [
+			"Wi-Fi 6E（IEEE 802.11ax 6GHz）",
+			"Wi-Fi 7（802.11be）",
+			"Wi-Fi 5（802.11ac）",
+			"60GHz（802.11ad）"
+		],
+		isImportant: true,
+		explanation: "Wi-Fi 6E（Extended）は既存のWi-Fi 6（2.4GHz/5GHz）に加えて6GHz帯を使用できる拡張版。6GHz帯は利用者が少なく干渉が少ないため、安定した高速通信が実現できる。最大1200MHzの連続帯域が利用可能。R6年以降の試験で出題が増えている。",
+		difficulty: 2
+	}),
+	{
+		id: "q-326",
+		topicId: "wireless",
+		questionText: "WPA3でWPA2の脆弱性（KRACK等）を解決するために採用された、オフライン辞書攻撃に耐性を持つ新しいパスワード認証プロトコルを{{blank}}という。",
+		correctAnswer: "SAE（Simultaneous Authentication of Equals）",
+		choices: [
+			"SAE（Simultaneous Authentication of Equals）",
+			"PSK",
+			"EAP-TLS",
+			"PEAP"
+		],
+		isImportant: true,
+		explanation: "SAE（RFC 7664、Dragonfly Key Exchange）はDragonfly鍵交換を用いてパスワードから共有鍵を生成する。WPA2-PSKのオフライン辞書攻撃（4-Wayハンドシェイクキャプチャ→ブルートフォース）を防ぐ。WPA3-Personalで標準採用。Forward Secrecyも保証する。",
+		difficulty: 2
+	},
+	{
+		id: "q-327",
+		topicId: "wireless",
+		questionText: "WPA3-Enterpriseで192-bitセキュリティモードに必須の暗号化スイートとして採用された方式を{{blank}}という。",
+		correctAnswer: "GCMP-256（AES-256-GCM）",
+		choices: [
+			"GCMP-256（AES-256-GCM）",
+			"CCMP-128（AES-128-CCM）",
+			"TKIP",
+			"WEP-104"
+		],
+		isImportant: false,
+		explanation: "WPA3-Enterprise 192ビットモードはNSAのCNSA（Commercial National Security Algorithm）スイートに準拠し、AES-256-GCM（GCMP-256）・SHA-384・ECDH/ECDSA（384ビット）を必須とする。政府・金融・防衛向けの高セキュリティ環境向け。",
+		difficulty: 3
+	}
+];
+
+//# sourceMappingURL=data:application/json;base64,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Q0FFRDtFQUNFLElBQUk7RUFDSixTQUFTO0VBQ1QsY0FBYztFQUNkLGVBQWU7RUFDZixTQUFTO0dBQUM7R0FBZ0M7R0FBcUI7R0FBcUI7R0FBa0I7RUFDdEcsYUFBYTtFQUNiLGFBQWE7RUFDYixZQUFZO0VBQ2I7Q0FDRDtFQUNFLElBQUk7RUFDSixTQUFTO0VBQ1QsY0FBYztFQUNkLGVBQWU7RUFDZixTQUFTO0dBQUM7R0FBOEM7R0FBTztHQUFXO0dBQU87RUFDakYsYUFBYTtFQUNiLGFBQWE7RUFDYixZQUFZO0VBQ2I7Q0FDRDtFQUNFLElBQUk7RUFDSixTQUFTO0VBQ1QsY0FBYztFQUNkLGVBQWU7RUFDZixTQUFTO0dBQUM7R0FBeUI7R0FBeUI7R0FBUTtHQUFVO0VBQzlFLGFBQWE7RUFDYixhQUFhO0VBQ2IsWUFBWTtFQUNiO0NBQ0YiLCJuYW1lcyI6W10sInNvdXJjZXMiOlsid2lyZWxlc3MudHMiXSwidmVyc2lvbiI6Mywic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHR5cGUgeyBRdWVzdGlvbiB9IGZyb20gJy4uLy4uL3R5cGVzJ1xyXG5cclxuZXhwb3J0IGNvbnN0IHdpcmVsZXNzUXVlc3Rpb25zOiBRdWVzdGlvbltdID0gW1xyXG4gIHtcclxuICAgIGlkOiAncS0xMDAnLFxyXG4gICAgdG9waWNJZDogJ3dpcmVsZXNzJyxcclxuICAgIHF1ZXN0aW9uVGV4dDogJ0lFRUUgODAyLjExYWPjgYzkvb/nlKjjgZnjgovlkajms6LmlbDluK/jga97e2JsYW5rfX3jgafjgYLjgovjgIInLFxyXG4gICAgY29ycmVjdEFuc3dlcjogJzVHSHrluK8nLFxyXG4gICAgY2hvaWNlczogWyc1R0h65bivJywgJzIuNEdIeuW4rycsICc2MEdIeuW4rycsICc5MDBNSHrluK8nXSxcclxuICAgIGlzSW1wb3J0YW50OiBmYWxzZSxcclxuICAgIGV4cGxhbmF0aW9uOiAnSUVFRSA4MDIuMTFhY++8iFdpLUZpIDXvvInjga81R0h65biv44Gu44G/5a++5b+c44CCODAyLjExbu+8iFdpLUZpIDTvvInjga8yLjQvNUdIeuS4oeWvvuW/nOOAgjgwMi4xMWF477yIV2ktRmkgNu+8ieOBrzIuNC81R0h65a++5b+c77yIV2ktRmkgNkXjga82R0h66L+95Yqg77yJ44CCJyxcclxuICAgIGRpZmZpY3VsdHk6IDIsXHJcbiAgfSxcclxuICB7XHJcbiAgICBpZDogJ3EtMTAxJyxcclxuICAgIHRvcGljSWQ6ICd3aXJlbGVzcycsXHJcbiAgICBxdWVzdGlvblRleHQ6ICdXUEEz44Gn5o6h55So44GV44KM44Gf44CB6L6e5pu45pS75pKD44Gr5by344GE6KqN6Ki85pa55byP44KSe3tibGFua31944Go44GE44GG44CCJyxcclxuICAgIGNvcnJlY3RBbnN3ZXI6ICdTQUXvvIhTaW11bHRhbmVvdXMgQXV0aGVudGljYXRpb24gb2YgRXF1YWxz77yJJyxcclxuICAgIGNob2ljZXM6IFsnU0FF77yIU2ltdWx0YW5lb3VzIEF1dGhlbnRpY2F0aW9uIG9mIEVxdWFsc++8iScsICdUS0lQJywgJ0NDTVAnLCAnUFNLJ10sXHJcbiAgICBpc0ltcG9ydGFudDogdHJ1ZSxcclxuICAgIGV4cGxhbmF0aW9uOiAnU0FF77yIRHJhZ29uZmx56Y215Lqk5o+b44Go44KC5ZG844Gw44KM44KL77yJ44GvV1BBMy1QZXJzb25hbOOBp+aOoeeUqOOAguS6i+WJjeWFseaciemNteOBi+OCieOCu+ODg+OCt+ODp+ODs+mNteOCkuWwjuWHuuOBmeOCi+mam+OBq+OCquODleODqeOCpOODs+i+nuabuOaUu+aSg+OCkuWbsOmbo+OBq+OBmeOCi+OAgldQQTLjga5QU0vjga/jg5Hjgrnjg6/jg7zjg4nmjqjmuKzmlLvmkoPjgavlvLHjgYvjgaPjgZ/jgIInLFxyXG4gICAgZGlmZmljdWx0eTogMixcclxuICB9LFxyXG4gIHtcclxuICAgIGlkOiAncS0xMDInLFxyXG4gICAgdG9waWNJZDogJ3dpcmVsZXNzJyxcclxuICAgIHF1ZXN0aW9uVGV4dDogJ+eEoee3mkxBTuOBruaal+WPt+WMluaWueW8j+OBruOBhuOBoeOAgUFFUy1DQ01Q44KS5L2/55So44GZ44KL6KaP5qC844KSe3tibGFua31944Go44GE44GG44CCJyxcclxuICAgIGNvcnJlY3RBbnN3ZXI6ICdXUEEyJyxcclxuICAgIGNob2ljZXM6IFsnV1BBMicsICdXUEEnLCAnV0VQJywgJ1dQQTPvvIhXUEEy44Go44Gu6YGV44GE44Gv6Y215Lqk5o+b44Gu44G/77yJJ10sXHJcbiAgICBpc0ltcG9ydGFudDogdHJ1ZSxcclxuICAgIGV4cGxhbmF0aW9uOiAnV1BBMuOBr0FFUy1DQ01Q77yIQ291bnRlciBtb2RlIENCQy1NQUMgUHJvdG9jb2zvvInjgpLkvb/nlKjjgZnjgovjgIJXUEHjga9US0lQ77yIVGVtcG9yYWwgS2V5IEludGVncml0eSBQcm90b2NvbO+8ieOCkuS9v+eUqOOAgldFUOOBr+iEhuW8seOBqlJDNOOCkuS9v+eUqOOBl+OBpuOBiuOCiuS9v+eUqOemgeatouOAgicsXHJcbiAgICBkaWZmaWN1bHR5OiAyLFxyXG4gIH0sXHJcbiAge1xyXG4gICAgaWQ6ICdxLTEwMycsXHJcbiAgICB0b3BpY0lkOiAnd2lyZWxlc3MnLFxyXG4gICAgcXVlc3Rpb25UZXh0OiAn5LyB5qWt54Sh57eaTEFO44GnUkFESVVT44K144O844OQ44KS5L2/44Gj44Gf6KqN6Ki844OV44Os44O844Og44Ov44O844Kv44KSe3tibGFua31944Go44GE44GG44CCJyxcclxuICAgIGNvcnJlY3RBbnN3ZXI6ICdJRUVFIDgwMi4xWCcsXHJcbiAgICBjaG9pY2VzOiBbJ0lFRUUgODAyLjFYJywgJ0lFRUUgODAyLjExaScsICdFQVAtVExTJywgJ1dQQTItRW50ZXJwcmlzZSddLFxyXG4gICAgaXNJbXBvcnRhbnQ6IHRydWUsXHJcbiAgICBleHBsYW5hdGlvbjogJ0lFRUUgODAyLjFY44GvUkFESVVT44Gr44KI44KL44Od44O844OI44OZ44O844K544Gu44Ki44Kv44K744K55Yi25b6h44OV44Os44O844Og44Ov44O844Kv44CCQVDvvIhBdXRoZW50aWNhdG9y77yJ44GM44K144OX44Oq44Kr44Oz44OI77yI56uv5pyr77yJ44Gu6KqN6Ki86KaB5rGC44KSUkFESVVT44K144O844OQ77yIQXV0aGVudGljYXRpb24gU2VydmVy77yJ44Gr6Lui6YCB44GZ44KL44CCJyxcclxuICAgIGRpZmZpY3VsdHk6IDIsXHJcbiAgfSxcclxuICB7XHJcbiAgICBpZDogJ3EtMTA0JyxcclxuICAgIHRvcGljSWQ6ICd3aXJlbGVzcycsXHJcbiAgICBxdWVzdGlvblRleHQ6ICfnhKHnt5pMQU7jgaflqpLkvZPjgqLjgq/jgrvjgrnliLblvqHjga7ln7rmnKzmlrnlvI/jgajjgarjgovjga7jga97e2JsYW5rfX3jgafjgYLjgovjgIInLFxyXG4gICAgY29ycmVjdEFuc3dlcjogJ0NTTUEvQ0HvvIhDb2xsaXNpb24gQXZvaWRhbmNl77yJJyxcclxuICAgIGNob2ljZXM6IFsnQ1NNQS9DQe+8iENvbGxpc2lvbiBBdm9pZGFuY2XvvIknLCAnQ1NNQS9DRCcsICdURE1BJywgJ0ZETUEnXSxcclxuICAgIGlzSW1wb3J0YW50OiBmYWxzZSxcclxuICAgIGV4cGxhbmF0aW9uOiAnQ1NNQS9DQSDjga/nhKHnt5pMQU7vvIhJRUVFIDgwMi4xMe+8ieOBruWfuuacrOeahOOBquWqkuS9k+OCouOCr+OCu+OCueWItuW+oeaWueW8j+OAgumbu+azouOBr+ihneeqgeaknOWHuuOBjOWbsOmbo+OBquOBn+OCgeOAgemAgeS/oeWJjeOBq+OCreODo+ODquOCouOCu+ODs+OCueOBl+OAgeepuuOBhOOBpuOBhOOCjOOBsOODqeODs+ODgOODoOaZgumWk++8iOODkOODg+OCr+OCquODle+8ieW+heapn+OBl+OBpuOBi+OCiemAgeS/oeOBmeOCi+OAjOihneeqgeWbnumBv+Wei+OAjeOBp+OBguOCi++8iOaciee3mkxBTuOBrkNTTUEvQ0Tjgajjga/nlbDjgarjgovvvInjgILjgarjgYrjgIHkupLjgYTjga7pm7vms6LjgYznm7TmjqXlsYrjgYvjgarjgYTnq6/mnKvlkIzlo6vjgYzlkIzmmYLpgIHkv6HjgZfjgabooZ3nqoHjgZnjgovjgIzpmqDjgoznq6/mnKvllY/poYzjgI3jgbjjga7lr77nrZbjgajjgZfjgabjga/jgIFDU01BL0NB44Gr5Yqg44GI44GmIFJUUy9DVFPvvIjpgIHkv6HmqKnkuojntITvvInjgpLkvbXnlKjjgZnjgovjga7jgYzlrprnlarjgILoqK3llY/jga/ln7rmnKzmlrnlvI/jgpLllY/jgYbjgoLjga7jgarjga7jgacgQ1NNQS9DQSDjgYzmraPop6PjgIInLFxyXG4gICAgZGlmZmljdWx0eTogMixcclxuICB9LFxyXG4gIC8vIFI3LTjlubQgV2ktRmkgN+WVj+mhjFxyXG4gIHtcclxuICAgIGlkOiAncS1yOC0wMDEnLFxyXG4gICAgdG9waWNJZDogJ3dpcmVsZXNzJyxcclxuICAgIHF1ZXN0aW9uVGV4dDogJ1dpLUZpIDfvvIhJRUVFIDgwMi4xMWJl77yJ44Gn5o6h55So44GV44KM44Gf44CB6KSH5pWw44Gu5ZGo5rOi5pWw5biv77yIMi40LzUvNkdIeu+8ieOCkuWQjOaZguOBvuOBn+OBr+WLleeahOOBq+S9v+OBhOS9jumBheW7tuODu+mrmOOCueODq+ODvOODl+ODg+ODiOOCkuWun+ePvuOBmeOCi+apn+iDveOCknt7Ymxhbmt9feOBqOOBhOOBhuOAgicsXHJcbiAgICBjb3JyZWN0QW5zd2VyOiAnTUxP77yITXVsdGktTGluayBPcGVyYXRpb27vvIknLFxyXG4gICAgY2hvaWNlczogWydNTE/vvIhNdWx0aS1MaW5rIE9wZXJhdGlvbu+8iScsICdNVS1NSU1PJywgJ09GRE1BJywgJ0JTUyBDb2xvcmluZyddLFxyXG4gICAgaXNJbXBvcnRhbnQ6IHRydWUsXHJcbiAgICBleHBsYW5hdGlvbjogJ01MT++8iE11bHRpLUxpbmsgT3BlcmF0aW9u77yJ44GvV2ktRmkgN+OBruacgOWkp+OBrueJueW+tOOAguikh+aVsOODkOODs+ODieOBp+WQjOaZguOBq0Fzc29jaWF0aW9u44GX44CB44OI44Op44OV44Kj44OD44Kv44KS5Lim5YiX6Lui6YCB44G+44Gf44Gv44OQ44Oz44OJ5YiH5pu/44GZ44KL44GT44Go44Gn6LaF5L2O6YGF5bu244Go6auY44K544Or44O844OX44OD44OI44KS5a6f54++44GZ44KL44CC44K544Kt44Oj44Oz44Gq44GX44Gr6auY6YCf44OP44Oz44OJ44Kq44O844OQ44KC5Y+v6IO944CCJyxcclxuICAgIGRpZmZpY3VsdHk6IDIsXHJcbiAgfSxcclxuICB7XHJcbiAgICBpZDogJ3EtcjgtMDAyJyxcclxuICAgIHRvcGljSWQ6ICd3aXJlbGVzcycsXHJcbiAgICBxdWVzdGlvblRleHQ6ICdXaS1GaSA344GM5o6h55So44GZ44KL5aSJ6Kq/5pa55byP44Gn44CBMeOCt+ODs+ODnOODq+OBpzEy44OT44OD44OI44KS5Lyd6YCB44Gn44GN44KL44KC44Gu44KSe3tibGFua31944Go44GE44GG44CCJyxcclxuICAgIGNvcnJlY3RBbnN3ZXI6ICc0MDk2LVFBTScsXHJcbiAgICBjaG9pY2VzOiBbJzQwOTYtUUFNJywgJzEwMjQtUUFNJywgJzI1Ni1RQU0nLCAnNjQtUUFNJ10sXHJcbiAgICBpc0ltcG9ydGFudDogdHJ1ZSxcclxuICAgIGV4cGxhbmF0aW9uOiAnNDA5Ni1RQU3vvIgxMuODk+ODg+ODiC/jgrfjg7Pjg5zjg6vvvInjga9XaS1GaSA344Gn5o6h55So44CCV2ktRmkgNuOBrjEwMjQtUUFN77yIMTDjg5Pjg4Pjg4jvvInmr5TjgafntIQyMCXjga7kvJ3pgIHlirnnjoflkJHkuIrjgILjgZ/jgaDjgZfkv6Hlj7flk4Hos6rjgYzoia/lpb3jgarov5Hot53pm6LpgJrkv6HmmYLjga7jgb/mnInlirnjgafjgIHot53pm6LjgYzlopfjgYjjgovjgajkvY7jgYTlpInoqr/mlrnlvI/jgavliIfjgormm7/jgo/jgovjgIInLFxyXG4gICAgZGlmZmljdWx0eTogMixcclxuICB9LFxyXG4gIHtcclxuICAgIGlkOiAncS1yOC0wMDMnLFxyXG4gICAgdG9waWNJZDogJ3dpcmVsZXNzJyxcclxuICAgIHF1ZXN0aW9uVGV4dDogJ1dpLUZpIDfjgafmnIDlpKfluK/ln5/luYXjga97e2JsYW5rfX1NSHrjgavmi6HlvLXjgZXjgozjgZ/vvIhXaS1GaSA25q+U44GnMuWAje+8ieOAgicsXHJcbiAgICBjb3JyZWN0QW5zd2VyOiAnMzIwJyxcclxuICAgIGNob2ljZXM6IFsnMzIwJywgJzE2MCcsICc4MCcsICc0MCddLFxyXG4gICAgaXNJbXBvcnRhbnQ6IHRydWUsXHJcbiAgICBleHBsYW5hdGlvbjogJ1dpLUZpIDfjga82R0h65biv44KS44OV44Or5rS755So44GX44Gm5pyA5aSnMzIwTUh644Gu44OB44Oj44ON44Or5bmF44KS5a6f54++77yIV2ktRmkgNi82ReOBr+acgOWkpzE2ME1Ieu+8ieOAguODgeODo+ODjeODq+W5heOCkjLlgI3jgavjgZnjgovjgZPjgajjgafnkIboq5bjgrnjg6vjg7zjg5fjg4Pjg4jjgpLlpKfluYXjgavlkJHkuIrjgZXjgZvjgovjgIInLFxyXG4gICAgZGlmZmljdWx0eTogMixcclxuICB9LFxyXG4gIHtcclxuICAgIGlkOiAncS1yOC0wMDQnLFxyXG4gICAgdG9waWNJZDogJ3dpcmVsZXNzJyxcclxuICAgIHF1ZXN0aW9uVGV4dDogJ1dpLUZpIDfjgafjg4Hjg6Pjg43jg6vjga7kuIDpg6jjgavlubLmuInjgYzlrZjlnKjjgZnjgovloLTlkIjjgIHlubLmuInpg6jliIbjgpLpmaTjgYTjgabmrovjgorjga7jgq/jg6rjg7zjg7PjgarluK/ln5/jgpLntZDlkIjjgZfjgabpgJrkv6HjgZnjgovmioDooZPjgpJ7e2JsYW5rfX3jgajjgYTjgYbjgIInLFxyXG4gICAgY29ycmVjdEFuc3dlcjogJ+ODl+ODquOCouODs+ODluODq+ODkeODs+OCr+ODgeODo+ODquODs+OCsCcsXHJcbiAgICBjaG9pY2VzOiBbJ+ODl+ODquOCouODs+ODluODq+ODkeODs+OCr+ODgeODo+ODquODs+OCsCcsICfjg4Hjg6Pjg43jg6vjg5zjg7Pjg4fjgqPjg7PjgrAnLCAnREZT77yIRHluYW1pYyBGcmVxdWVuY3kgU2VsZWN0aW9u77yJJywgJ1RXVO+8iFRhcmdldCBXYWtlIFRpbWXvvIknXSxcclxuICAgIGlzSW1wb3J0YW50OiBmYWxzZSxcclxuICAgIGV4cGxhbmF0aW9uOiAn44OX44Oq44Ki44Oz44OW44Or44OR44Oz44Kv44OB44Oj44Oq44Oz44Kw44Gv5L2/55So44OB44Oj44ON44Or5YaF44Gu5bmy5riJ5biv5Z+f44KS44CM56m05oqc44GN44CN44GX44Gm6Zmk5aSW44GX44CB5q6L44KK44Gu44Kv44Oq44O844Oz44Gq5biv5Z+f44KS57WQ5ZCI44GX44Gm5bqD5biv5Z+f6YCa5L+h44KS5a6f54++44GZ44KL5oqA6KGT44CC5bmy5riJ44GM5aSa44GE55Kw5aKD44Gn44KC6auY5biv5Z+f44KS57at5oyB44Gn44GN44KL44CCJyxcclxuICAgIGRpZmZpY3VsdHk6IDMsXHJcbiAgfSxcclxuICB7XHJcbiAgICBpZDogJ3EtcjgtMDExJyxcclxuICAgIHRvcGljSWQ6ICd3aXJlbGVzcycsXHJcbiAgICBxdWVzdGlvblRleHQ6ICdXaS1GaSA344Gn56m66ZaT44K544OI44Oq44O844Og5pWw44Gv5pyA5aSne3tibGFua3195pys44G+44Gn5ouh5by144GV44KM44Gf77yIV2ktRmkgNuOBrjLlgI3vvInjgIInLFxyXG4gICAgY29ycmVjdEFuc3dlcjogJzE2JyxcclxuICAgIGNob2ljZXM6IFsnMTYnLCAnOCcsICc0JywgJzMyJ10sXHJcbiAgICBpc0ltcG9ydGFudDogZmFsc2UsXHJcbiAgICBleHBsYW5hdGlvbjogJ1dpLUZpIDfjga/mnIDlpKcxNuepuumWk+OCueODiOODquODvOODoOOCkuOCteODneODvOODiO+8iFdpLUZpIDbjga/mnIDlpKc45pys77yJ44CCTXVsdGktUlXvvIjjg57jg6vjg4Hjg6rjgr3jg7zjgrnjg6bjg4vjg4Pjg4jvvInjgajntYTjgb/lkIjjgo/jgZvjgovjgZPjgajjgaflkajms6LmlbDliKnnlKjlirnnjofjgoLlkJHkuIrjgZfjgIHnkIboq5bniannkIbkvJ3pgIHpgJ/luqbjga9XaS1GaSA25q+U57SEMuWAjeOBrjQ2R2Jwc+OCkuWun+ePvuOAgicsXHJcbiAgICBkaWZmaWN1bHR5OiAzLFxyXG4gIH0sXHJcbiAgLy8g4pSA4pSAIFdpLUZpIDYg6Kmz57Sw44O7UG9FKyvvvIhSNSDljYjlvoxJLTMg6aC75Ye677yJ4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSAXHJcbiAge1xyXG4gICAgaWQ6ICdxLTMyMCcsXHJcbiAgICB0b3BpY0lkOiAnd2lyZWxlc3MnLFxyXG4gICAgcXVlc3Rpb25UZXh0OiAnV2ktRmkgNu+8iElFRUUgODAyLjExYXjvvInjgafmjqHnlKjjgZXjgozjgZ/jgIEx44Gk44Gu44OB44Oj44ON44Or44KS6KSH5pWw44Gu5bCP44K144OW44OB44Oj44ON44Or44Gr5YiG5Ymy44GX44Gm6KSH5pWw56uv5pyr44G45ZCM5pmC6YCB5Y+X5L+h44GZ44KL5aSa6YeN44Ki44Kv44K744K55oqA6KGT44KSe3tibGFua31944Go44GE44GG44CCJyxcclxuICAgIGNvcnJlY3RBbnN3ZXI6ICdPRkRNQe+8iE9ydGhvZ29uYWwgRnJlcXVlbmN5IERpdmlzaW9uIE11bHRpcGxlIEFjY2Vzc++8iScsXHJcbiAgICBjaG9pY2VzOiBbJ09GRE1B77yIT3J0aG9nb25hbCBGcmVxdWVuY3kgRGl2aXNpb24gTXVsdGlwbGUgQWNjZXNz77yJJywgJ09GRE0nLCAnTVUtTUlNTycsICdDU01BL0NBJ10sXHJcbiAgICBpc0ltcG9ydGFudDogdHJ1ZSxcclxuICAgIGV4cGxhbmF0aW9uOiAnT0ZETUHjga9XaS1GaSA244Gu5Li76KaB5oqA6KGT44CCV2ktRmkgNe+8iDgwMi4xMWFj77yJ44G+44Gn5L2/44KP44KM44Gm44GE44GfT0ZETeOBrzHnq6/mnKvjgYzjg4Hjg6Pjg43jg6vlhajkvZPjgpLljaDmnInjgZfjgZ/jgYzjgIFPRkRNQeOBr+ODgeODo+ODjeODq+OCklJV77yI44Oq44K944O844K544Om44OL44OD44OI77yJ44Gr5YiG5Ymy44GX44Gm6KSH5pWw56uv5pyr44Gr5ZCM5pmC5Ymy44KK5b2T44Gm5Y+v6IO944CC44K544K/44K444Ki44Og44O76aeF44Gq44Gp6auY5a+G5bqm55Kw5aKD44Gn44Gu5Yq5546H44GM5aSn5bmF44Gr5ZCR5LiK44GZ44KL44CCJyxcclxuICAgIGRpZmZpY3VsdHk6IDIsXHJcbiAgfSxcclxuICB7XHJcbiAgICBpZDogJ3EtMzIxJyxcclxuICAgIHRvcGljSWQ6ICd3aXJlbGVzcycsXHJcbiAgICBxdWVzdGlvblRleHQ6ICdXaS1GaSA244GnT0ZETUHjgajntYTjgb/lkIjjgo/jgZvjgablsI7lhaXjgZXjgozjgIHopIfmlbDjga7nq6/mnKvjgYzlkIzmmYLjgatBUOOBuOS4iuOCiumAgeS/oeOBp+OBjeOCi+OCiOOBhuOBq+OBl+OBn+aKgOihk+OCknt7Ymxhbmt9feOBqOOBhOOBhuOAgicsXHJcbiAgICBjb3JyZWN0QW5zd2VyOiAnVUwgTVUtTUlNT++8iFVwbGluayBNdWx0aS1Vc2VyIE1JTU/vvIknLFxyXG4gICAgY2hvaWNlczogWydVTCBNVS1NSU1P77yIVXBsaW5rIE11bHRpLVVzZXIgTUlNT++8iScsICdETCBNVS1NSU1PJywgJ1NVLU1JTU8nLCAnTUlNTy1PRkRNJ10sXHJcbiAgICBpc0ltcG9ydGFudDogZmFsc2UsXHJcbiAgICBleHBsYW5hdGlvbjogJ1dpLUZpIDXku6XliY3jga5NVS1NSU1P44Gv5LiL44KK77yIREzvvInjga7jgb/lr77lv5zjgIJXaS1GaSA244Gn44GvVUwgTVUtTUlNT++8iOS4iuOCiuaWueWQke+8ieOCgui/veWKoOOBleOCjOOAgeikh+aVsOerr+acq+OBi+OCieWQjOaZguOBq0FQ44G46YCB5L+h44Gn44GN44KL44KI44GG44Gr44Gq44Gj44Gf44CCSW9U44OH44OQ44Kk44K544KE55uj6KaW44Kr44Oh44Op44Gq44Gp5LiK44KK6YCa5L+h44GM5aSa44GE55Kw5aKD44Gn54m544Gr5pyJ5Yq544CCJyxcclxuICAgIGRpZmZpY3VsdHk6IDMsXHJcbiAgfSxcclxuICB7XHJcbiAgICBpZDogJ3EtMzIyJyxcclxuICAgIHRvcGljSWQ6ICd3aXJlbGVzcycsXHJcbiAgICBxdWVzdGlvblRleHQ6ICdXaS1GaSA244GM5bCO5YWl44GX44Gf44CB44OV44Os44O844Og44Gr44Kr44Op44O85YCk44KS5LuY5LiO44GX44Gm56m66ZaT55qE44Gr6L+R44GP44Gm44KC55Ww44Gq44KLQlNT44Gu44OV44Os44O844Og44KS54Sh6KaW44GX44Gm5ZCM5pmC6YCB5L+h44KS6Kix5Y+v44GZ44KL5oqA6KGT44KSe3tibGFua31944Go44GE44GG44CCJyxcclxuICAgIGNvcnJlY3RBbnN3ZXI6ICdCU1MgQ29sb3JpbmfvvIjnqbrplpPlho3liKnnlKjvvIknLFxyXG4gICAgY2hvaWNlczogWydCU1MgQ29sb3JpbmfvvIjnqbrplpPlho3liKnnlKjvvIknLCAnVFdUJywgJ1RhcmdldCBXYWtlIFRpbWUnLCAnT0ZETUEnXSxcclxuICAgIGlzSW1wb3J0YW50OiBmYWxzZSxcclxuICAgIGV4cGxhbmF0aW9uOiAnQlNTIENvbG9yaW5n77yIQlNT552A6Imy77yJ44GvV2ktRmkgNuOBruapn+iDveOAguWQhEFQ44Gu44OV44Os44O844Og44GrMeOAnDYz44Gu44Kr44Op44O85YCk44KS5LuY5Yqg44GX44CB55Ww44Gq44KLQlNT44Gu44OV44Os44O844Og44Gv6Zu75rOi44GM5byx44GR44KM44Gw54Sh6KaW44GX44Gm6YCB5L+h44KS57aZ57aa44Gn44GN44KL44CC5b6T5p2l44Gv5LuWQlNT44Gu44OV44Os44O844Og44KC44CM44OB44Oj44ON44Or5L2/55So5Lit44CN44Go44GX44Gm5b6F5qmf44GX44Gf44Gf44KB44CBQlNTIENvbG9yaW5n44Gr44KI44KK56m66ZaT5YaN5Yip55So546H44GM5ZCR5LiK44GZ44KL44CCJyxcclxuICAgIGRpZmZpY3VsdHk6IDMsXHJcbiAgfSxcclxuICB7XHJcbiAgICBpZDogJ3EtMzIzJyxcclxuICAgIHRvcGljSWQ6ICd3aXJlbGVzcycsXHJcbiAgICBxdWVzdGlvblRleHQ6ICdXaS1GaSA244Gn6L+95Yqg44GV44KM44GfSW9U56uv5pyr5ZCR44GR44Gu55yB6Zu75Yqb5qmf6IO944Gn44CBQVDjgajnq6/mnKvplpPjgafpgIHlj5fkv6Hjgr/jgqTjg5/jg7PjgrDjgpLkuovliY3jgavjg43jgrTjgrfjgqjjg7zjgrfjg6fjg7PjgZnjgovku5XntYTjgb/jgpJ7e2JsYW5rfX3jgajjgYTjgYbjgIInLFxyXG4gICAgY29ycmVjdEFuc3dlcjogJ1RXVO+8iFRhcmdldCBXYWtlIFRpbWXvvIknLFxyXG4gICAgY2hvaWNlczogWydUV1TvvIhUYXJnZXQgV2FrZSBUaW1l77yJJywgJ0JTUyBDb2xvcmluZycsICdPRkRNQScsICdQTUYnXSxcclxuICAgIGlzSW1wb3J0YW50OiB0cnVlLFxyXG4gICAgZXhwbGFuYXRpb246ICdUV1TvvIhUYXJnZXQgV2FrZSBUaW1l77yJ44GvQVDjgajnq6/mnKvjgYxXaS1GaemAmuS/oeOCkuihjOOBhuaZgumWk+OCkuS6i+WJjeOBq+WPluOCiuaxuuOCgeOCi+apn+iDveOAguerr+acq+OBr+aMh+WumuaZgumWk+OBoOOBkei1t+WLleOBl+OBpumAmuS/oeOBl+OAgeaui+OCiuOBruaZgumWk+OBr+OCueODquODvOODl+OBp+OBjeOCi+OAgklvVOOCu+ODs+OCteODvOOChOmbu+axoOmnhuWLleODh+ODkOOCpOOCueOBrumVt+Wvv+WRveWMluOBq+WKueaenOeahOOBp+OAgVdpLUZpIDZFL1dpLUZpIDfjgafjgoLntpnntprmjqHnlKjjgZXjgozjgabjgYTjgovjgIInLFxyXG4gICAgZGlmZmljdWx0eTogMixcclxuICB9LFxyXG4gIHtcclxuICAgIGlkOiAncS0zMjQnLFxyXG4gICAgdG9waWNJZDogJ3dpcmVsZXNzJyxcclxuICAgIHF1ZXN0aW9uVGV4dDogJ0lFRUUgODAyLjNidOOBp+imj+WumuOBleOCjOOBn1BvReOBruS4iuS9jeimj+agvOOBp+OAgeacgOWkpzkwV+OBrue1pumbu+OBjOWPr+iDveOBquOCguOBruOCknt7Ymxhbmt9feOBqOOBhOOBhuOAgicsXHJcbiAgICBjb3JyZWN0QW5zd2VyOiAnUG9FKyvvvIhJRUVFIDgwMi4zYnTvvIknLFxyXG4gICAgY2hvaWNlczogWydQb0UrK++8iElFRUUgODAyLjNidO+8iScsICdQb0Ur77yISUVFRSA4MDIuM2F077yJJywgJ1BvRe+8iElFRUUgODAyLjNhZu+8iScsICdVUG9FJ10sXHJcbiAgICBpc0ltcG9ydGFudDogdHJ1ZSxcclxuICAgIGV4cGxhbmF0aW9uOiAnUG9F6KaP5qC844Gu6Zu75Yqb5q+U6LyDOiBQb0XvvIg4MDIuM2Fm77yJPeacgOWkpzE1LjRXLCBQb0Ur77yIODAyLjNhdO+8iT3mnIDlpKczMFcsIFBvRSsr77yIODAyLjNidO+8iT3mnIDlpKc5MFfvvIhUeXBlIDTvvInjgIJXaS1GaSA25a++5b+cQVDjgoTpq5jmgKfog71JUOOCq+ODoeODqeOBr1BvRSsr44GM5b+F6KaB44Gq5aC05ZCI44GM44GC44KL44CCUjXljYjlvoxJLTPjgadQb0UrK+OBq+mWouOBmeOCi+WHuumhjOOBjOOBguOBo+OBn+OAgicsXHJcbiAgICBkaWZmaWN1bHR5OiAyLFxyXG4gIH0sXHJcbiAgLy8g4pSA4pSAIFI244CcUjcgV2ktRmkgNkXjg7tXUEEz44O754Sh57eaTEFO6Kmz57SwIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgFxyXG4gIHtcclxuICAgIGlkOiAncS0zMjUnLFxyXG4gICAgdG9waWNJZDogJ3dpcmVsZXNzJyxcclxuICAgIHF1ZXN0aW9uVGV4dDogJ1dpLUZpIDbvvIg4MDIuMTFheO+8ieOCkuOBleOCieOBqzZHSHrluK/vvIg1LjkyNeOAnDcuMTI1R0h677yJ44Gr5ouh5by144GX44Gf6KaP5qC844KSe3tibGFua31944Go44GE44GG44CCJyxcclxuICAgIGNvcnJlY3RBbnN3ZXI6ICdXaS1GaSA2Re+8iElFRUUgODAyLjExYXggNkdIeu+8iScsXHJcbiAgICBjaG9pY2VzOiBbJ1dpLUZpIDZF77yISUVFRSA4MDIuMTFheCA2R0h677yJJywgJ1dpLUZpIDfvvIg4MDIuMTFiZe+8iScsICdXaS1GaSA177yIODAyLjExYWPvvIknLCAnNjBHSHrvvIg4MDIuMTFhZO+8iSddLFxyXG4gICAgaXNJbXBvcnRhbnQ6IHRydWUsXHJcbiAgICBleHBsYW5hdGlvbjogJ1dpLUZpIDZF77yIRXh0ZW5kZWTvvInjga/ml6LlrZjjga5XaS1GaSA277yIMi40R0h6LzVHSHrvvInjgavliqDjgYjjgaY2R0h65biv44KS5L2/55So44Gn44GN44KL5ouh5by154mI44CCNkdIeuW4r+OBr+WIqeeUqOiAheOBjOWwkeOBquOBj+W5sua4ieOBjOWwkeOBquOBhOOBn+OCgeOAgeWuieWumuOBl+OBn+mrmOmAn+mAmuS/oeOBjOWun+ePvuOBp+OBjeOCi+OAguacgOWkpzEyMDBNSHrjga7pgKPntprluK/ln5/jgYzliKnnlKjlj6/og73jgIJSNuW5tOS7pemZjeOBruippumok+OBp+WHuumhjOOBjOWil+OBiOOBpuOBhOOCi+OAgicsXHJcbiAgICBkaWZmaWN1bHR5OiAyLFxyXG4gIH0sXHJcbiAge1xyXG4gICAgaWQ6ICdxLTMyNicsXHJcbiAgICB0b3BpY0lkOiAnd2lyZWxlc3MnLFxyXG4gICAgcXVlc3Rpb25UZXh0OiAnV1BBM+OBp1dQQTLjga7ohIblvLHmgKfvvIhLUkFDS+etie+8ieOCkuino+axuuOBmeOCi+OBn+OCgeOBq+aOoeeUqOOBleOCjOOBn+OAgeOCquODleODqeOCpOODs+i+nuabuOaUu+aSg+OBq+iAkOaAp+OCkuaMgeOBpOaWsOOBl+OBhOODkeOCueODr+ODvOODieiqjeiovOODl+ODreODiOOCs+ODq+OCknt7Ymxhbmt9feOBqOOBhOOBhuOAgicsXHJcbiAgICBjb3JyZWN0QW5zd2VyOiAnU0FF77yIU2ltdWx0YW5lb3VzIEF1dGhlbnRpY2F0aW9uIG9mIEVxdWFsc++8iScsXHJcbiAgICBjaG9pY2VzOiBbJ1NBRe+8iFNpbXVsdGFuZW91cyBBdXRoZW50aWNhdGlvbiBvZiBFcXVhbHPvvIknLCAnUFNLJywgJ0VBUC1UTFMnLCAnUEVBUCddLFxyXG4gICAgaXNJbXBvcnRhbnQ6IHRydWUsXHJcbiAgICBleHBsYW5hdGlvbjogJ1NBRe+8iFJGQyA3NjY044CBRHJhZ29uZmx5IEtleSBFeGNoYW5nZe+8ieOBr0RyYWdvbmZseemNteS6pOaPm+OCkueUqOOBhOOBpuODkeOCueODr+ODvOODieOBi+OCieWFseaciemNteOCkueUn+aIkOOBmeOCi+OAgldQQTItUFNL44Gu44Kq44OV44Op44Kk44Oz6L6e5pu45pS75pKD77yINC1XYXnjg4/jg7Pjg4njgrfjgqfjgqTjgq/jgq3jg6Pjg5fjg4Hjg6PihpLjg5bjg6vjg7zjg4jjg5Xjgqnjg7zjgrnvvInjgpLpmLLjgZDjgIJXUEEzLVBlcnNvbmFs44Gn5qiZ5rqW5o6h55So44CCRm9yd2FyZCBTZWNyZWN544KC5L+d6Ki844GZ44KL44CCJyxcclxuICAgIGRpZmZpY3VsdHk6IDIsXHJcbiAgfSxcclxuICB7XHJcbiAgICBpZDogJ3EtMzI3JyxcclxuICAgIHRvcGljSWQ6ICd3aXJlbGVzcycsXHJcbiAgICBxdWVzdGlvblRleHQ6ICdXUEEzLUVudGVycHJpc2XjgacxOTItYml044K744Kt44Ol44Oq44OG44Kj44Oi44O844OJ44Gr5b+F6aCI44Gu5pqX5Y+35YyW44K544Kk44O844OI44Go44GX44Gm5o6h55So44GV44KM44Gf5pa55byP44KSe3tibGFua31944Go44GE44GG44CCJyxcclxuICAgIGNvcnJlY3RBbnN3ZXI6ICdHQ01QLTI1Nu+8iEFFUy0yNTYtR0NN77yJJyxcclxuICAgIGNob2ljZXM6IFsnR0NNUC0yNTbvvIhBRVMtMjU2LUdDTe+8iScsICdDQ01QLTEyOO+8iEFFUy0xMjgtQ0NN77yJJywgJ1RLSVAnLCAnV0VQLTEwNCddLFxyXG4gICAgaXNJbXBvcnRhbnQ6IGZhbHNlLFxyXG4gICAgZXhwbGFuYXRpb246ICdXUEEzLUVudGVycHJpc2UgMTky44OT44OD44OI44Oi44O844OJ44GvTlNB44GuQ05TQe+8iENvbW1lcmNpYWwgTmF0aW9uYWwgU2VjdXJpdHkgQWxnb3JpdGht77yJ44K544Kk44O844OI44Gr5rqW5oug44GX44CBQUVTLTI1Ni1HQ03vvIhHQ01QLTI1Nu+8ieODu1NIQS0zODTjg7tFQ0RIL0VDRFNB77yIMzg044OT44OD44OI77yJ44KS5b+F6aCI44Go44GZ44KL44CC5pS/5bqc44O76YeR6J6N44O76Ziy6KGb5ZCR44GR44Gu6auY44K744Kt44Ol44Oq44OG44Kj55Kw5aKD5ZCR44GR44CCJyxcclxuICAgIGRpZmZpY3VsdHk6IDMsXHJcbiAgfSxcclxuXVxyXG4iXX0=

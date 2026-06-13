@@ -1,0 +1,156 @@
+export const tcpIpQuestions = [
+	{
+		id: "q-110",
+		topicId: "layer4-7",
+		questionText: "TCPの3ウェイハンドシェイクにおいて最初に送信されるパケットは{{blank}}である。",
+		correctAnswer: "SYN",
+		choices: [
+			"SYN",
+			"SYN-ACK",
+			"ACK",
+			"FIN"
+		],
+		isImportant: true,
+		explanation: "TCPコネクション確立の流れ：①クライアントSYN送信 ②サーバSYN-ACK応答 ③クライアントACK送信。コネクション切断は4-Wayハンドシェイク（FIN/ACK×2往復）。",
+		difficulty: 1
+	},
+	{
+		id: "q-111",
+		topicId: "layer4-7",
+		questionText: "TCPの輻輳制御において、ウィンドウサイズを指数的に増加させる段階を{{blank}}という。",
+		correctAnswer: "スロースタート",
+		choices: [
+			"スロースタート",
+			"輻輳回避",
+			"高速再転送",
+			"高速回復"
+		],
+		isImportant: false,
+		explanation: "スロースタートは接続初期にウィンドウサイズを1から始め、ACKを受けるたびに倍増させる。ssthresh（スロースタート閾値）に達すると輻輳回避フェーズ（線形増加）に移行する。",
+		difficulty: 2
+	},
+	{
+		id: "q-112",
+		topicId: "layer4-7",
+		questionText: "ping コマンドが送信する ICMP のタイプ番号は{{blank}}である。",
+		correctAnswer: "タイプ 8（Echo Request）",
+		choices: [
+			"タイプ 8（Echo Request）",
+			"タイプ 0（Echo Reply）",
+			"タイプ 11（Time Exceeded）",
+			"タイプ 3（Destination Unreachable）"
+		],
+		isImportant: false,
+		explanation: "pingコマンドはICMP Type 8（Echo Request）を送り、Type 0（Echo Reply）が返ってくる。tracerouteはTTL=1から順に増やしてType 11（Time Exceeded）を収集する。",
+		difficulty: 2
+	},
+	{
+		id: "q-113",
+		topicId: "layer4-7",
+		questionText: "IPフラグメンテーションを制御するIPヘッダのフィールドで、フラグメント禁止を示すビットを{{blank}}という。",
+		correctAnswer: "DFビット（Don't Fragment）",
+		choices: [
+			"DFビット（Don't Fragment）",
+			"MFビット（More Fragments）",
+			"TTL",
+			"TOS"
+		],
+		isImportant: false,
+		explanation: "DFビットを1にセットするとルータでのフラグメントを禁止する。パケットがMTUを超える場合はICMP「フラグメント要・DF設定」を返す。PMTUD（Path MTU Discovery）はこの仕組みを利用する。",
+		difficulty: 2
+	},
+	{
+		id: "q-114",
+		topicId: "layer4-7",
+		questionText: "UDPはTCPと異なり{{blank}}を提供しない。",
+		correctAnswer: "信頼性のある通信（順序保証・再送・コネクション管理）",
+		choices: [
+			"信頼性のある通信（順序保証・再送・コネクション管理）",
+			"チェックサム",
+			"ポート番号",
+			"マルチキャスト配信"
+		],
+		isImportant: false,
+		explanation: "UDPはコネクションレスで再送・順序保証がないため低遅延。DNS・DHCP・NTP・VoIP・動画ストリーミングなどリアルタイム性が重要な用途に向く。",
+		difficulty: 1
+	},
+	(
+	// ── R6〜R7 TCP/IP詳細 ─────────────────────────────────────────────
+	{
+		id: "q-115",
+		topicId: "layer4-7",
+		questionText: "NATの一種で、複数のプライベートIPアドレスを1つのグローバルIPアドレスにポート番号も使って多重化する方式を{{blank}}という。",
+		correctAnswer: "NAPT（IP Masquerade／PAT）",
+		choices: [
+			"NAPT（IP Masquerade／PAT）",
+			"静的NAT",
+			"ダイナミックNAT",
+			"NAT64"
+		],
+		isImportant: true,
+		explanation: "NAPT（Network Address Port Translation）はIPアドレスとポート番号を組み合わせて多対1の変換を行う。家庭用ルータや企業FWで広く使われる。「IPマスカレード」（Linux）や「PAT」（Cisco）とも呼ばれる。",
+		difficulty: 2
+	}),
+	{
+		id: "q-116",
+		topicId: "layer4-7",
+		questionText: "IPパケットのToSフィールドを拡張したDiffServでは、優先度クラスを示す6ビットの値を{{blank}}という。",
+		correctAnswer: "DSCP（Differentiated Services Code Point）",
+		choices: [
+			"DSCP（Differentiated Services Code Point）",
+			"COS",
+			"ToS",
+			"ECN"
+		],
+		isImportant: true,
+		explanation: "DSCP（RFC 2474）はIPヘッダのDSフィールド（旧ToS）の上位6ビットで64段階の優先度を指定する。EF（Expedited Forwarding：音声など低遅延優先）、AF（Assured Forwarding：保証帯域）、BE（Best Effort：デフォルト）などのクラスがある。",
+		difficulty: 2
+	},
+	{
+		id: "q-117",
+		topicId: "layer4-7",
+		questionText: "HTTP/3で採用された、TLS暗号化とTCPの機能をUDP上で実装した次世代トランスポートプロトコルを{{blank}}という。",
+		correctAnswer: "QUIC",
+		choices: [
+			"QUIC",
+			"SCTP",
+			"DCCP",
+			"UDP-Lite"
+		],
+		isImportant: true,
+		explanation: "QUIC（RFC 9000）はGoogleが開発しIETFで標準化されたプロトコル。UDP上でTLS 1.3相当の暗号化と多重化ストリームを実現し、TCPのHOL（Head-of-Line）ブロッキングを解消する。HTTP/3のトランスポート層として採用され、接続確立が1-RTTで高速。",
+		difficulty: 2
+	},
+	{
+		id: "q-118",
+		topicId: "layer4-7",
+		questionText: "ネットワーク経路上の全てのリンクで通過できる最大のIPパケットサイズをルーターが動的に発見する仕組みを{{blank}}という。",
+		correctAnswer: "PMTUD（Path MTU Discovery）",
+		choices: [
+			"PMTUD（Path MTU Discovery）",
+			"MTU設定",
+			"フラグメント制御",
+			"ジャンボフレーム"
+		],
+		isImportant: false,
+		explanation: "PMTUD（RFC 1191）はDFビットを1にしたパケットを送り、ルータからICMP「フラグメント要・DF設定」メッセージを受け取りながら経路上の最小MTUを発見する仕組み。ICMPをブロックするFWがあるとPMTUDブラックホールが発生し通信が止まる。",
+		difficulty: 3
+	},
+	{
+		id: "q-119",
+		topicId: "layer4-7",
+		questionText: "TCPのウィンドウスケーリングオプションを使うことで、TCPウィンドウサイズを最大{{blank}}バイトまで拡張できる。",
+		correctAnswer: "約1GB（2^30バイト）",
+		choices: [
+			"約1GB（2^30バイト）",
+			"65,535バイト（2^16-1）",
+			"約4GB（2^32バイト）",
+			"約128MB（2^27バイト）"
+		],
+		isImportant: false,
+		explanation: "TCPヘッダのウィンドウフィールドは16ビット（最大65,535バイト）だが、RFC 1323のウィンドウスケールオプションにより14ビットのシフト値を付与し、最大2^(16+14)=2^30≒1GBまで拡張できる。高遅延・大帯域（衛星回線など）のBDPを活かすために必要。",
+		difficulty: 3
+	}
+];
+
+//# sourceMappingURL=data:application/json;base64,eyJtYXBwaW5ncyI6IkFBRUEsT0FBTyxNQUFNLGlCQUE2QjtDQUN4QztFQUNFLElBQUk7RUFDSixTQUFTO0VBQ1QsY0FBYztFQUNkLGVBQWU7RUFDZixTQUFTO0dBQUM7R0FBTztHQUFXO0dBQU87R0FBTTtFQUN6QyxhQUFhO0VBQ2IsYUFBYTtFQUNiLFlBQVk7RUFDYjtDQUNEO0VBQ0UsSUFBSTtFQUNKLFNBQVM7RUFDVCxjQUFjO0VBQ2QsZUFBZTtFQUNmLFNBQVM7R0FBQztHQUFXO0dBQVE7R0FBUztHQUFPO0VBQzdDLGFBQWE7RUFDYixhQUFhO0VBQ2IsWUFBWTtFQUNiO0NBQ0Q7RUFDRSxJQUFJO0VBQ0osU0FBUztFQUNULGNBQWM7RUFDZCxlQUFlO0VBQ2YsU0FBUztHQUFDO0dBQXVCO0dBQXFCO0dBQXlCO0dBQWlDO0VBQ2hILGFBQWE7RUFDYixhQUFhO0VBQ2IsWUFBWTtFQUNiO0NBQ0Q7RUFDRSxJQUFJO0VBQ0osU0FBUztFQUNULGNBQWM7RUFDZCxlQUFlO0VBQ2YsU0FBUztHQUFDO0dBQTBCO0dBQXlCO0dBQU87R0FBTTtFQUMxRSxhQUFhO0VBQ2IsYUFBYTtFQUNiLFlBQVk7RUFDYjtDQUNEO0VBQ0UsSUFBSTtFQUNKLFNBQVM7RUFDVCxjQUFjO0VBQ2QsZUFBZTtFQUNmLFNBQVM7R0FBQztHQUE4QjtHQUFVO0dBQVM7R0FBWTtFQUN2RSxhQUFhO0VBQ2IsYUFBYTtFQUNiLFlBQVk7RUFDYjs7O0NBRUQ7RUFDRSxJQUFJO0VBQ0osU0FBUztFQUNULGNBQWM7RUFDZCxlQUFlO0VBQ2YsU0FBUztHQUFDO0dBQTJCO0dBQVM7R0FBYTtHQUFRO0VBQ25FLGFBQWE7RUFDYixhQUFhO0VBQ2IsWUFBWTtFQUNiO0NBQ0Q7RUFDRSxJQUFJO0VBQ0osU0FBUztFQUNULGNBQWM7RUFDZCxlQUFlO0VBQ2YsU0FBUztHQUFDO0dBQTRDO0dBQU87R0FBTztHQUFNO0VBQzFFLGFBQWE7RUFDYixhQUFhO0VBQ2IsWUFBWTtFQUNiO0NBQ0Q7RUFDRSxJQUFJO0VBQ0osU0FBUztFQUNULGNBQWM7RUFDZCxlQUFlO0VBQ2YsU0FBUztHQUFDO0dBQVE7R0FBUTtHQUFRO0dBQVc7RUFDN0MsYUFBYTtFQUNiLGFBQWE7RUFDYixZQUFZO0VBQ2I7Q0FDRDtFQUNFLElBQUk7RUFDSixTQUFTO0VBQ1QsY0FBYztFQUNkLGVBQWU7RUFDZixTQUFTO0dBQUM7R0FBNkI7R0FBUztHQUFZO0dBQVc7RUFDdkUsYUFBYTtFQUNiLGFBQWE7RUFDYixZQUFZO0VBQ2I7Q0FDRDtFQUNFLElBQUk7RUFDSixTQUFTO0VBQ1QsY0FBYztFQUNkLGVBQWU7RUFDZixTQUFTO0dBQUM7R0FBaUI7R0FBcUI7R0FBaUI7R0FBa0I7RUFDbkYsYUFBYTtFQUNiLGFBQWE7RUFDYixZQUFZO0VBQ2I7Q0FDRiIsIm5hbWVzIjpbXSwic291cmNlcyI6WyJ0Y3AtaXAudHMiXSwidmVyc2lvbiI6Mywic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHR5cGUgeyBRdWVzdGlvbiB9IGZyb20gJy4uLy4uL3R5cGVzJ1xyXG5cclxuZXhwb3J0IGNvbnN0IHRjcElwUXVlc3Rpb25zOiBRdWVzdGlvbltdID0gW1xyXG4gIHtcclxuICAgIGlkOiAncS0xMTAnLFxyXG4gICAgdG9waWNJZDogJ2xheWVyNC03JyxcclxuICAgIHF1ZXN0aW9uVGV4dDogJ1RDUOOBrjPjgqbjgqfjgqTjg4/jg7Pjg4njgrfjgqfjgqTjgq/jgavjgYrjgYTjgabmnIDliJ3jgavpgIHkv6HjgZXjgozjgovjg5HjgrHjg4Pjg4jjga97e2JsYW5rfX3jgafjgYLjgovjgIInLFxyXG4gICAgY29ycmVjdEFuc3dlcjogJ1NZTicsXHJcbiAgICBjaG9pY2VzOiBbJ1NZTicsICdTWU4tQUNLJywgJ0FDSycsICdGSU4nXSxcclxuICAgIGlzSW1wb3J0YW50OiB0cnVlLFxyXG4gICAgZXhwbGFuYXRpb246ICdUQ1DjgrPjg43jgq/jgrfjg6fjg7Pnorrnq4vjga7mtYHjgozvvJrikaDjgq/jg6njgqTjgqLjg7Pjg4hTWU7pgIHkv6Eg4pGh44K144O844OQU1lOLUFDS+W/nOetlCDikaLjgq/jg6njgqTjgqLjg7Pjg4hBQ0vpgIHkv6HjgILjgrPjg43jgq/jgrfjg6fjg7PliIfmlq3jga80LVdheeODj+ODs+ODieOCt+OCp+OCpOOCr++8iEZJTi9BQ0vDlzLlvoDlvqnvvInjgIInLFxyXG4gICAgZGlmZmljdWx0eTogMSxcclxuICB9LFxyXG4gIHtcclxuICAgIGlkOiAncS0xMTEnLFxyXG4gICAgdG9waWNJZDogJ2xheWVyNC03JyxcclxuICAgIHF1ZXN0aW9uVGV4dDogJ1RDUOOBrui8u+i8s+WItuW+oeOBq+OBiuOBhOOBpuOAgeOCpuOCo+ODs+ODieOCpuOCteOCpOOCuuOCkuaMh+aVsOeahOOBq+Wil+WKoOOBleOBm+OCi+autemajuOCknt7Ymxhbmt9feOBqOOBhOOBhuOAgicsXHJcbiAgICBjb3JyZWN0QW5zd2VyOiAn44K544Ot44O844K544K/44O844OIJyxcclxuICAgIGNob2ljZXM6IFsn44K544Ot44O844K544K/44O844OIJywgJ+i8u+i8s+WbnumBvycsICfpq5jpgJ/lho3ou6LpgIEnLCAn6auY6YCf5Zue5b6pJ10sXHJcbiAgICBpc0ltcG9ydGFudDogZmFsc2UsXHJcbiAgICBleHBsYW5hdGlvbjogJ+OCueODreODvOOCueOCv+ODvOODiOOBr+aOpee2muWIneacn+OBq+OCpuOCo+ODs+ODieOCpuOCteOCpOOCuuOCkjHjgYvjgonlp4vjgoHjgIFBQ0vjgpLlj5fjgZHjgovjgZ/jgbPjgavlgI3lopfjgZXjgZvjgovjgIJzc3RocmVzaO+8iOOCueODreODvOOCueOCv+ODvOODiOmWvuWApO+8ieOBq+mBlOOBmeOCi+OBqOi8u+i8s+WbnumBv+ODleOCp+ODvOOCuu+8iOe3muW9ouWil+WKoO+8ieOBq+enu+ihjOOBmeOCi+OAgicsXHJcbiAgICBkaWZmaWN1bHR5OiAyLFxyXG4gIH0sXHJcbiAge1xyXG4gICAgaWQ6ICdxLTExMicsXHJcbiAgICB0b3BpY0lkOiAnbGF5ZXI0LTcnLFxyXG4gICAgcXVlc3Rpb25UZXh0OiAncGluZyDjgrPjg57jg7Pjg4njgYzpgIHkv6HjgZnjgosgSUNNUCDjga7jgr/jgqTjg5fnlarlj7fjga97e2JsYW5rfX3jgafjgYLjgovjgIInLFxyXG4gICAgY29ycmVjdEFuc3dlcjogJ+OCv+OCpOODlyA477yIRWNobyBSZXF1ZXN077yJJyxcclxuICAgIGNob2ljZXM6IFsn44K/44Kk44OXIDjvvIhFY2hvIFJlcXVlc3TvvIknLCAn44K/44Kk44OXIDDvvIhFY2hvIFJlcGx577yJJywgJ+OCv+OCpOODlyAxMe+8iFRpbWUgRXhjZWVkZWTvvIknLCAn44K/44Kk44OXIDPvvIhEZXN0aW5hdGlvbiBVbnJlYWNoYWJsZe+8iSddLFxyXG4gICAgaXNJbXBvcnRhbnQ6IGZhbHNlLFxyXG4gICAgZXhwbGFuYXRpb246ICdwaW5n44Kz44Oe44Oz44OJ44GvSUNNUCBUeXBlIDjvvIhFY2hvIFJlcXVlc3TvvInjgpLpgIHjgorjgIFUeXBlIDDvvIhFY2hvIFJlcGx577yJ44GM6L+U44Gj44Gm44GP44KL44CCdHJhY2Vyb3V0ZeOBr1RUTD0x44GL44KJ6aCG44Gr5aKX44KE44GX44GmVHlwZSAxMe+8iFRpbWUgRXhjZWVkZWTvvInjgpLlj47pm4bjgZnjgovjgIInLFxyXG4gICAgZGlmZmljdWx0eTogMixcclxuICB9LFxyXG4gIHtcclxuICAgIGlkOiAncS0xMTMnLFxyXG4gICAgdG9waWNJZDogJ2xheWVyNC03JyxcclxuICAgIHF1ZXN0aW9uVGV4dDogJ0lQ44OV44Op44Kw44Oh44Oz44OG44O844K344On44Oz44KS5Yi25b6h44GZ44KLSVDjg5jjg4Pjg4Djga7jg5XjgqPjg7zjg6vjg4njgafjgIHjg5Xjg6njgrDjg6Hjg7Pjg4jnpoHmraLjgpLnpLrjgZnjg5Pjg4Pjg4jjgpJ7e2JsYW5rfX3jgajjgYTjgYbjgIInLFxyXG4gICAgY29ycmVjdEFuc3dlcjogJ0RG44OT44OD44OI77yIRG9uXFwndCBGcmFnbWVudO+8iScsXHJcbiAgICBjaG9pY2VzOiBbJ0RG44OT44OD44OI77yIRG9uXFwndCBGcmFnbWVudO+8iScsICdNRuODk+ODg+ODiO+8iE1vcmUgRnJhZ21lbnRz77yJJywgJ1RUTCcsICdUT1MnXSxcclxuICAgIGlzSW1wb3J0YW50OiBmYWxzZSxcclxuICAgIGV4cGxhbmF0aW9uOiAnREbjg5Pjg4Pjg4jjgpIx44Gr44K744OD44OI44GZ44KL44Go44Or44O844K/44Gn44Gu44OV44Op44Kw44Oh44Oz44OI44KS56aB5q2i44GZ44KL44CC44OR44Kx44OD44OI44GMTVRV44KS6LaF44GI44KL5aC05ZCI44GvSUNNUOOAjOODleODqeOCsOODoeODs+ODiOimgeODu0RG6Kit5a6a44CN44KS6L+U44GZ44CCUE1UVUTvvIhQYXRoIE1UVSBEaXNjb3ZlcnnvvInjga/jgZPjga7ku5XntYTjgb/jgpLliKnnlKjjgZnjgovjgIInLFxyXG4gICAgZGlmZmljdWx0eTogMixcclxuICB9LFxyXG4gIHtcclxuICAgIGlkOiAncS0xMTQnLFxyXG4gICAgdG9waWNJZDogJ2xheWVyNC03JyxcclxuICAgIHF1ZXN0aW9uVGV4dDogJ1VEUOOBr1RDUOOBqOeVsOOBquOCint7Ymxhbmt9feOCkuaPkOS+m+OBl+OBquOBhOOAgicsXHJcbiAgICBjb3JyZWN0QW5zd2VyOiAn5L+h6aC85oCn44Gu44GC44KL6YCa5L+h77yI6aCG5bqP5L+d6Ki844O75YaN6YCB44O744Kz44ON44Kv44K344On44Oz566h55CG77yJJyxcclxuICAgIGNob2ljZXM6IFsn5L+h6aC85oCn44Gu44GC44KL6YCa5L+h77yI6aCG5bqP5L+d6Ki844O75YaN6YCB44O744Kz44ON44Kv44K344On44Oz566h55CG77yJJywgJ+ODgeOCp+ODg+OCr+OCteODoCcsICfjg53jg7zjg4jnlarlj7cnLCAn44Oe44Or44OB44Kt44Oj44K544OI6YWN5L+hJ10sXHJcbiAgICBpc0ltcG9ydGFudDogZmFsc2UsXHJcbiAgICBleHBsYW5hdGlvbjogJ1VEUOOBr+OCs+ODjeOCr+OCt+ODp+ODs+ODrOOCueOBp+WGjemAgeODu+mghuW6j+S/neiovOOBjOOBquOBhOOBn+OCgeS9jumBheW7tuOAgkROU+ODu0RIQ1Djg7tOVFDjg7tWb0lQ44O75YuV55S744K544OI44Oq44O844Of44Oz44Kw44Gq44Gp44Oq44Ki44Or44K/44Kk44Og5oCn44GM6YeN6KaB44Gq55So6YCU44Gr5ZCR44GP44CCJyxcclxuICAgIGRpZmZpY3VsdHk6IDEsXHJcbiAgfSxcclxuICAvLyDilIDilIAgUjbjgJxSNyBUQ1AvSVDoqbPntLAg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSAXHJcbiAge1xyXG4gICAgaWQ6ICdxLTExNScsXHJcbiAgICB0b3BpY0lkOiAnbGF5ZXI0LTcnLFxyXG4gICAgcXVlc3Rpb25UZXh0OiAnTkFU44Gu5LiA56iu44Gn44CB6KSH5pWw44Gu44OX44Op44Kk44OZ44O844OISVDjgqLjg4njg6zjgrnjgpIx44Gk44Gu44Kw44Ot44O844OQ44OrSVDjgqLjg4njg6zjgrnjgavjg53jg7zjg4jnlarlj7fjgoLkvb/jgaPjgablpJrph43ljJbjgZnjgovmlrnlvI/jgpJ7e2JsYW5rfX3jgajjgYTjgYbjgIInLFxyXG4gICAgY29ycmVjdEFuc3dlcjogJ05BUFTvvIhJUCBNYXNxdWVyYWRl77yPUEFU77yJJyxcclxuICAgIGNob2ljZXM6IFsnTkFQVO+8iElQIE1hc3F1ZXJhZGXvvI9QQVTvvIknLCAn6Z2Z55qETkFUJywgJ+ODgOOCpOODiuODn+ODg+OCr05BVCcsICdOQVQ2NCddLFxyXG4gICAgaXNJbXBvcnRhbnQ6IHRydWUsXHJcbiAgICBleHBsYW5hdGlvbjogJ05BUFTvvIhOZXR3b3JrIEFkZHJlc3MgUG9ydCBUcmFuc2xhdGlvbu+8ieOBr0lQ44Ki44OJ44Os44K544Go44Od44O844OI55Wq5Y+344KS57WE44G/5ZCI44KP44Gb44Gm5aSa5a++MeOBruWkieaPm+OCkuihjOOBhuOAguWutuW6reeUqOODq+ODvOOCv+OChOS8gealrUZX44Gn5bqD44GP5L2/44KP44KM44KL44CC44CMSVDjg57jgrnjgqvjg6zjg7zjg4njgI3vvIhMaW51eO+8ieOChOOAjFBBVOOAje+8iENpc2Nv77yJ44Go44KC5ZG844Gw44KM44KL44CCJyxcclxuICAgIGRpZmZpY3VsdHk6IDIsXHJcbiAgfSxcclxuICB7XHJcbiAgICBpZDogJ3EtMTE2JyxcclxuICAgIHRvcGljSWQ6ICdsYXllcjQtNycsXHJcbiAgICBxdWVzdGlvblRleHQ6ICdJUOODkeOCseODg+ODiOOBrlRvU+ODleOCo+ODvOODq+ODieOCkuaLoeW8teOBl+OBn0RpZmZTZXJ244Gn44Gv44CB5YSq5YWI5bqm44Kv44Op44K544KS56S644GZNuODk+ODg+ODiOOBruWApOOCknt7Ymxhbmt9feOBqOOBhOOBhuOAgicsXHJcbiAgICBjb3JyZWN0QW5zd2VyOiAnRFNDUO+8iERpZmZlcmVudGlhdGVkIFNlcnZpY2VzIENvZGUgUG9pbnTvvIknLFxyXG4gICAgY2hvaWNlczogWydEU0NQ77yIRGlmZmVyZW50aWF0ZWQgU2VydmljZXMgQ29kZSBQb2ludO+8iScsICdDT1MnLCAnVG9TJywgJ0VDTiddLFxyXG4gICAgaXNJbXBvcnRhbnQ6IHRydWUsXHJcbiAgICBleHBsYW5hdGlvbjogJ0RTQ1DvvIhSRkMgMjQ3NO+8ieOBr0lQ44OY44OD44OA44GuRFPjg5XjgqPjg7zjg6vjg4nvvIjml6dUb1PvvInjga7kuIrkvY0244OT44OD44OI44GnNjTmrrXpmo7jga7lhKrlhYjluqbjgpLmjIflrprjgZnjgovjgIJFRu+8iEV4cGVkaXRlZCBGb3J3YXJkaW5n77ya6Z+z5aOw44Gq44Gp5L2O6YGF5bu25YSq5YWI77yJ44CBQUbvvIhBc3N1cmVkIEZvcndhcmRpbmfvvJrkv53oqLzluK/ln5/vvInjgIFCRe+8iEJlc3QgRWZmb3J077ya44OH44OV44Kp44Or44OI77yJ44Gq44Gp44Gu44Kv44Op44K544GM44GC44KL44CCJyxcclxuICAgIGRpZmZpY3VsdHk6IDIsXHJcbiAgfSxcclxuICB7XHJcbiAgICBpZDogJ3EtMTE3JyxcclxuICAgIHRvcGljSWQ6ICdsYXllcjQtNycsXHJcbiAgICBxdWVzdGlvblRleHQ6ICdIVFRQLzPjgafmjqHnlKjjgZXjgozjgZ/jgIFUTFPmmpflj7fljJbjgahUQ1Djga7mqZ/og73jgpJVRFDkuIrjgaflrp/oo4XjgZfjgZ/mrKHkuJbku6Pjg4jjg6njg7Pjgrnjg53jg7zjg4jjg5fjg63jg4jjgrPjg6vjgpJ7e2JsYW5rfX3jgajjgYTjgYbjgIInLFxyXG4gICAgY29ycmVjdEFuc3dlcjogJ1FVSUMnLFxyXG4gICAgY2hvaWNlczogWydRVUlDJywgJ1NDVFAnLCAnRENDUCcsICdVRFAtTGl0ZSddLFxyXG4gICAgaXNJbXBvcnRhbnQ6IHRydWUsXHJcbiAgICBleHBsYW5hdGlvbjogJ1FVSUPvvIhSRkMgOTAwMO+8ieOBr0dvb2dsZeOBjOmWi+eZuuOBl0lFVEbjgafmqJnmupbljJbjgZXjgozjgZ/jg5fjg63jg4jjgrPjg6vjgIJVRFDkuIrjgadUTFMgMS4z55u45b2T44Gu5pqX5Y+35YyW44Go5aSa6YeN5YyW44K544OI44Oq44O844Og44KS5a6f54++44GX44CBVENQ44GuSE9M77yISGVhZC1vZi1MaW5l77yJ44OW44Ot44OD44Kt44Oz44Kw44KS6Kej5raI44GZ44KL44CCSFRUUC8z44Gu44OI44Op44Oz44K544Od44O844OI5bGk44Go44GX44Gm5o6h55So44GV44KM44CB5o6l57aa56K656uL44GMMS1SVFTjgafpq5jpgJ/jgIInLFxyXG4gICAgZGlmZmljdWx0eTogMixcclxuICB9LFxyXG4gIHtcclxuICAgIGlkOiAncS0xMTgnLFxyXG4gICAgdG9waWNJZDogJ2xheWVyNC03JyxcclxuICAgIHF1ZXN0aW9uVGV4dDogJ+ODjeODg+ODiOODr+ODvOOCr+e1jOi3r+S4iuOBruWFqOOBpuOBruODquODs+OCr+OBp+mAmumBjuOBp+OBjeOCi+acgOWkp+OBrklQ44OR44Kx44OD44OI44K144Kk44K644KS44Or44O844K/44O844GM5YuV55qE44Gr55m66KaL44GZ44KL5LuV57WE44G/44KSe3tibGFua31944Go44GE44GG44CCJyxcclxuICAgIGNvcnJlY3RBbnN3ZXI6ICdQTVRVRO+8iFBhdGggTVRVIERpc2NvdmVyee+8iScsXHJcbiAgICBjaG9pY2VzOiBbJ1BNVFVE77yIUGF0aCBNVFUgRGlzY292ZXJ577yJJywgJ01UVeioreWumicsICfjg5Xjg6njgrDjg6Hjg7Pjg4jliLblvqEnLCAn44K444Oj44Oz44Oc44OV44Os44O844OgJ10sXHJcbiAgICBpc0ltcG9ydGFudDogZmFsc2UsXHJcbiAgICBleHBsYW5hdGlvbjogJ1BNVFVE77yIUkZDIDExOTHvvInjga9ERuODk+ODg+ODiOOCkjHjgavjgZfjgZ/jg5HjgrHjg4Pjg4jjgpLpgIHjgorjgIHjg6vjg7zjgr/jgYvjgolJQ01Q44CM44OV44Op44Kw44Oh44Oz44OI6KaB44O7REboqK3lrprjgI3jg6Hjg4Pjgrvjg7zjgrjjgpLlj5fjgZHlj5bjgorjgarjgYzjgonntYzot6/kuIrjga7mnIDlsI9NVFXjgpLnmbropovjgZnjgovku5XntYTjgb/jgIJJQ01Q44KS44OW44Ot44OD44Kv44GZ44KLRlfjgYzjgYLjgovjgahQTVRVROODluODqeODg+OCr+ODm+ODvOODq+OBjOeZuueUn+OBl+mAmuS/oeOBjOatouOBvuOCi+OAgicsXHJcbiAgICBkaWZmaWN1bHR5OiAzLFxyXG4gIH0sXHJcbiAge1xyXG4gICAgaWQ6ICdxLTExOScsXHJcbiAgICB0b3BpY0lkOiAnbGF5ZXI0LTcnLFxyXG4gICAgcXVlc3Rpb25UZXh0OiAnVENQ44Gu44Km44Kj44Oz44OJ44Km44K544Kx44O844Oq44Oz44Kw44Kq44OX44K344On44Oz44KS5L2/44GG44GT44Go44Gn44CBVENQ44Km44Kj44Oz44OJ44Km44K144Kk44K644KS5pyA5aSne3tibGFua31944OQ44Kk44OI44G+44Gn5ouh5by144Gn44GN44KL44CCJyxcclxuICAgIGNvcnJlY3RBbnN3ZXI6ICfntIQxR0LvvIgyXjMw44OQ44Kk44OI77yJJyxcclxuICAgIGNob2ljZXM6IFsn57SEMUdC77yIMl4zMOODkOOCpOODiO+8iScsICc2NSw1MzXjg5DjgqTjg4jvvIgyXjE2LTHvvIknLCAn57SENEdC77yIMl4zMuODkOOCpOODiO+8iScsICfntIQxMjhNQu+8iDJeMjfjg5DjgqTjg4jvvIknXSxcclxuICAgIGlzSW1wb3J0YW50OiBmYWxzZSxcclxuICAgIGV4cGxhbmF0aW9uOiAnVENQ44OY44OD44OA44Gu44Km44Kj44Oz44OJ44Km44OV44Kj44O844Or44OJ44GvMTbjg5Pjg4Pjg4jvvIjmnIDlpKc2NSw1MzXjg5DjgqTjg4jvvInjgaDjgYzjgIFSRkMgMTMyM+OBruOCpuOCo+ODs+ODieOCpuOCueOCseODvOODq+OCquODl+OCt+ODp+ODs+OBq+OCiOOCijE044OT44OD44OI44Gu44K344OV44OI5YCk44KS5LuY5LiO44GX44CB5pyA5aSnMl4oMTYrMTQpPTJeMzDiiZIxR0Ljgb7jgafmi6HlvLXjgafjgY3jgovjgILpq5jpgYXlu7bjg7vlpKfluK/ln5/vvIjooZvmmJ/lm57nt5rjgarjganvvInjga5CRFDjgpLmtLvjgYvjgZnjgZ/jgoHjgavlv4XopoHjgIInLFxyXG4gICAgZGlmZmljdWx0eTogMyxcclxuICB9LFxyXG5dXHJcbiJdfQ==

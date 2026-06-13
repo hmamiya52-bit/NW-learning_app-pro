@@ -1,0 +1,154 @@
+export const wanQuestions = [
+	{
+		id: "q-130",
+		topicId: "wan",
+		questionText: "MPLSにおいてルータがパケットに付加する短い識別子を{{blank}}という。",
+		correctAnswer: "ラベル",
+		choices: [
+			"ラベル",
+			"タグ",
+			"ヘッダ",
+			"マーカー"
+		],
+		isImportant: false,
+		explanation: "MPLS（Multi-Protocol Label Switching）はIPアドレスでなくラベルでパケットを転送する。ラベルは入口ルータ（LER）で付加され、コアルータ（LSR）でスワップされ、出口LERで除去される。",
+		difficulty: 2
+	},
+	{
+		id: "q-131",
+		topicId: "wan",
+		questionText: "インターネットVPNのうち、SSL/TLSを使ってWebブラウザからVPN接続できる方式を{{blank}}という。",
+		correctAnswer: "SSL-VPN",
+		choices: [
+			"SSL-VPN",
+			"IPsec VPN",
+			"L2TP VPN",
+			"PPTP VPN"
+		],
+		isImportant: true,
+		explanation: "SSL-VPNはHTTPS（TCP 443）を使うためFWの制限を受けにくい。リバースプロキシ型・L3トンネル型・L2トンネル型がある。クライアントレス接続が可能な点がIPsec VPNと大きく異なる。",
+		difficulty: 2
+	},
+	{
+		id: "q-132",
+		topicId: "wan",
+		questionText: "xDSLのうち、短距離の電話線で高速通信を実現し集合住宅のFTTB構成で使われる技術を{{blank}}という。",
+		correctAnswer: "VDSL（Very high-speed DSL）",
+		choices: [
+			"VDSL（Very high-speed DSL）",
+			"ADSL",
+			"SDSL",
+			"HDSL"
+		],
+		isImportant: false,
+		explanation: "VDSLは短距離（数百m程度）の電話線で高速通信を実現する。FTTHの延長として集合住宅内の既存配線を活用するFTTB+VDSLの構成で使われることが多い。",
+		difficulty: 3
+	},
+	{
+		id: "q-260",
+		topicId: "wan",
+		questionText: "キャリアの閉域網を使い、IPルーティングで複数拠点を接続するサービスを{{blank}}という。",
+		correctAnswer: "IP-VPN",
+		choices: [
+			"IP-VPN",
+			"広域イーサネット",
+			"インターネットVPN",
+			"MPLS-TE"
+		],
+		isImportant: true,
+		explanation: "IP-VPNはキャリアのMPLS閉域網上で提供される仮想プライベートネットワーク。インターネットを使わないため高いSLAが保証される。遅延・帯域が品質保証される点がインターネットVPNと大きく異なる。",
+		difficulty: 1
+	},
+	{
+		id: "q-261",
+		topicId: "wan",
+		questionText: "拠点間をイーサネットフレームレベルで接続し、拠点側でレイヤ2スイッチとして使えるWANサービスを{{blank}}という。",
+		correctAnswer: "広域イーサネット",
+		choices: [
+			"広域イーサネット",
+			"IP-VPN",
+			"MPLS VPN",
+			"専用線"
+		],
+		isImportant: true,
+		explanation: "広域イーサネットはMACフレームを転送するL2サービス。拠点のルータが不要でスイッチ接続が可能。IPアドレスの制約が少なく柔軟なアドレス設計ができる。IP-VPNよりもフレキシブルなルーティングが可能。",
+		difficulty: 2
+	},
+	{
+		id: "q-262",
+		topicId: "wan",
+		questionText: "SD-WANにおいて、ルータやVPN装置の設定を一元管理するコンポーネントを{{blank}}という。",
+		correctAnswer: "SD-WANコントローラ（オーケストレータ）",
+		choices: [
+			"SD-WANコントローラ（オーケストレータ）",
+			"CPE",
+			"vEdge",
+			"WAN最適化装置"
+		],
+		isImportant: true,
+		explanation: "SD-WANはコントロールプレーンをクラウドのコントローラに集中させ、各拠点CPE（Customer Premises Equipment）にポリシーを配布する。複数のWAN回線をソフトウェアで動的に使い分けることが可能。",
+		difficulty: 2
+	},
+	{
+		id: "q-263",
+		topicId: "wan",
+		questionText: "IP-VPNでキャリア網の複数顧客の経路を分離するために各PE（プロバイダエッジ）ルータに設定される仮想ルーティングテーブルを{{blank}}という。",
+		correctAnswer: "VRF（Virtual Routing and Forwarding）",
+		choices: [
+			"VRF（Virtual Routing and Forwarding）",
+			"VLANテーブル",
+			"BGPテーブル",
+			"MPLSラベルテーブル"
+		],
+		isImportant: false,
+		explanation: "VRFはルータ上で複数の独立したルーティングテーブルを管理する機能。キャリアはPEルータにVRFを設け、顧客ごとに異なる経路情報を保持する。同じIPアドレス帯でも顧客間で重複が可能。",
+		difficulty: 3
+	},
+	{
+		id: "q-264",
+		topicId: "wan",
+		questionText: "複数のISPに同一のIPアドレスブロックをアドバタイズして接続信頼性と帯域を確保する技術を{{blank}}という。",
+		correctAnswer: "マルチホーミング",
+		choices: [
+			"マルチホーミング",
+			"ロードバランシング",
+			"リンクアグリゲーション",
+			"ECMP"
+		],
+		isImportant: false,
+		explanation: "マルチホーミングは複数のISPに接続し、片方の回線障害でも通信を継続できる冗長構成。BGPで各ISPに自AS経路をアドバタイズする。エンタープライズ向けではBGPマルチホームが一般的。",
+		difficulty: 2
+	},
+	{
+		id: "q-265",
+		topicId: "wan",
+		questionText: "WAN回線で転送するデータを圧縮・重複排除し帯域を節約するアプライアンスを{{blank}}という。",
+		correctAnswer: "WAN最適化装置（WOC）",
+		choices: [
+			"WAN最適化装置（WOC）",
+			"プロキシサーバ",
+			"QoSシェーパ",
+			"ロードバランサ"
+		],
+		isImportant: false,
+		explanation: "WAN最適化装置（WAN Optimization Controller）はデータ圧縮・重複排除・TCPアクセラレーションによりWAN帯域の使用効率を向上させる。SD-WANにその機能が統合されることも多い。",
+		difficulty: 3
+	},
+	{
+		id: "q-266",
+		topicId: "wan",
+		questionText: "PPPoEでISPと認証を行う際にPPPoEクライアントが送信するディスカバリパケットを{{blank}}という。",
+		correctAnswer: "PADI（PPPoE Active Discovery Initiation）",
+		choices: [
+			"PADI（PPPoE Active Discovery Initiation）",
+			"PADR",
+			"PADS",
+			"PADO"
+		],
+		isImportant: false,
+		explanation: "PPPoEのディスカバリフェーズ: ①PADI（クライアント→ブロードキャスト）②PADO（サーバ→クライアント）③PADR（クライアント→特定サーバ）④PADS（サーバ→確認）の順で行われる。",
+		difficulty: 3
+	}
+];
+
+//# sourceMappingURL=data:application/json;base64,eyJtYXBwaW5ncyI6IkFBRUEsT0FBTyxNQUFNLGVBQTJCO0NBQ3RDO0VBQ0UsSUFBSTtFQUNKLFNBQVM7RUFDVCxjQUFjO0VBQ2QsZUFBZTtFQUNmLFNBQVM7R0FBQztHQUFPO0dBQU07R0FBTztHQUFPO0VBQ3JDLGFBQWE7RUFDYixhQUFhO0VBQ2IsWUFBWTtFQUNiO0NBQ0Q7RUFDRSxJQUFJO0VBQ0osU0FBUztFQUNULGNBQWM7RUFDZCxlQUFlO0VBQ2YsU0FBUztHQUFDO0dBQVc7R0FBYTtHQUFZO0dBQVc7RUFDekQsYUFBYTtFQUNiLGFBQWE7RUFDYixZQUFZO0VBQ2I7Q0FDRDtFQUNFLElBQUk7RUFDSixTQUFTO0VBQ1QsY0FBYztFQUNkLGVBQWU7RUFDZixTQUFTO0dBQUM7R0FBNkI7R0FBUTtHQUFRO0dBQU87RUFDOUQsYUFBYTtFQUNiLGFBQWE7RUFDYixZQUFZO0VBQ2I7Q0FDRDtFQUNFLElBQUk7RUFDSixTQUFTO0VBQ1QsY0FBYztFQUNkLGVBQWU7RUFDZixTQUFTO0dBQUM7R0FBVTtHQUFZO0dBQWM7R0FBVTtFQUN4RCxhQUFhO0VBQ2IsYUFBYTtFQUNiLFlBQVk7RUFDYjtDQUNEO0VBQ0UsSUFBSTtFQUNKLFNBQVM7RUFDVCxjQUFjO0VBQ2QsZUFBZTtFQUNmLFNBQVM7R0FBQztHQUFZO0dBQVU7R0FBWTtHQUFNO0VBQ2xELGFBQWE7RUFDYixhQUFhO0VBQ2IsWUFBWTtFQUNiO0NBQ0Q7RUFDRSxJQUFJO0VBQ0osU0FBUztFQUNULGNBQWM7RUFDZCxlQUFlO0VBQ2YsU0FBUztHQUFDO0dBQTBCO0dBQU87R0FBUztHQUFXO0VBQy9ELGFBQWE7RUFDYixhQUFhO0VBQ2IsWUFBWTtFQUNiO0NBQ0Q7RUFDRSxJQUFJO0VBQ0osU0FBUztFQUNULGNBQWM7RUFDZCxlQUFlO0VBQ2YsU0FBUztHQUFDO0dBQXVDO0dBQVk7R0FBVztHQUFjO0VBQ3RGLGFBQWE7RUFDYixhQUFhO0VBQ2IsWUFBWTtFQUNiO0NBQ0Q7RUFDRSxJQUFJO0VBQ0osU0FBUztFQUNULGNBQWM7RUFDZCxlQUFlO0VBQ2YsU0FBUztHQUFDO0dBQVk7R0FBYTtHQUFlO0dBQU87RUFDekQsYUFBYTtFQUNiLGFBQWE7RUFDYixZQUFZO0VBQ2I7Q0FDRDtFQUNFLElBQUk7RUFDSixTQUFTO0VBQ1QsY0FBYztFQUNkLGVBQWU7RUFDZixTQUFTO0dBQUM7R0FBaUI7R0FBVztHQUFXO0dBQVU7RUFDM0QsYUFBYTtFQUNiLGFBQWE7RUFDYixZQUFZO0VBQ2I7Q0FDRDtFQUNFLElBQUk7RUFDSixTQUFTO0VBQ1QsY0FBYztFQUNkLGVBQWU7RUFDZixTQUFTO0dBQUM7R0FBMkM7R0FBUTtHQUFRO0dBQU87RUFDNUUsYUFBYTtFQUNiLGFBQWE7RUFDYixZQUFZO0VBQ2I7Q0FDRiIsIm5hbWVzIjpbXSwic291cmNlcyI6WyJ3YW4udHMiXSwidmVyc2lvbiI6Mywic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHR5cGUgeyBRdWVzdGlvbiB9IGZyb20gJy4uLy4uL3R5cGVzJ1xyXG5cclxuZXhwb3J0IGNvbnN0IHdhblF1ZXN0aW9uczogUXVlc3Rpb25bXSA9IFtcclxuICB7XHJcbiAgICBpZDogJ3EtMTMwJyxcclxuICAgIHRvcGljSWQ6ICd3YW4nLFxyXG4gICAgcXVlc3Rpb25UZXh0OiAnTVBMU+OBq+OBiuOBhOOBpuODq+ODvOOCv+OBjOODkeOCseODg+ODiOOBq+S7mOWKoOOBmeOCi+efreOBhOitmOWIpeWtkOOCknt7Ymxhbmt9feOBqOOBhOOBhuOAgicsXHJcbiAgICBjb3JyZWN0QW5zd2VyOiAn44Op44OZ44OrJyxcclxuICAgIGNob2ljZXM6IFsn44Op44OZ44OrJywgJ+OCv+OCsCcsICfjg5jjg4Pjg4AnLCAn44Oe44O844Kr44O8J10sXHJcbiAgICBpc0ltcG9ydGFudDogZmFsc2UsXHJcbiAgICBleHBsYW5hdGlvbjogJ01QTFPvvIhNdWx0aS1Qcm90b2NvbCBMYWJlbCBTd2l0Y2hpbmfvvInjga9JUOOCouODieODrOOCueOBp+OBquOBj+ODqeODmeODq+OBp+ODkeOCseODg+ODiOOCkui7oumAgeOBmeOCi+OAguODqeODmeODq+OBr+WFpeWPo+ODq+ODvOOCv++8iExFUu+8ieOBp+S7mOWKoOOBleOCjOOAgeOCs+OCouODq+ODvOOCv++8iExTUu+8ieOBp+OCueODr+ODg+ODl+OBleOCjOOAgeWHuuWPo0xFUuOBp+mZpOWOu+OBleOCjOOCi+OAgicsXHJcbiAgICBkaWZmaWN1bHR5OiAyLFxyXG4gIH0sXHJcbiAge1xyXG4gICAgaWQ6ICdxLTEzMScsXHJcbiAgICB0b3BpY0lkOiAnd2FuJyxcclxuICAgIHF1ZXN0aW9uVGV4dDogJ+OCpOODs+OCv+ODvOODjeODg+ODiFZQTuOBruOBhuOBoeOAgVNTTC9UTFPjgpLkvb/jgaPjgaZXZWLjg5bjg6njgqbjgrbjgYvjgolWUE7mjqXntprjgafjgY3jgovmlrnlvI/jgpJ7e2JsYW5rfX3jgajjgYTjgYbjgIInLFxyXG4gICAgY29ycmVjdEFuc3dlcjogJ1NTTC1WUE4nLFxyXG4gICAgY2hvaWNlczogWydTU0wtVlBOJywgJ0lQc2VjIFZQTicsICdMMlRQIFZQTicsICdQUFRQIFZQTiddLFxyXG4gICAgaXNJbXBvcnRhbnQ6IHRydWUsXHJcbiAgICBleHBsYW5hdGlvbjogJ1NTTC1WUE7jga9IVFRQU++8iFRDUCA0NDPvvInjgpLkvb/jgYbjgZ/jgoFGV+OBruWItumZkOOCkuWPl+OBkeOBq+OBj+OBhOOAguODquODkOODvOOCueODl+ODreOCreOCt+Wei+ODu0wz44OI44Oz44ON44Or5Z6L44O7TDLjg4jjg7Pjg43jg6vlnovjgYzjgYLjgovjgILjgq/jg6njgqTjgqLjg7Pjg4jjg6zjgrnmjqXntprjgYzlj6/og73jgarngrnjgYxJUHNlYyBWUE7jgajlpKfjgY3jgY/nlbDjgarjgovjgIInLFxyXG4gICAgZGlmZmljdWx0eTogMixcclxuICB9LFxyXG4gIHtcclxuICAgIGlkOiAncS0xMzInLFxyXG4gICAgdG9waWNJZDogJ3dhbicsXHJcbiAgICBxdWVzdGlvblRleHQ6ICd4RFNM44Gu44GG44Gh44CB55+t6Led6Zui44Gu6Zu76Kmx57ea44Gn6auY6YCf6YCa5L+h44KS5a6f54++44GX6ZuG5ZCI5L2P5a6F44GuRlRUQuani+aIkOOBp+S9v+OCj+OCjOOCi+aKgOihk+OCknt7Ymxhbmt9feOBqOOBhOOBhuOAgicsXHJcbiAgICBjb3JyZWN0QW5zd2VyOiAnVkRTTO+8iFZlcnkgaGlnaC1zcGVlZCBEU0zvvIknLFxyXG4gICAgY2hvaWNlczogWydWRFNM77yIVmVyeSBoaWdoLXNwZWVkIERTTO+8iScsICdBRFNMJywgJ1NEU0wnLCAnSERTTCddLFxyXG4gICAgaXNJbXBvcnRhbnQ6IGZhbHNlLFxyXG4gICAgZXhwbGFuYXRpb246ICdWRFNM44Gv55+t6Led6Zui77yI5pWw55m+beeoi+W6pu+8ieOBrumbu+ipsee3muOBp+mrmOmAn+mAmuS/oeOCkuWun+ePvuOBmeOCi+OAgkZUVEjjga7lu7bplbfjgajjgZfjgabpm4blkIjkvY/lroXlhoXjga7ml6LlrZjphY3nt5rjgpLmtLvnlKjjgZnjgotGVFRCK1ZEU0zjga7mp4vmiJDjgafkvb/jgo/jgozjgovjgZPjgajjgYzlpJrjgYTjgIInLFxyXG4gICAgZGlmZmljdWx0eTogMyxcclxuICB9LFxyXG4gIHtcclxuICAgIGlkOiAncS0yNjAnLFxyXG4gICAgdG9waWNJZDogJ3dhbicsXHJcbiAgICBxdWVzdGlvblRleHQ6ICfjgq3jg6Pjg6rjgqLjga7plonln5/ntrLjgpLkvb/jgYTjgIFJUOODq+ODvOODhuOCo+ODs+OCsOOBp+ikh+aVsOaLoOeCueOCkuaOpee2muOBmeOCi+OCteODvOODk+OCueOCknt7Ymxhbmt9feOBqOOBhOOBhuOAgicsXHJcbiAgICBjb3JyZWN0QW5zd2VyOiAnSVAtVlBOJyxcclxuICAgIGNob2ljZXM6IFsnSVAtVlBOJywgJ+W6g+Wfn+OCpOODvOOCteODjeODg+ODiCcsICfjgqTjg7Pjgr/jg7zjg43jg4Pjg4hWUE4nLCAnTVBMUy1URSddLFxyXG4gICAgaXNJbXBvcnRhbnQ6IHRydWUsXHJcbiAgICBleHBsYW5hdGlvbjogJ0lQLVZQTuOBr+OCreODo+ODquOCouOBrk1QTFPplonln5/ntrLkuIrjgafmj5DkvpvjgZXjgozjgovku67mg7Pjg5fjg6njgqTjg5njg7zjg4jjg43jg4Pjg4jjg6/jg7zjgq/jgILjgqTjg7Pjgr/jg7zjg43jg4Pjg4jjgpLkvb/jgo/jgarjgYTjgZ/jgoHpq5jjgYRTTEHjgYzkv53oqLzjgZXjgozjgovjgILpgYXlu7bjg7vluK/ln5/jgYzlk4Hos6rkv53oqLzjgZXjgozjgovngrnjgYzjgqTjg7Pjgr/jg7zjg43jg4Pjg4hWUE7jgajlpKfjgY3jgY/nlbDjgarjgovjgIInLFxyXG4gICAgZGlmZmljdWx0eTogMSxcclxuICB9LFxyXG4gIHtcclxuICAgIGlkOiAncS0yNjEnLFxyXG4gICAgdG9waWNJZDogJ3dhbicsXHJcbiAgICBxdWVzdGlvblRleHQ6ICfmi6DngrnplpPjgpLjgqTjg7zjgrXjg43jg4Pjg4jjg5Xjg6zjg7zjg6Djg6zjg5njg6vjgafmjqXntprjgZfjgIHmi6DngrnlgbTjgafjg6zjgqTjg6Qy44K544Kk44OD44OB44Go44GX44Gm5L2/44GI44KLV0FO44K144O844OT44K544KSe3tibGFua31944Go44GE44GG44CCJyxcclxuICAgIGNvcnJlY3RBbnN3ZXI6ICfluoPln5/jgqTjg7zjgrXjg43jg4Pjg4gnLFxyXG4gICAgY2hvaWNlczogWyfluoPln5/jgqTjg7zjgrXjg43jg4Pjg4gnLCAnSVAtVlBOJywgJ01QTFMgVlBOJywgJ+WwgueUqOe3middLFxyXG4gICAgaXNJbXBvcnRhbnQ6IHRydWUsXHJcbiAgICBleHBsYW5hdGlvbjogJ+W6g+Wfn+OCpOODvOOCteODjeODg+ODiOOBr01BQ+ODleODrOODvOODoOOCkui7oumAgeOBmeOCi0wy44K144O844OT44K544CC5oug54K544Gu44Or44O844K/44GM5LiN6KaB44Gn44K544Kk44OD44OB5o6l57aa44GM5Y+v6IO944CCSVDjgqLjg4njg6zjgrnjga7liLbntITjgYzlsJHjgarjgY/mn5Tou5/jgarjgqLjg4njg6zjgrnoqK3oqIjjgYzjgafjgY3jgovjgIJJUC1WUE7jgojjgorjgoLjg5Xjg6zjgq3jgrfjg5bjg6vjgarjg6vjg7zjg4bjgqPjg7PjgrDjgYzlj6/og73jgIInLFxyXG4gICAgZGlmZmljdWx0eTogMixcclxuICB9LFxyXG4gIHtcclxuICAgIGlkOiAncS0yNjInLFxyXG4gICAgdG9waWNJZDogJ3dhbicsXHJcbiAgICBxdWVzdGlvblRleHQ6ICdTRC1XQU7jgavjgYrjgYTjgabjgIHjg6vjg7zjgr/jgoRWUE7oo4Xnva7jga7oqK3lrprjgpLkuIDlhYPnrqHnkIbjgZnjgovjgrPjg7Pjg53jg7zjg43jg7Pjg4jjgpJ7e2JsYW5rfX3jgajjgYTjgYbjgIInLFxyXG4gICAgY29ycmVjdEFuc3dlcjogJ1NELVdBTuOCs+ODs+ODiOODreODvOODqe+8iOOCquODvOOCseOCueODiOODrOODvOOCv++8iScsXHJcbiAgICBjaG9pY2VzOiBbJ1NELVdBTuOCs+ODs+ODiOODreODvOODqe+8iOOCquODvOOCseOCueODiOODrOODvOOCv++8iScsICdDUEUnLCAndkVkZ2UnLCAnV0FO5pyA6YGp5YyW6KOF572uJ10sXHJcbiAgICBpc0ltcG9ydGFudDogdHJ1ZSxcclxuICAgIGV4cGxhbmF0aW9uOiAnU0QtV0FO44Gv44Kz44Oz44OI44Ot44O844Or44OX44Os44O844Oz44KS44Kv44Op44Km44OJ44Gu44Kz44Oz44OI44Ot44O844Op44Gr6ZuG5Lit44GV44Gb44CB5ZCE5oug54K5Q1BF77yIQ3VzdG9tZXIgUHJlbWlzZXMgRXF1aXBtZW5077yJ44Gr44Od44Oq44K344O844KS6YWN5biD44GZ44KL44CC6KSH5pWw44GuV0FO5Zue57ea44KS44K944OV44OI44Km44Kn44Ki44Gn5YuV55qE44Gr5L2/44GE5YiG44GR44KL44GT44Go44GM5Y+v6IO944CCJyxcclxuICAgIGRpZmZpY3VsdHk6IDIsXHJcbiAgfSxcclxuICB7XHJcbiAgICBpZDogJ3EtMjYzJyxcclxuICAgIHRvcGljSWQ6ICd3YW4nLFxyXG4gICAgcXVlc3Rpb25UZXh0OiAnSVAtVlBO44Gn44Kt44Oj44Oq44Ki57ay44Gu6KSH5pWw6aGn5a6i44Gu57WM6Lev44KS5YiG6Zui44GZ44KL44Gf44KB44Gr5ZCEUEXvvIjjg5fjg63jg5DjgqTjg4Djgqjjg4PjgrjvvInjg6vjg7zjgr/jgavoqK3lrprjgZXjgozjgovku67mg7Pjg6vjg7zjg4bjgqPjg7PjgrDjg4bjg7zjg5bjg6vjgpJ7e2JsYW5rfX3jgajjgYTjgYbjgIInLFxyXG4gICAgY29ycmVjdEFuc3dlcjogJ1ZSRu+8iFZpcnR1YWwgUm91dGluZyBhbmQgRm9yd2FyZGluZ++8iScsXHJcbiAgICBjaG9pY2VzOiBbJ1ZSRu+8iFZpcnR1YWwgUm91dGluZyBhbmQgRm9yd2FyZGluZ++8iScsICdWTEFO44OG44O844OW44OrJywgJ0JHUOODhuODvOODluODqycsICdNUExT44Op44OZ44Or44OG44O844OW44OrJ10sXHJcbiAgICBpc0ltcG9ydGFudDogZmFsc2UsXHJcbiAgICBleHBsYW5hdGlvbjogJ1ZSRuOBr+ODq+ODvOOCv+S4iuOBp+ikh+aVsOOBrueLrOeri+OBl+OBn+ODq+ODvOODhuOCo+ODs+OCsOODhuODvOODluODq+OCkueuoeeQhuOBmeOCi+apn+iDveOAguOCreODo+ODquOCouOBr1BF44Or44O844K/44GrVlJG44KS6Kit44GR44CB6aGn5a6i44GU44Go44Gr55Ww44Gq44KL57WM6Lev5oOF5aCx44KS5L+d5oyB44GZ44KL44CC5ZCM44GYSVDjgqLjg4njg6zjgrnluK/jgafjgoLpoaflrqLplpPjgafph43opIfjgYzlj6/og73jgIInLFxyXG4gICAgZGlmZmljdWx0eTogMyxcclxuICB9LFxyXG4gIHtcclxuICAgIGlkOiAncS0yNjQnLFxyXG4gICAgdG9waWNJZDogJ3dhbicsXHJcbiAgICBxdWVzdGlvblRleHQ6ICfopIfmlbDjga5JU1DjgavlkIzkuIDjga5JUOOCouODieODrOOCueODluODreODg+OCr+OCkuOCouODieODkOOCv+OCpOOCuuOBl+OBpuaOpee2muS/oemgvOaAp+OBqOW4r+Wfn+OCkueiuuS/neOBmeOCi+aKgOihk+OCknt7Ymxhbmt9feOBqOOBhOOBhuOAgicsXHJcbiAgICBjb3JyZWN0QW5zd2VyOiAn44Oe44Or44OB44Ob44O844Of44Oz44KwJyxcclxuICAgIGNob2ljZXM6IFsn44Oe44Or44OB44Ob44O844Of44Oz44KwJywgJ+ODreODvOODieODkOODqeODs+OCt+ODs+OCsCcsICfjg6rjg7Pjgq/jgqLjgrDjg6rjgrLjg7zjgrfjg6fjg7MnLCAnRUNNUCddLFxyXG4gICAgaXNJbXBvcnRhbnQ6IGZhbHNlLFxyXG4gICAgZXhwbGFuYXRpb246ICfjg57jg6vjg4Hjg5vjg7zjg5/jg7PjgrDjga/opIfmlbDjga5JU1DjgavmjqXntprjgZfjgIHniYfmlrnjga7lm57nt5rpmpzlrrPjgafjgoLpgJrkv6HjgpLntpnntprjgafjgY3jgovlhpfplbfmp4vmiJDjgIJCR1DjgaflkIRJU1Djgavoh6pBU+e1jOi3r+OCkuOCouODieODkOOCv+OCpOOCuuOBmeOCi+OAguOCqOODs+OCv+ODvOODl+ODqeOCpOOCuuWQkeOBkeOBp+OBr0JHUOODnuODq+ODgeODm+ODvOODoOOBjOS4gOiIrOeahOOAgicsXHJcbiAgICBkaWZmaWN1bHR5OiAyLFxyXG4gIH0sXHJcbiAge1xyXG4gICAgaWQ6ICdxLTI2NScsXHJcbiAgICB0b3BpY0lkOiAnd2FuJyxcclxuICAgIHF1ZXN0aW9uVGV4dDogJ1dBTuWbnue3muOBp+i7oumAgeOBmeOCi+ODh+ODvOOCv+OCkuWcp+e4ruODu+mHjeikh+aOkumZpOOBl+W4r+Wfn+OCkuevgOe0hOOBmeOCi+OCouODl+ODqeOCpOOCouODs+OCueOCknt7Ymxhbmt9feOBqOOBhOOBhuOAgicsXHJcbiAgICBjb3JyZWN0QW5zd2VyOiAnV0FO5pyA6YGp5YyW6KOF572u77yIV09D77yJJyxcclxuICAgIGNob2ljZXM6IFsnV0FO5pyA6YGp5YyW6KOF572u77yIV09D77yJJywgJ+ODl+ODreOCreOCt+OCteODvOODkCcsICdRb1Pjgrfjgqfjg7zjg5EnLCAn44Ot44O844OJ44OQ44Op44Oz44K1J10sXHJcbiAgICBpc0ltcG9ydGFudDogZmFsc2UsXHJcbiAgICBleHBsYW5hdGlvbjogJ1dBTuacgOmBqeWMluijhee9ru+8iFdBTiBPcHRpbWl6YXRpb24gQ29udHJvbGxlcu+8ieOBr+ODh+ODvOOCv+Wcp+e4ruODu+mHjeikh+aOkumZpOODu1RDUOOCouOCr+OCu+ODqeODrOODvOOCt+ODp+ODs+OBq+OCiOOCildBTuW4r+Wfn+OBruS9v+eUqOWKueeOh+OCkuWQkeS4iuOBleOBm+OCi+OAglNELVdBTuOBq+OBneOBruapn+iDveOBjOe1seWQiOOBleOCjOOCi+OBk+OBqOOCguWkmuOBhOOAgicsXHJcbiAgICBkaWZmaWN1bHR5OiAzLFxyXG4gIH0sXHJcbiAge1xyXG4gICAgaWQ6ICdxLTI2NicsXHJcbiAgICB0b3BpY0lkOiAnd2FuJyxcclxuICAgIHF1ZXN0aW9uVGV4dDogJ1BQUG9F44GnSVNQ44Go6KqN6Ki844KS6KGM44GG6Zqb44GrUFBQb0Xjgq/jg6njgqTjgqLjg7Pjg4jjgYzpgIHkv6HjgZnjgovjg4fjgqPjgrnjgqvjg5Djg6rjg5HjgrHjg4Pjg4jjgpJ7e2JsYW5rfX3jgajjgYTjgYbjgIInLFxyXG4gICAgY29ycmVjdEFuc3dlcjogJ1BBREnvvIhQUFBvRSBBY3RpdmUgRGlzY292ZXJ5IEluaXRpYXRpb27vvIknLFxyXG4gICAgY2hvaWNlczogWydQQURJ77yIUFBQb0UgQWN0aXZlIERpc2NvdmVyeSBJbml0aWF0aW9u77yJJywgJ1BBRFInLCAnUEFEUycsICdQQURPJ10sXHJcbiAgICBpc0ltcG9ydGFudDogZmFsc2UsXHJcbiAgICBleHBsYW5hdGlvbjogJ1BQUG9F44Gu44OH44Kj44K544Kr44OQ44Oq44OV44Kn44O844K6OiDikaBQQURJ77yI44Kv44Op44Kk44Ki44Oz44OI4oaS44OW44Ot44O844OJ44Kt44Oj44K544OI77yJ4pGhUEFET++8iOOCteODvOODkOKGkuOCr+ODqeOCpOOCouODs+ODiO+8ieKRolBBRFLvvIjjgq/jg6njgqTjgqLjg7Pjg4jihpLnibnlrprjgrXjg7zjg5DvvInikaNQQURT77yI44K144O844OQ4oaS56K66KqN77yJ44Gu6aCG44Gn6KGM44KP44KM44KL44CCJyxcclxuICAgIGRpZmZpY3VsdHk6IDMsXHJcbiAgfSxcclxuXVxyXG4iXX0=

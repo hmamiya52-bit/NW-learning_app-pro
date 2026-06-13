@@ -11,6 +11,7 @@ import {
 } from 'lucide-react'
 import TextbookCallout from '../components/textbook/TextbookCallout'
 import TextbookDiagram from '../components/textbook/TextbookDiagram'
+import TextbookRichText from '../components/textbook/TextbookRichText'
 import { getTextbookChapter, textbookChapters, type TextbookChapter } from '../data/textbookChapters'
 import {
   getTextbookReadState,
@@ -58,7 +59,7 @@ function DraftChapter({ chapter }: { chapter: TextbookChapter }) {
       <div className="mx-auto max-w-3xl px-4 pb-16 pt-6">
         <Link to="/textbook" className="inline-flex items-center gap-1 text-sm font-bold text-blue-600 hover:text-blue-700">
           <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-          教科書一覧へ
+          章一覧へ
         </Link>
         <div className="mt-8 rounded-lg border border-slate-200 bg-white px-5 py-8 text-center shadow-sm">
           <Construction className="mx-auto h-10 w-10 text-slate-400" aria-hidden="true" />
@@ -77,12 +78,12 @@ function MissingChapter() {
       <div className="mx-auto max-w-3xl px-4 pb-16 pt-6">
         <Link to="/textbook" className="inline-flex items-center gap-1 text-sm font-bold text-blue-600 hover:text-blue-700">
           <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-          教科書一覧へ
+          章一覧へ
         </Link>
         <div className="mt-8 rounded-lg border border-slate-200 bg-white px-5 py-8 text-center shadow-sm">
           <BookOpenText className="mx-auto h-10 w-10 text-slate-400" aria-hidden="true" />
           <h1 className="mt-3 text-xl font-black text-slate-800">章が見つかりません</h1>
-          <p className="mt-2 text-sm text-slate-500">教科書一覧から読みたい章を選んでください。</p>
+          <p className="mt-2 text-sm text-slate-500">章一覧から読みたい章を選んでください。</p>
         </div>
       </div>
     </div>
@@ -135,7 +136,9 @@ function FocusList({ title, items }: { title: string; items: string[] }) {
         {items.map((item) => (
           <li key={item} className="flex gap-2 text-sm leading-relaxed text-slate-600">
             <span className="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-blue-500" />
-            <span>{item}</span>
+            <span>
+              <TextbookRichText text={item} />
+            </span>
           </li>
         ))}
       </ul>
@@ -162,7 +165,7 @@ export default function TextbookChapter() {
         <nav className="mb-4" aria-label="パンくず">
           <Link to="/textbook" className="inline-flex items-center gap-1 text-sm font-bold text-blue-600 hover:text-blue-700">
             <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-            教科書一覧へ
+            章一覧へ
           </Link>
         </nav>
 
@@ -187,7 +190,7 @@ export default function TextbookChapter() {
           <div className="mt-4 space-y-2 border-t border-slate-100 pt-4">
             {chapter.intro.map((paragraph) => (
               <p key={paragraph} className="text-sm leading-relaxed text-slate-700">
-                {paragraph}
+                <TextbookRichText text={paragraph} />
               </p>
             ))}
           </div>
@@ -205,7 +208,7 @@ export default function TextbookChapter() {
                   <div className="mt-3 space-y-3">
                     {section.body.map((paragraph) => (
                       <p key={paragraph} className="text-sm leading-7 text-slate-700">
-                        {paragraph}
+                        <TextbookRichText text={paragraph} />
                       </p>
                     ))}
                   </div>
@@ -243,7 +246,9 @@ export default function TextbookChapter() {
             {chapter.summary.map((item) => (
               <li key={item} className="flex gap-2 text-sm leading-relaxed text-blue-900">
                 <CheckCircle2 className="mt-0.5 h-4 w-4 flex-shrink-0 text-blue-600" aria-hidden="true" />
-                <span>{item}</span>
+                <span>
+                  <TextbookRichText text={item} />
+                </span>
               </li>
             ))}
           </ul>
@@ -260,6 +265,16 @@ export default function TextbookChapter() {
           <ChapterNavCard chapter={prevChapter} direction="prev" />
           <ChapterNavCard chapter={nextChapter} direction="next" />
         </nav>
+
+        <div className="mt-5 flex justify-center">
+          <Link
+            to="/textbook"
+            className="inline-flex items-center gap-2 rounded-lg border border-blue-200 bg-white px-4 py-2 text-sm font-black text-blue-700 shadow-sm transition-colors hover:border-blue-300 hover:bg-blue-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+          >
+            <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+            章一覧に戻る
+          </Link>
+        </div>
       </article>
     </div>
   )

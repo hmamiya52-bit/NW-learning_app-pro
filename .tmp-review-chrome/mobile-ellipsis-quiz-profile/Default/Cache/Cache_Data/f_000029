@@ -1,0 +1,186 @@
+export const ipsecQuestions = [
+	{
+		id: "q-070",
+		topicId: "ipsec",
+		questionText: "IPsecにおいてVPN装置間の通信を行うモードを{{blank}}という。",
+		correctAnswer: "トンネルモード",
+		choices: [
+			"トンネルモード",
+			"トランスポートモード",
+			"アグレッシブモード",
+			"メインモード"
+		],
+		isImportant: false,
+		explanation: "トンネルモードはVPN装置間でIPsec通信を行う。PCに個別のIPsec設定が不要なため企業間でよく使われる。トランスポートモードは端末間で直接IPsec通信を行う。",
+		difficulty: 2
+	},
+	{
+		id: "q-071",
+		topicId: "ipsec",
+		questionText: "IPsecのプロトコルのうち、認証のみを行い暗号化を行わないものを{{blank}}という。",
+		correctAnswer: "AH（Authentication Header）",
+		choices: [
+			"AH（Authentication Header）",
+			"ESP",
+			"IKE",
+			"ISAKMP"
+		],
+		isImportant: true,
+		explanation: "AH（Authentication Header）はIPヘッダを含むパケット全体を認証するが暗号化しない。ESP（Encapsulating Security Payload）はペイロードを暗号化し認証も行う。実運用ではESPが主に使われる。",
+		difficulty: 2
+	},
+	{
+		id: "q-072",
+		topicId: "ipsec",
+		questionText: "IPsecのSA（Security Association）を確立するために使われるプロトコルを{{blank}}という。",
+		correctAnswer: "IKE（Internet Key Exchange）",
+		choices: [
+			"IKE（Internet Key Exchange）",
+			"AH",
+			"ESP",
+			"ISAKMP"
+		],
+		isImportant: true,
+		explanation: "IKE（現行はIKEv2）はUDP 500番ポートを使用してIPsecのSAを確立する。フェーズ1でIKE SA（管理チャネル）、フェーズ2でIPsec SAを交換する。",
+		difficulty: 2
+	},
+	{
+		id: "q-073",
+		topicId: "ipsec",
+		questionText: "IPsecのNATトラバーサルで使用するプロトコルとポート番号は{{blank}}である。",
+		correctAnswer: "UDP 4500番",
+		choices: [
+			"UDP 4500番",
+			"TCP 1701番",
+			"UDP 500番",
+			"TCP 443番"
+		],
+		isImportant: false,
+		explanation: "NAPTを経由するIPsec通信はAH/ESPのポートがなくNATに不向き。NATトラバーサル（NAT-T）はESPをUDP 4500でカプセル化してNAPT越えを実現する。",
+		difficulty: 3
+	},
+	{
+		id: "q-290",
+		topicId: "ipsec",
+		questionText: "IPsecでは暗号化できないマルチキャスト・ブロードキャストを転送するために、IPsecと組み合わせてトンネルを構成するプロトコルを{{blank}}という。",
+		correctAnswer: "GRE（Generic Routing Encapsulation）",
+		choices: [
+			"GRE（Generic Routing Encapsulation）",
+			"L2TP",
+			"PPTP",
+			"VXLAN"
+		],
+		isImportant: true,
+		explanation: "GRE（Generic Routing Encapsulation）は任意のプロトコルをカプセル化するトンネルプロトコル。単体では暗号化機能がないため「GRE over IPsec」として組み合わせて使用する。マルチキャストやOSPFの通過に対応できる。",
+		difficulty: 2
+	},
+	{
+		id: "q-291",
+		topicId: "ipsec",
+		questionText: "IKEv2がIKEv1と比較して改善した点の一つとして、VPN接続中に相手装置の死活を監視するメカニズムを{{blank}}という。",
+		correctAnswer: "DPD（Dead Peer Detection）",
+		choices: [
+			"DPD（Dead Peer Detection）",
+			"BFD",
+			"Hello",
+			"KeepAlive"
+		],
+		isImportant: false,
+		explanation: "DPD（Dead Peer Detection）はRFC 3706で規定されたIKEの拡張機能。一定時間トラフィックがない場合にDPDリクエストを送り、応答がなければSAを削除して高速に障害を検出する。IKEv2では標準機能として組み込まれている。",
+		difficulty: 2
+	},
+	{
+		id: "q-292",
+		topicId: "ipsec",
+		questionText: "IPsec SAの鍵交換にDiffie-Hellman鍵交換を毎回新たに実行し、過去の通信が解読されないようにする特性を{{blank}}という。",
+		correctAnswer: "PFS（Perfect Forward Secrecy）",
+		choices: [
+			"PFS（Perfect Forward Secrecy）",
+			"前方秘匿性",
+			"HMAC",
+			"IKEリキー"
+		],
+		isImportant: true,
+		explanation: "PFS（Perfect Forward Secrecy）は長期鍵が漏洩しても過去のセッション鍵が安全である特性。IKEのフェーズ2でDH交換を再実行することで新しいセッション鍵を生成し、フェーズ1の鍵から独立させる。",
+		difficulty: 3
+	},
+	{
+		id: "q-293",
+		topicId: "ipsec",
+		questionText: "リモートアクセスVPNにおいて、VPN接続中に社内向けトラフィックのみトンネルを通し、インターネット通信は直接ISPへ流す設定を{{blank}}という。",
+		correctAnswer: "スプリットトンネリング",
+		choices: [
+			"スプリットトンネリング",
+			"フルトンネリング",
+			"ヘアピンNAT",
+			"ポリシーベースルーティング"
+		],
+		isImportant: true,
+		explanation: "スプリットトンネリングは宛先ネットワークによってVPNトンネル経由と直接インターネット接続を切り分ける設定。VPN集線装置の負荷軽減と帯域節約が目的。ただしインターネット通信のセキュリティ監視が困難になるリスクがある。",
+		difficulty: 2
+	},
+	{
+		id: "q-294",
+		topicId: "ipsec",
+		questionText: "IPsecでESPが提供するセキュリティ機能の組み合わせとして正しいものを選べ。",
+		correctAnswer: "暗号化・認証・アンチリプレイ",
+		choices: [
+			"暗号化・認証・アンチリプレイ",
+			"認証のみ",
+			"暗号化のみ",
+			"圧縮・暗号化・ルーティング"
+		],
+		isImportant: true,
+		explanation: "ESP（Encapsulating Security Payload）はペイロードの暗号化・送信元認証・アンチリプレイ（シーケンス番号による再送攻撃防止）を提供する。AHとは異なりIPヘッダは認証しないが、NATと共存できる点で実用上ESP単体が多く使われる。",
+		difficulty: 2
+	},
+	(
+	// ── R6〜R7 IKEv2・IPsec詳細 ──────────────────────────────────────
+	{
+		id: "q-295",
+		topicId: "ipsec",
+		questionText: "IKEv2が提供する機能のうち、モバイルクライアントがIPアドレスを変更してもVPNセッションを継続させる拡張機能を{{blank}}という。",
+		correctAnswer: "MOBIKE（IKEv2 Mobility and Multihoming）",
+		choices: [
+			"MOBIKE（IKEv2 Mobility and Multihoming）",
+			"DPD",
+			"NAT-T",
+			"IKEリキー"
+		],
+		isImportant: false,
+		explanation: "MOBIKE（RFC 4555）はIKEv2の拡張で、クライアントがIPアドレス変更（Wi-Fi→モバイルなど）してもSAを再確立せずにVPN接続を維持する。スマートフォンのVPN利用で重要な機能。",
+		difficulty: 3
+	}),
+	{
+		id: "q-296",
+		topicId: "ipsec",
+		questionText: "IPsecにおいてNATデバイスを越えるために、ESPパケットをUDPでカプセル化する技術を{{blank}}という。",
+		correctAnswer: "NAT-T（NAT Traversal）",
+		choices: [
+			"NAT-T（NAT Traversal）",
+			"GRE",
+			"L2TP",
+			"MOBIKE"
+		],
+		isImportant: true,
+		explanation: "NAT-T（RFC 3948）はNAT環境でESPが通過できない問題を解決するためにESPをUDP（ポート4500）でカプセル化する。IKEv1のフェーズ1でNATの存在を検出し、必要な場合に自動的に有効化される。IKEv2では標準機能として組み込まれている。",
+		difficulty: 2
+	},
+	{
+		id: "q-297",
+		topicId: "ipsec",
+		questionText: "IPsec SAの暗号化アルゴリズムとして、TLS 1.3同様にAEADモードが推奨されている。IPsec IKEv2で推奨されるAEAD方式は{{blank}}である。",
+		correctAnswer: "AES-GCM（Galois/Counter Mode）",
+		choices: [
+			"AES-GCM（Galois/Counter Mode）",
+			"AES-CBC + HMAC-SHA1",
+			"3DES",
+			"RC4"
+		],
+		isImportant: false,
+		explanation: "AES-GCMは認証付き暗号化（AEAD）でIPsecのESPに使われる。AES-CBC + HMACの組み合わせに比べ処理が高速で、認証と暗号化を1パスで実行できる。IKEv2との組み合わせで現在の推奨構成となっている。",
+		difficulty: 2
+	}
+];
+
+//# sourceMappingURL=data:application/json;base64,eyJtYXBwaW5ncyI6IkFBRUEsT0FBTyxNQUFNLGlCQUE2QjtDQUN4QztFQUNFLElBQUk7RUFDSixTQUFTO0VBQ1QsY0FBYztFQUNkLGVBQWU7RUFDZixTQUFTO0dBQUM7R0FBVztHQUFjO0dBQWE7R0FBUztFQUN6RCxhQUFhO0VBQ2IsYUFBYTtFQUNiLFlBQVk7RUFDYjtDQUNEO0VBQ0UsSUFBSTtFQUNKLFNBQVM7RUFDVCxjQUFjO0VBQ2QsZUFBZTtFQUNmLFNBQVM7R0FBQztHQUE2QjtHQUFPO0dBQU87R0FBUztFQUM5RCxhQUFhO0VBQ2IsYUFBYTtFQUNiLFlBQVk7RUFDYjtDQUNEO0VBQ0UsSUFBSTtFQUNKLFNBQVM7RUFDVCxjQUFjO0VBQ2QsZUFBZTtFQUNmLFNBQVM7R0FBQztHQUE4QjtHQUFNO0dBQU87R0FBUztFQUM5RCxhQUFhO0VBQ2IsYUFBYTtFQUNiLFlBQVk7RUFDYjtDQUNEO0VBQ0UsSUFBSTtFQUNKLFNBQVM7RUFDVCxjQUFjO0VBQ2QsZUFBZTtFQUNmLFNBQVM7R0FBQztHQUFhO0dBQWE7R0FBWTtHQUFXO0VBQzNELGFBQWE7RUFDYixhQUFhO0VBQ2IsWUFBWTtFQUNiO0NBQ0Q7RUFDRSxJQUFJO0VBQ0osU0FBUztFQUNULGNBQWM7RUFDZCxlQUFlO0VBQ2YsU0FBUztHQUFDO0dBQXNDO0dBQVE7R0FBUTtHQUFRO0VBQ3hFLGFBQWE7RUFDYixhQUFhO0VBQ2IsWUFBWTtFQUNiO0NBQ0Q7RUFDRSxJQUFJO0VBQ0osU0FBUztFQUNULGNBQWM7RUFDZCxlQUFlO0VBQ2YsU0FBUztHQUFDO0dBQTRCO0dBQU87R0FBUztHQUFZO0VBQ2xFLGFBQWE7RUFDYixhQUFhO0VBQ2IsWUFBWTtFQUNiO0NBQ0Q7RUFDRSxJQUFJO0VBQ0osU0FBUztFQUNULGNBQWM7RUFDZCxlQUFlO0VBQ2YsU0FBUztHQUFDO0dBQWdDO0dBQVM7R0FBUTtHQUFTO0VBQ3BFLGFBQWE7RUFDYixhQUFhO0VBQ2IsWUFBWTtFQUNiO0NBQ0Q7RUFDRSxJQUFJO0VBQ0osU0FBUztFQUNULGNBQWM7RUFDZCxlQUFlO0VBQ2YsU0FBUztHQUFDO0dBQWU7R0FBWTtHQUFXO0dBQWdCO0VBQ2hFLGFBQWE7RUFDYixhQUFhO0VBQ2IsWUFBWTtFQUNiO0NBQ0Q7RUFDRSxJQUFJO0VBQ0osU0FBUztFQUNULGNBQWM7RUFDZCxlQUFlO0VBQ2YsU0FBUztHQUFDO0dBQWtCO0dBQVE7R0FBUztHQUFnQjtFQUM3RCxhQUFhO0VBQ2IsYUFBYTtFQUNiLFlBQVk7RUFDYjs7O0NBRUQ7RUFDRSxJQUFJO0VBQ0osU0FBUztFQUNULGNBQWM7RUFDZCxlQUFlO0VBQ2YsU0FBUztHQUFDO0dBQTBDO0dBQU87R0FBUztHQUFTO0VBQzdFLGFBQWE7RUFDYixhQUFhO0VBQ2IsWUFBWTtFQUNiO0NBQ0Q7RUFDRSxJQUFJO0VBQ0osU0FBUztFQUNULGNBQWM7RUFDZCxlQUFlO0VBQ2YsU0FBUztHQUFDO0dBQXdCO0dBQU87R0FBUTtHQUFTO0VBQzFELGFBQWE7RUFDYixhQUFhO0VBQ2IsWUFBWTtFQUNiO0NBQ0Q7RUFDRSxJQUFJO0VBQ0osU0FBUztFQUNULGNBQWM7RUFDZCxlQUFlO0VBQ2YsU0FBUztHQUFDO0dBQWdDO0dBQXVCO0dBQVE7R0FBTTtFQUMvRSxhQUFhO0VBQ2IsYUFBYTtFQUNiLFlBQVk7RUFDYjtDQUNGIiwibmFtZXMiOltdLCJzb3VyY2VzIjpbImlwc2VjLnRzIl0sInZlcnNpb24iOjMsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB0eXBlIHsgUXVlc3Rpb24gfSBmcm9tICcuLi8uLi90eXBlcydcclxuXHJcbmV4cG9ydCBjb25zdCBpcHNlY1F1ZXN0aW9uczogUXVlc3Rpb25bXSA9IFtcclxuICB7XHJcbiAgICBpZDogJ3EtMDcwJyxcclxuICAgIHRvcGljSWQ6ICdpcHNlYycsXHJcbiAgICBxdWVzdGlvblRleHQ6ICdJUHNlY+OBq+OBiuOBhOOBplZQTuijhee9rumWk+OBrumAmuS/oeOCkuihjOOBhuODouODvOODieOCknt7Ymxhbmt9feOBqOOBhOOBhuOAgicsXHJcbiAgICBjb3JyZWN0QW5zd2VyOiAn44OI44Oz44ON44Or44Oi44O844OJJyxcclxuICAgIGNob2ljZXM6IFsn44OI44Oz44ON44Or44Oi44O844OJJywgJ+ODiOODqeODs+OCueODneODvOODiOODouODvOODiScsICfjgqLjgrDjg6zjg4Pjgrfjg5bjg6Ljg7zjg4knLCAn44Oh44Kk44Oz44Oi44O844OJJ10sXHJcbiAgICBpc0ltcG9ydGFudDogZmFsc2UsXHJcbiAgICBleHBsYW5hdGlvbjogJ+ODiOODs+ODjeODq+ODouODvOODieOBr1ZQTuijhee9rumWk+OBp0lQc2Vj6YCa5L+h44KS6KGM44GG44CCUEPjgavlgIvliKXjga5JUHNlY+ioreWumuOBjOS4jeimgeOBquOBn+OCgeS8gealremWk+OBp+OCiOOBj+S9v+OCj+OCjOOCi+OAguODiOODqeODs+OCueODneODvOODiOODouODvOODieOBr+err+acq+mWk+OBp+ebtOaOpUlQc2Vj6YCa5L+h44KS6KGM44GG44CCJyxcclxuICAgIGRpZmZpY3VsdHk6IDIsXHJcbiAgfSxcclxuICB7XHJcbiAgICBpZDogJ3EtMDcxJyxcclxuICAgIHRvcGljSWQ6ICdpcHNlYycsXHJcbiAgICBxdWVzdGlvblRleHQ6ICdJUHNlY+OBruODl+ODreODiOOCs+ODq+OBruOBhuOBoeOAgeiqjeiovOOBruOBv+OCkuihjOOBhOaal+WPt+WMluOCkuihjOOCj+OBquOBhOOCguOBruOCknt7Ymxhbmt9feOBqOOBhOOBhuOAgicsXHJcbiAgICBjb3JyZWN0QW5zd2VyOiAnQUjvvIhBdXRoZW50aWNhdGlvbiBIZWFkZXLvvIknLFxyXG4gICAgY2hvaWNlczogWydBSO+8iEF1dGhlbnRpY2F0aW9uIEhlYWRlcu+8iScsICdFU1AnLCAnSUtFJywgJ0lTQUtNUCddLFxyXG4gICAgaXNJbXBvcnRhbnQ6IHRydWUsXHJcbiAgICBleHBsYW5hdGlvbjogJ0FI77yIQXV0aGVudGljYXRpb24gSGVhZGVy77yJ44GvSVDjg5jjg4Pjg4DjgpLlkKvjgoDjg5HjgrHjg4Pjg4jlhajkvZPjgpLoqo3oqLzjgZnjgovjgYzmmpflj7fljJbjgZfjgarjgYTjgIJFU1DvvIhFbmNhcHN1bGF0aW5nIFNlY3VyaXR5IFBheWxvYWTvvInjga/jg5rjgqTjg63jg7zjg4njgpLmmpflj7fljJbjgZfoqo3oqLzjgoLooYzjgYbjgILlrp/pgYvnlKjjgafjga9FU1DjgYzkuLvjgavkvb/jgo/jgozjgovjgIInLFxyXG4gICAgZGlmZmljdWx0eTogMixcclxuICB9LFxyXG4gIHtcclxuICAgIGlkOiAncS0wNzInLFxyXG4gICAgdG9waWNJZDogJ2lwc2VjJyxcclxuICAgIHF1ZXN0aW9uVGV4dDogJ0lQc2Vj44GuU0HvvIhTZWN1cml0eSBBc3NvY2lhdGlvbu+8ieOCkueiuueri+OBmeOCi+OBn+OCgeOBq+S9v+OCj+OCjOOCi+ODl+ODreODiOOCs+ODq+OCknt7Ymxhbmt9feOBqOOBhOOBhuOAgicsXHJcbiAgICBjb3JyZWN0QW5zd2VyOiAnSUtF77yISW50ZXJuZXQgS2V5IEV4Y2hhbmdl77yJJyxcclxuICAgIGNob2ljZXM6IFsnSUtF77yISW50ZXJuZXQgS2V5IEV4Y2hhbmdl77yJJywgJ0FIJywgJ0VTUCcsICdJU0FLTVAnXSxcclxuICAgIGlzSW1wb3J0YW50OiB0cnVlLFxyXG4gICAgZXhwbGFuYXRpb246ICdJS0XvvIjnj77ooYzjga9JS0V2Mu+8ieOBr1VEUCA1MDDnlarjg53jg7zjg4jjgpLkvb/nlKjjgZfjgaZJUHNlY+OBrlNB44KS56K656uL44GZ44KL44CC44OV44Kn44O844K6MeOBp0lLRSBTQe+8iOeuoeeQhuODgeODo+ODjeODq++8ieOAgeODleOCp+ODvOOCujLjgadJUHNlYyBTQeOCkuS6pOaPm+OBmeOCi+OAgicsXHJcbiAgICBkaWZmaWN1bHR5OiAyLFxyXG4gIH0sXHJcbiAge1xyXG4gICAgaWQ6ICdxLTA3MycsXHJcbiAgICB0b3BpY0lkOiAnaXBzZWMnLFxyXG4gICAgcXVlc3Rpb25UZXh0OiAnSVBzZWPjga5OQVTjg4jjg6njg5Djg7zjgrXjg6vjgafkvb/nlKjjgZnjgovjg5fjg63jg4jjgrPjg6vjgajjg53jg7zjg4jnlarlj7fjga97e2JsYW5rfX3jgafjgYLjgovjgIInLFxyXG4gICAgY29ycmVjdEFuc3dlcjogJ1VEUCA0NTAw55WqJyxcclxuICAgIGNob2ljZXM6IFsnVURQIDQ1MDDnlaonLCAnVENQIDE3MDHnlaonLCAnVURQIDUwMOeVqicsICdUQ1AgNDQz55WqJ10sXHJcbiAgICBpc0ltcG9ydGFudDogZmFsc2UsXHJcbiAgICBleHBsYW5hdGlvbjogJ05BUFTjgpLntYznlLHjgZnjgotJUHNlY+mAmuS/oeOBr0FIL0VTUOOBruODneODvOODiOOBjOOBquOBj05BVOOBq+S4jeWQkeOBjeOAgk5BVOODiOODqeODkOODvOOCteODq++8iE5BVC1U77yJ44GvRVNQ44KSVURQIDQ1MDDjgafjgqvjg5fjgrvjg6vljJbjgZfjgaZOQVBU6LaK44GI44KS5a6f54++44GZ44KL44CCJyxcclxuICAgIGRpZmZpY3VsdHk6IDMsXHJcbiAgfSxcclxuICB7XHJcbiAgICBpZDogJ3EtMjkwJyxcclxuICAgIHRvcGljSWQ6ICdpcHNlYycsXHJcbiAgICBxdWVzdGlvblRleHQ6ICdJUHNlY+OBp+OBr+aal+WPt+WMluOBp+OBjeOBquOBhOODnuODq+ODgeOCreODo+OCueODiOODu+ODluODreODvOODieOCreODo+OCueODiOOCkui7oumAgeOBmeOCi+OBn+OCgeOBq+OAgUlQc2Vj44Go57WE44G/5ZCI44KP44Gb44Gm44OI44Oz44ON44Or44KS5qeL5oiQ44GZ44KL44OX44Ot44OI44Kz44Or44KSe3tibGFua31944Go44GE44GG44CCJyxcclxuICAgIGNvcnJlY3RBbnN3ZXI6ICdHUkXvvIhHZW5lcmljIFJvdXRpbmcgRW5jYXBzdWxhdGlvbu+8iScsXHJcbiAgICBjaG9pY2VzOiBbJ0dSRe+8iEdlbmVyaWMgUm91dGluZyBFbmNhcHN1bGF0aW9u77yJJywgJ0wyVFAnLCAnUFBUUCcsICdWWExBTiddLFxyXG4gICAgaXNJbXBvcnRhbnQ6IHRydWUsXHJcbiAgICBleHBsYW5hdGlvbjogJ0dSRe+8iEdlbmVyaWMgUm91dGluZyBFbmNhcHN1bGF0aW9u77yJ44Gv5Lu75oSP44Gu44OX44Ot44OI44Kz44Or44KS44Kr44OX44K744Or5YyW44GZ44KL44OI44Oz44ON44Or44OX44Ot44OI44Kz44Or44CC5Y2Y5L2T44Gn44Gv5pqX5Y+35YyW5qmf6IO944GM44Gq44GE44Gf44KB44CMR1JFIG92ZXIgSVBzZWPjgI3jgajjgZfjgabntYTjgb/lkIjjgo/jgZvjgabkvb/nlKjjgZnjgovjgILjg57jg6vjg4Hjgq3jg6Pjgrnjg4jjgoRPU1BG44Gu6YCa6YGO44Gr5a++5b+c44Gn44GN44KL44CCJyxcclxuICAgIGRpZmZpY3VsdHk6IDIsXHJcbiAgfSxcclxuICB7XHJcbiAgICBpZDogJ3EtMjkxJyxcclxuICAgIHRvcGljSWQ6ICdpcHNlYycsXHJcbiAgICBxdWVzdGlvblRleHQ6ICdJS0V2MuOBjElLRXYx44Go5q+U6LyD44GX44Gm5pS55ZaE44GX44Gf54K544Gu5LiA44Gk44Go44GX44Gm44CBVlBO5o6l57aa5Lit44Gr55u45omL6KOF572u44Gu5q275rS744KS55uj6KaW44GZ44KL44Oh44Kr44OL44K644Og44KSe3tibGFua31944Go44GE44GG44CCJyxcclxuICAgIGNvcnJlY3RBbnN3ZXI6ICdEUETvvIhEZWFkIFBlZXIgRGV0ZWN0aW9u77yJJyxcclxuICAgIGNob2ljZXM6IFsnRFBE77yIRGVhZCBQZWVyIERldGVjdGlvbu+8iScsICdCRkQnLCAnSGVsbG8nLCAnS2VlcEFsaXZlJ10sXHJcbiAgICBpc0ltcG9ydGFudDogZmFsc2UsXHJcbiAgICBleHBsYW5hdGlvbjogJ0RQRO+8iERlYWQgUGVlciBEZXRlY3Rpb27vvInjga9SRkMgMzcwNuOBp+imj+WumuOBleOCjOOBn0lLReOBruaLoeW8teapn+iDveOAguS4gOWumuaZgumWk+ODiOODqeODleOCo+ODg+OCr+OBjOOBquOBhOWgtOWQiOOBq0RQROODquOCr+OCqOOCueODiOOCkumAgeOCiuOAgeW/nOetlOOBjOOBquOBkeOCjOOBsFNB44KS5YmK6Zmk44GX44Gm6auY6YCf44Gr6Zqc5a6z44KS5qSc5Ye644GZ44KL44CCSUtFdjLjgafjga/mqJnmupbmqZ/og73jgajjgZfjgabntYTjgb/ovrzjgb7jgozjgabjgYTjgovjgIInLFxyXG4gICAgZGlmZmljdWx0eTogMixcclxuICB9LFxyXG4gIHtcclxuICAgIGlkOiAncS0yOTInLFxyXG4gICAgdG9waWNJZDogJ2lwc2VjJyxcclxuICAgIHF1ZXN0aW9uVGV4dDogJ0lQc2VjIFNB44Gu6Y215Lqk5o+b44GrRGlmZmllLUhlbGxtYW7pjbXkuqTmj5vjgpLmr47lm57mlrDjgZ/jgavlrp/ooYzjgZfjgIHpgY7ljrvjga7pgJrkv6HjgYzop6Poqq3jgZXjgozjgarjgYTjgojjgYbjgavjgZnjgovnibnmgKfjgpJ7e2JsYW5rfX3jgajjgYTjgYbjgIInLFxyXG4gICAgY29ycmVjdEFuc3dlcjogJ1BGU++8iFBlcmZlY3QgRm9yd2FyZCBTZWNyZWN577yJJyxcclxuICAgIGNob2ljZXM6IFsnUEZT77yIUGVyZmVjdCBGb3J3YXJkIFNlY3JlY3nvvIknLCAn5YmN5pa556eY5Yy/5oCnJywgJ0hNQUMnLCAnSUtF44Oq44Kt44O8J10sXHJcbiAgICBpc0ltcG9ydGFudDogdHJ1ZSxcclxuICAgIGV4cGxhbmF0aW9uOiAnUEZT77yIUGVyZmVjdCBGb3J3YXJkIFNlY3JlY3nvvInjga/plbfmnJ/pjbXjgYzmvI/mtKnjgZfjgabjgoLpgY7ljrvjga7jgrvjg4Pjgrfjg6fjg7PpjbXjgYzlronlhajjgafjgYLjgovnibnmgKfjgIJJS0Xjga7jg5Xjgqfjg7zjgroy44GnREjkuqTmj5vjgpLlho3lrp/ooYzjgZnjgovjgZPjgajjgafmlrDjgZfjgYTjgrvjg4Pjgrfjg6fjg7PpjbXjgpLnlJ/miJDjgZfjgIHjg5Xjgqfjg7zjgrox44Gu6Y2144GL44KJ54us56uL44GV44Gb44KL44CCJyxcclxuICAgIGRpZmZpY3VsdHk6IDMsXHJcbiAgfSxcclxuICB7XHJcbiAgICBpZDogJ3EtMjkzJyxcclxuICAgIHRvcGljSWQ6ICdpcHNlYycsXHJcbiAgICBxdWVzdGlvblRleHQ6ICfjg6rjg6Ljg7zjg4jjgqLjgq/jgrvjgrlWUE7jgavjgYrjgYTjgabjgIFWUE7mjqXntprkuK3jgavnpL7lhoXlkJHjgZHjg4jjg6njg5XjgqPjg4Pjgq/jga7jgb/jg4jjg7Pjg43jg6vjgpLpgJrjgZfjgIHjgqTjg7Pjgr/jg7zjg43jg4Pjg4jpgJrkv6Hjga/nm7TmjqVJU1DjgbjmtYHjgZnoqK3lrprjgpJ7e2JsYW5rfX3jgajjgYTjgYbjgIInLFxyXG4gICAgY29ycmVjdEFuc3dlcjogJ+OCueODl+ODquODg+ODiOODiOODs+ODjeODquODs+OCsCcsXHJcbiAgICBjaG9pY2VzOiBbJ+OCueODl+ODquODg+ODiOODiOODs+ODjeODquODs+OCsCcsICfjg5Xjg6vjg4jjg7Pjg43jg6rjg7PjgrAnLCAn44OY44Ki44OU44OzTkFUJywgJ+ODneODquOCt+ODvOODmeODvOOCueODq+ODvOODhuOCo+ODs+OCsCddLFxyXG4gICAgaXNJbXBvcnRhbnQ6IHRydWUsXHJcbiAgICBleHBsYW5hdGlvbjogJ+OCueODl+ODquODg+ODiOODiOODs+ODjeODquODs+OCsOOBr+Wum+WFiOODjeODg+ODiOODr+ODvOOCr+OBq+OCiOOBo+OBplZQTuODiOODs+ODjeODq+e1jOeUseOBqOebtOaOpeOCpOODs+OCv+ODvOODjeODg+ODiOaOpee2muOCkuWIh+OCiuWIhuOBkeOCi+ioreWumuOAglZQTumbhue3muijhee9ruOBruiyoOiNt+i7vea4m+OBqOW4r+Wfn+evgOe0hOOBjOebrueahOOAguOBn+OBoOOBl+OCpOODs+OCv+ODvOODjeODg+ODiOmAmuS/oeOBruOCu+OCreODpeODquODhuOCo+ebo+imluOBjOWbsOmbo+OBq+OBquOCi+ODquOCueOCr+OBjOOBguOCi+OAgicsXHJcbiAgICBkaWZmaWN1bHR5OiAyLFxyXG4gIH0sXHJcbiAge1xyXG4gICAgaWQ6ICdxLTI5NCcsXHJcbiAgICB0b3BpY0lkOiAnaXBzZWMnLFxyXG4gICAgcXVlc3Rpb25UZXh0OiAnSVBzZWPjgadFU1DjgYzmj5DkvpvjgZnjgovjgrvjgq3jg6Xjg6rjg4bjgqPmqZ/og73jga7ntYTjgb/lkIjjgo/jgZvjgajjgZfjgabmraPjgZfjgYTjgoLjga7jgpLpgbjjgbnjgIInLFxyXG4gICAgY29ycmVjdEFuc3dlcjogJ+aal+WPt+WMluODu+iqjeiovOODu+OCouODs+ODgeODquODl+ODrOOCpCcsXHJcbiAgICBjaG9pY2VzOiBbJ+aal+WPt+WMluODu+iqjeiovOODu+OCouODs+ODgeODquODl+ODrOOCpCcsICfoqo3oqLzjga7jgb8nLCAn5pqX5Y+35YyW44Gu44G/JywgJ+Wcp+e4ruODu+aal+WPt+WMluODu+ODq+ODvOODhuOCo+ODs+OCsCddLFxyXG4gICAgaXNJbXBvcnRhbnQ6IHRydWUsXHJcbiAgICBleHBsYW5hdGlvbjogJ0VTUO+8iEVuY2Fwc3VsYXRpbmcgU2VjdXJpdHkgUGF5bG9hZO+8ieOBr+ODmuOCpOODreODvOODieOBruaal+WPt+WMluODu+mAgeS/oeWFg+iqjeiovOODu+OCouODs+ODgeODquODl+ODrOOCpO+8iOOCt+ODvOOCseODs+OCueeVquWPt+OBq+OCiOOCi+WGjemAgeaUu+aSg+mYsuatou+8ieOCkuaPkOS+m+OBmeOCi+OAgkFI44Go44Gv55Ww44Gq44KKSVDjg5jjg4Pjg4Djga/oqo3oqLzjgZfjgarjgYTjgYzjgIFOQVTjgajlhbHlrZjjgafjgY3jgovngrnjgaflrp/nlKjkuIpFU1DljZjkvZPjgYzlpJrjgY/kvb/jgo/jgozjgovjgIInLFxyXG4gICAgZGlmZmljdWx0eTogMixcclxuICB9LFxyXG4gIC8vIOKUgOKUgCBSNuOAnFI3IElLRXYy44O7SVBzZWPoqbPntLAg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSAXHJcbiAge1xyXG4gICAgaWQ6ICdxLTI5NScsXHJcbiAgICB0b3BpY0lkOiAnaXBzZWMnLFxyXG4gICAgcXVlc3Rpb25UZXh0OiAnSUtFdjLjgYzmj5DkvpvjgZnjgovmqZ/og73jga7jgYbjgaHjgIHjg6Ljg5DjgqTjg6vjgq/jg6njgqTjgqLjg7Pjg4jjgYxJUOOCouODieODrOOCueOCkuWkieabtOOBl+OBpuOCglZQTuOCu+ODg+OCt+ODp+ODs+OCkue2mee2muOBleOBm+OCi+aLoeW8teapn+iDveOCknt7Ymxhbmt9feOBqOOBhOOBhuOAgicsXHJcbiAgICBjb3JyZWN0QW5zd2VyOiAnTU9CSUtF77yISUtFdjIgTW9iaWxpdHkgYW5kIE11bHRpaG9taW5n77yJJyxcclxuICAgIGNob2ljZXM6IFsnTU9CSUtF77yISUtFdjIgTW9iaWxpdHkgYW5kIE11bHRpaG9taW5n77yJJywgJ0RQRCcsICdOQVQtVCcsICdJS0Xjg6rjgq3jg7wnXSxcclxuICAgIGlzSW1wb3J0YW50OiBmYWxzZSxcclxuICAgIGV4cGxhbmF0aW9uOiAnTU9CSUtF77yIUkZDIDQ1NTXvvInjga9JS0V2MuOBruaLoeW8teOBp+OAgeOCr+ODqeOCpOOCouODs+ODiOOBjElQ44Ki44OJ44Os44K55aSJ5pu077yIV2ktRmnihpLjg6Ljg5DjgqTjg6vjgarjganvvInjgZfjgabjgoJTQeOCkuWGjeeiuueri+OBm+OBmuOBq1ZQTuaOpee2muOCkue2reaMgeOBmeOCi+OAguOCueODnuODvOODiOODleOCqeODs+OBrlZQTuWIqeeUqOOBp+mHjeimgeOBquapn+iDveOAgicsXHJcbiAgICBkaWZmaWN1bHR5OiAzLFxyXG4gIH0sXHJcbiAge1xyXG4gICAgaWQ6ICdxLTI5NicsXHJcbiAgICB0b3BpY0lkOiAnaXBzZWMnLFxyXG4gICAgcXVlc3Rpb25UZXh0OiAnSVBzZWPjgavjgYrjgYTjgaZOQVTjg4fjg5DjgqTjgrnjgpLotorjgYjjgovjgZ/jgoHjgavjgIFFU1Djg5HjgrHjg4Pjg4jjgpJVRFDjgafjgqvjg5fjgrvjg6vljJbjgZnjgovmioDooZPjgpJ7e2JsYW5rfX3jgajjgYTjgYbjgIInLFxyXG4gICAgY29ycmVjdEFuc3dlcjogJ05BVC1U77yITkFUIFRyYXZlcnNhbO+8iScsXHJcbiAgICBjaG9pY2VzOiBbJ05BVC1U77yITkFUIFRyYXZlcnNhbO+8iScsICdHUkUnLCAnTDJUUCcsICdNT0JJS0UnXSxcclxuICAgIGlzSW1wb3J0YW50OiB0cnVlLFxyXG4gICAgZXhwbGFuYXRpb246ICdOQVQtVO+8iFJGQyAzOTQ477yJ44GvTkFU55Kw5aKD44GnRVNQ44GM6YCa6YGO44Gn44GN44Gq44GE5ZWP6aGM44KS6Kej5rG644GZ44KL44Gf44KB44GrRVNQ44KSVURQ77yI44Od44O844OINDUwMO+8ieOBp+OCq+ODl+OCu+ODq+WMluOBmeOCi+OAgklLRXYx44Gu44OV44Kn44O844K6MeOBp05BVOOBruWtmOWcqOOCkuaknOWHuuOBl+OAgeW/heimgeOBquWgtOWQiOOBq+iHquWLleeahOOBq+acieWKueWMluOBleOCjOOCi+OAgklLRXYy44Gn44Gv5qiZ5rqW5qmf6IO944Go44GX44Gm57WE44G/6L6844G+44KM44Gm44GE44KL44CCJyxcclxuICAgIGRpZmZpY3VsdHk6IDIsXHJcbiAgfSxcclxuICB7XHJcbiAgICBpZDogJ3EtMjk3JyxcclxuICAgIHRvcGljSWQ6ICdpcHNlYycsXHJcbiAgICBxdWVzdGlvblRleHQ6ICdJUHNlYyBTQeOBruaal+WPt+WMluOCouODq+OCtOODquOCuuODoOOBqOOBl+OBpuOAgVRMUyAxLjPlkIzmp5jjgatBRUFE44Oi44O844OJ44GM5o6o5aWo44GV44KM44Gm44GE44KL44CCSVBzZWMgSUtFdjLjgafmjqjlpajjgZXjgozjgotBRUFE5pa55byP44Gve3tibGFua31944Gn44GC44KL44CCJyxcclxuICAgIGNvcnJlY3RBbnN3ZXI6ICdBRVMtR0NN77yIR2Fsb2lzL0NvdW50ZXIgTW9kZe+8iScsXHJcbiAgICBjaG9pY2VzOiBbJ0FFUy1HQ03vvIhHYWxvaXMvQ291bnRlciBNb2Rl77yJJywgJ0FFUy1DQkMgKyBITUFDLVNIQTEnLCAnM0RFUycsICdSQzQnXSxcclxuICAgIGlzSW1wb3J0YW50OiBmYWxzZSxcclxuICAgIGV4cGxhbmF0aW9uOiAnQUVTLUdDTeOBr+iqjeiovOS7mOOBjeaal+WPt+WMlu+8iEFFQUTvvInjgadJUHNlY+OBrkVTUOOBq+S9v+OCj+OCjOOCi+OAgkFFUy1DQkMgKyBITUFD44Gu57WE44G/5ZCI44KP44Gb44Gr5q+U44G55Yem55CG44GM6auY6YCf44Gn44CB6KqN6Ki844Go5pqX5Y+35YyW44KSMeODkeOCueOBp+Wun+ihjOOBp+OBjeOCi+OAgklLRXYy44Go44Gu57WE44G/5ZCI44KP44Gb44Gn54++5Zyo44Gu5o6o5aWo5qeL5oiQ44Go44Gq44Gj44Gm44GE44KL44CCJyxcclxuICAgIGRpZmZpY3VsdHk6IDIsXHJcbiAgfSxcclxuXVxyXG4iXX0=

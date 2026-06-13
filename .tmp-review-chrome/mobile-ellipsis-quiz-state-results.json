@@ -1,0 +1,172 @@
+{
+  "results": [
+    {
+      "route": {
+        "label": "???:???? ???",
+        "path": "/quiz?mode=random"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???:???? ???",
+        "path": "/quiz?mode=important"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???:レイヤ1〜3基礎 ???",
+        "path": "/quiz?mode=topic&category=layer1-3"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???:レイヤ4,7基礎 ???",
+        "path": "/quiz?mode=topic&category=layer4-7"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???:ファイアウォール ???",
+        "path": "/quiz?mode=topic&category=firewall"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???:無線LAN ???",
+        "path": "/quiz?mode=topic&category=wireless"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???:ルーティング ???",
+        "path": "/quiz?mode=topic&category=routing"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???:VRRP ???",
+        "path": "/quiz?mode=topic&category=vrrp"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???:WAN ???",
+        "path": "/quiz?mode=topic&category=wan"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???:負荷分散装置（LB） ???",
+        "path": "/quiz?mode=topic&category=load-balancer"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???:DHCP ???",
+        "path": "/quiz?mode=topic&category=dhcp"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???:DNS ???",
+        "path": "/quiz?mode=topic&category=dns"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???:メール ???",
+        "path": "/quiz?mode=topic&category=mail"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???:音声とVoIP ???",
+        "path": "/quiz?mode=topic&category=voip"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???:IPsecとGRE ???",
+        "path": "/quiz?mode=topic&category=ipsec"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???:SDN ???",
+        "path": "/quiz?mode=topic&category=sdn"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???:SSL/TLS・PKI ???",
+        "path": "/quiz?mode=topic&category=ssl-tls"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???:セキュリティ ???",
+        "path": "/quiz?mode=topic&category=security"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???:脅威・攻撃手法 ???",
+        "path": "/quiz?mode=topic&category=threat"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???:IPv6 ???",
+        "path": "/quiz?mode=topic&category=ipv6"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???:プロキシサーバ ???",
+        "path": "/quiz?mode=topic&category=proxy"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???:ネットワーク管理 ???",
+        "path": "/quiz?mode=topic&category=network-mgmt"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???:プロトコル総復習 ???",
+        "path": "/quiz?mode=topic&category=protocol-review"
+      },
+      "issues": []
+    },
+    {
+      "route": {
+        "label": "???:IoT（令和7年補足） ???",
+        "path": "/quiz?mode=topic&category=iot"
+      },
+      "issues": []
+    }
+  ]
+}

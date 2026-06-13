@@ -95,8 +95,8 @@ const MENU_CARDS: MenuCard[] = [
   },
   {
     to: '/textbook',
-    title: '教科書モード',
-    description: '図解で最初のインプット',
+    title: '図解で学ぶ教科書',
+    description: '通信の流れを最初から',
     iconBg: 'bg-sky-50',
     icon: <BookOpenText className="w-6 h-6 text-sky-600" />,
   },
@@ -151,15 +151,20 @@ const OTHER_CARDS: MenuCard[] = [
 ]
 
 function MenuCardGrid({ cards, studiedCount }: { cards: MenuCard[]; studiedCount: number }) {
+  const gridClassName = [
+    'grid grid-cols-1 sm:grid-cols-2 gap-2',
+    cards.length >= 4 ? 'lg:grid-cols-4' : 'lg:grid-cols-3',
+  ].join(' ')
+
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+    <div className={gridClassName}>
       {cards.map((card) => {
         const isWeakness = card.to === '/quiz?mode=weakness'
         const weaknessDisabled = isWeakness && studiedCount === 0
         return weaknessDisabled ? (
           <div
             key={card.to}
-            className={`flex items-center gap-1.5 sm:gap-3 bg-slate-50 rounded-xl border border-slate-200 px-2.5 py-2 sm:px-3 sm:py-2.5 opacity-60 cursor-not-allowed ${card.desktopFull ? 'sm:col-span-3' : ''}`}
+            className={`flex items-center gap-1.5 sm:gap-3 bg-slate-50 rounded-xl border border-slate-200 px-2.5 py-2 sm:px-3 sm:py-2.5 opacity-60 cursor-not-allowed ${card.desktopFull ? 'sm:col-span-2 lg:col-span-4' : ''}`}
           >
             <div className={`w-6 h-6 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${card.iconBg}`}>
               <span className="[&>svg]:w-4 [&>svg]:h-4 sm:[&>svg]:w-6 sm:[&>svg]:h-6 flex">
@@ -178,7 +183,7 @@ function MenuCardGrid({ cards, studiedCount }: { cards: MenuCard[]; studiedCount
           <Link
             key={card.to}
             to={card.to}
-            className={`group relative flex items-center gap-1.5 sm:gap-3 bg-white rounded-xl border border-slate-200 px-2.5 py-2 sm:px-3 sm:py-2.5 hover:border-blue-400 hover:shadow-md transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${card.desktopFull ? 'sm:col-span-3' : ''}`}
+            className={`group relative flex items-center gap-1.5 sm:gap-3 bg-white rounded-xl border border-slate-200 px-2.5 py-2 sm:px-3 sm:py-2.5 hover:border-blue-400 hover:shadow-md transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${card.desktopFull ? 'sm:col-span-2 lg:col-span-4' : ''}`}
           >
             <div className={`w-6 h-6 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${card.iconBg}`}>
               <span className="[&>svg]:w-4 [&>svg]:h-4 sm:[&>svg]:w-6 sm:[&>svg]:h-6 flex">

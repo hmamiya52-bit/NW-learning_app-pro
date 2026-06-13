@@ -1,5 +1,6 @@
 import { BookOpen, Info, Sparkles, TriangleAlert } from 'lucide-react'
 import type { TextbookCallout as TextbookCalloutData } from '../../data/textbookChapters'
+import TextbookRichText from './TextbookRichText'
 
 interface TextbookCalloutProps {
   callout: TextbookCalloutData
@@ -46,7 +47,7 @@ export default function TextbookCallout({ callout }: TextbookCalloutProps) {
           <div className="mt-1.5 space-y-1.5">
             {callout.body.map((paragraph) => (
               <p key={paragraph} className="text-sm leading-relaxed">
-                {paragraph}
+                <TextbookRichText text={paragraph} />
               </p>
             ))}
           </div>

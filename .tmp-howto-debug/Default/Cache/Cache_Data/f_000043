@@ -1,0 +1,269 @@
+export const protocolReviewQuestions = [
+	(
+	// === TCP/UDP とポート番号 ===
+	{
+		id: "q-240",
+		topicId: "protocol-review",
+		questionText: "DNS が使用する標準ポート番号は{{blank}}番である（通常 UDP、応答が大きい場合や AXFR では TCP に切り替える）。",
+		correctAnswer: "53",
+		choices: [
+			"53",
+			"5353",
+			"43",
+			"853"
+		],
+		isImportant: true,
+		explanation: "DNS は UDP/53 を標準とする。ゾーン転送（AXFR）や 512 バイトを超える応答では TCP/53 を使用する。DNS over TLS（DoT）は 853 番、DNS over HTTPS（DoH）は 443 番を使う。",
+		difficulty: 1
+	}),
+	{
+		id: "q-241",
+		topicId: "protocol-review",
+		questionText: "TFTP が使用するポート番号は{{blank}}番である（UDP を使用）。",
+		correctAnswer: "69",
+		choices: [
+			"69",
+			"21",
+			"20",
+			"22"
+		],
+		isImportant: true,
+		explanation: "TFTP（Trivial FTP）は UDP/69 を使用する。認証なし・軽量なファイル転送プロトコルで、ネットワーク機器の OS イメージ転送・PXE ブートに使われる。FTP（TCP/21,20）より機能は少ないがシンプル。",
+		difficulty: 1
+	},
+	{
+		id: "q-242",
+		topicId: "protocol-review",
+		questionText: "DHCP サーバが待ち受ける UDP ポート番号は{{blank}}番である。",
+		correctAnswer: "67",
+		choices: [
+			"67",
+			"68",
+			"69",
+			"546"
+		],
+		isImportant: true,
+		explanation: "DHCP はサーバが UDP/67、クライアントが UDP/68 を使う。クライアントは IP 未割当のため 0.0.0.0 からブロードキャスト（255.255.255.255）で DISCOVER を送信する。DHCPv6 はサーバ UDP/547、クライアント UDP/546 を使用する。",
+		difficulty: 2
+	},
+	{
+		id: "q-243",
+		topicId: "protocol-review",
+		questionText: "SNMP において、エージェントから管理サーバへの Trap 通知に使う UDP ポート番号は{{blank}}番である。",
+		correctAnswer: "162",
+		choices: [
+			"162",
+			"161",
+			"514",
+			"1162"
+		],
+		isImportant: true,
+		explanation: "SNMP は Get/Set（マネージャ→エージェント）が UDP/161、Trap（エージェント→マネージャの非同期通知）が UDP/162 を使う。Trap はエージェントが障害を能動的に通知する。",
+		difficulty: 2
+	},
+	{
+		id: "q-244",
+		topicId: "protocol-review",
+		questionText: "NTP が使用する UDP ポート番号は{{blank}}番である。",
+		correctAnswer: "123",
+		choices: [
+			"123",
+			"119",
+			"161",
+			"514"
+		],
+		isImportant: false,
+		explanation: "NTP（Network Time Protocol）は UDP/123 を使用する。時刻の精度はストラタム（Stratum）で管理し、Stratum 0（原子時計など）→Stratum 1 サーバ→Stratum 2 サーバという階層構造で同期する。",
+		difficulty: 1
+	},
+	{
+		id: "q-245",
+		topicId: "protocol-review",
+		questionText: "Syslog が使用する UDP ポート番号は{{blank}}番である。",
+		correctAnswer: "514",
+		choices: [
+			"514",
+			"161",
+			"162",
+			"512"
+		],
+		isImportant: false,
+		explanation: "Syslog は UDP/514 でログを転送する（RFC 3164）。UDP のため転送の信頼性は保証されない。セキュアな転送が必要な場合は TLS over TCP（ポート 6514）を使う RFC 5424 の仕様もある。",
+		difficulty: 1
+	},
+	(
+	// === メール系 ===
+	{
+		id: "q-246",
+		topicId: "protocol-review",
+		questionText: "メールクライアントから送信サーバへの投稿（サブミッション）に使う SMTP ポート番号は{{blank}}番である（STARTTLS で暗号化）。",
+		correctAnswer: "587",
+		choices: [
+			"587",
+			"25",
+			"465",
+			"110"
+		],
+		isImportant: true,
+		explanation: "SMTP は MTA 間のメール転送に TCP/25 を使い、クライアント→送信サーバ間のサブミッションに TCP/587 を使う。587 は STARTTLS による暗号化と SMTP AUTH 認証をセットで使用する。",
+		difficulty: 2
+	}),
+	{
+		id: "q-247",
+		topicId: "protocol-review",
+		questionText: "IMAP4S（IMAP4 over SSL/TLS）が使用するポート番号は{{blank}}番である。",
+		correctAnswer: "993",
+		choices: [
+			"993",
+			"143",
+			"995",
+			"110"
+		],
+		isImportant: true,
+		explanation: "IMAP4 は TCP/143（平文）・TCP/993（IMAPS）を使う。POP3 は TCP/110（平文）・TCP/995（POP3S）。IMAP4 はサーバ上でメールを管理し複数デバイスから同期できるのに対し、POP3 はメールをダウンロード後に削除するのが基本。",
+		difficulty: 2
+	},
+	(
+	// === リモートアクセス系 ===
+	{
+		id: "q-248",
+		topicId: "protocol-review",
+		questionText: "SSH が使用する TCP ポート番号は{{blank}}番である。",
+		correctAnswer: "22",
+		choices: [
+			"22",
+			"23",
+			"443",
+			"3389"
+		],
+		isImportant: true,
+		explanation: "SSH（Secure Shell）は TCP/22 で暗号化されたリモートログインを提供する。Telnet（TCP/23）の平文通信に代わるプロトコルで、パスワード認証のほか公開鍵認証も使える。RDP（リモートデスクトップ）は TCP/3389。",
+		difficulty: 1
+	}),
+	{
+		id: "q-249",
+		topicId: "protocol-review",
+		questionText: "FTP において、制御コネクション（コマンドのやり取り）に使用するポート番号は{{blank}}番である。",
+		correctAnswer: "21",
+		choices: [
+			"21",
+			"20",
+			"22",
+			"69"
+		],
+		isImportant: true,
+		explanation: "FTP は制御コネクションに TCP/21 を使い、データ転送にはアクティブモードで TCP/20 を使う。パッシブモードではサーバが空きポートを使うため FW 環境で推奨される。制御=21、データ=20 と覚える。",
+		difficulty: 1
+	},
+	(
+	// === 認証・ディレクトリ系 ===
+	{
+		id: "q-250",
+		topicId: "protocol-review",
+		questionText: "LDAP が使用する標準ポート番号は{{blank}}番である（平文）。",
+		correctAnswer: "389",
+		choices: [
+			"389",
+			"636",
+			"88",
+			"3268"
+		],
+		isImportant: true,
+		explanation: "LDAP は TCP/389（平文）、LDAPS（SSL/TLS）は TCP/636 を使う。Active Directory 関連では LDAP/389 のほか、グローバルカタログポートとして TCP/3268（LDAP）・TCP/3269（LDAPS）も使われる。",
+		difficulty: 2
+	}),
+	{
+		id: "q-251",
+		topicId: "protocol-review",
+		questionText: "RADIUS 認証が使用する UDP ポート番号は{{blank}}番である（RFC 2865）。",
+		correctAnswer: "1812",
+		choices: [
+			"1812",
+			"1813",
+			"1645",
+			"389"
+		],
+		isImportant: true,
+		explanation: "RADIUS は認証・認可に UDP/1812、アカウンティングに UDP/1813 を使用（RFC 2865/2866）。古い実装では UDP/1645,1646 が使われることもある。802.1X 認証ではサプリカント→NAS→RADIUS サーバの流れで認証を行う。",
+		difficulty: 2
+	},
+	(
+	// === VoIP・SDN・IoT 系 ===
+	{
+		id: "q-252",
+		topicId: "protocol-review",
+		questionText: "SIP が使用する標準ポート番号は{{blank}}番である（平文・UDP/TCP）。",
+		correctAnswer: "5060",
+		choices: [
+			"5060",
+			"5061",
+			"1720",
+			"4569"
+		],
+		isImportant: true,
+		explanation: "SIP（Session Initiation Protocol）は UDP/TCP の 5060（平文）・5061（TLS）を使う。音声データ自体は RTP（高位 UDP ポート）で送受信する。H.323 は TCP/1720 を使う旧来のプロトコル。",
+		difficulty: 2
+	}),
+	{
+		id: "q-253",
+		topicId: "protocol-review",
+		questionText: "BGP が使用する TCP ポート番号は{{blank}}番である。",
+		correctAnswer: "179",
+		choices: [
+			"179",
+			"520",
+			"89",
+			"88"
+		],
+		isImportant: true,
+		explanation: "BGP は TCP/179 を使用する。TCP で信頼性・フロー制御を確保し、大量の経路情報を確実に交換する。RIP は UDP/520、OSPF は IP プロトコル番号 89（ポートなし）、EIGRP は IP プロトコル番号 88 で動作する。",
+		difficulty: 2
+	},
+	{
+		id: "q-254",
+		topicId: "protocol-review",
+		questionText: "IoT 向け Pub/Sub プロトコル MQTT が使用する標準ポート番号は{{blank}}番である（平文）。",
+		correctAnswer: "1883",
+		choices: [
+			"1883",
+			"8883",
+			"5683",
+			"1884"
+		],
+		isImportant: false,
+		explanation: "MQTT は TCP/1883（平文）と TCP/8883（TLS）を使う。ブローカーを介して Publisher/Subscriber が非同期通信するプロトコル。CoAP（IoT 向け UDP ベース）は UDP/5683 を使う。",
+		difficulty: 2
+	},
+	{
+		id: "q-255",
+		topicId: "protocol-review",
+		questionText: "HTTP/3 が採用した、TCP の代替となる UDP ベースのトランスポート層プロトコルは{{blank}}である。",
+		correctAnswer: "QUIC",
+		choices: [
+			"QUIC",
+			"SCTP",
+			"DTLS",
+			"SPDY"
+		],
+		isImportant: true,
+		explanation: "HTTP/3 は QUIC プロトコル上で動作し UDP/443 を使用する。QUIC は TLS 1.3 を内包し、TCP の HOL（Head-of-Line）ブロッキングを排除。0/1-RTT で接続確立できる。HTTP/1.1・HTTP/2 は TCP/443（HTTPS）。",
+		difficulty: 2
+	},
+	{
+		id: "q-256",
+		topicId: "protocol-review",
+		questionText: "IKEv2 において、NAT 越え（NAT-T）時に切り替えて使用する UDP ポート番号は{{blank}}番である。",
+		correctAnswer: "4500",
+		choices: [
+			"4500",
+			"500",
+			"1194",
+			"4501"
+		],
+		isImportant: true,
+		explanation: "IKEv2 は通常 UDP/500 で SA ネゴシエーションを行う。NAT デバイスが存在すると ESP パケット（IP プロトコル番号 50）を NAT が処理できないため、NAT-T として UDP/4500 にカプセル化して通信する。",
+		difficulty: 2
+	}
+];
+
+//# sourceMappingURL=data:application/json;base64,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O0VBQ0osU0FBUztFQUNULGNBQWM7RUFDZCxlQUFlO0VBQ2YsU0FBUztHQUFDO0dBQVE7R0FBUTtHQUFRO0dBQU87RUFDekMsYUFBYTtFQUNiLGFBQWE7RUFDYixZQUFZO0VBQ2I7Q0FDRDtFQUNFLElBQUk7RUFDSixTQUFTO0VBQ1QsY0FBYztFQUNkLGVBQWU7RUFDZixTQUFTO0dBQUM7R0FBUTtHQUFPO0dBQVE7R0FBTztFQUN4QyxhQUFhO0VBQ2IsYUFBYTtFQUNiLFlBQVk7RUFDYjtDQUNGIiwibmFtZXMiOltdLCJzb3VyY2VzIjpbInByb3RvY29sLXJldmlldy50cyJdLCJ2ZXJzaW9uIjozLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgdHlwZSB7IFF1ZXN0aW9uIH0gZnJvbSAnLi4vLi4vdHlwZXMnXHJcblxyXG5leHBvcnQgY29uc3QgcHJvdG9jb2xSZXZpZXdRdWVzdGlvbnM6IFF1ZXN0aW9uW10gPSBbXHJcbiAgLy8gPT09IFRDUC9VRFAg44Go44Od44O844OI55Wq5Y+3ID09PVxyXG4gIHtcclxuICAgIGlkOiAncS0yNDAnLFxyXG4gICAgdG9waWNJZDogJ3Byb3RvY29sLXJldmlldycsXHJcbiAgICBxdWVzdGlvblRleHQ6ICdETlMg44GM5L2/55So44GZ44KL5qiZ5rqW44Od44O844OI55Wq5Y+344Gve3tibGFua31955Wq44Gn44GC44KL77yI6YCa5bi4IFVEUOOAgeW/nOetlOOBjOWkp+OBjeOBhOWgtOWQiOOChCBBWEZSIOOBp+OBryBUQ1Ag44Gr5YiH44KK5pu/44GI44KL77yJ44CCJyxcclxuICAgIGNvcnJlY3RBbnN3ZXI6ICc1MycsXHJcbiAgICBjaG9pY2VzOiBbJzUzJywgJzUzNTMnLCAnNDMnLCAnODUzJ10sXHJcbiAgICBpc0ltcG9ydGFudDogdHJ1ZSxcclxuICAgIGV4cGxhbmF0aW9uOiAnRE5TIOOBryBVRFAvNTMg44KS5qiZ5rqW44Go44GZ44KL44CC44K+44O844Oz6Lui6YCB77yIQVhGUu+8ieOChCA1MTIg44OQ44Kk44OI44KS6LaF44GI44KL5b+c562U44Gn44GvIFRDUC81MyDjgpLkvb/nlKjjgZnjgovjgIJETlMgb3ZlciBUTFPvvIhEb1TvvInjga8gODUzIOeVquOAgUROUyBvdmVyIEhUVFBT77yIRG9I77yJ44GvIDQ0MyDnlarjgpLkvb/jgYbjgIInLFxyXG4gICAgZGlmZmljdWx0eTogMSxcclxuICB9LFxyXG4gIHtcclxuICAgIGlkOiAncS0yNDEnLFxyXG4gICAgdG9waWNJZDogJ3Byb3RvY29sLXJldmlldycsXHJcbiAgICBxdWVzdGlvblRleHQ6ICdURlRQIOOBjOS9v+eUqOOBmeOCi+ODneODvOODiOeVquWPt+OBr3t7Ymxhbmt9feeVquOBp+OBguOCi++8iFVEUCDjgpLkvb/nlKjvvInjgIInLFxyXG4gICAgY29ycmVjdEFuc3dlcjogJzY5JyxcclxuICAgIGNob2ljZXM6IFsnNjknLCAnMjEnLCAnMjAnLCAnMjInXSxcclxuICAgIGlzSW1wb3J0YW50OiB0cnVlLFxyXG4gICAgZXhwbGFuYXRpb246ICdURlRQ77yIVHJpdmlhbCBGVFDvvInjga8gVURQLzY5IOOCkuS9v+eUqOOBmeOCi+OAguiqjeiovOOBquOBl+ODu+i7vemHj+OBquODleOCoeOCpOODq+i7oumAgeODl+ODreODiOOCs+ODq+OBp+OAgeODjeODg+ODiOODr+ODvOOCr+apn+WZqOOBriBPUyDjgqTjg6Hjg7zjgrjou6LpgIHjg7tQWEUg44OW44O844OI44Gr5L2/44KP44KM44KL44CCRlRQ77yIVENQLzIxLDIw77yJ44KI44KK5qmf6IO944Gv5bCR44Gq44GE44GM44K344Oz44OX44Or44CCJyxcclxuICAgIGRpZmZpY3VsdHk6IDEsXHJcbiAgfSxcclxuICB7XHJcbiAgICBpZDogJ3EtMjQyJyxcclxuICAgIHRvcGljSWQ6ICdwcm90b2NvbC1yZXZpZXcnLFxyXG4gICAgcXVlc3Rpb25UZXh0OiAnREhDUCDjgrXjg7zjg5DjgYzlvoXjgaHlj5fjgZHjgosgVURQIOODneODvOODiOeVquWPt+OBr3t7Ymxhbmt9feeVquOBp+OBguOCi+OAgicsXHJcbiAgICBjb3JyZWN0QW5zd2VyOiAnNjcnLFxyXG4gICAgY2hvaWNlczogWyc2NycsICc2OCcsICc2OScsICc1NDYnXSxcclxuICAgIGlzSW1wb3J0YW50OiB0cnVlLFxyXG4gICAgZXhwbGFuYXRpb246ICdESENQIOOBr+OCteODvOODkOOBjCBVRFAvNjfjgIHjgq/jg6njgqTjgqLjg7Pjg4jjgYwgVURQLzY4IOOCkuS9v+OBhuOAguOCr+ODqeOCpOOCouODs+ODiOOBryBJUCDmnKrlibLlvZPjga7jgZ/jgoEgMC4wLjAuMCDjgYvjgonjg5bjg63jg7zjg4njgq3jg6Pjgrnjg4jvvIgyNTUuMjU1LjI1NS4yNTXvvInjgacgRElTQ09WRVIg44KS6YCB5L+h44GZ44KL44CCREhDUHY2IOOBr+OCteODvOODkCBVRFAvNTQ344CB44Kv44Op44Kk44Ki44Oz44OIIFVEUC81NDYg44KS5L2/55So44GZ44KL44CCJyxcclxuICAgIGRpZmZpY3VsdHk6IDIsXHJcbiAgfSxcclxuICB7XHJcbiAgICBpZDogJ3EtMjQzJyxcclxuICAgIHRvcGljSWQ6ICdwcm90b2NvbC1yZXZpZXcnLFxyXG4gICAgcXVlc3Rpb25UZXh0OiAnU05NUCDjgavjgYrjgYTjgabjgIHjgqjjg7zjgrjjgqfjg7Pjg4jjgYvjgonnrqHnkIbjgrXjg7zjg5Djgbjjga4gVHJhcCDpgJrnn6Xjgavkvb/jgYYgVURQIOODneODvOODiOeVquWPt+OBr3t7Ymxhbmt9feeVquOBp+OBguOCi+OAgicsXHJcbiAgICBjb3JyZWN0QW5zd2VyOiAnMTYyJyxcclxuICAgIGNob2ljZXM6IFsnMTYyJywgJzE2MScsICc1MTQnLCAnMTE2MiddLFxyXG4gICAgaXNJbXBvcnRhbnQ6IHRydWUsXHJcbiAgICBleHBsYW5hdGlvbjogJ1NOTVAg44GvIEdldC9TZXTvvIjjg57jg43jg7zjgrjjg6PihpLjgqjjg7zjgrjjgqfjg7Pjg4jvvInjgYwgVURQLzE2MeOAgVRyYXDvvIjjgqjjg7zjgrjjgqfjg7Pjg4jihpLjg57jg43jg7zjgrjjg6Pjga7pnZ7lkIzmnJ/pgJrnn6XvvInjgYwgVURQLzE2MiDjgpLkvb/jgYbjgIJUcmFwIOOBr+OCqOODvOOCuOOCp+ODs+ODiOOBjOmanOWus+OCkuiDveWLleeahOOBq+mAmuefpeOBmeOCi+OAgicsXHJcbiAgICBkaWZmaWN1bHR5OiAyLFxyXG4gIH0sXHJcbiAge1xyXG4gICAgaWQ6ICdxLTI0NCcsXHJcbiAgICB0b3BpY0lkOiAncHJvdG9jb2wtcmV2aWV3JyxcclxuICAgIHF1ZXN0aW9uVGV4dDogJ05UUCDjgYzkvb/nlKjjgZnjgosgVURQIOODneODvOODiOeVquWPt+OBr3t7Ymxhbmt9feeVquOBp+OBguOCi+OAgicsXHJcbiAgICBjb3JyZWN0QW5zd2VyOiAnMTIzJyxcclxuICAgIGNob2ljZXM6IFsnMTIzJywgJzExOScsICcxNjEnLCAnNTE0J10sXHJcbiAgICBpc0ltcG9ydGFudDogZmFsc2UsXHJcbiAgICBleHBsYW5hdGlvbjogJ05UUO+8iE5ldHdvcmsgVGltZSBQcm90b2NvbO+8ieOBryBVRFAvMTIzIOOCkuS9v+eUqOOBmeOCi+OAguaZguWIu+OBrueyvuW6puOBr+OCueODiOODqeOCv+ODoO+8iFN0cmF0dW3vvInjgafnrqHnkIbjgZfjgIFTdHJhdHVtIDDvvIjljp/lrZDmmYLoqIjjgarjganvvInihpJTdHJhdHVtIDEg44K144O844OQ4oaSU3RyYXR1bSAyIOOCteODvOODkOOBqOOBhOOBhumajuWxpOani+mAoOOBp+WQjOacn+OBmeOCi+OAgicsXHJcbiAgICBkaWZmaWN1bHR5OiAxLFxyXG4gIH0sXHJcbiAge1xyXG4gICAgaWQ6ICdxLTI0NScsXHJcbiAgICB0b3BpY0lkOiAncHJvdG9jb2wtcmV2aWV3JyxcclxuICAgIHF1ZXN0aW9uVGV4dDogJ1N5c2xvZyDjgYzkvb/nlKjjgZnjgosgVURQIOODneODvOODiOeVquWPt+OBr3t7Ymxhbmt9feeVquOBp+OBguOCi+OAgicsXHJcbiAgICBjb3JyZWN0QW5zd2VyOiAnNTE0JyxcclxuICAgIGNob2ljZXM6IFsnNTE0JywgJzE2MScsICcxNjInLCAnNTEyJ10sXHJcbiAgICBpc0ltcG9ydGFudDogZmFsc2UsXHJcbiAgICBleHBsYW5hdGlvbjogJ1N5c2xvZyDjga8gVURQLzUxNCDjgafjg63jgrDjgpLou6LpgIHjgZnjgovvvIhSRkMgMzE2NO+8ieOAglVEUCDjga7jgZ/jgoHou6LpgIHjga7kv6HpoLzmgKfjga/kv53oqLzjgZXjgozjgarjgYTjgILjgrvjgq3jg6XjgqLjgarou6LpgIHjgYzlv4XopoHjgarloLTlkIjjga8gVExTIG92ZXIgVENQ77yI44Od44O844OIIDY1MTTvvInjgpLkvb/jgYYgUkZDIDU0MjQg44Gu5LuV5qeY44KC44GC44KL44CCJyxcclxuICAgIGRpZmZpY3VsdHk6IDEsXHJcbiAgfSxcclxuICAvLyA9PT0g44Oh44O844Or57O7ID09PVxyXG4gIHtcclxuICAgIGlkOiAncS0yNDYnLFxyXG4gICAgdG9waWNJZDogJ3Byb3RvY29sLXJldmlldycsXHJcbiAgICBxdWVzdGlvblRleHQ6ICfjg6Hjg7zjg6vjgq/jg6njgqTjgqLjg7Pjg4jjgYvjgonpgIHkv6HjgrXjg7zjg5Djgbjjga7mipXnqL/vvIjjgrXjg5bjg5/jg4Pjgrfjg6fjg7PvvInjgavkvb/jgYYgU01UUCDjg53jg7zjg4jnlarlj7fjga97e2JsYW5rfX3nlarjgafjgYLjgovvvIhTVEFSVFRMUyDjgafmmpflj7fljJbvvInjgIInLFxyXG4gICAgY29ycmVjdEFuc3dlcjogJzU4NycsXHJcbiAgICBjaG9pY2VzOiBbJzU4NycsICcyNScsICc0NjUnLCAnMTEwJ10sXHJcbiAgICBpc0ltcG9ydGFudDogdHJ1ZSxcclxuICAgIGV4cGxhbmF0aW9uOiAnU01UUCDjga8gTVRBIOmWk+OBruODoeODvOODq+i7oumAgeOBqyBUQ1AvMjUg44KS5L2/44GE44CB44Kv44Op44Kk44Ki44Oz44OI4oaS6YCB5L+h44K144O844OQ6ZaT44Gu44K144OW44Of44OD44K344On44Oz44GrIFRDUC81ODcg44KS5L2/44GG44CCNTg3IOOBryBTVEFSVFRMUyDjgavjgojjgovmmpflj7fljJbjgaggU01UUCBBVVRIIOiqjeiovOOCkuOCu+ODg+ODiOOBp+S9v+eUqOOBmeOCi+OAgicsXHJcbiAgICBkaWZmaWN1bHR5OiAyLFxyXG4gIH0sXHJcbiAge1xyXG4gICAgaWQ6ICdxLTI0NycsXHJcbiAgICB0b3BpY0lkOiAncHJvdG9jb2wtcmV2aWV3JyxcclxuICAgIHF1ZXN0aW9uVGV4dDogJ0lNQVA0U++8iElNQVA0IG92ZXIgU1NML1RMU++8ieOBjOS9v+eUqOOBmeOCi+ODneODvOODiOeVquWPt+OBr3t7Ymxhbmt9feeVquOBp+OBguOCi+OAgicsXHJcbiAgICBjb3JyZWN0QW5zd2VyOiAnOTkzJyxcclxuICAgIGNob2ljZXM6IFsnOTkzJywgJzE0MycsICc5OTUnLCAnMTEwJ10sXHJcbiAgICBpc0ltcG9ydGFudDogdHJ1ZSxcclxuICAgIGV4cGxhbmF0aW9uOiAnSU1BUDQg44GvIFRDUC8xNDPvvIjlubPmlofvvInjg7tUQ1AvOTkz77yISU1BUFPvvInjgpLkvb/jgYbjgIJQT1AzIOOBryBUQ1AvMTEw77yI5bmz5paH77yJ44O7VENQLzk5Ne+8iFBPUDNT77yJ44CCSU1BUDQg44Gv44K144O844OQ5LiK44Gn44Oh44O844Or44KS566h55CG44GX6KSH5pWw44OH44OQ44Kk44K544GL44KJ5ZCM5pyf44Gn44GN44KL44Gu44Gr5a++44GX44CBUE9QMyDjga/jg6Hjg7zjg6vjgpLjg4Djgqbjg7Pjg63jg7zjg4nlvozjgavliYrpmaTjgZnjgovjga7jgYzln7rmnKzjgIInLFxyXG4gICAgZGlmZmljdWx0eTogMixcclxuICB9LFxyXG4gIC8vID09PSDjg6rjg6Ljg7zjg4jjgqLjgq/jgrvjgrnns7sgPT09XHJcbiAge1xyXG4gICAgaWQ6ICdxLTI0OCcsXHJcbiAgICB0b3BpY0lkOiAncHJvdG9jb2wtcmV2aWV3JyxcclxuICAgIHF1ZXN0aW9uVGV4dDogJ1NTSCDjgYzkvb/nlKjjgZnjgosgVENQIOODneODvOODiOeVquWPt+OBr3t7Ymxhbmt9feeVquOBp+OBguOCi+OAgicsXHJcbiAgICBjb3JyZWN0QW5zd2VyOiAnMjInLFxyXG4gICAgY2hvaWNlczogWycyMicsICcyMycsICc0NDMnLCAnMzM4OSddLFxyXG4gICAgaXNJbXBvcnRhbnQ6IHRydWUsXHJcbiAgICBleHBsYW5hdGlvbjogJ1NTSO+8iFNlY3VyZSBTaGVsbO+8ieOBryBUQ1AvMjIg44Gn5pqX5Y+35YyW44GV44KM44Gf44Oq44Oi44O844OI44Ot44Kw44Kk44Oz44KS5o+Q5L6b44GZ44KL44CCVGVsbmV077yIVENQLzIz77yJ44Gu5bmz5paH6YCa5L+h44Gr5Luj44KP44KL44OX44Ot44OI44Kz44Or44Gn44CB44OR44K544Ov44O844OJ6KqN6Ki844Gu44G744GL5YWs6ZaL6Y216KqN6Ki844KC5L2/44GI44KL44CCUkRQ77yI44Oq44Oi44O844OI44OH44K544Kv44OI44OD44OX77yJ44GvIFRDUC8zMzg544CCJyxcclxuICAgIGRpZmZpY3VsdHk6IDEsXHJcbiAgfSxcclxuICB7XHJcbiAgICBpZDogJ3EtMjQ5JyxcclxuICAgIHRvcGljSWQ6ICdwcm90b2NvbC1yZXZpZXcnLFxyXG4gICAgcXVlc3Rpb25UZXh0OiAnRlRQIOOBq+OBiuOBhOOBpuOAgeWItuW+oeOCs+ODjeOCr+OCt+ODp+ODs++8iOOCs+ODnuODs+ODieOBruOChOOCiuWPluOCiu+8ieOBq+S9v+eUqOOBmeOCi+ODneODvOODiOeVquWPt+OBr3t7Ymxhbmt9feeVquOBp+OBguOCi+OAgicsXHJcbiAgICBjb3JyZWN0QW5zd2VyOiAnMjEnLFxyXG4gICAgY2hvaWNlczogWycyMScsICcyMCcsICcyMicsICc2OSddLFxyXG4gICAgaXNJbXBvcnRhbnQ6IHRydWUsXHJcbiAgICBleHBsYW5hdGlvbjogJ0ZUUCDjga/liLblvqHjgrPjg43jgq/jgrfjg6fjg7PjgasgVENQLzIxIOOCkuS9v+OBhOOAgeODh+ODvOOCv+i7oumAgeOBq+OBr+OCouOCr+ODhuOCo+ODluODouODvOODieOBpyBUQ1AvMjAg44KS5L2/44GG44CC44OR44OD44K344OW44Oi44O844OJ44Gn44Gv44K144O844OQ44GM56m644GN44Od44O844OI44KS5L2/44GG44Gf44KBIEZXIOeSsOWig+OBp+aOqOWlqOOBleOCjOOCi+OAguWItuW+oT0yMeOAgeODh+ODvOOCvz0yMCDjgajopprjgYjjgovjgIInLFxyXG4gICAgZGlmZmljdWx0eTogMSxcclxuICB9LFxyXG4gIC8vID09PSDoqo3oqLzjg7vjg4fjgqPjg6zjgq/jg4jjg6rns7sgPT09XHJcbiAge1xyXG4gICAgaWQ6ICdxLTI1MCcsXHJcbiAgICB0b3BpY0lkOiAncHJvdG9jb2wtcmV2aWV3JyxcclxuICAgIHF1ZXN0aW9uVGV4dDogJ0xEQVAg44GM5L2/55So44GZ44KL5qiZ5rqW44Od44O844OI55Wq5Y+344Gve3tibGFua31955Wq44Gn44GC44KL77yI5bmz5paH77yJ44CCJyxcclxuICAgIGNvcnJlY3RBbnN3ZXI6ICczODknLFxyXG4gICAgY2hvaWNlczogWyczODknLCAnNjM2JywgJzg4JywgJzMyNjgnXSxcclxuICAgIGlzSW1wb3J0YW50OiB0cnVlLFxyXG4gICAgZXhwbGFuYXRpb246ICdMREFQIOOBryBUQ1AvMzg577yI5bmz5paH77yJ44CBTERBUFPvvIhTU0wvVExT77yJ44GvIFRDUC82MzYg44KS5L2/44GG44CCQWN0aXZlIERpcmVjdG9yeSDplqLpgKPjgafjga8gTERBUC8zODkg44Gu44G744GL44CB44Kw44Ot44O844OQ44Or44Kr44K/44Ot44Kw44Od44O844OI44Go44GX44GmIFRDUC8zMjY477yITERBUO+8ieODu1RDUC8zMjY577yITERBUFPvvInjgoLkvb/jgo/jgozjgovjgIInLFxyXG4gICAgZGlmZmljdWx0eTogMixcclxuICB9LFxyXG4gIHtcclxuICAgIGlkOiAncS0yNTEnLFxyXG4gICAgdG9waWNJZDogJ3Byb3RvY29sLXJldmlldycsXHJcbiAgICBxdWVzdGlvblRleHQ6ICdSQURJVVMg6KqN6Ki844GM5L2/55So44GZ44KLIFVEUCDjg53jg7zjg4jnlarlj7fjga97e2JsYW5rfX3nlarjgafjgYLjgovvvIhSRkMgMjg2Ne+8ieOAgicsXHJcbiAgICBjb3JyZWN0QW5zd2VyOiAnMTgxMicsXHJcbiAgICBjaG9pY2VzOiBbJzE4MTInLCAnMTgxMycsICcxNjQ1JywgJzM4OSddLFxyXG4gICAgaXNJbXBvcnRhbnQ6IHRydWUsXHJcbiAgICBleHBsYW5hdGlvbjogJ1JBRElVUyDjga/oqo3oqLzjg7voqo3lj6/jgasgVURQLzE4MTLjgIHjgqLjgqvjgqbjg7Pjg4bjgqPjg7PjgrDjgasgVURQLzE4MTMg44KS5L2/55So77yIUkZDIDI4NjUvMjg2Nu+8ieOAguWPpOOBhOWun+ijheOBp+OBryBVRFAvMTY0NSwxNjQ2IOOBjOS9v+OCj+OCjOOCi+OBk+OBqOOCguOBguOCi+OAgjgwMi4xWCDoqo3oqLzjgafjga/jgrXjg5fjg6rjgqvjg7Pjg4jihpJOQVPihpJSQURJVVMg44K144O844OQ44Gu5rWB44KM44Gn6KqN6Ki844KS6KGM44GG44CCJyxcclxuICAgIGRpZmZpY3VsdHk6IDIsXHJcbiAgfSxcclxuICAvLyA9PT0gVm9JUOODu1NETuODu0lvVCDns7sgPT09XHJcbiAge1xyXG4gICAgaWQ6ICdxLTI1MicsXHJcbiAgICB0b3BpY0lkOiAncHJvdG9jb2wtcmV2aWV3JyxcclxuICAgIHF1ZXN0aW9uVGV4dDogJ1NJUCDjgYzkvb/nlKjjgZnjgovmqJnmupbjg53jg7zjg4jnlarlj7fjga97e2JsYW5rfX3nlarjgafjgYLjgovvvIjlubPmlofjg7tVRFAvVENQ77yJ44CCJyxcclxuICAgIGNvcnJlY3RBbnN3ZXI6ICc1MDYwJyxcclxuICAgIGNob2ljZXM6IFsnNTA2MCcsICc1MDYxJywgJzE3MjAnLCAnNDU2OSddLFxyXG4gICAgaXNJbXBvcnRhbnQ6IHRydWUsXHJcbiAgICBleHBsYW5hdGlvbjogJ1NJUO+8iFNlc3Npb24gSW5pdGlhdGlvbiBQcm90b2NvbO+8ieOBryBVRFAvVENQIOOBriA1MDYw77yI5bmz5paH77yJ44O7NTA2Me+8iFRMU++8ieOCkuS9v+OBhuOAgumfs+WjsOODh+ODvOOCv+iHquS9k+OBryBSVFDvvIjpq5jkvY0gVURQIOODneODvOODiO+8ieOBp+mAgeWPl+S/oeOBmeOCi+OAgkguMzIzIOOBryBUQ1AvMTcyMCDjgpLkvb/jgYbml6fmnaXjga7jg5fjg63jg4jjgrPjg6vjgIInLFxyXG4gICAgZGlmZmljdWx0eTogMixcclxuICB9LFxyXG4gIHtcclxuICAgIGlkOiAncS0yNTMnLFxyXG4gICAgdG9waWNJZDogJ3Byb3RvY29sLXJldmlldycsXHJcbiAgICBxdWVzdGlvblRleHQ6ICdCR1Ag44GM5L2/55So44GZ44KLIFRDUCDjg53jg7zjg4jnlarlj7fjga97e2JsYW5rfX3nlarjgafjgYLjgovjgIInLFxyXG4gICAgY29ycmVjdEFuc3dlcjogJzE3OScsXHJcbiAgICBjaG9pY2VzOiBbJzE3OScsICc1MjAnLCAnODknLCAnODgnXSxcclxuICAgIGlzSW1wb3J0YW50OiB0cnVlLFxyXG4gICAgZXhwbGFuYXRpb246ICdCR1Ag44GvIFRDUC8xNzkg44KS5L2/55So44GZ44KL44CCVENQIOOBp+S/oemgvOaAp+ODu+ODleODreODvOWItuW+oeOCkueiuuS/neOBl+OAgeWkp+mHj+OBrue1jOi3r+aDheWgseOCkueiuuWun+OBq+S6pOaPm+OBmeOCi+OAglJJUCDjga8gVURQLzUyMOOAgU9TUEYg44GvIElQIOODl+ODreODiOOCs+ODq+eVquWPtyA4Oe+8iOODneODvOODiOOBquOBl++8ieOAgUVJR1JQIOOBryBJUCDjg5fjg63jg4jjgrPjg6vnlarlj7cgODgg44Gn5YuV5L2c44GZ44KL44CCJyxcclxuICAgIGRpZmZpY3VsdHk6IDIsXHJcbiAgfSxcclxuICB7XHJcbiAgICBpZDogJ3EtMjU0JyxcclxuICAgIHRvcGljSWQ6ICdwcm90b2NvbC1yZXZpZXcnLFxyXG4gICAgcXVlc3Rpb25UZXh0OiAnSW9UIOWQkeOBkSBQdWIvU3ViIOODl+ODreODiOOCs+ODqyBNUVRUIOOBjOS9v+eUqOOBmeOCi+aomea6luODneODvOODiOeVquWPt+OBr3t7Ymxhbmt9feeVquOBp+OBguOCi++8iOW5s+aWh++8ieOAgicsXHJcbiAgICBjb3JyZWN0QW5zd2VyOiAnMTg4MycsXHJcbiAgICBjaG9pY2VzOiBbJzE4ODMnLCAnODg4MycsICc1NjgzJywgJzE4ODQnXSxcclxuICAgIGlzSW1wb3J0YW50OiBmYWxzZSxcclxuICAgIGV4cGxhbmF0aW9uOiAnTVFUVCDjga8gVENQLzE4ODPvvIjlubPmlofvvInjgaggVENQLzg4ODPvvIhUTFPvvInjgpLkvb/jgYbjgILjg5bjg63jg7zjgqvjg7zjgpLku4vjgZfjgaYgUHVibGlzaGVyL1N1YnNjcmliZXIg44GM6Z2e5ZCM5pyf6YCa5L+h44GZ44KL44OX44Ot44OI44Kz44Or44CCQ29BUO+8iElvVCDlkJHjgZEgVURQIOODmeODvOOCue+8ieOBryBVRFAvNTY4MyDjgpLkvb/jgYbjgIInLFxyXG4gICAgZGlmZmljdWx0eTogMixcclxuICB9LFxyXG4gIHtcclxuICAgIGlkOiAncS0yNTUnLFxyXG4gICAgdG9waWNJZDogJ3Byb3RvY29sLXJldmlldycsXHJcbiAgICBxdWVzdGlvblRleHQ6ICdIVFRQLzMg44GM5o6h55So44GX44Gf44CBVENQIOOBruS7o+abv+OBqOOBquOCiyBVRFAg44OZ44O844K544Gu44OI44Op44Oz44K544Od44O844OI5bGk44OX44Ot44OI44Kz44Or44Gve3tibGFua31944Gn44GC44KL44CCJyxcclxuICAgIGNvcnJlY3RBbnN3ZXI6ICdRVUlDJyxcclxuICAgIGNob2ljZXM6IFsnUVVJQycsICdTQ1RQJywgJ0RUTFMnLCAnU1BEWSddLFxyXG4gICAgaXNJbXBvcnRhbnQ6IHRydWUsXHJcbiAgICBleHBsYW5hdGlvbjogJ0hUVFAvMyDjga8gUVVJQyDjg5fjg63jg4jjgrPjg6vkuIrjgafli5XkvZzjgZcgVURQLzQ0MyDjgpLkvb/nlKjjgZnjgovjgIJRVUlDIOOBryBUTFMgMS4zIOOCkuWGheWMheOBl+OAgVRDUCDjga4gSE9M77yISGVhZC1vZi1MaW5l77yJ44OW44Ot44OD44Kt44Oz44Kw44KS5o6S6Zmk44CCMC8xLVJUVCDjgafmjqXntprnorrnq4vjgafjgY3jgovjgIJIVFRQLzEuMeODu0hUVFAvMiDjga8gVENQLzQ0M++8iEhUVFBT77yJ44CCJyxcclxuICAgIGRpZmZpY3VsdHk6IDIsXHJcbiAgfSxcclxuICB7XHJcbiAgICBpZDogJ3EtMjU2JyxcclxuICAgIHRvcGljSWQ6ICdwcm90b2NvbC1yZXZpZXcnLFxyXG4gICAgcXVlc3Rpb25UZXh0OiAnSUtFdjIg44Gr44GK44GE44Gm44CBTkFUIOi2iuOBiO+8iE5BVC1U77yJ5pmC44Gr5YiH44KK5pu/44GI44Gm5L2/55So44GZ44KLIFVEUCDjg53jg7zjg4jnlarlj7fjga97e2JsYW5rfX3nlarjgafjgYLjgovjgIInLFxyXG4gICAgY29ycmVjdEFuc3dlcjogJzQ1MDAnLFxyXG4gICAgY2hvaWNlczogWyc0NTAwJywgJzUwMCcsICcxMTk0JywgJzQ1MDEnXSxcclxuICAgIGlzSW1wb3J0YW50OiB0cnVlLFxyXG4gICAgZXhwbGFuYXRpb246ICdJS0V2MiDjga/pgJrluLggVURQLzUwMCDjgacgU0Eg44ON44K044K344Ko44O844K344On44Oz44KS6KGM44GG44CCTkFUIOODh+ODkOOCpOOCueOBjOWtmOWcqOOBmeOCi+OBqCBFU1Ag44OR44Kx44OD44OI77yISVAg44OX44Ot44OI44Kz44Or55Wq5Y+3IDUw77yJ44KSIE5BVCDjgYzlh6bnkIbjgafjgY3jgarjgYTjgZ/jgoHjgIFOQVQtVCDjgajjgZfjgaYgVURQLzQ1MDAg44Gr44Kr44OX44K744Or5YyW44GX44Gm6YCa5L+h44GZ44KL44CCJyxcclxuICAgIGRpZmZpY3VsdHk6IDIsXHJcbiAgfSxcclxuXVxyXG4iXX0=

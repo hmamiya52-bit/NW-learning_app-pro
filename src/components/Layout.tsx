@@ -131,7 +131,7 @@ function IconClose() {
 const NAV_ITEMS: NavItem[] = [
   { label: 'ホーム', to: '/', icon: <IconHouse /> },
   { label: 'カテゴリ一覧', to: '/#categories', icon: <IconGrid /> },
-  { label: '教科書モード', to: '/textbook', icon: <BookOpenText className="w-5 h-5" aria-hidden="true" /> },
+  { label: '図解で学ぶ教科書', to: '/textbook', icon: <BookOpenText className="w-5 h-5" aria-hidden="true" /> },
   { label: 'ノートモード', to: '/notes', icon: <IconBook /> },
   { label: 'ランダム出題', to: '/quiz?mode=random', icon: <IconShuffle /> },
   { label: '弱点克服', to: '/quiz?mode=weakness', icon: <IconChart /> },

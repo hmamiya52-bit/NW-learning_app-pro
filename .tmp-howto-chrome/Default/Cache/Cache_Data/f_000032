@@ -1,0 +1,156 @@
+export const mailQuestions = [
+	{
+		id: "q-050",
+		topicId: "mail",
+		questionText: "メール送信に使われるプロトコルを{{blank}}という。",
+		correctAnswer: "SMTP",
+		choices: [
+			"SMTP",
+			"POP3",
+			"IMAP",
+			"MIME"
+		],
+		isImportant: true,
+		explanation: "SMTP（Simple Mail Transfer Protocol）はポート25でメール転送に使われる。クライアント→サーバ間はSubmission（587/465）を使うことが多い。",
+		difficulty: 1
+	},
+	{
+		id: "q-051",
+		topicId: "mail",
+		questionText: "メールの送信ドメイン認証技術のうち、送信元IPアドレスを検証する仕組みを{{blank}}という。",
+		correctAnswer: "SPF（Sender Policy Framework）",
+		choices: [
+			"SPF（Sender Policy Framework）",
+			"DKIM",
+			"DMARC",
+			"S/MIME"
+		],
+		isImportant: true,
+		explanation: "SPFはDNSのTXTレコードに送信可能なメールサーバのIPアドレスを登録し、受信サーバが照合することで送信元ドメインの正当性を確認する。なりすましメール対策。",
+		difficulty: 2
+	},
+	{
+		id: "q-052",
+		topicId: "mail",
+		questionText: "メール本文と添付ファイルをデジタル署名で保護する技術を{{blank}}という。",
+		correctAnswer: "DKIM（DomainKeys Identified Mail）",
+		choices: [
+			"DKIM（DomainKeys Identified Mail）",
+			"SPF",
+			"DMARC",
+			"PGP"
+		],
+		isImportant: true,
+		explanation: "DKIMは送信ドメインの秘密鍵でメールヘッダ・本文を署名し、DNS公開鍵で受信側が検証する。改ざん検知とドメイン認証を同時に実現する。",
+		difficulty: 2
+	},
+	{
+		id: "q-053",
+		topicId: "mail",
+		questionText: "SPF・DKIMの認証結果に基づいてメールの取り扱い方針（受信・隔離・拒否）を定義する仕組みを{{blank}}という。",
+		correctAnswer: "DMARC",
+		choices: [
+			"DMARC",
+			"DNSBL",
+			"SMTP-AUTH",
+			"MTA-STS"
+		],
+		isImportant: true,
+		explanation: "DMARC（Domain-based Message Authentication, Reporting, and Conformance）はSPFとDKIMの認証結果に応じたポリシー（none/quarantine/reject）をDNSで公開し、受信側がそれに従いメールを処理する。",
+		difficulty: 2
+	},
+	{
+		id: "q-054",
+		topicId: "mail",
+		questionText: "クライアントがサーバに接続したままメールを管理でき、複数デバイスで同期可能なメール受信プロトコルを{{blank}}という。",
+		correctAnswer: "IMAP",
+		choices: [
+			"IMAP",
+			"POP3",
+			"SMTP",
+			"MBOX"
+		],
+		isImportant: false,
+		explanation: "IMAPはメールをサーバ上に保持し、複数クライアントから同じメールボックスにアクセスできる。POP3はサーバからメールをダウンロードして削除する方式のため、複数端末での同期に不向き。",
+		difficulty: 1
+	},
+	(
+	// ── R6 午後II-2 頻出：メールセキュリティ強化 ─────────────────────
+	{
+		id: "q-360",
+		topicId: "mail",
+		questionText: "DMARCのポリシーのうち、SPF/DKIM認証に失敗したメールを迷惑メールフォルダに振り分けるよう指示するポリシーを{{blank}}という。",
+		correctAnswer: "quarantine（隔離）",
+		choices: [
+			"quarantine（隔離）",
+			"reject（拒否）",
+			"none（監視のみ）",
+			"discard"
+		],
+		isImportant: true,
+		explanation: "DMARCのポリシー: none=認証失敗でも受信、quarantine=迷惑メール扱い、reject=受信拒否。最初はnoneで様子見し、レポートを確認後quarantine→rejectへ段階的に強化するのが運用のベストプラクティス。",
+		difficulty: 2
+	}),
+	{
+		id: "q-361",
+		topicId: "mail",
+		questionText: "メールの内容と添付ファイルをエンドツーエンドで暗号化・デジタル署名する規格で、S/MIMEで使用する証明書の発行元は{{blank}}である。",
+		correctAnswer: "CA（認証局）",
+		choices: [
+			"CA（認証局）",
+			"送信者自身",
+			"メールサーバ",
+			"DKIM公開鍵"
+		],
+		isImportant: true,
+		explanation: "S/MIME（Secure/Multipurpose Internet Mail Extensions）は公開鍵暗号でメールを暗号化・署名する規格。送信者はCAから発行されたクライアント証明書で署名し、受信者は公開鍵で検証する。PGPと異なりCA信頼モデルを使う点が特徴。R6午後II-2で出題。",
+		difficulty: 2
+	},
+	{
+		id: "q-362",
+		topicId: "mail",
+		questionText: "メールサーバがTLSで他サーバと通信する際に、送信先ドメインのMTAポリシーをDNSで公開して強制TLS接続を要求する仕組みを{{blank}}という。",
+		correctAnswer: "MTA-STS（Mail Transfer Agent Strict Transport Security）",
+		choices: [
+			"MTA-STS（Mail Transfer Agent Strict Transport Security）",
+			"STARTTLS",
+			"DANE",
+			"SMTP-AUTH"
+		],
+		isImportant: false,
+		explanation: "MTA-STS（RFC 8461）は送信MTAに対してTLS接続を強制する仕組み。DNSのTXTレコードとHTTPS上のポリシーファイルで設定する。STARTTLSのダウングレード攻撃対策として有効。",
+		difficulty: 3
+	},
+	{
+		id: "q-363",
+		topicId: "mail",
+		questionText: "DMARC認証でSPF/DKIMが両方失敗した場合でも、メールのFrom:アドレスのドメインが認証済みドメインと一致する「{{blank}}」が取れていれば認証成功とみなす。",
+		correctAnswer: "アライメント（Alignment）",
+		choices: [
+			"アライメント（Alignment）",
+			"フォールバック",
+			"エンベロープ一致",
+			"ドメイン照合"
+		],
+		isImportant: false,
+		explanation: "DMARCアライメントはSPF検証のReturn-PathまたはDKIM署名のd=タグと、メールのFrom:ヘッダのドメインが一致するかを確認する仕組み。Relaxed（サブドメイン許可）とStrict（完全一致）の2モードがある。",
+		difficulty: 3
+	},
+	{
+		id: "q-364",
+		topicId: "mail",
+		questionText: "SMTPでメールを受け取る際、接続元のIPアドレスを問い合わせて既知の迷惑メール送信IPであれば拒否するDNSベースのブラックリストを{{blank}}という。",
+		correctAnswer: "DNSBL（DNS Blackhole List）",
+		choices: [
+			"DNSBL（DNS Blackhole List）",
+			"DMARC",
+			"RBL",
+			"Greylisting"
+		],
+		isImportant: false,
+		explanation: "DNSBL（DNSブラックホールリスト）は迷惑メール送信IPのリスト。メールサーバは接続元IPをDNSBLサービスに問い合わせ、登録済みであれば受信拒否する。代表的なDNSBLとしてSpamhausなどがある。",
+		difficulty: 2
+	}
+];
+
+//# sourceMappingURL=data:application/json;base64,eyJtYXBwaW5ncyI6IkFBRUEsT0FBTyxNQUFNLGdCQUE0QjtDQUN2QztFQUNFLElBQUk7RUFDSixTQUFTO0VBQ1QsY0FBYztFQUNkLGVBQWU7RUFDZixTQUFTO0dBQUM7R0FBUTtHQUFRO0dBQVE7R0FBTztFQUN6QyxhQUFhO0VBQ2IsYUFBYTtFQUNiLFlBQVk7RUFDYjtDQUNEO0VBQ0UsSUFBSTtFQUNKLFNBQVM7RUFDVCxjQUFjO0VBQ2QsZUFBZTtFQUNmLFNBQVM7R0FBQztHQUFnQztHQUFRO0dBQVM7R0FBUztFQUNwRSxhQUFhO0VBQ2IsYUFBYTtFQUNiLFlBQVk7RUFDYjtDQUNEO0VBQ0UsSUFBSTtFQUNKLFNBQVM7RUFDVCxjQUFjO0VBQ2QsZUFBZTtFQUNmLFNBQVM7R0FBQztHQUFvQztHQUFPO0dBQVM7R0FBTTtFQUNwRSxhQUFhO0VBQ2IsYUFBYTtFQUNiLFlBQVk7RUFDYjtDQUNEO0VBQ0UsSUFBSTtFQUNKLFNBQVM7RUFDVCxjQUFjO0VBQ2QsZUFBZTtFQUNmLFNBQVM7R0FBQztHQUFTO0dBQVM7R0FBYTtHQUFVO0VBQ25ELGFBQWE7RUFDYixhQUFhO0VBQ2IsWUFBWTtFQUNiO0NBQ0Q7RUFDRSxJQUFJO0VBQ0osU0FBUztFQUNULGNBQWM7RUFDZCxlQUFlO0VBQ2YsU0FBUztHQUFDO0dBQVE7R0FBUTtHQUFRO0dBQU87RUFDekMsYUFBYTtFQUNiLGFBQWE7RUFDYixZQUFZO0VBQ2I7OztDQUVEO0VBQ0UsSUFBSTtFQUNKLFNBQVM7RUFDVCxjQUFjO0VBQ2QsZUFBZTtFQUNmLFNBQVM7R0FBQztHQUFrQjtHQUFjO0dBQWM7R0FBVTtFQUNsRSxhQUFhO0VBQ2IsYUFBYTtFQUNiLFlBQVk7RUFDYjtDQUNEO0VBQ0UsSUFBSTtFQUNKLFNBQVM7RUFDVCxjQUFjO0VBQ2QsZUFBZTtFQUNmLFNBQVM7R0FBQztHQUFXO0dBQVM7R0FBVTtHQUFVO0VBQ2xELGFBQWE7RUFDYixhQUFhO0VBQ2IsWUFBWTtFQUNiO0NBQ0Q7RUFDRSxJQUFJO0VBQ0osU0FBUztFQUNULGNBQWM7RUFDZCxlQUFlO0VBQ2YsU0FBUztHQUFDO0dBQTBEO0dBQVk7R0FBUTtHQUFZO0VBQ3BHLGFBQWE7RUFDYixhQUFhO0VBQ2IsWUFBWTtFQUNiO0NBQ0Q7RUFDRSxJQUFJO0VBQ0osU0FBUztFQUNULGNBQWM7RUFDZCxlQUFlO0VBQ2YsU0FBUztHQUFDO0dBQXFCO0dBQVc7R0FBWTtHQUFTO0VBQy9ELGFBQWE7RUFDYixhQUFhO0VBQ2IsWUFBWTtFQUNiO0NBQ0Q7RUFDRSxJQUFJO0VBQ0osU0FBUztFQUNULGNBQWM7RUFDZCxlQUFlO0VBQ2YsU0FBUztHQUFDO0dBQTZCO0dBQVM7R0FBTztHQUFjO0VBQ3JFLGFBQWE7RUFDYixhQUFhO0VBQ2IsWUFBWTtFQUNiO0NBQ0YiLCJuYW1lcyI6W10sInNvdXJjZXMiOlsibWFpbC50cyJdLCJ2ZXJzaW9uIjozLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgdHlwZSB7IFF1ZXN0aW9uIH0gZnJvbSAnLi4vLi4vdHlwZXMnXHJcblxyXG5leHBvcnQgY29uc3QgbWFpbFF1ZXN0aW9uczogUXVlc3Rpb25bXSA9IFtcclxuICB7XHJcbiAgICBpZDogJ3EtMDUwJyxcclxuICAgIHRvcGljSWQ6ICdtYWlsJyxcclxuICAgIHF1ZXN0aW9uVGV4dDogJ+ODoeODvOODq+mAgeS/oeOBq+S9v+OCj+OCjOOCi+ODl+ODreODiOOCs+ODq+OCknt7Ymxhbmt9feOBqOOBhOOBhuOAgicsXHJcbiAgICBjb3JyZWN0QW5zd2VyOiAnU01UUCcsXHJcbiAgICBjaG9pY2VzOiBbJ1NNVFAnLCAnUE9QMycsICdJTUFQJywgJ01JTUUnXSxcclxuICAgIGlzSW1wb3J0YW50OiB0cnVlLFxyXG4gICAgZXhwbGFuYXRpb246ICdTTVRQ77yIU2ltcGxlIE1haWwgVHJhbnNmZXIgUHJvdG9jb2zvvInjga/jg53jg7zjg4gyNeOBp+ODoeODvOODq+i7oumAgeOBq+S9v+OCj+OCjOOCi+OAguOCr+ODqeOCpOOCouODs+ODiOKGkuOCteODvOODkOmWk+OBr1N1Ym1pc3Npb27vvIg1ODcvNDY177yJ44KS5L2/44GG44GT44Go44GM5aSa44GE44CCJyxcclxuICAgIGRpZmZpY3VsdHk6IDEsXHJcbiAgfSxcclxuICB7XHJcbiAgICBpZDogJ3EtMDUxJyxcclxuICAgIHRvcGljSWQ6ICdtYWlsJyxcclxuICAgIHF1ZXN0aW9uVGV4dDogJ+ODoeODvOODq+OBrumAgeS/oeODieODoeOCpOODs+iqjeiovOaKgOihk+OBruOBhuOBoeOAgemAgeS/oeWFg0lQ44Ki44OJ44Os44K544KS5qSc6Ki844GZ44KL5LuV57WE44G/44KSe3tibGFua31944Go44GE44GG44CCJyxcclxuICAgIGNvcnJlY3RBbnN3ZXI6ICdTUEbvvIhTZW5kZXIgUG9saWN5IEZyYW1ld29ya++8iScsXHJcbiAgICBjaG9pY2VzOiBbJ1NQRu+8iFNlbmRlciBQb2xpY3kgRnJhbWV3b3Jr77yJJywgJ0RLSU0nLCAnRE1BUkMnLCAnUy9NSU1FJ10sXHJcbiAgICBpc0ltcG9ydGFudDogdHJ1ZSxcclxuICAgIGV4cGxhbmF0aW9uOiAnU1BG44GvRE5T44GuVFhU44Os44Kz44O844OJ44Gr6YCB5L+h5Y+v6IO944Gq44Oh44O844Or44K144O844OQ44GuSVDjgqLjg4njg6zjgrnjgpLnmbvpjLLjgZfjgIHlj5fkv6HjgrXjg7zjg5DjgYznhaflkIjjgZnjgovjgZPjgajjgafpgIHkv6HlhYPjg4njg6HjgqTjg7Pjga7mraPlvZPmgKfjgpLnorroqo3jgZnjgovjgILjgarjgorjgZnjgb7jgZfjg6Hjg7zjg6vlr77nrZbjgIInLFxyXG4gICAgZGlmZmljdWx0eTogMixcclxuICB9LFxyXG4gIHtcclxuICAgIGlkOiAncS0wNTInLFxyXG4gICAgdG9waWNJZDogJ21haWwnLFxyXG4gICAgcXVlc3Rpb25UZXh0OiAn44Oh44O844Or5pys5paH44Go5re75LuY44OV44Kh44Kk44Or44KS44OH44K444K/44Or572y5ZCN44Gn5L+d6K2344GZ44KL5oqA6KGT44KSe3tibGFua31944Go44GE44GG44CCJyxcclxuICAgIGNvcnJlY3RBbnN3ZXI6ICdES0lN77yIRG9tYWluS2V5cyBJZGVudGlmaWVkIE1haWzvvIknLFxyXG4gICAgY2hvaWNlczogWydES0lN77yIRG9tYWluS2V5cyBJZGVudGlmaWVkIE1haWzvvIknLCAnU1BGJywgJ0RNQVJDJywgJ1BHUCddLFxyXG4gICAgaXNJbXBvcnRhbnQ6IHRydWUsXHJcbiAgICBleHBsYW5hdGlvbjogJ0RLSU3jga/pgIHkv6Hjg4njg6HjgqTjg7Pjga7np5jlr4bpjbXjgafjg6Hjg7zjg6vjg5jjg4Pjg4Djg7vmnKzmlofjgpLnvbLlkI3jgZfjgIFETlPlhazplovpjbXjgaflj5fkv6HlgbTjgYzmpJzoqLzjgZnjgovjgILmlLnjgZbjgpPmpJznn6Xjgajjg4njg6HjgqTjg7Poqo3oqLzjgpLlkIzmmYLjgavlrp/nj77jgZnjgovjgIInLFxyXG4gICAgZGlmZmljdWx0eTogMixcclxuICB9LFxyXG4gIHtcclxuICAgIGlkOiAncS0wNTMnLFxyXG4gICAgdG9waWNJZDogJ21haWwnLFxyXG4gICAgcXVlc3Rpb25UZXh0OiAnU1BG44O7REtJTeOBruiqjeiovOe1kOaenOOBq+WfuuOBpeOBhOOBpuODoeODvOODq+OBruWPluOCiuaJseOBhOaWuemHne+8iOWPl+S/oeODu+malOmbouODu+aLkuWQpu+8ieOCkuWumue+qeOBmeOCi+S7lee1hOOBv+OCknt7Ymxhbmt9feOBqOOBhOOBhuOAgicsXHJcbiAgICBjb3JyZWN0QW5zd2VyOiAnRE1BUkMnLFxyXG4gICAgY2hvaWNlczogWydETUFSQycsICdETlNCTCcsICdTTVRQLUFVVEgnLCAnTVRBLVNUUyddLFxyXG4gICAgaXNJbXBvcnRhbnQ6IHRydWUsXHJcbiAgICBleHBsYW5hdGlvbjogJ0RNQVJD77yIRG9tYWluLWJhc2VkIE1lc3NhZ2UgQXV0aGVudGljYXRpb24sIFJlcG9ydGluZywgYW5kIENvbmZvcm1hbmNl77yJ44GvU1BG44GoREtJTeOBruiqjeiovOe1kOaenOOBq+W/nOOBmOOBn+ODneODquOCt+ODvO+8iG5vbmUvcXVhcmFudGluZS9yZWplY3TvvInjgpJETlPjgaflhazplovjgZfjgIHlj5fkv6HlgbTjgYzjgZ3jgozjgavlvpPjgYTjg6Hjg7zjg6vjgpLlh6bnkIbjgZnjgovjgIInLFxyXG4gICAgZGlmZmljdWx0eTogMixcclxuICB9LFxyXG4gIHtcclxuICAgIGlkOiAncS0wNTQnLFxyXG4gICAgdG9waWNJZDogJ21haWwnLFxyXG4gICAgcXVlc3Rpb25UZXh0OiAn44Kv44Op44Kk44Ki44Oz44OI44GM44K144O844OQ44Gr5o6l57aa44GX44Gf44G+44G+44Oh44O844Or44KS566h55CG44Gn44GN44CB6KSH5pWw44OH44OQ44Kk44K544Gn5ZCM5pyf5Y+v6IO944Gq44Oh44O844Or5Y+X5L+h44OX44Ot44OI44Kz44Or44KSe3tibGFua31944Go44GE44GG44CCJyxcclxuICAgIGNvcnJlY3RBbnN3ZXI6ICdJTUFQJyxcclxuICAgIGNob2ljZXM6IFsnSU1BUCcsICdQT1AzJywgJ1NNVFAnLCAnTUJPWCddLFxyXG4gICAgaXNJbXBvcnRhbnQ6IGZhbHNlLFxyXG4gICAgZXhwbGFuYXRpb246ICdJTUFQ44Gv44Oh44O844Or44KS44K144O844OQ5LiK44Gr5L+d5oyB44GX44CB6KSH5pWw44Kv44Op44Kk44Ki44Oz44OI44GL44KJ5ZCM44GY44Oh44O844Or44Oc44OD44Kv44K544Gr44Ki44Kv44K744K544Gn44GN44KL44CCUE9QM+OBr+OCteODvOODkOOBi+OCieODoeODvOODq+OCkuODgOOCpuODs+ODreODvOODieOBl+OBpuWJiumZpOOBmeOCi+aWueW8j+OBruOBn+OCgeOAgeikh+aVsOerr+acq+OBp+OBruWQjOacn+OBq+S4jeWQkeOBjeOAgicsXHJcbiAgICBkaWZmaWN1bHR5OiAxLFxyXG4gIH0sXHJcbiAgLy8g4pSA4pSAIFI2IOWNiOW+jElJLTIg6aC75Ye677ya44Oh44O844Or44K744Kt44Ol44Oq44OG44Kj5by35YyWIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgFxyXG4gIHtcclxuICAgIGlkOiAncS0zNjAnLFxyXG4gICAgdG9waWNJZDogJ21haWwnLFxyXG4gICAgcXVlc3Rpb25UZXh0OiAnRE1BUkPjga7jg53jg6rjgrfjg7zjga7jgYbjgaHjgIFTUEYvREtJTeiqjeiovOOBq+WkseaVl+OBl+OBn+ODoeODvOODq+OCkui/t+aDkeODoeODvOODq+ODleOCqeODq+ODgOOBq+aMr+OCiuWIhuOBkeOCi+OCiOOBhuaMh+ekuuOBmeOCi+ODneODquOCt+ODvOOCknt7Ymxhbmt9feOBqOOBhOOBhuOAgicsXHJcbiAgICBjb3JyZWN0QW5zd2VyOiAncXVhcmFudGluZe+8iOmalOmbou+8iScsXHJcbiAgICBjaG9pY2VzOiBbJ3F1YXJhbnRpbmXvvIjpmpTpm6LvvIknLCAncmVqZWN077yI5ouS5ZCm77yJJywgJ25vbmXvvIjnm6Poppbjga7jgb/vvIknLCAnZGlzY2FyZCddLFxyXG4gICAgaXNJbXBvcnRhbnQ6IHRydWUsXHJcbiAgICBleHBsYW5hdGlvbjogJ0RNQVJD44Gu44Od44Oq44K344O8OiBub25lPeiqjeiovOWkseaVl+OBp+OCguWPl+S/oeOAgXF1YXJhbnRpbmU96L+35oOR44Oh44O844Or5omx44GE44CBcmVqZWN0PeWPl+S/oeaLkuWQpuOAguacgOWIneOBr25vbmXjgafmp5jlrZDopovjgZfjgIHjg6zjg53jg7zjg4jjgpLnorroqo3lvoxxdWFyYW50aW5l4oaScmVqZWN044G45q616ZqO55qE44Gr5by35YyW44GZ44KL44Gu44GM6YGL55So44Gu44OZ44K544OI44OX44Op44Kv44OG44Kj44K544CCJyxcclxuICAgIGRpZmZpY3VsdHk6IDIsXHJcbiAgfSxcclxuICB7XHJcbiAgICBpZDogJ3EtMzYxJyxcclxuICAgIHRvcGljSWQ6ICdtYWlsJyxcclxuICAgIHF1ZXN0aW9uVGV4dDogJ+ODoeODvOODq+OBruWGheWuueOBqOa3u+S7mOODleOCoeOCpOODq+OCkuOCqOODs+ODieODhOODvOOCqOODs+ODieOBp+aal+WPt+WMluODu+ODh+OCuOOCv+ODq+e9suWQjeOBmeOCi+imj+agvOOBp+OAgVMvTUlNReOBp+S9v+eUqOOBmeOCi+iovOaYjuabuOOBrueZuuihjOWFg+OBr3t7Ymxhbmt9feOBp+OBguOCi+OAgicsXHJcbiAgICBjb3JyZWN0QW5zd2VyOiAnQ0HvvIjoqo3oqLzlsYDvvIknLFxyXG4gICAgY2hvaWNlczogWydDQe+8iOiqjeiovOWxgO+8iScsICfpgIHkv6HogIXoh6rouqsnLCAn44Oh44O844Or44K144O844OQJywgJ0RLSU3lhazplovpjbUnXSxcclxuICAgIGlzSW1wb3J0YW50OiB0cnVlLFxyXG4gICAgZXhwbGFuYXRpb246ICdTL01JTUXvvIhTZWN1cmUvTXVsdGlwdXJwb3NlIEludGVybmV0IE1haWwgRXh0ZW5zaW9uc++8ieOBr+WFrOmWi+mNteaal+WPt+OBp+ODoeODvOODq+OCkuaal+WPt+WMluODu+e9suWQjeOBmeOCi+imj+agvOOAgumAgeS/oeiAheOBr0NB44GL44KJ55m66KGM44GV44KM44Gf44Kv44Op44Kk44Ki44Oz44OI6Ki85piO5pu444Gn572y5ZCN44GX44CB5Y+X5L+h6ICF44Gv5YWs6ZaL6Y2144Gn5qSc6Ki844GZ44KL44CCUEdQ44Go55Ww44Gq44KKQ0Hkv6HpoLzjg6Ljg4fjg6vjgpLkvb/jgYbngrnjgYznibnlvrTjgIJSNuWNiOW+jElJLTLjgaflh7rpoYzjgIInLFxyXG4gICAgZGlmZmljdWx0eTogMixcclxuICB9LFxyXG4gIHtcclxuICAgIGlkOiAncS0zNjInLFxyXG4gICAgdG9waWNJZDogJ21haWwnLFxyXG4gICAgcXVlc3Rpb25UZXh0OiAn44Oh44O844Or44K144O844OQ44GMVExT44Gn5LuW44K144O844OQ44Go6YCa5L+h44GZ44KL6Zqb44Gr44CB6YCB5L+h5YWI44OJ44Oh44Kk44Oz44GuTVRB44Od44Oq44K344O844KSRE5T44Gn5YWs6ZaL44GX44Gm5by35Yi2VExT5o6l57aa44KS6KaB5rGC44GZ44KL5LuV57WE44G/44KSe3tibGFua31944Go44GE44GG44CCJyxcclxuICAgIGNvcnJlY3RBbnN3ZXI6ICdNVEEtU1RT77yITWFpbCBUcmFuc2ZlciBBZ2VudCBTdHJpY3QgVHJhbnNwb3J0IFNlY3VyaXR577yJJyxcclxuICAgIGNob2ljZXM6IFsnTVRBLVNUU++8iE1haWwgVHJhbnNmZXIgQWdlbnQgU3RyaWN0IFRyYW5zcG9ydCBTZWN1cml0ee+8iScsICdTVEFSVFRMUycsICdEQU5FJywgJ1NNVFAtQVVUSCddLFxyXG4gICAgaXNJbXBvcnRhbnQ6IGZhbHNlLFxyXG4gICAgZXhwbGFuYXRpb246ICdNVEEtU1RT77yIUkZDIDg0NjHvvInjga/pgIHkv6FNVEHjgavlr77jgZfjgaZUTFPmjqXntprjgpLlvLfliLbjgZnjgovku5XntYTjgb/jgIJETlPjga5UWFTjg6zjgrPjg7zjg4njgahIVFRQU+S4iuOBruODneODquOCt+ODvOODleOCoeOCpOODq+OBp+ioreWumuOBmeOCi+OAglNUQVJUVExT44Gu44OA44Km44Oz44Kw44Os44O844OJ5pS75pKD5a++562W44Go44GX44Gm5pyJ5Yq544CCJyxcclxuICAgIGRpZmZpY3VsdHk6IDMsXHJcbiAgfSxcclxuICB7XHJcbiAgICBpZDogJ3EtMzYzJyxcclxuICAgIHRvcGljSWQ6ICdtYWlsJyxcclxuICAgIHF1ZXN0aW9uVGV4dDogJ0RNQVJD6KqN6Ki844GnU1BGL0RLSU3jgYzkuKHmlrnlpLHmlZfjgZfjgZ/loLTlkIjjgafjgoLjgIHjg6Hjg7zjg6vjga5Gcm9tOuOCouODieODrOOCueOBruODieODoeOCpOODs+OBjOiqjeiovOa4iOOBv+ODieODoeOCpOODs+OBqOS4gOiHtOOBmeOCi+OAjHt7Ymxhbmt9feOAjeOBjOWPluOCjOOBpuOBhOOCjOOBsOiqjeiovOaIkOWKn+OBqOOBv+OBquOBmeOAgicsXHJcbiAgICBjb3JyZWN0QW5zd2VyOiAn44Ki44Op44Kk44Oh44Oz44OI77yIQWxpZ25tZW5077yJJyxcclxuICAgIGNob2ljZXM6IFsn44Ki44Op44Kk44Oh44Oz44OI77yIQWxpZ25tZW5077yJJywgJ+ODleOCqeODvOODq+ODkOODg+OCrycsICfjgqjjg7Pjg5njg63jg7zjg5fkuIDoh7QnLCAn44OJ44Oh44Kk44Oz54Wn5ZCIJ10sXHJcbiAgICBpc0ltcG9ydGFudDogZmFsc2UsXHJcbiAgICBleHBsYW5hdGlvbjogJ0RNQVJD44Ki44Op44Kk44Oh44Oz44OI44GvU1BG5qSc6Ki844GuUmV0dXJuLVBhdGjjgb7jgZ/jga9ES0lN572y5ZCN44GuZD3jgr/jgrDjgajjgIHjg6Hjg7zjg6vjga5Gcm9tOuODmOODg+ODgOOBruODieODoeOCpOODs+OBjOS4gOiHtOOBmeOCi+OBi+OCkueiuuiqjeOBmeOCi+S7lee1hOOBv+OAglJlbGF4ZWTvvIjjgrXjg5bjg4njg6HjgqTjg7PoqLHlj6/vvInjgahTdHJpY3TvvIjlrozlhajkuIDoh7TvvInjga4y44Oi44O844OJ44GM44GC44KL44CCJyxcclxuICAgIGRpZmZpY3VsdHk6IDMsXHJcbiAgfSxcclxuICB7XHJcbiAgICBpZDogJ3EtMzY0JyxcclxuICAgIHRvcGljSWQ6ICdtYWlsJyxcclxuICAgIHF1ZXN0aW9uVGV4dDogJ1NNVFDjgafjg6Hjg7zjg6vjgpLlj5fjgZHlj5bjgovpmpvjgIHmjqXntprlhYPjga5JUOOCouODieODrOOCueOCkuWVj+OBhOWQiOOCj+OBm+OBpuaXouefpeOBrui/t+aDkeODoeODvOODq+mAgeS/oUlQ44Gn44GC44KM44Gw5ouS5ZCm44GZ44KLRE5T44OZ44O844K544Gu44OW44Op44OD44Kv44Oq44K544OI44KSe3tibGFua31944Go44GE44GG44CCJyxcclxuICAgIGNvcnJlY3RBbnN3ZXI6ICdETlNCTO+8iEROUyBCbGFja2hvbGUgTGlzdO+8iScsXHJcbiAgICBjaG9pY2VzOiBbJ0ROU0JM77yIRE5TIEJsYWNraG9sZSBMaXN077yJJywgJ0RNQVJDJywgJ1JCTCcsICdHcmV5bGlzdGluZyddLFxyXG4gICAgaXNJbXBvcnRhbnQ6IGZhbHNlLFxyXG4gICAgZXhwbGFuYXRpb246ICdETlNCTO+8iEROU+ODluODqeODg+OCr+ODm+ODvOODq+ODquOCueODiO+8ieOBr+i/t+aDkeODoeODvOODq+mAgeS/oUlQ44Gu44Oq44K544OI44CC44Oh44O844Or44K144O844OQ44Gv5o6l57aa5YWDSVDjgpJETlNCTOOCteODvOODk+OCueOBq+WVj+OBhOWQiOOCj+OBm+OAgeeZu+mMsua4iOOBv+OBp+OBguOCjOOBsOWPl+S/oeaLkuWQpuOBmeOCi+OAguS7o+ihqOeahOOBqkROU0JM44Go44GX44GmU3BhbWhhdXPjgarjganjgYzjgYLjgovjgIInLFxyXG4gICAgZGlmZmljdWx0eTogMixcclxuICB9LFxyXG5dXHJcbiJdfQ==

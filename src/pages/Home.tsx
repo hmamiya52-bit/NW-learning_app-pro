@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
+import { BookOpenText } from 'lucide-react'
 import { categories } from '../data/categories'
 import { questions } from '../data/questions'
 import { getAllProgress, getAnswerRecords, getQuestionMastery } from '../lib/storage'
@@ -91,6 +92,13 @@ const MENU_CARDS: MenuCard[] = [
     description: '3つのモードの活用方法',
     iconBg: 'bg-blue-50',
     icon: <IconBook className="w-6 h-6 text-blue-600" />,
+  },
+  {
+    to: '/textbook',
+    title: '教科書モード',
+    description: '図解で最初のインプット',
+    iconBg: 'bg-sky-50',
+    icon: <BookOpenText className="w-6 h-6 text-sky-600" />,
   },
   // ノートモード（重要問題より前）
   {

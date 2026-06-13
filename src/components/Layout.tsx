@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { BookOpenText } from 'lucide-react'
 import PwaInstallPrompt from './PwaInstallPrompt'
 import { VERSION_LABEL } from '../version'
 
@@ -130,6 +131,7 @@ function IconClose() {
 const NAV_ITEMS: NavItem[] = [
   { label: 'ホーム', to: '/', icon: <IconHouse /> },
   { label: 'カテゴリ一覧', to: '/#categories', icon: <IconGrid /> },
+  { label: '教科書モード', to: '/textbook', icon: <BookOpenText className="w-5 h-5" aria-hidden="true" /> },
   { label: 'ノートモード', to: '/notes', icon: <IconBook /> },
   { label: 'ランダム出題', to: '/quiz?mode=random', icon: <IconShuffle /> },
   { label: '弱点克服', to: '/quiz?mode=weakness', icon: <IconChart /> },

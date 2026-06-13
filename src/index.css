@@ -42,3 +42,26 @@ samp,
     Consolas,
     monospace;
 }
+
+@keyframes textbook-packet-flow {
+  from {
+    left: var(--packet-from-x);
+    top: var(--packet-from-y);
+  }
+  to {
+    left: var(--packet-to-x);
+    top: var(--packet-to-y);
+  }
+}
+
+.textbook-packet {
+  left: var(--packet-to-x);
+  top: var(--packet-to-y);
+  animation: textbook-packet-flow 700ms ease-in-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .textbook-packet {
+    animation: none;
+  }
+}

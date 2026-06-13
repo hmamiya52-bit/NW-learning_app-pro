@@ -7,6 +7,8 @@ import Search from './pages/Search'
 import Settings from './pages/Settings'
 import Notes from './pages/Notes'
 import NoteDetail from './pages/NoteDetail'
+import Textbook from './pages/Textbook'
+import TextbookChapter from './pages/TextbookChapter'
 import Badges from './pages/Badges'
 import AfternoonProblems from './pages/AfternoonProblems'
 import AfternoonAnswerDetail from './pages/AfternoonAnswerDetail'
@@ -47,6 +49,8 @@ export default function App() {
           <Route path="/protocols" element={<Protocols />} />
           <Route path="/search" element={<Search />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/textbook" element={<Textbook />} />
+          <Route path="/textbook/:chapterId" element={<TextbookChapter />} />
           <Route path="/notes" element={<Notes />} />
           <Route path="/notes/:categoryId" element={<NoteDetail />} />
           <Route path="/badges" element={<Badges />} />

@@ -12,7 +12,11 @@
 
 章本文を実装する前に、章別詳細設計を作成する。
 
-第2章以降の章順・学習ストーリー・図解方針は、`docs/textbook-mode-research.md` の調査結果を前提に見直す。
+第2章以降の章順・学習ストーリー・図解方針は、次の文書を前提に見直す。
+
+- `docs/textbook-afternoon-exam-research.md`
+- `docs/textbook-curriculum-architecture.md`
+- `docs/textbook-mode-research.md`
 
 第1章の本文、図解、動く図解の実装基準は、`docs/textbook-chapter-detailed-design.md` に従う。第1章の既存実装と章別詳細設計が矛盾する場合は、章別詳細設計を優先する。
 

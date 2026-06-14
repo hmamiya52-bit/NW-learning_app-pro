@@ -60,6 +60,23 @@ samp,
   animation: textbook-packet-flow 700ms ease-in-out both;
 }
 
+@keyframes textbook-exam-packet-flow {
+  from {
+    left: var(--exam-packet-from-x);
+    top: var(--exam-packet-from-y);
+  }
+  to {
+    left: var(--exam-packet-to-x);
+    top: var(--exam-packet-to-y);
+  }
+}
+
+.textbook-exam-packet {
+  left: var(--exam-packet-to-x);
+  top: var(--exam-packet-to-y);
+  animation: textbook-exam-packet-flow 800ms ease-in-out both;
+}
+
 @keyframes textbook-encapsulation-rise {
   from {
     opacity: 0;
@@ -78,6 +95,10 @@ samp,
 
 @media (prefers-reduced-motion: reduce) {
   .textbook-packet {
+    animation: none;
+  }
+
+  .textbook-exam-packet {
     animation: none;
   }
 

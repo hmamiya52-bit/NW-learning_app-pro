@@ -1,7 +1,10 @@
-import { ArrowRight, Cable, Check, Monitor, Network, Router, Server } from 'lucide-react'
+import { useEffect, useState, type CSSProperties } from 'react'
+import { ArrowRight, Cable, Check, ChevronLeft, ChevronRight, Monitor, Network, Play, RotateCcw, Router, Server } from 'lucide-react'
 import type {
   ComparisonDiagram,
   EncapsulationDiagram,
+  ExamNetworkDiagram,
+  ExamNetworkStep,
   LayerStackDiagram,
   NetworkFlowDiagram,
   PacketFrameDiagram,
@@ -424,6 +427,325 @@ function VlanDesignDiagramView({ diagram }: { diagram: VlanDesignDiagram }) {
   )
 }
 
+function SvgText({
+  x,
+  y,
+  lines,
+  size = 15,
+  weight = 700,
+  anchor = 'middle',
+  color = '#0f172a',
+}: {
+  x: number
+  y: number
+  lines: string[]
+  size?: number
+  weight?: number
+  anchor?: 'start' | 'middle' | 'end'
+  color?: string
+}) {
+  return (
+    <text x={x} y={y} textAnchor={anchor} fill={color} fontSize={size} fontWeight={weight}>
+      {lines.map((line, index) => (
+        <tspan key={`${line}-${index}`} x={x} dy={index === 0 ? 0 : size + 4}>
+          {line}
+        </tspan>
+      ))}
+    </text>
+  )
+}
+
+function nodeLines(label: string, caption?: string) {
+  return caption ? [label, caption] : [label]
+}
+
+function ExamNetworkCapture({ step }: { step: ExamNetworkStep }) {
+  return (
+    <section className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
+      <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <p className="text-xs font-black text-blue-700">{step.capture.point}</p>
+          <h5 className="mt-1 text-sm font-black leading-snug text-slate-800">{step.title}</h5>
+        </div>
+        <span className="w-fit rounded-full bg-blue-600 px-2.5 py-1 text-[11px] font-black text-white">
+          {step.packetLabel}
+        </span>
+      </div>
+      <p className="mt-2 text-sm leading-relaxed text-slate-600">
+        <TextbookRichText text={step.description} />
+      </p>
+      <p className="mt-2 rounded-lg border border-blue-100 bg-white px-3 py-2 text-xs font-bold leading-relaxed text-blue-900">
+        <TextbookRichText text={step.deviceAction} />
+      </p>
+      <p className="mt-3 text-xs font-black text-slate-500">キャプチャ風表示（この区間で見る主な値）</p>
+      <div className="mt-2 overflow-hidden rounded-lg border border-slate-200 bg-white">
+        {[
+          ['L2', step.capture.l2],
+          ['L3', step.capture.l3],
+          ['L4', step.capture.l4],
+          ['注目点', step.capture.note],
+        ].map(([label, value]) => (
+          <div key={label} className="grid grid-cols-[72px_minmax(0,1fr)] border-b border-slate-100 last:border-b-0">
+            <div className="bg-slate-50 px-3 py-2 text-xs font-black text-slate-500">{label}</div>
+            <div className="min-w-0 px-3 py-2 text-xs font-bold leading-relaxed text-slate-800">
+              <TextbookRichText text={value} />
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+function ExamNetworkDiagramView({ diagram }: { diagram: ExamNetworkDiagram }) {
+  const [stepIndex, setStepIndex] = useState(0)
+  const [isPlaying, setIsPlaying] = useState(false)
+  const currentStep = diagram.steps?.[stepIndex]
+  const activeLinkIds = new Set(currentStep?.activeLinkIds ?? [])
+  const hasSteps = Boolean(diagram.steps?.length)
+
+  useEffect(() => {
+    if (!isPlaying || !diagram.steps) return undefined
+    const timer = window.setTimeout(() => {
+      setStepIndex((current) => {
+        if (!diagram.steps || current >= diagram.steps.length - 1) {
+          setIsPlaying(false)
+          return current
+        }
+        return current + 1
+      })
+    }, 4300)
+    return () => window.clearTimeout(timer)
+  }, [diagram.steps, isPlaying, stepIndex])
+
+  const goPrevious = () => {
+    setIsPlaying(false)
+    setStepIndex((current) => Math.max(0, current - 1))
+  }
+
+  const goNext = () => {
+    const steps = diagram.steps
+    if (!steps) return
+    setIsPlaying(false)
+    setStepIndex((current) => Math.min(steps.length - 1, current + 1))
+  }
+
+  const restart = () => {
+    setIsPlaying(false)
+    setStepIndex(0)
+  }
+
+  const play = () => {
+    if (diagram.steps && stepIndex >= diagram.steps.length - 1) {
+      setStepIndex(0)
+    }
+    setIsPlaying(true)
+  }
+
+  const packetStyle = currentStep
+    ? ({
+        '--exam-packet-from-x': `${(currentStep.packet.from.x / diagram.viewBox.width) * 100}%`,
+        '--exam-packet-from-y': `${(currentStep.packet.from.y / diagram.viewBox.height) * 100}%`,
+        '--exam-packet-to-x': `${(currentStep.packet.to.x / diagram.viewBox.width) * 100}%`,
+        '--exam-packet-to-y': `${(currentStep.packet.to.y / diagram.viewBox.height) * 100}%`,
+      } as CSSProperties)
+    : undefined
+
+  return (
+    <DiagramShell title={diagram.title} description={diagram.description} points={diagram.points}>
+      <div className="overflow-x-auto pb-1" data-testid="exam-network-diagram">
+        <div
+          className="relative min-w-[760px] overflow-hidden rounded-lg border border-slate-300 bg-white"
+          style={{ aspectRatio: `${diagram.viewBox.width} / ${diagram.viewBox.height}` }}
+        >
+          <svg
+            className="absolute inset-0 h-full w-full"
+            viewBox={`0 0 ${diagram.viewBox.width} ${diagram.viewBox.height}`}
+            role="img"
+            aria-label={diagram.title}
+          >
+            <rect x="0" y="0" width={diagram.viewBox.width} height={diagram.viewBox.height} fill="#ffffff" />
+            {diagram.zones.map((zone) => {
+              if (zone.kind === 'cloud') {
+                return (
+                  <g key={zone.id}>
+                    <ellipse
+                      cx={zone.x + zone.width / 2}
+                      cy={zone.y + zone.height / 2}
+                      rx={zone.width / 2}
+                      ry={zone.height / 2}
+                      fill="#f8fafc"
+                      stroke="#111827"
+                      strokeWidth="2"
+                    />
+                    <SvgText x={zone.x + zone.width / 2} y={zone.y + zone.height / 2 - 2} lines={[zone.label]} size={18} />
+                    {zone.caption && (
+                      <SvgText
+                        x={zone.x + zone.width / 2}
+                        y={zone.y + zone.height / 2 + 22}
+                        lines={[zone.caption]}
+                        size={12}
+                        weight={600}
+                        color="#64748b"
+                      />
+                    )}
+                  </g>
+                )
+              }
+
+              return (
+                <g key={zone.id}>
+                  <rect
+                    x={zone.x}
+                    y={zone.y}
+                    width={zone.width}
+                    height={zone.height}
+                    rx="0"
+                    fill={zone.kind === 'solid' ? '#f8fafc' : 'transparent'}
+                    stroke="#111827"
+                    strokeWidth="2"
+                    strokeDasharray={zone.kind === 'dashed' ? '10 7' : undefined}
+                  />
+                  <rect x={zone.x + 12} y={zone.y - 13} width={Math.max(zone.label.length * 14, 118)} height="24" fill="#ffffff" />
+                  <SvgText x={zone.x + 20} y={zone.y + 4} lines={[zone.label]} size={16} anchor="start" />
+                  {zone.caption && (
+                    <SvgText
+                      x={zone.x + 20}
+                      y={zone.y + 28}
+                      lines={[zone.caption]}
+                      size={12}
+                      weight={600}
+                      anchor="start"
+                      color="#475569"
+                    />
+                  )}
+                </g>
+              )
+            })}
+
+            {diagram.links.map((link) => {
+              const active = activeLinkIds.has(link.id)
+              return (
+                <g key={link.id}>
+                  <polyline
+                    points={link.points.map((point) => `${point.x},${point.y}`).join(' ')}
+                    fill="none"
+                    stroke={active ? '#2563eb' : '#111827'}
+                    strokeWidth={active ? 5 : 3}
+                    strokeLinecap="square"
+                    strokeLinejoin="round"
+                    strokeDasharray={link.dashed ? '8 8' : undefined}
+                  />
+                  {link.label && (
+                    <SvgText
+                      x={link.points[Math.floor(link.points.length / 2)].x + 8}
+                      y={link.points[Math.floor(link.points.length / 2)].y - 8}
+                      lines={[link.label]}
+                      size={12}
+                      weight={700}
+                      anchor="start"
+                      color={active ? '#1d4ed8' : '#334155'}
+                    />
+                  )}
+                </g>
+              )
+            })}
+
+            {diagram.nodes.map((node) => {
+              const active = currentStep?.activeLinkIds.some((linkId) => linkId.includes(node.id))
+              const lines = nodeLines(node.label, node.caption)
+              return (
+                <g key={node.id}>
+                  <rect
+                    x={node.x}
+                    y={node.y}
+                    width={node.width}
+                    height={node.height}
+                    rx="0"
+                    fill={active ? '#eff6ff' : '#ffffff'}
+                    stroke={active ? '#2563eb' : '#111827'}
+                    strokeWidth={active ? 3 : 2}
+                  />
+                  <SvgText
+                    x={node.x + node.width / 2}
+                    y={node.y + (lines.length === 1 ? node.height / 2 + 5 : node.height / 2 - 2)}
+                    lines={lines}
+                    size={lines.length === 1 ? 15 : 13}
+                    weight={lines.length === 1 ? 800 : 700}
+                    color="#020617"
+                  />
+                </g>
+              )
+            })}
+          </svg>
+
+          {currentStep && packetStyle && (
+            <div
+              key={currentStep.id}
+              className="textbook-exam-packet absolute z-10 -translate-x-1/2 -translate-y-1/2"
+              style={packetStyle}
+              aria-hidden="true"
+            >
+              <span className="rounded-full bg-blue-600 px-3 py-1 text-[11px] font-black text-white shadow-lg shadow-blue-200">
+                {currentStep.packetLabel}
+              </span>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {hasSteps && diagram.steps && currentStep && (
+        <div className="mt-4 space-y-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={goPrevious}
+              disabled={stepIndex === 0}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+              title="前のステップ"
+            >
+              <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+              前へ
+            </button>
+            <button
+              type="button"
+              onClick={play}
+              className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-2 text-xs font-bold text-white transition-colors hover:bg-blue-700"
+              title="再生"
+            >
+              <Play className="h-4 w-4" aria-hidden="true" />
+              再生
+            </button>
+            <button
+              type="button"
+              onClick={goNext}
+              disabled={stepIndex >= diagram.steps.length - 1}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+              title="次のステップ"
+            >
+              次へ
+              <ChevronRight className="h-4 w-4" aria-hidden="true" />
+            </button>
+            <button
+              type="button"
+              onClick={restart}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 transition-colors hover:bg-slate-50"
+              title="最初から"
+            >
+              <RotateCcw className="h-4 w-4" aria-hidden="true" />
+              最初から
+            </button>
+            <span className="ml-1 text-xs font-bold text-slate-500">
+              STEP {stepIndex + 1} / {diagram.steps.length}
+            </span>
+          </div>
+          <ExamNetworkCapture step={currentStep} />
+        </div>
+      )}
+    </DiagramShell>
+  )
+}
+
 export default function TextbookDiagram({ diagram }: TextbookDiagramProps) {
   if (diagram.type === 'layer-stack') return <LayerStackDiagramView diagram={diagram} />
   if (diagram.type === 'network-flow') return <NetworkFlowDiagramView diagram={diagram} />
@@ -433,6 +755,7 @@ export default function TextbookDiagram({ diagram }: TextbookDiagramProps) {
   if (diagram.type === 'packet-frame') return <PacketFrameDiagramView diagram={diagram} />
   if (diagram.type === 'encapsulation-flow') return <EncapsulationDiagramView diagram={diagram} />
   if (diagram.type === 'vlan-design') return <VlanDesignDiagramView diagram={diagram} />
+  if (diagram.type === 'exam-network') return <ExamNetworkDiagramView diagram={diagram} />
   return (
     <PacketFlowVisualizer
       scenario={diagram.scenario}

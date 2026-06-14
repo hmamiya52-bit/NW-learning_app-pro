@@ -1,0 +1,817 @@
+import type { ExamNetworkDiagram, TextbookChapter } from './textbookChapters'
+
+const companyNetworkBase = {
+  viewBox: { width: 1000, height: 560 },
+  zones: [
+    {
+      id: 'internet',
+      label: 'インターネット',
+      x: 360,
+      y: 24,
+      width: 260,
+      height: 76,
+      kind: 'cloud',
+      caption: '社外ネットワーク',
+    },
+    {
+      id: 'company',
+      label: 'A社ネットワーク',
+      x: 40,
+      y: 120,
+      width: 920,
+      height: 400,
+      kind: 'dashed',
+      caption: '午後問題では、この境界が前提条件になります。',
+    },
+    {
+      id: 'internal',
+      label: '内部LAN / 192.168.10.0/24',
+      x: 70,
+      y: 250,
+      width: 500,
+      height: 220,
+      kind: 'dashed',
+      caption: 'PC、L2SW、L3SWの内部側インタフェースが属する範囲',
+    },
+    {
+      id: 'dmz',
+      label: 'DMZ / 172.16.0.0/24',
+      x: 650,
+      y: 215,
+      width: 260,
+      height: 210,
+      kind: 'dashed',
+      caption: '外部公開サーバを置く範囲',
+    },
+  ],
+  nodes: [
+    {
+      id: 'fw',
+      label: 'FW',
+      caption: '許可/遮断',
+      x: 440,
+      y: 150,
+      width: 110,
+      height: 48,
+      role: 'firewall',
+    },
+    {
+      id: 'l3sw',
+      label: 'L3SW',
+      caption: 'GW: 192.168.10.1',
+      x: 400,
+      y: 300,
+      width: 125,
+      height: 54,
+      role: 'router',
+    },
+    {
+      id: 'l2sw',
+      label: 'L2SW',
+      caption: '内部LAN収容',
+      x: 240,
+      y: 340,
+      width: 105,
+      height: 48,
+      role: 'switch',
+    },
+    {
+      id: 'pc',
+      label: 'PC',
+      caption: '192.168.10.10',
+      x: 95,
+      y: 390,
+      width: 110,
+      height: 48,
+      role: 'pc',
+    },
+    {
+      id: 'internal-dns',
+      label: '社内DNS',
+      caption: '192.168.10.53',
+      x: 95,
+      y: 300,
+      width: 110,
+      height: 48,
+      role: 'dns',
+    },
+    {
+      id: 'dmz-sw',
+      label: 'L2SW',
+      caption: 'DMZ収容',
+      x: 730,
+      y: 345,
+      width: 110,
+      height: 42,
+      role: 'switch',
+    },
+    {
+      id: 'web',
+      label: 'Webサーバ',
+      caption: '172.16.0.20',
+      x: 760,
+      y: 260,
+      width: 120,
+      height: 48,
+      role: 'server',
+    },
+    {
+      id: 'external-dns',
+      label: '外部DNS',
+      caption: '172.16.0.53',
+      x: 650,
+      y: 260,
+      width: 100,
+      height: 48,
+      role: 'dns',
+    },
+  ],
+  links: [
+    { id: 'internet-fw', points: [{ x: 490, y: 100 }, { x: 490, y: 150 }], label: '外部接続' },
+    { id: 'fw-l3sw', points: [{ x: 495, y: 198 }, { x: 495, y: 300 }], label: '社内側' },
+    { id: 'l3sw-l2sw', points: [{ x: 400, y: 327 }, { x: 345, y: 364 }], label: '内部LAN' },
+    { id: 'l2sw-pc', points: [{ x: 240, y: 364 }, { x: 205, y: 414 }], label: '端末収容' },
+    { id: 'l2sw-dns', points: [{ x: 240, y: 364 }, { x: 205, y: 324 }], dashed: true },
+    { id: 'fw-dmz-sw', points: [{ x: 550, y: 174 }, { x: 785, y: 174 }, { x: 785, y: 345 }], label: 'DMZ側' },
+    { id: 'dmz-sw-web', points: [{ x: 785, y: 345 }, { x: 820, y: 308 }], label: '公開Web' },
+    { id: 'dmz-sw-dns', points: [{ x: 785, y: 345 }, { x: 700, y: 308 }], dashed: true },
+  ],
+} satisfies Pick<ExamNetworkDiagram, 'viewBox' | 'zones' | 'nodes' | 'links'>
+
+const structureOverviewDiagram: ExamNetworkDiagram = {
+  type: 'exam-network',
+  title: 'ネスペで出る構成図として通信を見る',
+  description:
+    'この章では、このような構成図を前提にして読み進めます。丸暗記ではなく、[[blue:どの機器がどのヘッダを見て判断するか]]を図の上で追います。',
+  points: [
+    '構成図は「機器の配置」だけでなく、通信が通る境界を示す地図です。',
+    '内部LAN、DMZ、インターネットのような範囲を分けて読むと、L2とL3の話が混ざりにくくなります。',
+    'この章の動く図では、同じ構成図の上でARP、L2転送、L3転送を追います。',
+  ],
+  ...companyNetworkBase,
+}
+
+const arpLearningDiagram: ExamNetworkDiagram = {
+  type: 'exam-network',
+  title: 'ARPでデフォルトゲートウェイのMACアドレスを調べる',
+  description:
+    'PCがDMZのWebサーバへ向かう前に、まず同じLAN内の次ホップを調べます。ここで必要なのは[[amber:WebサーバのMACアドレス]]ではなく、[[green:デフォルトゲートウェイのMACアドレス]]です。',
+  points: [
+    'ARP要求は同じLAN内へのブロードキャストです。',
+    'Webサーバが別ネットワークにある場合、PCはデフォルトゲートウェイのMACアドレスを調べます。',
+    'ARPはIPパケットではありません。Ethernetフレームとして運ばれ、ARPの中に送信元/対象のIPアドレス情報を持ちます。',
+  ],
+  ...companyNetworkBase,
+  steps: [
+    {
+      id: 'arp-request-pc-l2sw',
+      title: 'PCがARP要求をブロードキャストする',
+      packetLabel: 'ARP要求',
+      activeLinkIds: ['l2sw-pc'],
+      packet: { from: { x: 188, y: 400 }, to: { x: 225, y: 382 } },
+      description:
+        'PCは宛先IPアドレス172.16.0.20が自分のネットワーク外だと判断し、次ホップをデフォルトゲートウェイ192.168.10.1にします。そのMACアドレスを知らないため、ARP要求を送ります。',
+      deviceAction:
+        'PCの処理: 「192.168.10.1を持つ機器はMACアドレスを教えてください」と、同じLAN内へ問い合わせます。',
+      capture: {
+        point: 'PC - L2SW間',
+        l2: '宛先MAC ff:ff:ff:ff:ff:ff / 送信元MAC 00:10:10:10:10:10 / EtherType ARP',
+        l3: 'IPヘッダなし。ARPの対象プロトコルアドレスとして 192.168.10.1 を指定',
+        l4: 'なし',
+        note: 'ARP要求はブロードキャストなので、同じLAN内の機器に届きます。',
+      },
+    },
+    {
+      id: 'arp-request-l2sw-l3sw',
+      title: 'L2SWが同じLAN内へARP要求を転送する',
+      packetLabel: 'ARP要求',
+      activeLinkIds: ['l3sw-l2sw'],
+      packet: { from: { x: 340, y: 354 }, to: { x: 388, y: 335 } },
+      description:
+        'L2SWは宛先MACアドレスがブロードキャストであることを見て、同じLANに属するポートへフレームを転送します。IPアドレスで経路選択しているわけではありません。',
+      deviceAction:
+        'L2SWの処理: L2フレームの宛先MACアドレスを見て、同じLAN内へフレームを出します。',
+      capture: {
+        point: 'L2SW - L3SW間',
+        l2: '宛先MAC ff:ff:ff:ff:ff:ff / 送信元MAC 00:10:10:10:10:10 / EtherType ARP',
+        l3: 'IPヘッダなし。対象プロトコルアドレスは 192.168.10.1',
+        l4: 'なし',
+        note: 'L2SWはARPの意味を理解して経路を選んでいるのではなく、L2フレームとして転送しています。',
+      },
+    },
+    {
+      id: 'arp-reply-l3sw-l2sw',
+      title: 'L3SWがARP応答を返す',
+      packetLabel: 'ARP応答',
+      activeLinkIds: ['l3sw-l2sw'],
+      packet: { from: { x: 388, y: 335 }, to: { x: 340, y: 354 } },
+      description:
+        'L3SWは内部LAN側インタフェースで192.168.10.1を持っているため、自分のMACアドレスをPCへ返します。',
+      deviceAction:
+        'L3SWの処理: デフォルトゲートウェイとして、自分の内部LAN側MACアドレスを応答します。',
+      capture: {
+        point: 'L3SW - L2SW間',
+        l2: '宛先MAC 00:10:10:10:10:10 / 送信元MAC aa:aa:aa:aa:10:01 / EtherType ARP',
+        l3: 'IPヘッダなし。送信元プロトコルアドレスは 192.168.10.1',
+        l4: 'なし',
+        note: 'PCはこの応答によって、次ホップへ送るEthernetフレームを作れるようになります。',
+      },
+    },
+    {
+      id: 'arp-reply-l2sw-pc',
+      title: 'PCが次ホップのMACアドレスを記録する',
+      packetLabel: 'ARP応答',
+      activeLinkIds: ['l2sw-pc'],
+      packet: { from: { x: 225, y: 382 }, to: { x: 188, y: 400 } },
+      description:
+        'PCはARP応答を受け取り、192.168.10.1とaa:aa:aa:aa:10:01の対応をARPテーブルに保存します。ここからWebサーバ宛てのIPパケットを、デフォルトゲートウェイ宛てのEthernetフレームに入れて送れます。',
+      deviceAction:
+        'PCの処理: 宛先IPはWebサーバのまま、宛先MACだけを次ホップであるL3SWにします。',
+      capture: {
+        point: 'L2SW - PC間',
+        l2: '宛先MAC 00:10:10:10:10:10 / 送信元MAC aa:aa:aa:aa:10:01 / EtherType ARP',
+        l3: 'IPヘッダなし。送信元プロトコルアドレスは 192.168.10.1',
+        l4: 'なし',
+        note: 'ARPが終わって初めて、通常のIP通信を入れたL2フレームを送れる状態になります。',
+      },
+    },
+  ],
+}
+
+const webFlowDiagram: ExamNetworkDiagram = {
+  type: 'exam-network',
+  title: '動く構成図: PCからDMZのWebサーバへHTTPS通信する',
+  description:
+    '同じ構成図の上で、Webサーバ宛ての通信を区間ごとに追います。重要なのは、[[green:L2ヘッダはリンクごとに変わる]]一方で、[[blue:IPヘッダの宛先IPは最終宛先を示し続ける]]ことです。',
+  points: [
+    'PCからL3SWまでは、宛先MACがデフォルトゲートウェイになります。',
+    'L3SWやFWは、受信したL2ヘッダ/トレーラを取り外し、IPヘッダを見て次の転送先を判断します。',
+    'TCPの宛先ポート443は、Webサーバ上のHTTPSサービスへ渡すための情報です。',
+  ],
+  ...companyNetworkBase,
+  steps: [
+    {
+      id: 'tcp-pc-l2sw',
+      title: 'PCがWebサーバ宛てのIPパケットをL2フレームに入れる',
+      packetLabel: 'TCP SYN',
+      activeLinkIds: ['l2sw-pc'],
+      packet: { from: { x: 188, y: 400 }, to: { x: 225, y: 382 } },
+      description:
+        'PCは宛先IPアドレスを172.16.0.20にしたIPパケットを作ります。ただし最初のリンクでの宛先MACアドレスは、WebサーバではなくデフォルトゲートウェイのMACアドレスです。',
+      deviceAction:
+        'PCの処理: L4ヘッダ、L3ヘッダを付加した後、内部LANで使うL2ヘッダ/トレーラを付加して送信します。',
+      capture: {
+        point: 'PC - L2SW間',
+        l2: '宛先MAC aa:aa:aa:aa:10:01 / 送信元MAC 00:10:10:10:10:10 / EtherType IPv4',
+        l3: '送信元IP 192.168.10.10 / 宛先IP 172.16.0.20 / TTL 64',
+        l4: 'TCP 送信元ポート 51520 / 宛先ポート 443 / SYN',
+        note: '宛先IPはWebサーバ、宛先MACは次ホップです。この違いが最初の重要点です。',
+      },
+    },
+    {
+      id: 'tcp-l2sw-l3sw',
+      title: 'L2SWが宛先MACアドレスを見て転送する',
+      packetLabel: 'TCP SYN',
+      activeLinkIds: ['l3sw-l2sw'],
+      packet: { from: { x: 340, y: 354 }, to: { x: 388, y: 335 } },
+      description:
+        'L2SWはEthernetフレームの宛先MACアドレスを見て、L3SWへ向かうポートへ転送します。中のIPパケットを使って経路選択しているわけではありません。',
+      deviceAction:
+        'L2SWの処理: MACアドレステーブルを参照し、L2フレームを内部LAN内で転送します。',
+      capture: {
+        point: 'L2SW - L3SW間',
+        l2: '宛先MAC aa:aa:aa:aa:10:01 / 送信元MAC 00:10:10:10:10:10 / EtherType IPv4',
+        l3: '送信元IP 192.168.10.10 / 宛先IP 172.16.0.20',
+        l4: 'TCP 51520 -> 443 / SYN',
+        note: 'L2SWを通っても、同じLAN内のL2ヘッダは基本的にそのままです。',
+      },
+    },
+    {
+      id: 'tcp-l3sw-fw',
+      title: 'L3SWがIPヘッダを見てFWへ転送する',
+      packetLabel: 'IP転送',
+      activeLinkIds: ['fw-l3sw'],
+      packet: { from: { x: 482, y: 292 }, to: { x: 492, y: 216 } },
+      description:
+        'L3SWは受信したEthernetフレームのL2ヘッダ/トレーラを取り外し、IPヘッダの宛先IPアドレスを見ます。次ホップがFWだと判断したら、FWへ向かうリンク用の新しいL2ヘッダ/トレーラを付加して送ります。',
+      deviceAction:
+        'L3SWの処理: L2をデカプセル化し、L3で経路を判断し、次のリンク用にL2を再カプセル化します。',
+      capture: {
+        point: 'L3SW - FW間',
+        l2: '宛先MAC cc:cc:cc:cc:00:01 / 送信元MAC bb:bb:bb:bb:00:01 / EtherType IPv4',
+        l3: '送信元IP 192.168.10.10 / 宛先IP 172.16.0.20 / TTL 63',
+        l4: 'TCP 51520 -> 443 / SYN',
+        note: 'IPの送信元/宛先は変わらず、L2のMACアドレスだけが次のリンク用に変わります。',
+      },
+    },
+    {
+      id: 'tcp-fw-dmz',
+      title: 'FWが許可ルールを確認してDMZへ転送する',
+      packetLabel: '許可後転送',
+      activeLinkIds: ['fw-dmz-sw', 'dmz-sw-web'],
+      packet: { from: { x: 560, y: 190 }, to: { x: 735, y: 250 } },
+      description:
+        'FWはポリシーに照らして、内部LANからDMZのWebサーバへのTCP/443通信を許可できるか確認します。許可する場合、DMZ側リンク用のL2ヘッダ/トレーラを付加して転送します。',
+      deviceAction:
+        'FWの処理: L3/L4の情報を見て許可判断を行い、DMZ側で使うL2フレームとして送信します。',
+      capture: {
+        point: 'FW - DMZ Webサーバ間',
+        l2: '宛先MAC 00:20:20:20:20:20 / 送信元MAC dd:dd:dd:dd:16:01 / EtherType IPv4',
+        l3: '送信元IP 192.168.10.10 / 宛先IP 172.16.0.20 / TTL 62',
+        l4: 'TCP 51520 -> 443 / SYN',
+        note: 'ここでも、リンク上はDMZ側のEthernetフレームです。中のIPパケットはWebサーバ宛てのままです。',
+      },
+    },
+    {
+      id: 'tcp-web-decapsulation',
+      title: 'Webサーバがヘッダを確認してアプリケーションへ渡す',
+      packetLabel: '受信処理',
+      activeLinkIds: ['dmz-sw-web'],
+      packet: { from: { x: 770, y: 325 }, to: { x: 745, y: 300 } },
+      description:
+        'WebサーバはL2ヘッダを確認し、宛先MACアドレスが自分宛てであることを見ます。次にIPヘッダで宛先IPアドレスが自分宛てであることを確認し、TCPヘッダの宛先ポート443を見てHTTPSの処理へ渡します。',
+      deviceAction:
+        'Webサーバの処理: L2、L3、L4の順にデカプセル化し、最後にアプリケーションへデータを渡します。',
+      capture: {
+        point: 'Webサーバ受信時',
+        l2: '宛先MAC 00:20:20:20:20:20 / 送信元MAC dd:dd:dd:dd:16:01 / EtherType IPv4',
+        l3: '送信元IP 192.168.10.10 / 宛先IP 172.16.0.20',
+        l4: 'TCP 51520 -> 443 / SYN',
+        note: '受信側では、外側のL2から順に確認し、不要になったヘッダを取り外して上位層へ渡します。',
+      },
+    },
+  ],
+}
+
+const vlanNetworkDiagram: ExamNetworkDiagram = {
+  type: 'exam-network',
+  title: 'VLANは物理構成と論理構成を分けて読む',
+  description:
+    '同じL2SWにつながっていても、VLANが違えば同じブロードキャストドメインではありません。構成図では、[[green:配線としての物理構成]]と[[blue:通信範囲としての論理構成]]を分けて読みます。',
+  points: [
+    '上段は物理的な配線、下段はVLANごとの論理的な範囲です。',
+    'VLAN 10のARP要求は、VLAN 10のブロードキャストドメイン内に閉じます。',
+    'VLAN 10からVLAN 20へ通信するには、L3SWのSVIなどによるL3転送が必要です。',
+  ],
+  viewBox: { width: 1000, height: 520 },
+  zones: [
+    {
+      id: 'physical',
+      label: '物理構成（配線）',
+      x: 40,
+      y: 45,
+      width: 920,
+      height: 190,
+      kind: 'solid',
+      caption: 'ケーブル上は同じスイッチに見える',
+    },
+    {
+      id: 'vlan10',
+      label: 'VLAN 10 業務PC / 192.168.10.0/24',
+      x: 70,
+      y: 305,
+      width: 275,
+      height: 160,
+      kind: 'dashed',
+    },
+    {
+      id: 'l3',
+      label: 'L3SW / SVI',
+      x: 390,
+      y: 305,
+      width: 220,
+      height: 160,
+      kind: 'dashed',
+      caption: 'VLAN間通信の境界',
+    },
+    {
+      id: 'vlan20',
+      label: 'VLAN 20 サーバ / 192.168.20.0/24',
+      x: 655,
+      y: 305,
+      width: 275,
+      height: 160,
+      kind: 'dashed',
+    },
+  ],
+  nodes: [
+    { id: 'pc-a', label: 'PC-A', caption: 'VLAN 10', x: 105, y: 130, width: 95, height: 46, role: 'pc' },
+    { id: 'pc-b', label: 'PC-B', caption: 'VLAN 10', x: 225, y: 130, width: 95, height: 46, role: 'pc' },
+    { id: 'l2sw-vlan', label: 'L2SW', caption: 'アクセスポート/トランク', x: 430, y: 118, width: 125, height: 54, role: 'switch' },
+    { id: 'l3sw-vlan', label: 'L3SW', caption: 'VLAN間ルーティング', x: 605, y: 118, width: 130, height: 54, role: 'router' },
+    { id: 'web-vlan', label: 'Webサーバ', caption: 'VLAN 20', x: 800, y: 130, width: 115, height: 46, role: 'server' },
+    { id: 'vlan10-pc-a', label: 'PC-A', caption: '192.168.10.10', x: 105, y: 365, width: 95, height: 46, role: 'pc' },
+    { id: 'vlan10-pc-b', label: 'PC-B', caption: '192.168.10.11', x: 220, y: 365, width: 95, height: 46, role: 'pc' },
+    { id: 'vlan-gw-10', label: 'SVI 10', caption: '192.168.10.1', x: 425, y: 355, width: 130, height: 46, role: 'router' },
+    { id: 'vlan-gw-20', label: 'SVI 20', caption: '192.168.20.1', x: 425, y: 410, width: 130, height: 46, role: 'router' },
+    { id: 'vlan20-web', label: 'Webサーバ', caption: '192.168.20.20', x: 750, y: 365, width: 125, height: 46, role: 'server' },
+  ],
+  links: [
+    { id: 'pc-a-l2sw', points: [{ x: 200, y: 153 }, { x: 430, y: 145 }] },
+    { id: 'pc-b-l2sw', points: [{ x: 320, y: 153 }, { x: 430, y: 145 }] },
+    { id: 'l2sw-l3sw-trunk', points: [{ x: 555, y: 145 }, { x: 605, y: 145 }], label: 'トランク' },
+    { id: 'l3sw-web', points: [{ x: 735, y: 145 }, { x: 800, y: 153 }] },
+    { id: 'logical-vlan10', points: [{ x: 200, y: 388 }, { x: 425, y: 378 }], label: 'L2範囲' },
+    { id: 'logical-vlan20', points: [{ x: 555, y: 433 }, { x: 750, y: 388 }], label: 'L3転送後' },
+    { id: 'svi10-svi20', points: [{ x: 490, y: 401 }, { x: 490, y: 410 }], label: 'L3判断' },
+  ],
+}
+
+export const layerOneThreeChapter: TextbookChapter = {
+  id: 'layer1-3',
+  order: 1,
+  title: 'OSI参照モデルと構成図の読み方',
+  description: 'ネスペで出るネットワーク構成図を題材に、L2/L3/L4、カプセル化、ARP、VLANを最初からつなげて理解します',
+  status: 'published',
+  estimatedMinutes: 38,
+  intro: [
+    'ネットワークの初学者が最初につまずくのは、用語そのものよりも「いま、構成図のどの場所で、どの層の話をしているのか」が見えなくなることです。MACアドレス、IPアドレス、ポート番号、フレーム、パケット、セグメントが同時に出ると、説明が霧のように散らばります。',
+    'この章では、ネスペ午後問題で出てくるような[[blue:ネットワーク構成図]]を最初から使います。その図の上で、[[green:L2の転送]]、[[blue:L3の経路選択]]、[[amber:L4のアプリケーション識別]]を順番に追います。',
+    '目標は、細かいコマンドや暗記ではありません。構成図を見たときに「この機器は何を見て判断するのか」「この区間ではどのヘッダが使われるのか」を、自分の言葉で説明できるようになることです。',
+  ],
+  sections: [
+    {
+      heading: 'OSI参照モデルを通信の地図として置く',
+      body: [
+        '最初に置くべき地図はOSI参照モデルです。OSI参照モデルは、通信を7つの層に分けて見るための考え方です。これは試験用の飾りではなく、構成図の中で「いま何の話をしているか」を迷わないための基準になります。',
+        'OSI参照モデルはL1からL7まであります。L5のセッション層、L6のプレゼンテーション層も含めて7層です。この章では全体像を押さえたうえで、ネスペで特に問われやすい[[green:L2]]、[[blue:L3]]、[[amber:L4]]を中心に読み進めます。',
+        'たとえば、PCからDMZのWebサーバへアクセスするとき、L2SWは主にL2の情報を見ます。L3SWやFWはL3/L4の情報を見る場面があります。Webサーバは最後にL4から上位層へデータを渡します。層を分けると、構成図上の役割が見えます。',
+      ],
+      diagrams: [
+        {
+          type: 'layer-stack',
+          title: 'OSI参照モデルの7層',
+          description:
+            'まず7層すべてを確認します。この章では[[green:L2]]、[[blue:L3]]、[[amber:L4]]を中心に、構成図の読み方へつなげます。',
+          points: [
+            'L5とL6もOSI参照モデルに含まれます。この章では名前と位置を押さえ、詳細は後の章に回します。',
+            'L2は同じリンク上でフレームを届ける層です。',
+            'L3はIPアドレスを見て、別ネットワークへ進む経路を選ぶ層です。',
+            'L4はTCP/UDPとポート番号で、端末上の通信を識別する層です。',
+          ],
+          layers: [
+            {
+              label: 'L7',
+              title: 'アプリケーション層',
+              description: 'HTTPやDNSなど、利用者に近い通信の意味を扱う',
+              example: 'HTTP, DNS, SMTP',
+              color: 'amber',
+            },
+            {
+              label: 'L6',
+              title: 'プレゼンテーション層',
+              description: '文字コード、データ形式、暗号化表現などを扱う',
+              example: '文字コード, データ形式, 暗号化表現',
+              color: 'amber',
+            },
+            {
+              label: 'L5',
+              title: 'セッション層',
+              description: '通信の開始、維持、終了といった会話の単位を扱う',
+              example: 'セッション管理',
+              color: 'amber',
+            },
+            {
+              label: 'L4',
+              title: 'トランスポート層',
+              description: 'TCP/UDPとポート番号で端末間の通信を整理する',
+              example: 'TCP, UDP, ポート番号',
+              color: 'amber',
+            },
+            {
+              label: 'L3',
+              title: 'ネットワーク層',
+              description: 'IPアドレスを使い、別ネットワークへ進む経路を選ぶ',
+              example: 'IP, ルーティング, ルータ, L3SW',
+              color: 'blue',
+            },
+            {
+              label: 'L2',
+              title: 'データリンク層',
+              description: '同じリンク上で、MACアドレスを使ってフレームを届ける',
+              example: 'Ethernet, MACアドレス, L2SW, ARP',
+              color: 'green',
+            },
+            {
+              label: 'L1',
+              title: '物理層',
+              description: 'ビット列を電気信号、光、電波として運ぶ',
+              example: 'LANケーブル, 光ファイバ, 無線の物理信号',
+              color: 'blue',
+            },
+          ],
+        },
+        structureOverviewDiagram,
+      ],
+    },
+    {
+      heading: 'カプセル化とデカプセル化でヘッダの位置を理解する',
+      body: [
+        '送信端末では、アプリケーションのデータがそのままケーブルへ流れるわけではありません。下位層へ渡すたびに、その層が処理で使う情報をヘッダとして付加します。この処理を[[amber:カプセル化]]と呼びます。',
+        'HTTPS通信を例にすると、アプリケーションデータにTCPヘッダが付加されて[[amber:TCPセグメント]]になります。そこへIPヘッダが付加されて[[blue:IPパケット]]になります。最後にEthernetヘッダとFCSが付加されて[[green:Ethernetフレーム]]としてリンク上を流れます。',
+        '受信側では逆に、外側から順にヘッダを確認し、取り外しながら上位層へ渡します。これが[[blue:デカプセル化]]です。途中のルータやL3SWは、受信したL2フレームをデカプセル化してIPヘッダを確認し、次のリンク用にL2ヘッダ/トレーラを付加し直します。',
+      ],
+      diagrams: [
+        {
+          type: 'encapsulation-flow',
+          title: '送信時にヘッダを付加していく流れ',
+          description:
+            'アプリケーションデータにL4、L3、L2の情報が順に付加されます。ここでは「何がどの層の情報か」を見ます。',
+          points: [
+            'L4ではTCP/UDPヘッダが付加されます。ポート番号はここにあります。',
+            'L3ではIPヘッダが付加されます。送信元IPアドレスと宛先IPアドレスはここにあります。',
+            'L2ではEthernetヘッダとFCSが付加されます。MACアドレスはここにあります。',
+          ],
+          stages: [
+            {
+              label: '1',
+              title: 'アプリケーションデータ',
+              description: 'HTTPリクエストなど、アプリケーションが送りたい内容。',
+              parts: [{ label: 'データ', accent: 'slate' }],
+            },
+            {
+              label: '2',
+              title: 'L4ヘッダを付加',
+              description: 'TCPならポート番号やシーケンス番号などを付加する。',
+              parts: [
+                { label: 'TCPヘッダ', accent: 'amber' },
+                { label: 'データ', accent: 'slate' },
+              ],
+            },
+            {
+              label: '3',
+              title: 'L3ヘッダを付加',
+              description: 'IPアドレスなど、最終的な送信元と宛先を示す情報を付加する。',
+              parts: [
+                { label: 'IPヘッダ', accent: 'blue' },
+                { label: 'TCP', accent: 'amber' },
+                { label: 'データ', accent: 'slate' },
+              ],
+            },
+            {
+              label: '4',
+              title: 'L2ヘッダ/FCSを付加',
+              description: '次ホップへ届けるためのMACアドレスなどを付加する。',
+              parts: [
+                { label: 'Ethernetヘッダ', accent: 'emerald' },
+                { label: 'IP', accent: 'blue' },
+                { label: 'TCP', accent: 'amber' },
+                { label: 'データ', accent: 'slate' },
+                { label: 'FCS', accent: 'emerald' },
+              ],
+            },
+          ],
+          routeNotes: [
+            {
+              title: 'ルータやL3SWで起きること',
+              body: '受信したL2ヘッダ/トレーラを取り外し、IPヘッダを見て、次のリンク用のL2ヘッダ/トレーラを付加して送信します。',
+              accent: 'blue',
+            },
+            {
+              title: 'リンク上を流れる単位',
+              body: '別ネットワーク宛ての通信でも、各リンク上ではそのリンク用のEthernetフレームとして運ばれます。',
+              accent: 'emerald',
+            },
+          ],
+        },
+        {
+          type: 'packet-frame',
+          title: 'フレーム、パケット、セグメントの関係',
+          description:
+            'L2、L3、L4の情報は同列ではありません。Ethernetフレームの中にIPパケットがあり、その中にTCPセグメントがあります。',
+          points: [
+            'Ethernetフレームは、同じリンク上の次ホップへ届けるための単位です。',
+            'IPパケットは、最終的な送信元IPアドレスと宛先IPアドレスを持ちます。',
+            'TCPセグメントは、ポート番号などを持ち、端末上のアプリケーション通信を識別します。',
+          ],
+          layers: [
+            {
+              title: 'Ethernetフレーム（L2）',
+              subtitle: 'リンク上で次ホップへ届ける',
+              accent: 'emerald',
+              fields: ['宛先MAC', '送信元MAC', 'タイプ', '中身: IPパケット', 'FCS'],
+            },
+            {
+              title: 'IPパケット（L3）',
+              subtitle: '最終的な送信元と宛先を示す',
+              accent: 'blue',
+              fields: ['送信元IP', '宛先IP', 'TTL', '中身: TCPセグメント'],
+            },
+            {
+              title: 'TCPセグメント（L4）',
+              subtitle: 'アプリケーション間の通信を識別する',
+              accent: 'amber',
+              fields: ['送信元ポート', '宛先ポート', 'シーケンス番号', 'データ'],
+            },
+          ],
+          notes: [
+            {
+              title: 'L2はリンクごとに変わる',
+              body: 'ルータを越えるたびに、次のリンクで使うMACアドレスへ付け替えられます。',
+              accent: 'emerald',
+            },
+            {
+              title: 'L3は最終宛先を示す',
+              body: '通常のルーティングでは、送信元IPと宛先IPは途中のルータを通っても最終端末を示します。',
+              accent: 'blue',
+            },
+            {
+              title: 'L4はサービスを示す',
+              body: '宛先ポート443なら、宛先端末上のHTTPSサービスへ渡す通信だと分かります。',
+              accent: 'amber',
+            },
+            {
+              title: '午後問題での使い方',
+              body: '「何を見て判断したか」を聞かれたら、L2、L3、L4のどのヘッダかを先に分けます。',
+              accent: 'slate',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      heading: 'MACアドレス、IPアドレス、ポート番号を分けて読む',
+      body: [
+        'MACアドレス、IPアドレス、ポート番号は、すべて通信相手を識別する情報です。ただし、識別している範囲が違います。ここを曖昧にしたまま構成図を読むと、L2とL3の説明が崩れます。',
+        '[[green:MACアドレス]]は、同じリンク上で次に渡す相手を示します。[[blue:IPアドレス]]は、最終的な端末を示します。[[amber:ポート番号]]は、その端末の中でどのアプリケーションの通信かを示します。',
+        '表記も分けて覚えます。MACアドレスは16進数を区切って[[green:00:11:22:33:44:55]]のように書きます。IPv4アドレスは10進数をドットで区切って[[blue:192.168.10.10]]のように書きます。ポート番号は10進数で、HTTPSなら[[amber:443]]です。',
+        'PCからDMZのWebサーバへ通信する場合、宛先IPアドレスはWebサーバの172.16.0.20です。一方、最初のEthernetフレームの宛先MACアドレスは、同じLAN内にいるデフォルトゲートウェイのMACアドレスです。',
+      ],
+      diagrams: [
+        {
+          type: 'comparison',
+          title: '識別する範囲と表記の違い',
+          description:
+            'MACアドレス、IPアドレス、ポート番号は「何を識別しているか」と「どのように書くか」をセットで整理します。',
+          points: [
+            'MACアドレスは通常、16進数2桁ずつをコロンまたはハイフンで区切ります。',
+            'IPv4アドレスは10進数4つをドットで区切ります。ネットワーク範囲は192.168.10.0/24のようにCIDR表記を使います。',
+            'ポート番号は0から65535までの10進数です。TCP/UDPと組み合わせて読みます。',
+          ],
+          columns: [
+            {
+              title: 'MACアドレス',
+              subtitle: '例: 00:11:22:33:44:55',
+              accent: 'teal',
+              items: [
+                'L2ヘッダに入る',
+                '同じリンク上の次ホップを識別する',
+                'ルータを越えると、次のリンク用に変わる',
+              ],
+            },
+            {
+              title: 'IPv4アドレス',
+              subtitle: '例: 192.168.10.10',
+              accent: 'indigo',
+              items: [
+                'L3ヘッダに入る',
+                '最終的な端末を識別する',
+                'サブネットや経路選択の判断に使う',
+              ],
+            },
+            {
+              title: 'ポート番号',
+              subtitle: '例: TCP/443',
+              accent: 'amber',
+              items: [
+                'L4ヘッダに入る',
+                '端末上のアプリケーションを識別する',
+                'FWの許可条件にもよく使われる',
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    {
+      heading: '構成図では境界と次ホップを先に見る',
+      body: [
+        'ネスペ午後問題の構成図は、機器名の暗記表ではありません。どの範囲が内部LANか、どこにDMZがあるか、どの機器を通ると別ネットワークへ進むかを読むための地図です。',
+        '最初に見るのは、送信元と宛先の位置です。PCは内部LANにあり、WebサーバはDMZにあります。この時点で、同じLAN内で完結する通信ではなく、L3SWやFWを通る通信だと分かります。',
+        '次に見るのは次ホップです。PCがDMZのWebサーバへ直接L2フレームを送るわけではありません。PCが最初にL2フレームを渡す相手は、同じ内部LANにいるデフォルトゲートウェイです。',
+      ],
+      diagrams: [structureOverviewDiagram],
+      callouts: [
+        {
+          type: 'exam',
+          title: '午後問題では「構成図を説明できるか」が問われる',
+          body: [
+            '設問文の条件を構成図へ書き込むつもりで読むと、答えの根拠が見つけやすくなります。送信元、宛先、次ホップ、通過する境界を先に確認してください。',
+          ],
+        },
+      ],
+    },
+    {
+      heading: 'ARPで最初のL2フレームを作れる状態にする',
+      body: [
+        'PCが別ネットワーク宛てに通信するとき、最初に必要なのはWebサーバのMACアドレスではありません。PCと同じLAN内で次に渡す相手、つまりデフォルトゲートウェイのMACアドレスです。',
+        'ARPは、IPv4アドレスに対応するMACアドレスを調べるためのプロトコルです。ただし、単に定義を覚えるよりも、[[green:Ethernetフレームを作るための前処理]]だと理解した方が実用的です。',
+        'ARP要求はブロードキャストとして同じLAN内に届きます。該当するIPアドレスを持つ機器がARP応答を返し、PCはその対応をARPテーブルに保存します。',
+      ],
+      diagrams: [arpLearningDiagram],
+      callouts: [
+        {
+          type: 'pitfall',
+          title: '別ネットワーク宛てでWebサーバのMACアドレスを使うわけではない',
+          body: [
+            'PCが最初に送るEthernetフレームの宛先MACアドレスは、同じLAN内の次ホップです。Webサーバが別ネットワークにあるなら、最初の宛先MACアドレスはデフォルトゲートウェイになります。',
+          ],
+        },
+      ],
+    },
+    {
+      heading: '動く構成図でPCからWebサーバまでを追う',
+      body: [
+        'ここまでの内容を、実際の構成図の上でつなげます。PCからDMZのWebサーバへHTTPS通信する流れを、区間ごとのL2ヘッダ、IPヘッダ、TCPヘッダとして見ます。',
+        'ポイントは、[[green:L2ヘッダは区間ごとに変わる]]ことです。PCからL3SWへ行く区間、L3SWからFWへ行く区間、FWからDMZのWebサーバへ行く区間では、それぞれリンク上の送信元MACアドレスと宛先MACアドレスが変わります。',
+        '一方で、[[blue:IPヘッダの宛先IPアドレスはWebサーバ]]を示し続けます。FWがNATを行うような別条件がない限り、途中機器を通っても、送信元IPと宛先IPはエンド端末を示す情報として読みます。',
+      ],
+      diagrams: [webFlowDiagram],
+    },
+    {
+      heading: 'VLANは物理構成と論理構成を分けて理解する',
+      body: [
+        'ここで初めてVLANを扱います。VLANは、L2の範囲を論理的に分ける仕組みです。同じL2SWにつながっていても、VLANが違えば同じブロードキャストドメインではありません。',
+        '物理構成だけを見ると、複数の端末が同じスイッチに接続されているように見えます。しかし論理構成では、業務PC用のVLAN 10とサーバ用のVLAN 20のように、別のL2範囲として分かれていることがあります。',
+        'VLAN 10のPCがVLAN 20のサーバと通信するには、L2SWだけでは完結しません。L3SWのSVIやルータがデフォルトゲートウェイとなり、L3で経路選択して別のVLANへ転送します。',
+      ],
+      diagrams: [vlanNetworkDiagram],
+      callouts: [
+        {
+          type: 'important',
+          title: '同じスイッチ配下でも、同じLANとは限らない',
+          body: [
+            'ネスペ午後では、物理的な配線図とVLAN設計が別々に示されることがあります。物理的に近いかどうかではなく、同じVLANかどうかを確認してください。',
+          ],
+        },
+      ],
+    },
+    {
+      heading: '午後問題では「どの機器が何を見たか」で説明する',
+      body: [
+        '最後に、試験で使える読み方へまとめます。構成図を見たら、まず送信元と宛先のネットワークを確認します。次に、同じLAN内で完結するのか、デフォルトゲートウェイを越えるのかを見ます。',
+        '設問で「なぜ通信できないか」「どの設定を追加するか」「どのアドレスを指定するか」と聞かれたら、機器ごとの判断材料へ戻ります。L2SWはMACアドレス、L3SW/ルータはIPアドレス、FWはIPアドレスやポート番号を条件にすることが多いです。',
+        '実務でも同じです。PCからデフォルトゲートウェイへ届くのか、名前解決はできているのか、FWで許可されているのか、Webサーバのポートが待ち受けているのか。層を分けて考えると、調査の順番が落ち着きます。',
+      ],
+      diagrams: [
+        {
+          type: 'sequence',
+          title: '構成図を読む手順',
+          description:
+            '午後問題では、いきなり答えを探すより、構成図上の通信経路を層ごとに分けると根拠を作りやすくなります。',
+          points: [
+            '送信元と宛先のIPアドレス、サブネット、配置場所を確認します。',
+            '同じLAN内の通信か、デフォルトゲートウェイを越える通信かを分けます。',
+            '通過する機器ごとに、L2、L3、L4のどの情報を見るかを書き出します。',
+          ],
+          steps: [
+            {
+              label: '1',
+              title: '送信元と宛先を構成図に置く',
+              body: 'PC、サーバ、DNS、FWなどの位置を確認し、どのネットワークに属しているかを見ます。',
+            },
+            {
+              label: '2',
+              title: '同じLAN内か別ネットワークかを判断する',
+              body: '同じLAN内ならL2中心、別ネットワークならデフォルトゲートウェイとL3転送を中心に考えます。',
+            },
+            {
+              label: '3',
+              title: '次ホップと通過機器を並べる',
+              body: 'PCからL2SW、L3SW、FW、DMZサーバのように、通信が通る順番を書きます。',
+            },
+            {
+              label: '4',
+              title: '各機器の判断材料を説明する',
+              body: 'L2SWは宛先MACアドレス、L3SW/ルータは宛先IPアドレス、FWはIPアドレスやポート番号を条件にする、と層で説明します。',
+            },
+          ],
+        },
+      ],
+    },
+  ],
+  examFocus: [
+    '構成図上で、送信元、宛先、次ホップ、通過する境界を説明できる',
+    'L2SWは[[green:宛先MACアドレス]]、L3SW/ルータは[[blue:宛先IPアドレス]]を主な判断材料にする、と説明できる',
+    '別ネットワーク宛ての通信で、最初の宛先MACアドレスが[[green:デフォルトゲートウェイ]]になる理由を説明できる',
+    'VLANによって[[green:ブロードキャストドメイン]]が分かれ、VLAN間通信には[[blue:L3転送]]が必要だと読める',
+  ],
+  practicalFocus: [
+    '障害切り分けでは、同じLAN内で届かないのか、デフォルトゲートウェイを越えた先で詰まっているのかを分けて見る',
+    'パケットキャプチャを見るときは、Ethernet、IP、TCP/UDPのどのヘッダを見ているかを意識する',
+    'FWやL3SWの設定を見る前に、送信元/宛先IP、ポート番号、通過経路を構成図上で整理する',
+  ],
+  pitfalls: [
+    'IPアドレスが分かれば、そのまま相手へ送れると思ってしまう',
+    '別ネットワーク宛てなのに、最初の宛先MACアドレスをWebサーバのMACアドレスだと考えてしまう',
+    '同じスイッチにつながっていれば、必ず同じブロードキャストドメインだと思ってしまう',
+    'ルータやL3SWでL2ヘッダが付け替えられることを忘れ、フレームとパケットを同じものとして説明してしまう',
+  ],
+  summary: [
+    'OSI参照モデルは、構成図の中で[[blue:いま何の層の話か]]を迷わないための地図です。',
+    '送信側ではヘッダを順に付加する[[amber:カプセル化]]、受信側ではヘッダを順に確認して取り外す[[blue:デカプセル化]]が行われます。',
+    '[[green:MACアドレス]]は同じリンク上の次ホップ、[[blue:IPアドレス]]は最終的な端末、[[amber:ポート番号]]は端末上のアプリケーションを識別します。',
+    'ARPは、同じLAN内でL2フレームを作るために必要なMACアドレスを調べる仕組みです。',
+    'VLANはL2の範囲を論理的に分け、VLAN間通信はL3の中継として考えます。',
+  ],
+}

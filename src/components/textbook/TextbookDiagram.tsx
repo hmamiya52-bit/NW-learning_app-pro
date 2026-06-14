@@ -9,6 +9,7 @@ import type {
   SegmentDiagram,
   SequenceDiagram,
   TextbookDiagram as TextbookDiagramData,
+  VlanDesignDiagram,
 } from '../../data/textbookChapters'
 import PacketFlowVisualizer from './PacketFlowVisualizer'
 import TextbookRichText from './TextbookRichText'
@@ -129,7 +130,7 @@ function NetworkFlowDiagramView({ diagram }: { diagram: NetworkFlowDiagram }) {
           <div className="absolute bottom-3 left-3 top-3 w-[66%] rounded-lg border border-sky-200 bg-sky-50/70" />
           <div className="absolute bottom-3 right-3 top-3 w-[27%] rounded-lg border border-indigo-200 bg-indigo-50/70" />
           <div className="absolute left-6 top-5 rounded-full bg-white/85 px-3 py-1 text-xs font-black text-sky-800 shadow-sm">
-            社内LAN / VLAN 10 / 192.168.1.0/24
+            社内LAN / 192.168.1.0/24
           </div>
           <div className="absolute right-6 top-5 rounded-full bg-white/85 px-3 py-1 text-xs font-black text-indigo-800 shadow-sm">
             別ネットワーク
@@ -186,9 +187,9 @@ function NetworkFlowDiagramView({ diagram }: { diagram: NetworkFlowDiagram }) {
           ))}
 
           <div className="absolute bottom-5 left-6 right-6 grid gap-2 text-[11px] font-bold text-slate-600 md:grid-cols-3">
-            <div className="rounded-lg bg-white/85 px-3 py-2 shadow-sm">PCはIPパケットを次ホップ宛てL2フレームに入れる</div>
-            <div className="rounded-lg bg-white/85 px-3 py-2 shadow-sm">L2SWはフレームを同じVLAN内で転送する</div>
-            <div className="rounded-lg bg-white/85 px-3 py-2 shadow-sm">ルータはL2を外し、IPを見て、L2を作り直す</div>
+            <div className="rounded-lg bg-white/85 px-3 py-2 shadow-sm">PCはIPパケットに次ホップ宛てのL2ヘッダを付加する</div>
+            <div className="rounded-lg bg-white/85 px-3 py-2 shadow-sm">L2SWはフレームを同じLAN内で転送する</div>
+            <div className="rounded-lg bg-white/85 px-3 py-2 shadow-sm">ルータはL2ヘッダを取り外し、IPを見て、次のL2ヘッダを付加する</div>
           </div>
         </div>
       </div>
@@ -225,7 +226,7 @@ function NetworkFlowDiagramView({ diagram }: { diagram: NetworkFlowDiagram }) {
 function ComparisonDiagramView({ diagram }: { diagram: ComparisonDiagram }) {
   return (
     <DiagramShell title={diagram.title} description={diagram.description} points={diagram.points}>
-      <div className="grid gap-3 md:grid-cols-2">
+      <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
         {diagram.columns.map((column) => (
           <div key={column.title} className={`rounded-lg border px-4 py-3 ${COMPARISON_COLORS[column.accent]}`}>
             <p className="text-base font-black">{column.title}</p>
@@ -369,6 +370,60 @@ function EncapsulationDiagramView({ diagram }: { diagram: EncapsulationDiagram }
   )
 }
 
+function VlanDesignDiagramView({ diagram }: { diagram: VlanDesignDiagram }) {
+  return (
+    <DiagramShell title={diagram.title} description={diagram.description} points={diagram.points}>
+      <div className="space-y-4" data-testid="vlan-design-diagram">
+        <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-3">
+          <p className="text-xs font-black text-slate-500">物理構成</p>
+          <div className="mt-3 grid gap-2 md:grid-cols-5">
+            {diagram.physical.map((device) => (
+              <div key={device.label} className="rounded-lg border border-slate-200 bg-white px-3 py-3 text-center shadow-sm">
+                <div className="mx-auto flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 text-slate-700">
+                  <RoleIcon role={device.role} />
+                </div>
+                <p className="mt-2 text-sm font-black text-slate-800">{device.label}</p>
+                <p className="mt-1 text-[11px] font-bold leading-relaxed text-slate-500">{device.caption}</p>
+                {device.vlan && (
+                  <p className="mt-2 rounded-md bg-blue-50 px-2 py-1 text-[11px] font-black text-blue-700">{device.vlan}</p>
+                )}
+              </div>
+            ))}
+          </div>
+          <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2">
+            <p className="text-xs font-black text-amber-900">{diagram.trunk.label}</p>
+            <p className="mt-1 text-xs leading-relaxed text-amber-900">
+              <TextbookRichText text={diagram.trunk.description} />
+            </p>
+          </div>
+        </div>
+
+        <div className="rounded-lg border border-slate-200 bg-white px-3 py-3">
+          <p className="text-xs font-black text-slate-500">論理構成</p>
+          <div className="mt-3 grid gap-3 md:grid-cols-3">
+            {diagram.logical.map((domain) => (
+              <div key={domain.title} className={`rounded-lg border px-4 py-3 ${SEGMENT_COLORS[domain.accent]}`}>
+                <p className="text-sm font-black">{domain.title}</p>
+                <p className="mt-1 text-xs font-bold opacity-80">{domain.subnet}</p>
+                <p className="mt-2 text-xs leading-relaxed">
+                  <TextbookRichText text={domain.description} />
+                </p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {domain.members.map((member) => (
+                    <span key={member} className="rounded-md bg-white/75 px-2 py-1 text-xs font-bold shadow-sm">
+                      {member}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </DiagramShell>
+  )
+}
+
 export default function TextbookDiagram({ diagram }: TextbookDiagramProps) {
   if (diagram.type === 'layer-stack') return <LayerStackDiagramView diagram={diagram} />
   if (diagram.type === 'network-flow') return <NetworkFlowDiagramView diagram={diagram} />
@@ -377,6 +432,7 @@ export default function TextbookDiagram({ diagram }: TextbookDiagramProps) {
   if (diagram.type === 'segment') return <SegmentDiagramView diagram={diagram} />
   if (diagram.type === 'packet-frame') return <PacketFrameDiagramView diagram={diagram} />
   if (diagram.type === 'encapsulation-flow') return <EncapsulationDiagramView diagram={diagram} />
+  if (diagram.type === 'vlan-design') return <VlanDesignDiagramView diagram={diagram} />
   return (
     <PacketFlowVisualizer
       scenario={diagram.scenario}

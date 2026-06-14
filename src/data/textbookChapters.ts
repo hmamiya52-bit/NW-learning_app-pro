@@ -21,6 +21,7 @@ export type TextbookDiagram =
   | SegmentDiagram
   | PacketFrameDiagram
   | EncapsulationDiagram
+  | VlanDesignDiagram
   | InteractiveFlowDiagram
 
 export interface TextbookChapter {
@@ -139,6 +140,27 @@ export interface EncapsulationDiagram extends DiagramBase {
   }[]
 }
 
+export interface VlanDesignDiagram extends DiagramBase {
+  type: 'vlan-design'
+  physical: {
+    label: string
+    caption: string
+    role: PacketFlowNodeRole
+    vlan?: string
+  }[]
+  logical: {
+    title: string
+    subnet: string
+    description: string
+    members: string[]
+    accent: 'sky' | 'emerald' | 'rose'
+  }[]
+  trunk: {
+    label: string
+    description: string
+  }
+}
+
 export interface InteractiveFlowDiagram extends DiagramBase {
   type: 'interactive-flow'
   scenario: PacketFlowScenario
@@ -206,7 +228,7 @@ const layerOneThreeScenario: PacketFlowScenario = {
       id: 'switch',
       label: 'L2SW',
       role: 'switch',
-      hint: '同じVLAN内で、宛先MACアドレスを見てフレームを転送する。',
+      hint: '同じLAN内で、宛先MACアドレスを見てフレームを転送する。',
       x: 37,
       y: 52,
     },
@@ -214,7 +236,7 @@ const layerOneThreeScenario: PacketFlowScenario = {
       id: 'router',
       label: 'ルータ',
       role: 'router',
-      hint: 'L2フレームを外し、IPパケットを見て別ネットワークへ転送する。',
+      hint: 'L2ヘッダ/トレーラを取り外し、IPパケットを見て別ネットワークへ転送する。',
       x: 62,
       y: 52,
     },
@@ -248,14 +270,14 @@ const layerOneThreeScenario: PacketFlowScenario = {
     },
     {
       id: 'arp-request-to-router',
-      title: 'L2SWはARP要求を同じVLAN内へ広げる',
+      title: 'L2SWはARP要求を同じLAN内へ広げる',
       from: 'switch',
       to: 'router',
       packetLabel: 'ARP要求',
       explanation:
-        'ARP要求の宛先MACアドレスはブロードキャストです。L2SWは、同じVLANに属するポートへフレームを転送します。この時点でL2SWが見ている中心は[[green:MACアドレス]]です。',
+        'ARP要求の宛先MACアドレスはブロードキャストです。L2SWは、同じLANに属するポートへフレームを転送します。この時点でL2SWが見ている中心は[[green:MACアドレス]]です。',
       deviceFocus:
-        'L2SWはIPアドレスで経路選択しているわけではありません。同じVLAN内でL2フレームを転送しています。',
+        'L2SWはIPアドレスで経路選択しているわけではありません。同じLAN内でL2フレームを転送しています。',
       headerFocus: {
         sourceMac: '00:11:22:33:44:55',
         destinationMac: 'ff:ff:ff:ff:ff:ff',
@@ -345,7 +367,7 @@ const layerOneThreeScenario: PacketFlowScenario = {
       to: 'web',
       packetLabel: 'TCP SYN',
       explanation:
-        'ルータは受け取ったL2フレームを外し、中のIPパケットを見ます。[[blue:宛先IPアドレス]]で次の転送先を決めたら、次のリンクで使う[[green:新しいL2フレーム]]に入れ直して送ります。',
+        'ルータは受け取ったL2フレームのL2ヘッダ/トレーラを取り外し、中のIPパケットを見ます。[[blue:宛先IPアドレス]]で次の転送先を決めたら、次のリンクで使う[[green:新しいL2ヘッダ/トレーラ]]を付加して送ります。',
       deviceFocus:
         'ルータはL2をデカプセル化し、IPで経路判断し、次のリンク用に再カプセル化します。',
       headerFocus: {
@@ -396,7 +418,7 @@ const layerOneThreeChapter: TextbookChapter = {
       heading: 'OSI参照モデルは通信を見るための地図',
       body: [
         'OSI参照モデルは、通信を7つの層に分けて考えるためのモデルです。最初から7層すべてを細かく覚えようとすると苦しくなりますが、[[blue:通信を分解して見るための地図]]だと考えると役に立ちます。',
-        'この章で特に大事なのは、[[green:L2]]、[[blue:L3]]、[[amber:L4]]の境目です。L2は同じリンク内でフレームを届ける層、L3はIPアドレスを使ってネットワーク間を届ける層、L4は端末同士の通信をポート番号などで整理する層です。',
+        'OSI参照モデルは、L1からL7までの7層で構成されます。L5のセッション層、L6のプレゼンテーション層も含めて全体像を押さえたうえで、この章では特に[[green:L2]]、[[blue:L3]]、[[amber:L4]]の境目を重点的に見ます。',
         'Webページを見るとき、利用者からは「PCがWebサーバにアクセスした」だけに見えます。けれども中では、アプリケーションのデータが下の層へ渡され、各層のヘッダを付けられながら、スイッチやルータを通って進みます。',
       ],
       diagrams: [
@@ -404,9 +426,10 @@ const layerOneThreeChapter: TextbookChapter = {
           type: 'layer-stack',
           title: 'OSI参照モデルを通信の地図として見る',
           description:
-            'この図は、各層がどの範囲の問題を扱うかを示しています。まずは[[green:L2]]、[[blue:L3]]、[[amber:L4]]の境目に注目してください。',
+            'この図は、OSI参照モデルの7層すべてを並べたものです。まず全体を見たうえで、この章では[[green:L2]]、[[blue:L3]]、[[amber:L4]]の境目に注目します。',
           points: [
-            'L2は同じリンク、または同じVLAN内でフレームを届けます。',
+            'L5とL6もOSI参照モデルの一部です。この章では詳細に踏み込まず、後の章で扱います。',
+            'L2は同じリンク上でフレームを届けます。',
             'L3はIPアドレスを見て、別ネットワークへ進む道を選びます。',
             'L4はTCP/UDPとポート番号で、端末上のどの通信かを識別します。',
           ],
@@ -416,6 +439,20 @@ const layerOneThreeChapter: TextbookChapter = {
               title: 'アプリケーション層',
               description: 'HTTPやDNSなど、利用者に近い通信の意味を扱う',
               example: 'HTTP, DNS, SMTP',
+              color: 'amber',
+            },
+            {
+              label: 'L6',
+              title: 'プレゼンテーション層',
+              description: '文字コード、データ形式、暗号化など、表現形式に関わる処理を扱う',
+              example: '文字コード, データ形式, 暗号化表現',
+              color: 'amber',
+            },
+            {
+              label: 'L5',
+              title: 'セッション層',
+              description: '通信の開始、維持、終了といった会話の単位を扱う',
+              example: 'セッション管理',
               color: 'amber',
             },
             {
@@ -436,7 +473,7 @@ const layerOneThreeChapter: TextbookChapter = {
               label: 'L2',
               title: 'データリンク層',
               description: '同じリンク内で、MACアドレスを使ってフレームを届ける',
-              example: 'Ethernet, MACアドレス, L2SW, VLAN, ARP',
+              example: 'Ethernet, MACアドレス, L2SW, ARP',
               color: 'green',
             },
             {
@@ -451,22 +488,22 @@ const layerOneThreeChapter: TextbookChapter = {
       ],
     },
     {
-      heading: 'データは下のレイヤへ渡されるたびに包まれる',
+      heading: '送信時はヘッダを付加し、受信時は順に取り外す',
       body: [
-        '送信側の端末では、アプリケーションのデータがそのまま線に流れるわけではありません。上位層のデータは、下位層へ渡されるたびに、その層で必要な情報を付け加えられます。この処理を[[amber:カプセル化]]と呼びます。',
-        'たとえばHTTPS通信なら、アプリケーションのデータにTCPヘッダが付き、[[amber:TCPセグメント]]になります。そこへIPヘッダが付くと[[blue:IPパケット]]になり、最後にEthernetヘッダとFCSが付くと[[green:Ethernetフレーム]]になります。',
-        'ルータを通るときは、この入れ子構造が重要です。ルータは受信したL2フレームをいったん外し、中のIPパケットを見て次の経路を決めます。そして、次のリンクで使う新しいL2フレームに入れ直して送り出します。',
+        '送信側の端末では、アプリケーションのデータがそのまま線に流れるわけではありません。下位層へ渡すたびに、その層が処理に使うヘッダを付加します。この処理を[[amber:カプセル化]]と呼びます。',
+        'たとえばHTTPS通信なら、アプリケーションデータにTCPヘッダが付加され、[[amber:TCPセグメント]]になります。そこへIPヘッダが付加されると[[blue:IPパケット]]になり、最後にEthernetヘッダとFCSが付加されると[[green:Ethernetフレーム]]になります。',
+        '受信側では逆に、外側から順にヘッダを確認し、取り外しながら上位層へ渡します。この処理を[[blue:デカプセル化]]と呼びます。ルータも受信したL2フレームをデカプセル化してIPヘッダを確認し、次のリンク用に新しいL2ヘッダ/トレーラを付加して転送します。',
       ],
       diagrams: [
         {
           type: 'encapsulation-flow',
-          title: 'データがヘッダで包まれていく流れ',
+          title: '送信側でヘッダを付加していく流れ',
           description:
-            'この図は、アプリケーションデータにL4、L3、L2の情報が順に付いていく様子を表しています。外側ほど、その区間で運ぶための情報になります。',
+            'この図は、アプリケーションデータにL4、L3、L2のヘッダが順に付加される様子を表しています。外側に近い情報ほど、その区間で転送するために使われます。',
           points: [
-            'L4ではポート番号などが付き、TCPセグメントまたはUDPデータグラムとして扱われます。',
-            'L3では送信元IPアドレスと宛先IPアドレスが付き、IPパケットになります。',
-            'L2では送信元MACアドレスと宛先MACアドレスが付き、リンク上を流れるフレームになります。',
+            'L4ではポート番号などを持つTCPヘッダまたはUDPヘッダが付加されます。',
+            'L3では送信元IPアドレスと宛先IPアドレスを持つIPヘッダが付加されます。',
+            'L2では送信元MACアドレスと宛先MACアドレスを持つEthernetヘッダなどが付加されます。',
           ],
           stages: [
             {
@@ -477,7 +514,7 @@ const layerOneThreeChapter: TextbookChapter = {
             },
             {
               label: '2',
-              title: 'L4で包む',
+              title: 'L4ヘッダを付加',
               description: 'TCPならポート番号やシーケンス番号を付ける。',
               parts: [
                 { label: 'TCPヘッダ', accent: 'amber' },
@@ -486,7 +523,7 @@ const layerOneThreeChapter: TextbookChapter = {
             },
             {
               label: '3',
-              title: 'L3で包む',
+              title: 'L3ヘッダを付加',
               description: 'IPアドレスを付け、最終的な宛先を示す。',
               parts: [
                 { label: 'IPヘッダ', accent: 'blue' },
@@ -496,7 +533,7 @@ const layerOneThreeChapter: TextbookChapter = {
             },
             {
               label: '4',
-              title: 'L2で包む',
+              title: 'L2ヘッダとFCSを付加',
               description: '次ホップへ届けるためのMACアドレスを付ける。',
               parts: [
                 { label: 'Ethernetヘッダ', accent: 'emerald' },
@@ -510,13 +547,46 @@ const layerOneThreeChapter: TextbookChapter = {
           routeNotes: [
             {
               title: 'ルータで起きること',
-              body: 'ルータはL2フレームを外し、IPヘッダを見て転送先を決めます。その後、次のリンク用のL2フレームを新しく作ります。',
+              body: 'ルータはL2ヘッダ/トレーラを取り外してIPヘッダを見ます。その後、次のリンク用のL2ヘッダ/トレーラを付加して新しいフレームとして送ります。',
               accent: 'blue',
             },
             {
               title: 'ここを混同しない',
               body: '別ネットワークへ行く通信でも、リンク上を流れるときは必ずそのリンクで使うL2フレームに入っています。',
               accent: 'emerald',
+            },
+          ],
+        },
+        {
+          type: 'sequence',
+          title: 'カプセル化とデカプセル化の対応',
+          description:
+            '送信側ではヘッダを付加し、受信側では外側から順にヘッダを確認して取り外します。ルータは途中でL2だけを付け替える点が重要です。',
+          points: [
+            '送信端末では、L4、L3、L2の順にヘッダを付加します。',
+            'ルータでは、受信側のL2ヘッダ/トレーラを取り外し、IPヘッダを見て、送信側のL2ヘッダ/トレーラを付加します。',
+            '宛先端末では、L2、L3、L4の順に確認して上位層へ渡します。',
+          ],
+          steps: [
+            {
+              label: '1',
+              title: '送信端末でカプセル化する',
+              body: 'アプリケーションデータにTCPヘッダ、IPヘッダ、Ethernetヘッダ/FCSを順に付加します。',
+            },
+            {
+              label: '2',
+              title: 'ルータでL2をデカプセル化する',
+              body: 'ルータは受信したEthernetフレームのL2ヘッダ/トレーラを取り外し、中のIPヘッダを見て次の転送先を決めます。',
+            },
+            {
+              label: '3',
+              title: '次のリンク用に再カプセル化する',
+              body: 'ルータは次のリンクで使う送信元MACアドレスと宛先MACアドレスを付加し、新しいL2フレームとして送信します。',
+            },
+            {
+              label: '4',
+              title: '宛先端末でデカプセル化する',
+              body: 'WebサーバはL2、L3、L4の順にヘッダを確認し、最終的にアプリケーションへデータを渡します。',
             },
           ],
         },
@@ -527,7 +597,7 @@ const layerOneThreeChapter: TextbookChapter = {
       body: [
         'PCからWebサーバへアクセスするとき、同じ通信でも、機器によって見ている情報は違います。PCはアプリケーションの要求を作り、宛先IPアドレスと次に渡す相手を決めます。',
         'L2SWは、フレームの宛先MACアドレスを見て、どのポートへ出すかを決めます。ここでL2SWが中心に見ているのはL2の情報であり、IPアドレスで経路を選んでいるわけではありません。',
-        'ルータは受け取ったフレームからL2ヘッダを外し、IPパケットの宛先IPアドレスを見て、次のネットワークへ転送します。サーバは最終的に受け取ったデータを、HTTPなどのアプリケーションとして処理します。',
+        'ルータは受け取ったフレームからL2ヘッダ/トレーラを取り外し、IPパケットの宛先IPアドレスを見て、次のネットワークへ転送します。サーバは最終的に受け取ったデータを、HTTPなどのアプリケーションとして処理します。',
       ],
       diagrams: [
         {
@@ -537,7 +607,7 @@ const layerOneThreeChapter: TextbookChapter = {
             'この図は、PCからWebサーバへ向かう通信を、機器ごとの判断材料で見たものです。どの区間でもL2フレームで運ばれますが、中に入っているIPパケットが最終宛先を示します。',
           points: [
             'PCは宛先IPを見て、次ホップがデフォルトゲートウェイだと判断します。',
-            'L2SWは宛先MACアドレスを見て、同じVLAN内でフレームを転送します。',
+            'L2SWは宛先MACアドレスを見て、同じLAN内でフレームを転送します。',
             'ルータはIPヘッダを見て、次のネットワークへ進む経路を選びます。',
           ],
           nodes: [
@@ -559,9 +629,53 @@ const layerOneThreeChapter: TextbookChapter = {
       body: [
         'MACアドレス、IPアドレス、ポート番号は、どれも通信相手を識別する情報です。ただし、見ている範囲が違います。ここを分けられると、フレームとパケットの話もかなり整理されます。',
         '[[green:MACアドレス]]は、同じリンク上で次に渡す相手を示します。[[blue:IPアドレス]]は、最終的な端末を示します。[[amber:ポート番号]]は、その端末の中でどのアプリケーションの通信かを示します。',
+        '表記にも違いがあります。MACアドレスは16進数を区切って表し、例として[[green:00:11:22:33:44:55]]のように書きます。IPv4アドレスは10進数をドットで区切り、例として[[blue:192.168.1.10]]のように書きます。ポート番号は10進数の番号で、HTTPSなら[[amber:443]]が代表例です。',
         '別ネットワーク上のWebサーバへ通信する場合、宛先IPアドレスはWebサーバのままです。一方、PCが最初に送るEthernetフレームの宛先MACアドレスは、Webサーバではなくデフォルトゲートウェイになります。',
       ],
       diagrams: [
+        {
+          type: 'comparison',
+          title: 'アドレスとポート番号の表記',
+          description:
+            'この図は、MACアドレス、IPv4アドレス、ポート番号の書き方と読み方を整理したものです。何を識別しているかと、どう書くかをセットで覚えます。',
+          points: [
+            'MACアドレスは通常、16進数2桁ずつをコロンまたはハイフンで区切ります。',
+            'IPv4アドレスは10進数4つをドットで区切ります。ネットワーク範囲は192.168.1.0/24のようにCIDR表記を使います。',
+            'ポート番号は0から65535までの10進数です。HTTPは80、HTTPSは443が代表例です。',
+          ],
+          columns: [
+            {
+              title: 'MACアドレス',
+              subtitle: '例: 00:11:22:33:44:55',
+              accent: 'teal',
+              items: [
+                '16進数で表す',
+                '2桁ずつをコロンまたはハイフンで区切る',
+                '同じリンク上の次の相手を識別する',
+              ],
+            },
+            {
+              title: 'IPv4アドレス',
+              subtitle: '例: 192.168.1.10',
+              accent: 'indigo',
+              items: [
+                '10進数4つをドットで区切る',
+                '192.168.1.0/24のようにネットワーク範囲も表せる',
+                '最終的な端末を識別する',
+              ],
+            },
+            {
+              title: 'ポート番号',
+              subtitle: '例: TCP/443',
+              accent: 'amber',
+              items: [
+                '10進数で表す',
+                'TCPまたはUDPと組み合わせて読む',
+                '端末上のアプリケーションを識別する',
+              ],
+            },
+          ],
+        },
         {
           type: 'packet-frame',
           title: 'フレーム、パケット、セグメントの入れ子',
@@ -618,7 +732,7 @@ const layerOneThreeChapter: TextbookChapter = {
       ],
     },
     {
-      heading: 'ARPはL2フレームを作るために必要になる',
+      heading: 'ARPで次に渡す相手のMACアドレスを調べる',
       body: [
         'ARPは、IPv4アドレスからMACアドレスを調べるためのプロトコルです。ただし、ここで大事なのは定義の暗記ではありません。ARPは[[green:Ethernetフレームを作るために必要な前処理]]です。',
         '同じLAN内へフレームを送るには、宛先MACアドレスが必要です。PCがデフォルトゲートウェイへフレームを送りたいなら、まずデフォルトゲートウェイのIPアドレスに対応するMACアドレスを知る必要があります。',
@@ -631,7 +745,7 @@ const layerOneThreeChapter: TextbookChapter = {
           description:
             'この図は、PCが別ネットワーク宛ての通信を始める前に、同じLAN内のデフォルトゲートウェイを探す流れです。',
           points: [
-            'ARP要求はブロードキャストとして、同じVLAN内に届きます。',
+            'ARP要求はブロードキャストとして、同じLAN内に届きます。',
             '該当するIPアドレスを持つ機器が、自分のMACアドレスをARP応答で返します。',
             'PCは得られた対応をARPテーブルに保存し、そのMACアドレス宛てにフレームを作ります。',
           ],
@@ -694,41 +808,56 @@ const layerOneThreeChapter: TextbookChapter = {
     {
       heading: 'VLANとブロードキャストドメイン',
       body: [
-        'VLANは、L2の範囲を論理的に分ける仕組みです。物理的には同じスイッチにつながっていても、VLANが違えば同じブロードキャストドメインではありません。',
-        'ARP要求のようなブロードキャストは、原則として同じVLAN内にだけ届きます。VLAN 10のPCがVLAN 20のサーバと通信したい場合は、ルータやL3SWによる[[blue:L3の中継]]が必要です。',
-        'ネスペ午後では、VLAN ID、アクセスポート、トランクポート、L3SWがよく一緒に出ます。まずは、[[green:VLANはL2の届く範囲を分けるもの]]、[[blue:VLAN間通信はL3の話]]と切り分けましょう。',
+        'VLANは、L2の範囲を論理的に分ける仕組みです。ここで大事なのは、[[green:物理構成]]と[[blue:論理構成]]を分けて見ることです。同じスイッチにつながっていても、VLANが違えば同じブロードキャストドメインではありません。',
+        'たとえば、1台のL2SWに業務PCとサーバが接続されているとします。配線だけを見ると同じスイッチ配下に見えますが、業務PCをVLAN 10、サーバをVLAN 20に分ければ、ARP要求のようなブロードキャストはそれぞれのVLAN内に閉じます。',
+        'VLAN 10のPCがVLAN 20のサーバと通信したい場合は、L3SWやルータによる[[blue:L3の中継]]が必要です。ネスペ午後では、物理的な接続図を見ながら、実際にはどのVLANに分かれているのかを読む力が問われます。',
       ],
       diagrams: [
         {
-          type: 'segment',
-          title: 'VLANでブロードキャストドメインを分ける',
+          type: 'vlan-design',
+          title: '物理構成と論理構成を分けてVLANを見る',
           description:
-            'この図は、同じ物理スイッチ上でもVLANが違うとブロードキャストが届く範囲が分かれることを表しています。',
+            '上段は実際の配線、下段はVLANで分かれた論理的なネットワークです。同じL2SWに接続されていても、VLANが違えば別のブロードキャストドメインになります。',
           points: [
-            'VLAN 10のARP要求は、VLAN 10内にだけ広がります。',
-            'VLAN 20へ通信するには、ルータまたはL3SWでL3転送が必要です。',
-            'トランクポートでは、複数のVLANを識別するためにVLANタグを使います。',
+            '物理構成では同じL2SW配下に見えても、論理構成ではVLANごとに別の範囲として扱います。',
+            'VLAN 10のブロードキャストは、VLAN 10内にだけ届きます。',
+            'VLAN間通信はL2SWだけでは完結せず、L3SWまたはルータが必要です。',
           ],
-          domains: [
+          physical: [
+            { label: 'PC-A', caption: '業務PC', role: 'pc', vlan: 'VLAN 10' },
+            { label: 'PC-B', caption: '業務PC', role: 'pc', vlan: 'VLAN 10' },
+            { label: 'L2SW', caption: '同じ物理スイッチ', role: 'switch' },
+            { label: 'L3SW', caption: 'VLAN間の中継', role: 'router' },
+            { label: 'Webサーバ', caption: 'サーバ用', role: 'server', vlan: 'VLAN 20' },
+          ],
+          logical: [
             {
               title: 'VLAN 10',
-              description: '業務PC用セグメント。ARPやブロードキャストはこの範囲に閉じる。',
+              subnet: '192.168.10.0/24',
+              description: '業務PC用のブロードキャストドメイン。PC-AとPC-BのARP要求はこの範囲に閉じます。',
               accent: 'sky',
-              members: ['PC-A', 'PC-B', 'プリンタ'],
+              members: ['PC-A', 'PC-B'],
             },
             {
-              title: 'L3SW / ルータ',
-              description: 'VLAN間通信を中継する境目。ここからL3の判断になる。',
+              title: 'L3SW',
+              subnet: 'VLAN間ルーティング',
+              description: 'VLAN 10とVLAN 20の間を中継します。ここからIPアドレスを見たL3の判断になります。',
               accent: 'emerald',
               members: ['SVI', 'デフォルトゲートウェイ', '経路表'],
             },
             {
               title: 'VLAN 20',
-              description: 'サーバ用セグメント。VLAN 10とは別のブロードキャストドメイン。',
+              subnet: '192.168.20.0/24',
+              description: 'サーバ用のブロードキャストドメイン。VLAN 10とはL2の範囲が分かれています。',
               accent: 'rose',
-              members: ['Webサーバ', 'DBサーバ', '監視サーバ'],
+              members: ['Webサーバ'],
             },
           ],
+          trunk: {
+            label: 'L2SW-L3SW間: トランクポート',
+            description:
+              '1本の物理リンクで複数のVLANを運ぶ場合、VLANタグを使って「このフレームはVLAN 10」「これはVLAN 20」と識別します。',
+          },
         },
       ],
     },
@@ -793,7 +922,7 @@ const layerOneThreeChapter: TextbookChapter = {
   ],
   summary: [
     'OSI参照モデルは、通信を層に分けて見るための[[blue:地図]]です。',
-    '送信側では、データにL4、L3、L2の情報が順に付く[[amber:カプセル化]]が行われます。',
+    '送信側ではヘッダを順に付加する[[amber:カプセル化]]、受信側ではヘッダを順に取り外す[[blue:デカプセル化]]が行われます。',
     '[[green:MACアドレス]]は次のリンク上の相手、[[blue:IPアドレス]]は最終的な端末、[[amber:ポート番号]]は端末上のアプリケーションを識別します。',
     'ARPは、同じLAN内でL2フレームを作るために必要なMACアドレスを調べる仕組みです。',
     'VLANはL2の届く範囲を分け、VLAN間通信はL3の中継として考えます。',

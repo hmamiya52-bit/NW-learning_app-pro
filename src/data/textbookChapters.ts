@@ -19,6 +19,7 @@ export type TextbookDiagram =
   | LayerStackDiagram
   | NetworkFlowDiagram
   | ComparisonDiagram
+  | AddressRoleTableDiagram
   | SequenceDiagram
   | SegmentDiagram
   | PacketFrameDiagram
@@ -88,6 +89,20 @@ export interface ComparisonDiagram extends DiagramBase {
     subtitle: string
     items: string[]
     accent: 'teal' | 'indigo' | 'amber'
+  }[]
+}
+
+export interface AddressRoleTableDiagram extends DiagramBase {
+  type: 'address-role-table'
+  rows: {
+    name: string
+    layer: string
+    header: string
+    identifies: string
+    scope: string
+    example: string
+    examHint: string
+    accent: 'emerald' | 'blue' | 'amber'
   }[]
 }
 
@@ -185,6 +200,7 @@ export interface ExamNetworkZone {
   height: number
   kind: 'solid' | 'dashed' | 'cloud'
   caption?: string
+  tone?: 'slate' | 'sky' | 'blue' | 'emerald' | 'amber' | 'rose' | 'violet'
 }
 
 export interface ExamNetworkNode {
@@ -196,6 +212,7 @@ export interface ExamNetworkNode {
   width: number
   height: number
   role: PacketFlowNodeRole
+  tone?: 'slate' | 'sky' | 'blue' | 'emerald' | 'amber' | 'rose' | 'violet'
 }
 
 export interface ExamNetworkLink {
@@ -203,6 +220,8 @@ export interface ExamNetworkLink {
   points: { x: number; y: number }[]
   label?: string
   dashed?: boolean
+  tone?: 'slate' | 'sky' | 'blue' | 'emerald' | 'amber' | 'rose' | 'violet'
+  labelPosition?: { x: number; y: number }
 }
 
 export interface ExamNetworkStep {

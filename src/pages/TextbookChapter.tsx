@@ -201,7 +201,7 @@ export default function TextbookChapter() {
 
         <div className="mt-5 space-y-5">
           {chapter.sections.map((section, index) => (
-            <section key={section.heading} id={`textbook-section-${index + 1}`} className="rounded-lg border border-slate-200 bg-white px-5 py-5 shadow-sm">
+            <section key={section.heading} id={`textbook-section-${index + 1}`} className="scroll-mt-16 rounded-lg border border-slate-200 bg-white px-5 py-5 shadow-sm">
               <div className="flex items-start gap-3">
                 <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-blue-50 text-sm font-black text-blue-700">
                   {index + 1}

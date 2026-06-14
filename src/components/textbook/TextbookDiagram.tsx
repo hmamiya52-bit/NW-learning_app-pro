@@ -1,6 +1,7 @@
 import { useEffect, useState, type CSSProperties } from 'react'
 import { ArrowRight, Cable, Check, ChevronLeft, ChevronRight, Monitor, Network, Play, RotateCcw, Router, Server } from 'lucide-react'
 import type {
+  AddressRoleTableDiagram,
   ComparisonDiagram,
   EncapsulationDiagram,
   ExamNetworkDiagram,
@@ -45,6 +46,32 @@ const PACKET_FRAME_COLORS = {
   amber: 'border-amber-200 bg-amber-50 text-amber-900',
   slate: 'border-slate-200 bg-slate-50 text-slate-900',
 } as const
+
+const ADDRESS_TABLE_COLORS = {
+  emerald: 'bg-emerald-50 text-emerald-800 border-emerald-200',
+  blue: 'bg-blue-50 text-blue-800 border-blue-200',
+  amber: 'bg-amber-50 text-amber-900 border-amber-200',
+} as const
+
+const EXAM_TONES = {
+  slate: { fill: '#f8fafc', stroke: '#334155', text: '#0f172a', link: '#475569' },
+  sky: { fill: '#eff6ff', stroke: '#2563eb', text: '#1e3a8a', link: '#2563eb' },
+  blue: { fill: '#eef2ff', stroke: '#4f46e5', text: '#312e81', link: '#4f46e5' },
+  emerald: { fill: '#ecfdf5', stroke: '#059669', text: '#064e3b', link: '#059669' },
+  amber: { fill: '#fffbeb', stroke: '#d97706', text: '#78350f', link: '#d97706' },
+  rose: { fill: '#fff1f2', stroke: '#e11d48', text: '#881337', link: '#e11d48' },
+  violet: { fill: '#f5f3ff', stroke: '#7c3aed', text: '#4c1d95', link: '#7c3aed' },
+} as const
+
+const ROLE_TONES: Record<PacketFlowNodeRole, keyof typeof EXAM_TONES> = {
+  pc: 'sky',
+  switch: 'emerald',
+  router: 'blue',
+  server: 'amber',
+  dns: 'violet',
+  firewall: 'rose',
+  internet: 'slate',
+}
 
 function RoleIcon({ role }: { role: PacketFlowNodeRole }) {
   if (role === 'pc') return <Monitor className="h-5 w-5" aria-hidden="true" />
@@ -246,6 +273,55 @@ function ComparisonDiagramView({ diagram }: { diagram: ComparisonDiagram }) {
             </ul>
           </div>
         ))}
+      </div>
+    </DiagramShell>
+  )
+}
+
+function AddressRoleTableDiagramView({ diagram }: { diagram: AddressRoleTableDiagram }) {
+  return (
+    <DiagramShell title={diagram.title} description={diagram.description} points={diagram.points}>
+      <div className="overflow-x-auto">
+        <table className="min-w-[760px] border-collapse text-left text-xs">
+          <thead>
+            <tr className="border-b border-slate-200 bg-slate-50 text-slate-600">
+              <th className="whitespace-nowrap px-3 py-2 font-black">項目</th>
+              <th className="whitespace-nowrap px-3 py-2 font-black">層</th>
+              <th className="whitespace-nowrap px-3 py-2 font-black">入る場所</th>
+              <th className="whitespace-nowrap px-3 py-2 font-black">識別するもの</th>
+              <th className="whitespace-nowrap px-3 py-2 font-black">有効範囲</th>
+              <th className="whitespace-nowrap px-3 py-2 font-black">例</th>
+              <th className="whitespace-nowrap px-3 py-2 font-black">構成図での読み方</th>
+            </tr>
+          </thead>
+          <tbody>
+            {diagram.rows.map((row) => (
+              <tr key={row.name} className="border-b border-slate-100 align-top last:border-b-0">
+                <th className="w-28 px-3 py-3">
+                  <span className={`inline-flex rounded-full border px-2.5 py-1 font-black ${ADDRESS_TABLE_COLORS[row.accent]}`}>
+                    {row.name}
+                  </span>
+                </th>
+                <td className="px-3 py-3 font-black text-slate-800">{row.layer}</td>
+                <td className="px-3 py-3 leading-relaxed text-slate-700">
+                  <TextbookRichText text={row.header} />
+                </td>
+                <td className="px-3 py-3 leading-relaxed text-slate-700">
+                  <TextbookRichText text={row.identifies} />
+                </td>
+                <td className="px-3 py-3 leading-relaxed text-slate-700">
+                  <TextbookRichText text={row.scope} />
+                </td>
+                <td className="px-3 py-3 font-bold leading-relaxed text-slate-800">
+                  <TextbookRichText text={row.example} />
+                </td>
+                <td className="px-3 py-3 leading-relaxed text-slate-700">
+                  <TextbookRichText text={row.examHint} />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </DiagramShell>
   )
@@ -455,6 +531,38 @@ function SvgText({
   )
 }
 
+function SvgBadge({
+  x,
+  y,
+  label,
+  color,
+}: {
+  x: number
+  y: number
+  label: string
+  color: string
+}) {
+  const width = Math.max(label.length * 13 + 16, 48)
+
+  return (
+    <g>
+      <rect
+        x={x - width / 2}
+        y={y - 13}
+        width={width}
+        height="22"
+        rx="4"
+        fill="#ffffff"
+        stroke="#cbd5e1"
+        strokeWidth="1"
+      />
+      <text x={x} y={y + 3} textAnchor="middle" fill={color} fontSize="12" fontWeight="800">
+        {label}
+      </text>
+    </g>
+  )
+}
+
 function nodeLines(label: string, caption?: string) {
   return caption ? [label, caption] : [label]
 }
@@ -566,6 +674,7 @@ function ExamNetworkDiagramView({ diagram }: { diagram: ExamNetworkDiagram }) {
           >
             <rect x="0" y="0" width={diagram.viewBox.width} height={diagram.viewBox.height} fill="#ffffff" />
             {diagram.zones.map((zone) => {
+              const tone = EXAM_TONES[zone.tone ?? 'slate']
               if (zone.kind === 'cloud') {
                 return (
                   <g key={zone.id}>
@@ -574,11 +683,11 @@ function ExamNetworkDiagramView({ diagram }: { diagram: ExamNetworkDiagram }) {
                       cy={zone.y + zone.height / 2}
                       rx={zone.width / 2}
                       ry={zone.height / 2}
-                      fill="#f8fafc"
-                      stroke="#111827"
+                      fill={tone.fill}
+                      stroke={tone.stroke}
                       strokeWidth="2"
                     />
-                    <SvgText x={zone.x + zone.width / 2} y={zone.y + zone.height / 2 - 2} lines={[zone.label]} size={18} />
+                    <SvgText x={zone.x + zone.width / 2} y={zone.y + zone.height / 2 - 2} lines={[zone.label]} size={18} color={tone.text} />
                     {zone.caption && (
                       <SvgText
                         x={zone.x + zone.width / 2}
@@ -586,7 +695,7 @@ function ExamNetworkDiagramView({ diagram }: { diagram: ExamNetworkDiagram }) {
                         lines={[zone.caption]}
                         size={12}
                         weight={600}
-                        color="#64748b"
+                        color={tone.text}
                       />
                     )}
                   </g>
@@ -601,22 +710,22 @@ function ExamNetworkDiagramView({ diagram }: { diagram: ExamNetworkDiagram }) {
                     width={zone.width}
                     height={zone.height}
                     rx="0"
-                    fill={zone.kind === 'solid' ? '#f8fafc' : 'transparent'}
-                    stroke="#111827"
+                    fill={tone.fill}
+                    stroke={tone.stroke}
                     strokeWidth="2"
                     strokeDasharray={zone.kind === 'dashed' ? '10 7' : undefined}
+                    strokeLinejoin="round"
                   />
-                  <rect x={zone.x + 12} y={zone.y - 13} width={Math.max(zone.label.length * 14, 118)} height="24" fill="#ffffff" />
-                  <SvgText x={zone.x + 20} y={zone.y + 4} lines={[zone.label]} size={16} anchor="start" />
+                  <SvgText x={zone.x + 18} y={zone.y + 24} lines={[zone.label]} size={16} anchor="start" color={tone.text} />
                   {zone.caption && (
                     <SvgText
                       x={zone.x + 20}
-                      y={zone.y + 28}
+                      y={zone.y + 48}
                       lines={[zone.caption]}
                       size={12}
                       weight={600}
                       anchor="start"
-                      color="#475569"
+                      color={tone.text}
                     />
                   )}
                 </g>
@@ -625,27 +734,21 @@ function ExamNetworkDiagramView({ diagram }: { diagram: ExamNetworkDiagram }) {
 
             {diagram.links.map((link) => {
               const active = activeLinkIds.has(link.id)
+              const tone = EXAM_TONES[link.tone ?? 'slate']
+              const labelPoint = link.labelPosition ?? link.points[Math.floor(link.points.length / 2)]
               return (
                 <g key={link.id}>
                   <polyline
                     points={link.points.map((point) => `${point.x},${point.y}`).join(' ')}
                     fill="none"
-                    stroke={active ? '#2563eb' : '#111827'}
+                    stroke={active ? '#2563eb' : tone.link}
                     strokeWidth={active ? 5 : 3}
-                    strokeLinecap="square"
+                    strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeDasharray={link.dashed ? '8 8' : undefined}
                   />
                   {link.label && (
-                    <SvgText
-                      x={link.points[Math.floor(link.points.length / 2)].x + 8}
-                      y={link.points[Math.floor(link.points.length / 2)].y - 8}
-                      lines={[link.label]}
-                      size={12}
-                      weight={700}
-                      anchor="start"
-                      color={active ? '#1d4ed8' : '#334155'}
-                    />
+                    <SvgBadge x={labelPoint.x} y={labelPoint.y} label={link.label} color={active ? '#1d4ed8' : tone.text} />
                   )}
                 </g>
               )
@@ -654,6 +757,7 @@ function ExamNetworkDiagramView({ diagram }: { diagram: ExamNetworkDiagram }) {
             {diagram.nodes.map((node) => {
               const active = currentStep?.activeLinkIds.some((linkId) => linkId.includes(node.id))
               const lines = nodeLines(node.label, node.caption)
+              const tone = EXAM_TONES[node.tone ?? ROLE_TONES[node.role]]
               return (
                 <g key={node.id}>
                   <rect
@@ -662,8 +766,8 @@ function ExamNetworkDiagramView({ diagram }: { diagram: ExamNetworkDiagram }) {
                     width={node.width}
                     height={node.height}
                     rx="0"
-                    fill={active ? '#eff6ff' : '#ffffff'}
-                    stroke={active ? '#2563eb' : '#111827'}
+                    fill={active ? '#dbeafe' : tone.fill}
+                    stroke={active ? '#2563eb' : tone.stroke}
                     strokeWidth={active ? 3 : 2}
                   />
                   <SvgText
@@ -672,7 +776,7 @@ function ExamNetworkDiagramView({ diagram }: { diagram: ExamNetworkDiagram }) {
                     lines={lines}
                     size={lines.length === 1 ? 15 : 13}
                     weight={lines.length === 1 ? 800 : 700}
-                    color="#020617"
+                    color={tone.text}
                   />
                 </g>
               )
@@ -750,6 +854,7 @@ export default function TextbookDiagram({ diagram }: TextbookDiagramProps) {
   if (diagram.type === 'layer-stack') return <LayerStackDiagramView diagram={diagram} />
   if (diagram.type === 'network-flow') return <NetworkFlowDiagramView diagram={diagram} />
   if (diagram.type === 'comparison') return <ComparisonDiagramView diagram={diagram} />
+  if (diagram.type === 'address-role-table') return <AddressRoleTableDiagramView diagram={diagram} />
   if (diagram.type === 'sequence') return <SequenceDiagramView diagram={diagram} />
   if (diagram.type === 'segment') return <SegmentDiagramView diagram={diagram} />
   if (diagram.type === 'packet-frame') return <PacketFrameDiagramView diagram={diagram} />

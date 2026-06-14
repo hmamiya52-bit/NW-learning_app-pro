@@ -510,6 +510,8 @@ VLANは第1章の最後で扱う。L2の文脈ができた後に説明する。
 
 第2章以降の章順と学習ストーリーは、`docs/textbook-afternoon-exam-research.md` と `docs/textbook-curriculum-architecture.md` の調査・全体設計を前提に見直す。
 
+第3章から第20章までの詳細設計は、文書肥大化を避けるため `docs/textbook-chapters-03-20-detailed-design.md` に分離する。
+
 第2章では、HTTPやDNSを深掘りしすぎず、TCP/UDP、ポート番号、TCP 3ウェイハンドシェイク、セッション識別を中心にする。HTTP、DNS、TLSは、第2章で作ったL4の見方を使って後続章で扱う。
 
 ## 9. 第2章 詳細設計

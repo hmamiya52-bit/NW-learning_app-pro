@@ -20,6 +20,8 @@
 
 第1章の本文、図解、動く図解の実装基準は、`docs/textbook-chapter-detailed-design.md` に従う。第1章の既存実装と章別詳細設計が矛盾する場合は、章別詳細設計を優先する。
 
+第2章の詳細設計は `docs/textbook-chapter-detailed-design.md` の第9章に従う。第3章から第20章までの詳細設計は、`docs/textbook-chapters-03-20-detailed-design.md` に従う。
+
 ## 2. 設計方針
 
 教科書モードは、既存機能から独立した読み物コンテンツとして実装する。

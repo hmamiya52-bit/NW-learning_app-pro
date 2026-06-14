@@ -564,7 +564,16 @@ function SvgBadge({
 }
 
 function nodeLines(label: string, caption?: string) {
-  return caption ? [label, caption] : [label]
+  return caption ? [label, ...caption.split('\n').filter(Boolean)] : [label]
+}
+
+function nodeTextLayout(lineCount: number, height: number) {
+  if (lineCount === 1) return { size: 15, yOffset: height / 2 + 5 }
+
+  const size = lineCount >= 3 ? 12 : 13
+  const lineHeight = size + 4
+  const yOffset = height / 2 - ((lineCount - 1) * lineHeight) / 2 + size / 2
+  return { size, yOffset }
 }
 
 function ExamNetworkCapture({ step }: { step: ExamNetworkStep }) {
@@ -757,6 +766,7 @@ function ExamNetworkDiagramView({ diagram }: { diagram: ExamNetworkDiagram }) {
             {diagram.nodes.map((node) => {
               const active = currentStep?.activeLinkIds.some((linkId) => linkId.includes(node.id))
               const lines = nodeLines(node.label, node.caption)
+              const textLayout = nodeTextLayout(lines.length, node.height)
               const tone = EXAM_TONES[node.tone ?? ROLE_TONES[node.role]]
               return (
                 <g key={node.id}>
@@ -772,9 +782,9 @@ function ExamNetworkDiagramView({ diagram }: { diagram: ExamNetworkDiagram }) {
                   />
                   <SvgText
                     x={node.x + node.width / 2}
-                    y={node.y + (lines.length === 1 ? node.height / 2 + 5 : node.height / 2 - 2)}
+                    y={node.y + textLayout.yOffset}
                     lines={lines}
-                    size={lines.length === 1 ? 15 : 13}
+                    size={textLayout.size}
                     weight={lines.length === 1 ? 800 : 700}
                     color={tone.text}
                   />

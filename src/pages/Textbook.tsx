@@ -126,10 +126,7 @@ export default function Textbook() {
           <div className="flex gap-3">
             <Sparkles className="mt-0.5 h-5 w-5 flex-shrink-0 text-blue-600" aria-hidden="true" />
             <div className="min-w-0">
-              <h2 className="text-sm font-black text-blue-900">第1章は、通信の流れを「見える形」にして読みます</h2>
-              <p className="mt-1 text-sm leading-relaxed text-blue-800">
-                PCからWebサーバへ届くまでを、構成図、フレーム/パケットの入れ子、動く図解で確認します。紙面だけでは追いにくい「次の一歩」を、ステップごとに見られるようにしました。
-              </p>
+              <h2 className="text-sm font-black text-blue-900">教科書は現在試験的に作成中です。完成は未定です。要望次第で作成時期を早める可能性有</h2>
             </div>
           </div>
         </section>

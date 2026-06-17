@@ -1,5 +1,5 @@
 import { useEffect, useState, type CSSProperties } from 'react'
-import { ArrowRight, Cable, Check, ChevronLeft, ChevronRight, Monitor, Network, Play, RotateCcw, Router, Server } from 'lucide-react'
+import { ArrowRight, Cable, Check, ChevronLeft, ChevronRight, Monitor, Network, Pause, Play, RotateCcw, Router, Server } from 'lucide-react'
 import type {
   AddressRoleTableDiagram,
   ComparisonDiagram,
@@ -386,9 +386,9 @@ function PacketFrameDiagramView({ diagram }: { diagram: PacketFrameDiagram }) {
               <p className="text-sm font-black">{layer.title}</p>
               <p className="text-xs font-bold opacity-75">{layer.subtitle}</p>
             </div>
-            <div className="mt-3 grid gap-2 sm:grid-cols-4">
+            <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
               {layer.fields.map((field) => (
-                <div key={field} className="rounded-md bg-white/80 px-2.5 py-2 text-center text-xs font-black shadow-sm">
+                <div key={field} className="rounded-md bg-white/80 px-2.5 py-2 text-center text-xs font-black leading-snug shadow-sm">
                   {field}
                 </div>
               ))}
@@ -542,38 +542,68 @@ function SvgBadge({
   label: string
   color: string
 }) {
-  const width = Math.max(label.length * 13 + 16, 48)
+  const width = Math.min(Math.max(label.length * 12 + 22, 62), 150)
 
   return (
     <g>
       <rect
         x={x - width / 2}
-        y={y - 13}
+        y={y - 15}
         width={width}
-        height="22"
-        rx="4"
+        height="26"
+        rx="7"
         fill="#ffffff"
-        stroke="#cbd5e1"
-        strokeWidth="1"
+        fillOpacity="0.96"
+        stroke="#dbe4ef"
+        strokeWidth="1.2"
       />
-      <text x={x} y={y + 3} textAnchor="middle" fill={color} fontSize="12" fontWeight="800">
+      <text x={x} y={y + 3} textAnchor="middle" fill={color} fontSize="11" fontWeight="900">
         {label}
       </text>
     </g>
   )
 }
 
-function nodeLines(label: string, caption?: string) {
-  return caption ? [label, ...caption.split('\n').filter(Boolean)] : [label]
+function nodeCaptionLines(caption?: string): string[] {
+  return caption ? caption.split('\n').filter(Boolean).slice(0, 2) : []
 }
 
-function nodeTextLayout(lineCount: number, height: number) {
-  if (lineCount === 1) return { size: 15, yOffset: height / 2 + 5 }
+function SvgNodeLabel({
+  x,
+  y,
+  width,
+  height,
+  label,
+  caption,
+  color,
+}: {
+  x: number
+  y: number
+  width: number
+  height: number
+  label: string
+  caption?: string
+  color: string
+}) {
+  const captionLines = nodeCaptionLines(caption)
+  const labelY = y + (captionLines.length > 0 ? height / 2 - 6 : height / 2 + 5)
 
-  const size = lineCount >= 3 ? 12 : 13
-  const lineHeight = size + 4
-  const yOffset = height / 2 - ((lineCount - 1) * lineHeight) / 2 + size / 2
-  return { size, yOffset }
+  return (
+    <text textAnchor="middle" fill={color}>
+      <tspan x={x + width / 2} y={labelY} fontSize="14" fontWeight="900">
+        {label}
+      </tspan>
+      {captionLines.map((line, index) => (
+        <tspan key={`${label}-${line}-${index}`} x={x + width / 2} dy={index === 0 ? 18 : 14} fontSize="10.5" fontWeight="700">
+          {line}
+        </tspan>
+      ))}
+    </text>
+  )
+}
+
+function linkTouchesNode(linkId: string, nodeId: string): boolean {
+  return linkId.startsWith(`link-${nodeId}-`) || linkId.endsWith(`-${nodeId}`)
 }
 
 function ExamNetworkCapture({ step }: { step: ExamNetworkStep }) {
@@ -652,7 +682,11 @@ function ExamNetworkDiagramView({ diagram }: { diagram: ExamNetworkDiagram }) {
     setStepIndex(0)
   }
 
-  const play = () => {
+  const togglePlay = () => {
+    if (isPlaying) {
+      setIsPlaying(false)
+      return
+    }
     if (diagram.steps && stepIndex >= diagram.steps.length - 1) {
       setStepIndex(0)
     }
@@ -718,10 +752,10 @@ function ExamNetworkDiagramView({ diagram }: { diagram: ExamNetworkDiagram }) {
                     y={zone.y}
                     width={zone.width}
                     height={zone.height}
-                    rx="0"
+                    rx="8"
                     fill={tone.fill}
                     stroke={tone.stroke}
-                    strokeWidth="2"
+                    strokeWidth="2.2"
                     strokeDasharray={zone.kind === 'dashed' ? '10 7' : undefined}
                     strokeLinejoin="round"
                   />
@@ -750,8 +784,16 @@ function ExamNetworkDiagramView({ diagram }: { diagram: ExamNetworkDiagram }) {
                   <polyline
                     points={link.points.map((point) => `${point.x},${point.y}`).join(' ')}
                     fill="none"
+                    stroke="#ffffff"
+                    strokeWidth={active ? 10 : 8}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <polyline
+                    points={link.points.map((point) => `${point.x},${point.y}`).join(' ')}
+                    fill="none"
                     stroke={active ? '#2563eb' : tone.link}
-                    strokeWidth={active ? 5 : 3}
+                    strokeWidth={active ? 5.5 : 3.2}
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeDasharray={link.dashed ? '8 8' : undefined}
@@ -764,28 +806,36 @@ function ExamNetworkDiagramView({ diagram }: { diagram: ExamNetworkDiagram }) {
             })}
 
             {diagram.nodes.map((node) => {
-              const active = currentStep?.activeLinkIds.some((linkId) => linkId.includes(node.id))
-              const lines = nodeLines(node.label, node.caption)
-              const textLayout = nodeTextLayout(lines.length, node.height)
+              const active = currentStep?.activeLinkIds.some((linkId) => linkTouchesNode(linkId, node.id))
               const tone = EXAM_TONES[node.tone ?? ROLE_TONES[node.role]]
               return (
                 <g key={node.id}>
+                  <rect
+                    x={node.x + 4}
+                    y={node.y + 5}
+                    width={node.width}
+                    height={node.height}
+                    rx="8"
+                    fill="#0f172a"
+                    fillOpacity="0.08"
+                  />
                   <rect
                     x={node.x}
                     y={node.y}
                     width={node.width}
                     height={node.height}
-                    rx="0"
+                    rx="8"
                     fill={active ? '#dbeafe' : tone.fill}
                     stroke={active ? '#2563eb' : tone.stroke}
                     strokeWidth={active ? 3 : 2}
                   />
-                  <SvgText
-                    x={node.x + node.width / 2}
-                    y={node.y + textLayout.yOffset}
-                    lines={lines}
-                    size={textLayout.size}
-                    weight={lines.length === 1 ? 800 : 700}
+                  <SvgNodeLabel
+                    x={node.x}
+                    y={node.y}
+                    width={node.width}
+                    height={node.height}
+                    label={node.label}
+                    caption={node.caption}
                     color={tone.text}
                   />
                 </g>
@@ -796,11 +846,11 @@ function ExamNetworkDiagramView({ diagram }: { diagram: ExamNetworkDiagram }) {
           {currentStep && packetStyle && (
             <div
               key={currentStep.id}
-              className="textbook-exam-packet absolute z-10 -translate-x-1/2 -translate-y-1/2"
+              className="textbook-exam-packet absolute z-20 -translate-x-1/2 -translate-y-1/2"
               style={packetStyle}
               aria-hidden="true"
             >
-              <span className="rounded-full bg-blue-600 px-3 py-1 text-[11px] font-black text-white shadow-lg shadow-blue-200">
+              <span className="rounded-md border border-blue-200 bg-white px-2.5 py-1 text-[11px] font-black text-blue-700 shadow-lg shadow-blue-100">
                 {currentStep.packetLabel}
               </span>
             </div>
@@ -823,12 +873,12 @@ function ExamNetworkDiagramView({ diagram }: { diagram: ExamNetworkDiagram }) {
             </button>
             <button
               type="button"
-              onClick={play}
+              onClick={togglePlay}
               className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-2 text-xs font-bold text-white transition-colors hover:bg-blue-700"
-              title="再生"
+              title={isPlaying ? '一時停止' : '再生'}
             >
-              <Play className="h-4 w-4" aria-hidden="true" />
-              再生
+              {isPlaying ? <Pause className="h-4 w-4" aria-hidden="true" /> : <Play className="h-4 w-4" aria-hidden="true" />}
+              {isPlaying ? '停止' : '再生'}
             </button>
             <button
               type="button"

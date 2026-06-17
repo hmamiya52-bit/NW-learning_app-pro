@@ -78,6 +78,8 @@ export default function PacketFlowVisualizer({
     () => scenario.nodes.slice(0, -1).map((node, index) => [node, scenario.nodes[index + 1]] as const),
     [scenario.nodes],
   )
+  const arrowMarkerId = `${scenario.id}-packet-flow-arrow`
+  const activeArrowMarkerId = `${scenario.id}-packet-flow-arrow-active`
 
   const headerEntries = Object.entries(currentStep.headerFocus).filter(
     (entry): entry is [keyof PacketFlowStep['headerFocus'], string] => Boolean(entry[1]),
@@ -97,7 +99,7 @@ export default function PacketFlowVisualizer({
 
   const packetStartRatio = 0.32
   const packetEndRatio = 0.68
-  const packetYOffset = currentFrom.y === currentTo.y ? -18 : 0
+  const packetYOffset = currentFrom.y === currentTo.y ? -40 : -18
   const packetStyle = {
     '--packet-from-x': `${currentFrom.x + (currentTo.x - currentFrom.x) * packetStartRatio}%`,
     '--packet-from-y': `${currentFrom.y + (currentTo.y - currentFrom.y) * packetStartRatio + packetYOffset}%`,
@@ -152,55 +154,77 @@ export default function PacketFlowVisualizer({
       </div>
 
       <div className="p-3 sm:p-4">
-        <div
-          className="relative h-[180px] overflow-hidden rounded-lg border border-slate-200 bg-slate-50 sm:h-[220px]"
-          aria-label={`${scenario.title}の通信フロー図`}
-        >
-          <svg className="absolute inset-0 h-full w-full" aria-hidden="true">
-            {pathPairs.map(([from, to]) => {
-              const active = isActivePath(currentStep, from, to)
-              return (
-                <line
-                  key={`${from.id}-${to.id}`}
-                  x1={`${from.x}%`}
-                  y1={`${from.y}%`}
-                  x2={`${to.x}%`}
-                  y2={`${to.y}%`}
-                  stroke={active ? '#2563eb' : '#cbd5e1'}
-                  strokeWidth={active ? 5 : 3}
-                  strokeLinecap="round"
-                  strokeDasharray={active ? '0' : '8 8'}
-                />
-              )
-            })}
-          </svg>
-
-          {scenario.nodes.map((node) => (
-            <div
-              key={node.id}
-              className={[
-                'absolute w-[58px] -translate-x-1/2 -translate-y-1/2 rounded-lg border bg-white px-1 py-2 text-center shadow-sm transition-all sm:w-[104px] sm:px-2',
-                node.id === currentStep.from || node.id === currentStep.to
-                  ? 'border-blue-300 ring-2 ring-blue-100'
-                  : 'border-slate-200',
-              ].join(' ')}
-              style={{ left: `${node.x}%`, top: `${node.y}%` }}
-            >
-              <div className="mx-auto flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 text-slate-700">
-                <RoleIcon role={node.role} />
-              </div>
-              <p className="mt-1 text-[10px] font-black leading-tight text-slate-800 sm:text-xs">{node.label}</p>
-            </div>
-          ))}
-
+        <div className="overflow-x-auto pb-1">
           <div
-            key={currentStep.id}
-            className="textbook-packet absolute z-10 -translate-x-1/2 -translate-y-1/2"
-            style={packetStyle}
-            aria-hidden="true"
+            className="relative h-[230px] min-w-[720px] overflow-hidden rounded-lg border border-slate-200 bg-gradient-to-b from-slate-50 to-white sm:h-[270px]"
+            aria-label={`${scenario.title}の通信フロー図`}
           >
-            <div className="rounded-full bg-blue-600 px-2.5 py-1 text-[10px] font-black text-white shadow-lg shadow-blue-200">
-              {currentStep.packetLabel}
+            <svg className="absolute inset-0 h-full w-full" aria-hidden="true">
+              <defs>
+                <marker id={arrowMarkerId} markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+                  <path d="M0,0 L7,3.5 L0,7 Z" fill="#94a3b8" />
+                </marker>
+                <marker id={activeArrowMarkerId} markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+                  <path d="M0,0 L8,4 L0,8 Z" fill="#2563eb" />
+                </marker>
+              </defs>
+              {pathPairs.map(([from, to]) => {
+                const active = isActivePath(currentStep, from, to)
+                return (
+                  <g key={`${from.id}-${to.id}`}>
+                    <line
+                      x1={`${from.x}%`}
+                      y1={`${from.y}%`}
+                      x2={`${to.x}%`}
+                      y2={`${to.y}%`}
+                      stroke="#ffffff"
+                      strokeWidth={active ? 9 : 7}
+                      strokeLinecap="round"
+                    />
+                    <line
+                      x1={`${from.x}%`}
+                      y1={`${from.y}%`}
+                      x2={`${to.x}%`}
+                      y2={`${to.y}%`}
+                      stroke={active ? '#2563eb' : '#cbd5e1'}
+                      strokeWidth={active ? 5 : 3}
+                      strokeLinecap="round"
+                      strokeDasharray={active ? '0' : '8 8'}
+                      markerEnd={active ? `url(#${activeArrowMarkerId})` : `url(#${arrowMarkerId})`}
+                    />
+                  </g>
+                )
+              })}
+            </svg>
+
+            {scenario.nodes.map((node) => (
+              <div
+                key={node.id}
+                className={[
+                  'absolute w-[76px] -translate-x-1/2 -translate-y-1/2 rounded-lg border bg-white px-2 py-2.5 text-center shadow-sm transition-all sm:w-[126px] sm:px-3',
+                  node.id === currentStep.from || node.id === currentStep.to
+                    ? 'border-blue-300 ring-2 ring-blue-100'
+                    : 'border-slate-200',
+                ].join(' ')}
+                style={{ left: `${node.x}%`, top: `${node.y}%` }}
+              >
+                <div className="mx-auto flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 text-slate-700">
+                  <RoleIcon role={node.role} />
+                </div>
+                <p className="mt-1 text-[10px] font-black leading-tight text-slate-800 sm:text-xs">{node.label}</p>
+                <p className="mt-1 hidden text-[10px] font-bold leading-snug text-slate-500 sm:block">{node.hint}</p>
+              </div>
+            ))}
+
+            <div
+              key={currentStep.id}
+              className="textbook-packet absolute z-10 -translate-x-1/2 -translate-y-1/2"
+              style={packetStyle}
+              aria-hidden="true"
+            >
+              <div className="rounded-md border border-blue-200 bg-white px-2.5 py-1 text-[10px] font-black text-blue-700 shadow-lg shadow-blue-100">
+                {currentStep.packetLabel}
+              </div>
             </div>
           </div>
         </div>
@@ -271,7 +295,7 @@ export default function PacketFlowVisualizer({
             <h5 className="text-xs font-black text-slate-700">このステップで見るヘッダ</h5>
             <dl className="mt-2 space-y-1.5">
               {headerEntries.map(([key, value]) => (
-                <div key={key} className="grid grid-cols-[76px_minmax(0,1fr)] gap-2 text-[11px]">
+                <div key={key} className="grid grid-cols-[88px_minmax(0,1fr)] gap-2 text-[11px]">
                   <dt className="font-bold text-slate-500">{HEADER_LABELS[key]}</dt>
                   <dd className="min-w-0 break-all font-bold text-slate-800">{value}</dd>
                 </div>

@@ -134,7 +134,7 @@ function makeStep(
 
 function centerX(index: number, total: number): number {
   if (total <= 1) return 500
-  return 120 + (760 / (total - 1)) * index
+  return 128 + (744 / (total - 1)) * index
 }
 
 function linkId(from: string, to: string): string {
@@ -153,7 +153,13 @@ function findAdjacentLinkId(nodes: PacketFlowNode[], from: string, to: string): 
 }
 
 function makeExamNetworkDiagram(spec: ChapterSpec): ExamNetworkDiagram {
-  const centers = new Map(spec.nodes.map((node, index) => [node.id, { x: centerX(index, spec.nodes.length), y: 240 }]))
+  const nodeCenterY = 280
+  const nodeWidth = 136
+  const nodeHeight = 76
+  const nodeHalfWidth = nodeWidth / 2
+  const packetLaneY = 194
+  const linkLabelY = 224
+  const centers = new Map(spec.nodes.map((node, index) => [node.id, { x: centerX(index, spec.nodes.length), y: nodeCenterY }]))
   const nodeById = new Map(spec.nodes.map((node) => [node.id, node]))
 
   return {
@@ -165,7 +171,7 @@ function makeExamNetworkDiagram(spec: ChapterSpec): ExamNetworkDiagram {
       '線は物理的な接続だけでなく、読解上の通信経路として追います。',
       '動くラベルとキャプチャ欄で、どの層の情報を見ているかを確認します。',
     ],
-    viewBox: { width: 1000, height: 430 },
+    viewBox: { width: 1000, height: 470 },
     zones: [
       {
         id: 'scope',
@@ -173,7 +179,7 @@ function makeExamNetworkDiagram(spec: ChapterSpec): ExamNetworkDiagram {
         x: 35,
         y: 40,
         width: 930,
-        height: 330,
+        height: 370,
         kind: 'dashed',
         caption: '図解先行公開中',
         tone: 'slate',
@@ -182,9 +188,9 @@ function makeExamNetworkDiagram(spec: ChapterSpec): ExamNetworkDiagram {
         id: 'client-side',
         label: '利用者側',
         x: 65,
-        y: 120,
-        width: 250,
-        height: 185,
+        y: 135,
+        width: 285,
+        height: 220,
         kind: 'dashed',
         caption: '送信元、利用者、端末',
         tone: 'sky',
@@ -192,47 +198,49 @@ function makeExamNetworkDiagram(spec: ChapterSpec): ExamNetworkDiagram {
       {
         id: 'service-side',
         label: 'サービス側',
-        x: 685,
-        y: 120,
-        width: 250,
-        height: 185,
+        x: 650,
+        y: 135,
+        width: 285,
+        height: 220,
         kind: 'dashed',
         caption: '宛先、基盤、外部サービス',
         tone: 'amber',
       },
     ],
     nodes: spec.nodes.map((node, index) => {
-      const center = centers.get(node.id) ?? { x: centerX(index, spec.nodes.length), y: 240 }
+      const center = centers.get(node.id) ?? { x: centerX(index, spec.nodes.length), y: nodeCenterY }
       return {
         id: node.id,
         label: node.label,
         caption: node.hint,
-        x: center.x - 62,
-        y: center.y - 32,
-        width: 124,
-        height: 64,
+        x: center.x - nodeHalfWidth,
+        y: center.y - nodeHeight / 2,
+        width: nodeWidth,
+        height: nodeHeight,
         role: node.role,
         tone: ROLE_TONE[node.role],
       }
     }),
     links: spec.nodes.slice(0, -1).map((node, index) => {
       const next = spec.nodes[index + 1]
-      const from = centers.get(node.id) ?? { x: centerX(index, spec.nodes.length), y: 240 }
-      const to = centers.get(next.id) ?? { x: centerX(index + 1, spec.nodes.length), y: 240 }
+      const from = centers.get(node.id) ?? { x: centerX(index, spec.nodes.length), y: nodeCenterY }
+      const to = centers.get(next.id) ?? { x: centerX(index + 1, spec.nodes.length), y: nodeCenterY }
       return {
         id: linkId(node.id, next.id),
         points: [
-          { x: from.x + 62, y: from.y },
-          { x: to.x - 62, y: to.y },
+          { x: from.x + nodeHalfWidth, y: from.y },
+          { x: to.x - nodeHalfWidth, y: to.y },
         ],
         label: spec.linkLabels[index],
         tone: index % 2 === 0 ? 'blue' : 'emerald',
-        labelPosition: { x: (from.x + to.x) / 2, y: 206 },
+        labelPosition: { x: (from.x + to.x) / 2, y: linkLabelY },
       }
     }),
     steps: spec.steps.map((step) => {
-      const from = centers.get(step.from) ?? { x: 120, y: 240 }
-      const to = centers.get(step.to) ?? { x: 880, y: 240 }
+      const fromCenter = centers.get(step.from) ?? { x: 128, y: nodeCenterY }
+      const toCenter = centers.get(step.to) ?? { x: 872, y: nodeCenterY }
+      const from = { x: fromCenter.x, y: packetLaneY }
+      const to = { x: toCenter.x, y: packetLaneY }
       const fromNode = nodeById.get(step.from)
       const toNode = nodeById.get(step.to)
       return {

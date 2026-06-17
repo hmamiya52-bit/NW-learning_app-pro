@@ -199,6 +199,20 @@ export default function TextbookChapter() {
           )}
         </header>
 
+        {chapter.status === 'diagram' && (
+          <section className="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3">
+            <div className="flex gap-3">
+              <Construction className="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-700" aria-hidden="true" />
+              <div className="min-w-0">
+                <h2 className="text-sm font-black text-amber-950">工事中: この章は図解部分のみ先行公開中です</h2>
+                <p className="mt-1 text-xs font-bold leading-relaxed text-amber-900">
+                  説明文は後続工程で追加します。現在は構成図、観測点、動く図解を先に確認できる状態です。
+                </p>
+              </div>
+            </div>
+          </section>
+        )}
+
         <div className="mt-5 space-y-5">
           {chapter.sections.map((section, index) => (
             <section key={section.heading} id={`textbook-section-${index + 1}`} className="scroll-mt-16 rounded-lg border border-slate-200 bg-white px-5 py-5 shadow-sm">

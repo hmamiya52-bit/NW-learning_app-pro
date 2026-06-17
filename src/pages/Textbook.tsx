@@ -13,6 +13,7 @@ import { getTextbookReadState } from '../lib/textbookReadState'
 
 const STATUS_STYLES = {
   published: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+  diagram: 'bg-amber-50 text-amber-800 border-amber-200',
   draft: 'bg-slate-100 text-slate-500 border-slate-200',
 } as const
 
@@ -22,6 +23,15 @@ function ChapterStatus({ chapter, isRead }: { chapter: TextbookChapter; isRead: 
       <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-1 text-[11px] font-bold ${STATUS_STYLES.draft}`}>
         <Construction className="h-3.5 w-3.5" aria-hidden="true" />
         準備中
+      </span>
+    )
+  }
+
+  if (chapter.status === 'diagram') {
+    return (
+      <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-1 text-[11px] font-bold ${STATUS_STYLES.diagram}`}>
+        <Construction className="h-3.5 w-3.5" aria-hidden="true" />
+        図解先行
       </span>
     )
   }
@@ -56,7 +66,7 @@ function ChapterCard({ chapter, isRead }: { chapter: TextbookChapter; isRead: bo
             <p className="mt-1 text-xs leading-relaxed text-slate-500">{chapter.description}</p>
           </div>
         </div>
-        {chapter.status === 'published' && (
+        {chapter.status !== 'draft' && (
           <ChevronRight className="mt-2 h-4 w-4 flex-shrink-0 text-slate-300 transition-colors group-hover:text-blue-500" aria-hidden="true" />
         )}
       </div>
@@ -94,6 +104,7 @@ function ChapterCard({ chapter, isRead }: { chapter: TextbookChapter; isRead: bo
 export default function Textbook() {
   const [readState] = useState(() => getTextbookReadState())
   const publishedCount = textbookChapters.filter((chapter) => chapter.status === 'published').length
+  const diagramCount = textbookChapters.filter((chapter) => chapter.status === 'diagram').length
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -109,10 +120,14 @@ export default function Textbook() {
                 ネスペ学習の入口として、通信の流れを図で追いながら基礎を固めます。暗記に入る前に、MAC/IP、L2/L3、ARP、VLANがどうつながるかをつかむための読み物です。
               </p>
             </div>
-            <div className="grid grid-cols-2 gap-2 text-center md:w-52">
+            <div className="grid grid-cols-3 gap-2 text-center md:w-72">
               <div className="rounded-lg border border-blue-100 bg-blue-50 px-3 py-2">
-                <p className="text-lg font-black text-blue-700">{publishedCount}</p>
-                <p className="text-[11px] font-bold text-blue-800">公開中</p>
+                <p className="text-lg font-black text-blue-700">{diagramCount}</p>
+                <p className="text-[11px] font-bold text-blue-800">図解先行</p>
+              </div>
+              <div className="rounded-lg border border-emerald-100 bg-emerald-50 px-3 py-2">
+                <p className="text-lg font-black text-emerald-700">{publishedCount}</p>
+                <p className="text-[11px] font-bold text-emerald-800">完成版</p>
               </div>
               <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
                 <p className="text-lg font-black text-slate-700">{textbookChapters.length}</p>

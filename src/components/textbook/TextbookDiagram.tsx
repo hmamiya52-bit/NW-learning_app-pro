@@ -616,10 +616,10 @@ function MobileExamNetworkDiagram({
   const activeLinkIds = new Set(currentStep?.activeLinkIds ?? [])
   const scopeZone = diagram.zones.find((zone) => zone.id === 'scope')
   const sideZones = diagram.zones.filter((zone) => zone.id === 'client-side' || zone.id === 'service-side')
-  const viewBox = { width: 360, height: 248 }
+  const viewBox = { width: 360, height: 198 }
   const nodeWidth = 58
-  const nodeHeight = 50
-  const nodeCenterY = 154
+  const nodeHeight = 44
+  const nodeCenterY = 132
   const nodeCenters = diagram.nodes.map((node, index) => ({
     node,
     x: diagram.nodes.length <= 1 ? viewBox.width / 2 : 42 + (276 / (diagram.nodes.length - 1)) * index,
@@ -634,9 +634,9 @@ function MobileExamNetworkDiagram({
         role="img"
         aria-label={`${diagram.title}のスマホ用構成図`}
       >
-        <rect x="8" y="12" width="344" height="220" rx="8" fill="#f8fafc" stroke="#334155" strokeWidth="1.6" strokeDasharray="7 5" />
+        <rect x="8" y="8" width="344" height="178" rx="8" fill="#f8fafc" stroke="#334155" strokeWidth="1.6" strokeDasharray="7 5" />
         {scopeZone && (
-          <text x="22" y="32" fill="#0f172a" fontSize="12" fontWeight="900">
+          <text x="22" y="28" fill="#0f172a" fontSize="12" fontWeight="900">
             {scopeZone.label}
           </text>
         )}
@@ -647,20 +647,20 @@ function MobileExamNetworkDiagram({
             <g key={zone.id}>
               <rect
                 x={isService ? 202 : 14}
-                y="62"
+                y="50"
                 width={isService ? 140 : 150}
-                height="126"
+                height="112"
                 rx="7"
                 fill={tone.fill}
                 stroke={tone.stroke}
                 strokeWidth="1.4"
                 strokeDasharray="6 4"
               />
-              <text x={isService ? 214 : 26} y="80" fill={tone.text} fontSize="11" fontWeight="900">
+              <text x={isService ? 214 : 26} y="68" fill={tone.text} fontSize="11" fontWeight="900">
                 {zone.label}
               </text>
               {zone.caption && (
-                <text x={isService ? 214 : 26} y="96" fill={tone.text} fontSize="7.5" fontWeight="700">
+                <text x={isService ? 214 : 26} y="84" fill={tone.text} fontSize="7.5" fontWeight="700">
                   {zone.caption}
                 </text>
               )}
@@ -699,8 +699,8 @@ function MobileExamNetworkDiagram({
               />
               {label && (
                 <g>
-                  <rect x={labelX - badgeWidth / 2} y="106" width={badgeWidth} height="18" rx="5" fill="#ffffff" stroke="#dbe4ef" />
-                  <text x={labelX} y="119" textAnchor="middle" fill={active ? '#1d4ed8' : tone.text} fontSize="8" fontWeight="900">
+                  <rect x={labelX - badgeWidth / 2} y="92" width={badgeWidth} height="18" rx="5" fill="#ffffff" stroke="#dbe4ef" />
+                  <text x={labelX} y="105" textAnchor="middle" fill={active ? '#1d4ed8' : tone.text} fontSize="8" fontWeight="900">
                     {label}
                   </text>
                 </g>
@@ -745,15 +745,32 @@ function MobileExamNetworkDiagram({
   )
 }
 
+function CaptureValue({ value }: { value: string }) {
+  const pieces = value.split(' / ')
+  if (pieces.length <= 1) {
+    return <TextbookRichText text={value} />
+  }
+
+  return (
+    <span className="space-y-0.5">
+      {pieces.map((piece) => (
+        <span key={piece} className="block">
+          <TextbookRichText text={piece} />
+        </span>
+      ))}
+    </span>
+  )
+}
+
 function ExamNetworkCapture({ step }: { step: ExamNetworkStep }) {
   return (
-    <section className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
-      <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
-        <div>
+    <section className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-3 sm:px-4">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
           <p className="text-xs font-black text-blue-700">{step.capture.point}</p>
           <h5 className="mt-1 text-sm font-black leading-snug text-slate-800">{step.title}</h5>
         </div>
-        <span className="w-fit rounded-full bg-blue-600 px-2.5 py-1 text-[11px] font-black text-white">
+        <span className="mt-0.5 flex-shrink-0 rounded-full bg-blue-600 px-2.5 py-1 text-[11px] font-black text-white">
           {step.packetLabel}
         </span>
       </div>
@@ -771,10 +788,10 @@ function ExamNetworkCapture({ step }: { step: ExamNetworkStep }) {
           ['L4', step.capture.l4],
           ['注目点', step.capture.note],
         ].map(([label, value]) => (
-          <div key={label} className="grid grid-cols-[72px_minmax(0,1fr)] border-b border-slate-100 last:border-b-0">
-            <div className="bg-slate-50 px-3 py-2 text-xs font-black text-slate-500">{label}</div>
-            <div className="min-w-0 px-3 py-2 text-xs font-bold leading-relaxed text-slate-800">
-              <TextbookRichText text={value} />
+          <div key={label} className="grid grid-cols-[58px_minmax(0,1fr)] border-b border-slate-100 last:border-b-0 sm:grid-cols-[72px_minmax(0,1fr)]">
+            <div className="bg-slate-50 px-2.5 py-2 text-xs font-black text-slate-500 sm:px-3">{label}</div>
+            <div className="min-w-0 px-2.5 py-2 text-xs font-bold leading-relaxed text-slate-800 sm:px-3">
+              <CaptureValue value={value} />
             </div>
           </div>
         ))}

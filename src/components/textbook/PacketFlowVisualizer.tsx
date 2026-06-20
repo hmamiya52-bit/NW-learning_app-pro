@@ -229,6 +229,40 @@ export default function PacketFlowVisualizer({
           </div>
         </div>
 
+        <div className="mt-3 grid gap-3 lg:grid-cols-[minmax(0,1fr)_260px]">
+          <section className="min-h-[178px] rounded-lg border border-slate-200 bg-white px-4 py-3" aria-live="polite">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="text-xs font-bold text-blue-600">
+                  STEP {stepIndex + 1} / {scenario.steps.length}
+                </p>
+                <h5 className="mt-1 text-sm font-black leading-snug text-slate-800">{currentStep.title}</h5>
+              </div>
+              <span className="rounded-full bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-500">
+                {currentStep.packetLabel}
+              </span>
+            </div>
+            <p className="mt-2 text-sm leading-relaxed text-slate-600">
+              <TextbookRichText text={currentStep.explanation} />
+            </p>
+            <p className="mt-2 rounded-lg bg-blue-50 px-3 py-2 text-xs font-bold leading-relaxed text-blue-800">
+              <TextbookRichText text={currentStep.deviceFocus} />
+            </p>
+          </section>
+
+          <section className="min-h-[178px] rounded-lg border border-slate-200 bg-slate-50 px-3 py-3">
+            <h5 className="text-xs font-black text-slate-700">このステップで見るヘッダ</h5>
+            <dl className="mt-2 space-y-1.5">
+              {headerEntries.map(([key, value]) => (
+                <div key={key} className="grid grid-cols-[88px_minmax(0,1fr)] gap-2 text-[11px]">
+                  <dt className="font-bold text-slate-500">{HEADER_LABELS[key]}</dt>
+                  <dd className="min-w-0 break-all font-bold text-slate-800">{value}</dd>
+                </div>
+              ))}
+            </dl>
+          </section>
+        </div>
+
         <div className="mt-3 flex flex-wrap items-center gap-2">
           <button
             type="button"
@@ -268,40 +302,6 @@ export default function PacketFlowVisualizer({
             <RotateCcw className="h-4 w-4" aria-hidden="true" />
             最初から
           </button>
-        </div>
-
-        <div className="mt-3 grid gap-3 lg:grid-cols-[minmax(0,1fr)_260px]">
-          <section className="min-h-[178px] rounded-lg border border-slate-200 bg-white px-4 py-3" aria-live="polite">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="text-xs font-bold text-blue-600">
-                  STEP {stepIndex + 1} / {scenario.steps.length}
-                </p>
-                <h5 className="mt-1 text-sm font-black leading-snug text-slate-800">{currentStep.title}</h5>
-              </div>
-              <span className="rounded-full bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-500">
-                {currentStep.packetLabel}
-              </span>
-            </div>
-            <p className="mt-2 text-sm leading-relaxed text-slate-600">
-              <TextbookRichText text={currentStep.explanation} />
-            </p>
-            <p className="mt-2 rounded-lg bg-blue-50 px-3 py-2 text-xs font-bold leading-relaxed text-blue-800">
-              <TextbookRichText text={currentStep.deviceFocus} />
-            </p>
-          </section>
-
-          <section className="min-h-[178px] rounded-lg border border-slate-200 bg-slate-50 px-3 py-3">
-            <h5 className="text-xs font-black text-slate-700">このステップで見るヘッダ</h5>
-            <dl className="mt-2 space-y-1.5">
-              {headerEntries.map(([key, value]) => (
-                <div key={key} className="grid grid-cols-[88px_minmax(0,1fr)] gap-2 text-[11px]">
-                  <dt className="font-bold text-slate-500">{HEADER_LABELS[key]}</dt>
-                  <dd className="min-w-0 break-all font-bold text-slate-800">{value}</dd>
-                </div>
-              ))}
-            </dl>
-          </section>
         </div>
       </div>
     </div>

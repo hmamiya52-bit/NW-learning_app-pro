@@ -860,6 +860,7 @@ function ExamNetworkDiagramView({ diagram }: { diagram: ExamNetworkDiagram }) {
 
       {hasSteps && diagram.steps && currentStep && (
         <div className="mt-4 space-y-3">
+          <ExamNetworkCapture step={currentStep} />
           <div className="flex flex-wrap items-center gap-2">
             <button
               type="button"
@@ -903,7 +904,6 @@ function ExamNetworkDiagramView({ diagram }: { diagram: ExamNetworkDiagram }) {
               STEP {stepIndex + 1} / {diagram.steps.length}
             </span>
           </div>
-          <ExamNetworkCapture step={currentStep} />
         </div>
       )}
     </DiagramShell>

@@ -81,6 +81,30 @@ function RoleIcon({ role }: { role: PacketFlowNodeRole }) {
   return <Cable className="h-5 w-5" aria-hidden="true" />
 }
 
+function compactLabelLines(label: string, maxLines = 2): string[] {
+  const trimmed = label.trim()
+  if (!trimmed) return []
+  if (trimmed.length <= 6 && !trimmed.includes(' ')) return [trimmed]
+  if (/^[A-Za-z0-9-]+$/.test(trimmed) && trimmed.length <= 9) return [trimmed]
+
+  if (trimmed.includes('/')) {
+    const [first, ...rest] = trimmed.split('/')
+    return [`${first}/`, rest.join('/')].filter(Boolean).slice(0, maxLines)
+  }
+
+  if (trimmed.includes(' ')) {
+    return trimmed.split(/\s+/).filter(Boolean).slice(0, maxLines)
+  }
+
+  const alphaPrefix = trimmed.match(/^([A-Za-z0-9]+)(.+)$/)
+  if (alphaPrefix && alphaPrefix[1].length >= 3 && alphaPrefix[2].length >= 2) {
+    return [alphaPrefix[1], alphaPrefix[2]].slice(0, maxLines)
+  }
+
+  const splitAt = Math.ceil(trimmed.length / 2)
+  return [trimmed.slice(0, splitAt), trimmed.slice(splitAt)].filter(Boolean).slice(0, maxLines)
+}
+
 function DiagramShell({
   title,
   description,
@@ -94,14 +118,14 @@ function DiagramShell({
 }) {
   return (
     <figure className="rounded-lg border border-slate-200 bg-white shadow-sm">
-      <figcaption className="border-b border-slate-200 px-4 py-3">
+      <figcaption className="border-b border-slate-200 px-3 py-3 sm:px-4">
         <p className="text-sm font-black text-slate-800">{title}</p>
         <p className="mt-1 text-sm leading-relaxed text-slate-600">
           <TextbookRichText text={description} />
         </p>
       </figcaption>
-      <div className="p-4">{children}</div>
-      <div className="border-t border-slate-100 px-4 py-3">
+      <div className="p-3 sm:p-4">{children}</div>
+      <div className="border-t border-slate-100 px-3 py-3 sm:px-4">
         <p className="text-xs font-black text-slate-500">この図で見るところ</p>
         <ul className="mt-2 space-y-1.5">
           {points.map((point) => (
@@ -155,7 +179,7 @@ function NetworkFlowDiagramView({ diagram }: { diagram: NetworkFlowDiagram }) {
 
   return (
     <DiagramShell title={diagram.title} description={diagram.description} points={diagram.points}>
-      <div className="hidden sm:block">
+      <div className="hidden lg:block">
         <div className="relative h-[310px] overflow-hidden rounded-lg border border-slate-200 bg-slate-50">
           <div className="absolute bottom-3 left-3 top-3 w-[66%] rounded-lg border border-sky-200 bg-sky-50/70" />
           <div className="absolute bottom-3 right-3 top-3 w-[27%] rounded-lg border border-indigo-200 bg-indigo-50/70" />
@@ -224,30 +248,74 @@ function NetworkFlowDiagramView({ diagram }: { diagram: NetworkFlowDiagram }) {
         </div>
       </div>
 
-      <div className="space-y-3 sm:hidden">
-        {diagram.nodes.map((node, index) => {
-          const link = diagram.links[index]
-          return (
-            <div key={node.id}>
-              <div className="grid grid-cols-[44px_minmax(0,1fr)] gap-3 rounded-lg border border-slate-200 bg-slate-50 px-3 py-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white text-slate-700 shadow-sm">
-                  <RoleIcon role={node.role} />
-                </div>
-                <div>
-                  <p className="text-sm font-black text-slate-800">{node.label}</p>
-                  <p className="mt-1 text-xs leading-relaxed text-slate-500">{node.caption}</p>
-                </div>
-              </div>
-              {link && (
-                <div className="ml-5 flex items-center gap-2 py-2 text-xs font-black text-blue-700">
-                  <span className="h-6 w-px bg-blue-200" />
+      <div className="-mx-2 lg:hidden">
+        <svg
+          className="h-auto w-full rounded-lg border border-slate-200 bg-white"
+          viewBox="0 0 360 184"
+          role="img"
+          aria-label={`${diagram.title}のスマホ用構成図`}
+        >
+          <rect x="10" y="12" width="228" height="136" rx="8" fill="#eff6ff" stroke="#2563eb" strokeWidth="1.4" strokeDasharray="6 4" />
+          <rect x="246" y="12" width="104" height="136" rx="8" fill="#eef2ff" stroke="#4f46e5" strokeWidth="1.4" strokeDasharray="6 4" />
+          <text x="24" y="32" fill="#1e3a8a" fontSize="11" fontWeight="900">社内LAN</text>
+          <text x="258" y="32" fill="#312e81" fontSize="11" fontWeight="900">別ネットワーク</text>
+
+          {diagram.links.map((link) => {
+            const from = nodeMap.get(link.from)
+            const to = nodeMap.get(link.to)
+            if (!from || !to) return null
+            const labelX = ((from.x + to.x) / 2 / 100) * 360
+            return (
+              <g key={`${link.from}-${link.to}-mobile`}>
+                <line
+                  x1={`${from.x + 7}%`}
+                  y1="112"
+                  x2={`${to.x - 7}%`}
+                  y2="112"
+                  stroke="#ffffff"
+                  strokeWidth="6"
+                  strokeLinecap="round"
+                />
+                <line
+                  x1={`${from.x + 7}%`}
+                  y1="112"
+                  x2={`${to.x - 7}%`}
+                  y2="112"
+                  stroke="#2563eb"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                />
+                <rect x={labelX - 32} y="78" width="64" height="18" rx="5" fill="#ffffff" stroke="#dbeafe" />
+                <text x={labelX} y="91" textAnchor="middle" fill="#1d4ed8" fontSize="8" fontWeight="900">
                   {link.label}
-                  <ArrowRight className="h-3.5 w-3.5 rotate-90" aria-hidden="true" />
-                </div>
-              )}
-            </div>
-          )
-        })}
+                </text>
+              </g>
+            )
+          })}
+
+          {positionedNodes.map((node) => {
+            const x = (node.x / 100) * 360
+            const lines = compactLabelLines(node.label)
+            return (
+              <g key={node.id}>
+                <rect x={x - 30} y="91" width="60" height="42" rx="7" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1.6" />
+                {lines.map((line, index) => (
+                  <text
+                    key={`${node.id}-${line}`}
+                    x={x}
+                    y={111 + index * 11 - (lines.length - 1) * 5}
+                    textAnchor="middle"
+                    fill="#0f172a"
+                    fontSize="9.3"
+                    fontWeight="900"
+                  >
+                    {line}
+                  </text>
+                ))}
+              </g>
+            )
+          })}
+        </svg>
       </div>
     </DiagramShell>
   )
@@ -281,7 +349,34 @@ function ComparisonDiagramView({ diagram }: { diagram: ComparisonDiagram }) {
 function AddressRoleTableDiagramView({ diagram }: { diagram: AddressRoleTableDiagram }) {
   return (
     <DiagramShell title={diagram.title} description={diagram.description} points={diagram.points}>
-      <div className="overflow-x-auto">
+      <div className="space-y-3 lg:hidden">
+        {diagram.rows.map((row) => (
+          <section key={row.name} className={`rounded-lg border px-3 py-3 ${ADDRESS_TABLE_COLORS[row.accent]}`}>
+            <div className="flex items-center justify-between gap-3">
+              <h4 className="text-sm font-black">{row.name}</h4>
+              <span className="rounded-md bg-white/75 px-2 py-1 text-[11px] font-black shadow-sm">{row.layer}</span>
+            </div>
+            <dl className="mt-3 space-y-2 text-xs">
+              {[
+                ['入る場所', row.header],
+                ['識別するもの', row.identifies],
+                ['有効範囲', row.scope],
+                ['例', row.example],
+                ['構成図での読み方', row.examHint],
+              ].map(([label, value]) => (
+                <div key={label} className="rounded-md bg-white/75 px-2.5 py-2 shadow-sm">
+                  <dt className="font-black opacity-70">{label}</dt>
+                  <dd className="mt-1 font-bold leading-relaxed text-slate-800">
+                    <TextbookRichText text={value} />
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </section>
+        ))}
+      </div>
+
+      <div className="hidden overflow-x-auto lg:block">
         <table className="min-w-[760px] border-collapse text-left text-xs">
           <thead>
             <tr className="border-b border-slate-200 bg-slate-50 text-slate-600">
@@ -627,7 +722,7 @@ function MobileExamNetworkDiagram({
   }))
 
   return (
-    <div className="-mx-3 sm:hidden" data-testid="mobile-exam-network-diagram">
+    <div className="-mx-3 lg:hidden" data-testid="mobile-exam-network-diagram">
       <svg
         className="h-auto w-full rounded-lg border border-slate-200 bg-white"
         viewBox={`0 0 ${viewBox.width} ${viewBox.height}`}
@@ -712,7 +807,8 @@ function MobileExamNetworkDiagram({
         {nodeCenters.map(({ node, x, y }) => {
           const tone = EXAM_TONES[node.tone ?? ROLE_TONES[node.role]]
           const active = currentStep?.activeLinkIds.some((linkId) => linkTouchesNode(linkId, node.id))
-          const labelSize = node.label.length >= 5 ? 9.2 : 10.5
+          const labelLines = compactLabelLines(node.label)
+          const labelSize = labelLines.some((line) => line.length >= 7) ? 8.8 : 10
           return (
             <g key={node.id}>
               <rect
@@ -734,9 +830,19 @@ function MobileExamNetworkDiagram({
                 stroke={active ? '#2563eb' : tone.stroke}
                 strokeWidth={active ? 2.4 : 1.8}
               />
-              <text x={x} y={y + 4} textAnchor="middle" fill={tone.text} fontSize={labelSize} fontWeight="900">
-                {node.label}
-              </text>
+              {labelLines.map((line, index) => (
+                <text
+                  key={`${node.id}-${line}`}
+                  x={x}
+                  y={y + 4 + index * 11 - (labelLines.length - 1) * 5}
+                  textAnchor="middle"
+                  fill={tone.text}
+                  fontSize={labelSize}
+                  fontWeight="900"
+                >
+                  {line}
+                </text>
+              ))}
             </g>
           )
         })}
@@ -862,7 +968,7 @@ function ExamNetworkDiagramView({ diagram }: { diagram: ExamNetworkDiagram }) {
     <DiagramShell title={diagram.title} description={diagram.description} points={diagram.points}>
       {diagram.mobileOptimized && <MobileExamNetworkDiagram diagram={diagram} currentStep={currentStep} />}
 
-      <div className={`${diagram.mobileOptimized ? 'hidden sm:block' : ''} overflow-x-auto pb-1`} data-testid="exam-network-diagram">
+      <div className={`${diagram.mobileOptimized ? 'hidden lg:block' : ''} overflow-x-auto pb-1`} data-testid="exam-network-diagram">
         <div
           className="relative min-w-[760px] overflow-hidden rounded-lg border border-slate-300 bg-white"
           style={{ aspectRatio: `${diagram.viewBox.width} / ${diagram.viewBox.height}` }}

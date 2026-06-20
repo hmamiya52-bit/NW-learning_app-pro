@@ -164,7 +164,7 @@ function makeExamNetworkDiagram(spec: ChapterSpec): ExamNetworkDiagram {
 
   return {
     type: 'exam-network',
-    mobileOptimized: spec.order <= 2,
+    mobileOptimized: true,
     title: `${spec.title}: 構成図で見る範囲`,
     description: spec.scope,
     points: [
@@ -314,7 +314,7 @@ function makeInteractiveFlowDiagram(spec: ChapterSpec): TextbookDiagram {
       id: `${spec.id}-flow`,
       title: spec.title,
       description: spec.scope,
-      mobileOptimized: spec.order <= 2,
+      mobileOptimized: true,
       nodes: spec.nodes,
       steps: spec.steps,
     },

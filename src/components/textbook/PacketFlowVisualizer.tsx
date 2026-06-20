@@ -47,6 +47,30 @@ function RoleIcon({ role }: { role: PacketFlowNodeRole }) {
   return <Globe2 className="h-5 w-5" aria-hidden="true" />
 }
 
+function compactLabelLines(label: string, maxLines = 2): string[] {
+  const trimmed = label.trim()
+  if (!trimmed) return []
+  if (trimmed.length <= 6 && !trimmed.includes(' ')) return [trimmed]
+  if (/^[A-Za-z0-9-]+$/.test(trimmed) && trimmed.length <= 9) return [trimmed]
+
+  if (trimmed.includes('/')) {
+    const [first, ...rest] = trimmed.split('/')
+    return [`${first}/`, rest.join('/')].filter(Boolean).slice(0, maxLines)
+  }
+
+  if (trimmed.includes(' ')) {
+    return trimmed.split(/\s+/).filter(Boolean).slice(0, maxLines)
+  }
+
+  const alphaPrefix = trimmed.match(/^([A-Za-z0-9]+)(.+)$/)
+  if (alphaPrefix && alphaPrefix[1].length >= 3 && alphaPrefix[2].length >= 2) {
+    return [alphaPrefix[1], alphaPrefix[2]].slice(0, maxLines)
+  }
+
+  const splitAt = Math.ceil(trimmed.length / 2)
+  return [trimmed.slice(0, splitAt), trimmed.slice(splitAt)].filter(Boolean).slice(0, maxLines)
+}
+
 function nodeById(nodes: PacketFlowNode[], id: string): PacketFlowNode {
   const node = nodes.find((item) => item.id === id)
   if (!node) {
@@ -81,10 +105,11 @@ function MobilePacketFlowPath({
   const activeFrom = activePair ? positionById.get(activePair[0].id) : undefined
   const activeTo = activePair ? positionById.get(activePair[1].id) : undefined
   const packetLeft = activeFrom && activeTo ? (activeFrom.mobileX + activeTo.mobileX) / 2 : 50
+  const compactNodes = nodes.length >= 5
 
   return (
     <div
-      className="relative -mx-3 h-[190px] overflow-hidden rounded-lg border border-slate-200 bg-gradient-to-b from-slate-50 to-white sm:mx-0 sm:hidden"
+      className="relative -mx-3 h-[162px] overflow-hidden rounded-lg border border-slate-200 bg-gradient-to-b from-slate-50 to-white lg:mx-0 lg:hidden"
       data-testid="mobile-packet-flow"
     >
       <svg className="absolute inset-0 h-full w-full" aria-hidden="true">
@@ -120,7 +145,7 @@ function MobilePacketFlowPath({
       </svg>
 
       <div
-        className="absolute top-[20%] z-20 -translate-x-1/2 rounded-md border border-blue-200 bg-white px-2.5 py-1 text-[10px] font-black text-blue-700 shadow-lg shadow-blue-100"
+        className="absolute top-[16%] z-20 -translate-x-1/2 rounded-md border border-blue-200 bg-white px-2.5 py-1 text-[10px] font-black text-blue-700 shadow-lg shadow-blue-100"
         style={{ left: `${packetLeft}%` }}
       >
         {currentStep.packetLabel}
@@ -128,20 +153,35 @@ function MobilePacketFlowPath({
 
       {positionedNodes.map((node) => {
         const activeNode = node.id === currentStep.from || node.id === currentStep.to
+        const labelLines = compactLabelLines(node.label)
+        const hintLines = compactLabelLines(node.hint)
         return (
           <div
             key={node.id}
             className={[
-              'absolute z-10 w-[60px] -translate-x-1/2 -translate-y-1/2 rounded-lg border bg-white px-1 py-2 text-center shadow-sm',
+              'absolute z-10 -translate-x-1/2 -translate-y-1/2 rounded-lg border bg-white px-1 py-2 text-center shadow-sm',
+              compactNodes ? 'w-[48px]' : 'w-[60px]',
               activeNode ? 'border-blue-300 ring-2 ring-blue-100' : 'border-slate-200',
             ].join(' ')}
             style={{ left: `${node.mobileX}%`, top: `${node.mobileY}%` }}
           >
-            <div className="mx-auto flex h-7 w-7 items-center justify-center rounded-lg bg-slate-100 text-slate-700">
+            <div className={`mx-auto flex items-center justify-center rounded-lg bg-slate-100 text-slate-700 ${compactNodes ? 'h-6 w-6' : 'h-7 w-7'}`}>
               <RoleIcon role={node.role} />
             </div>
-            <p className="mt-1 text-[9.5px] font-black leading-tight text-slate-800">{node.label}</p>
-            <p className="mt-1 text-[7.5px] font-bold leading-tight text-slate-500">{node.hint}</p>
+            <p className={`mt-1 font-black leading-tight text-slate-800 ${compactNodes ? 'text-[8.5px]' : 'text-[9.5px]'}`}>
+              {labelLines.map((line) => (
+                <span key={line} className="block">
+                  {line}
+                </span>
+              ))}
+            </p>
+            <p className={`mt-1 font-bold leading-tight text-slate-500 ${compactNodes ? 'text-[6.8px]' : 'text-[7.4px]'}`}>
+              {hintLines.map((line) => (
+                <span key={line} className="block">
+                  {line}
+                </span>
+              ))}
+            </p>
           </div>
         )
       })}
@@ -244,7 +284,7 @@ export default function PacketFlowVisualizer({
       <div className="p-3 sm:p-4">
         {useMobileOptimizedPath && <MobilePacketFlowPath nodes={scenario.nodes} pathPairs={pathPairs} currentStep={currentStep} />}
 
-        <div className={`${useMobileOptimizedPath ? 'hidden sm:block' : ''} overflow-x-auto pb-1`}>
+        <div className={`${useMobileOptimizedPath ? 'hidden lg:block' : ''} overflow-x-auto pb-1`}>
           <div
             className="relative h-[230px] min-w-[720px] overflow-hidden rounded-lg border border-slate-200 bg-gradient-to-b from-slate-50 to-white sm:h-[270px]"
             aria-label={`${scenario.title}の通信フロー図`}

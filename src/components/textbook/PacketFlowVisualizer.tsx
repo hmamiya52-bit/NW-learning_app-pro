@@ -62,6 +62,59 @@ function isActivePath(step: PacketFlowStep, from: PacketFlowNode, to: PacketFlow
   )
 }
 
+function MobilePacketFlowPath({
+  nodes,
+  pathPairs,
+  currentStep,
+}: {
+  nodes: PacketFlowNode[]
+  pathPairs: readonly (readonly [PacketFlowNode, PacketFlowNode])[]
+  currentStep: PacketFlowStep
+}) {
+  return (
+    <div className="space-y-2 rounded-lg border border-slate-200 bg-slate-50 p-3 sm:hidden" data-testid="mobile-packet-flow">
+      {nodes.map((node, index) => {
+        const nextPair = pathPairs[index]
+        const activeNode = node.id === currentStep.from || node.id === currentStep.to
+        const activeLink = Boolean(nextPair && isActivePath(currentStep, nextPair[0], nextPair[1]))
+
+        return (
+          <div key={node.id} className="space-y-2">
+            <div
+              className={[
+                'grid grid-cols-[42px_minmax(0,1fr)] gap-3 rounded-lg border bg-white px-3 py-3 shadow-sm',
+                activeNode ? 'border-blue-300 ring-2 ring-blue-100' : 'border-slate-200',
+              ].join(' ')}
+            >
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 text-slate-700">
+                <RoleIcon role={node.role} />
+              </div>
+              <div className="min-w-0">
+                <p className="text-sm font-black leading-tight text-slate-800">{node.label}</p>
+                <p className="mt-1 text-xs font-bold leading-relaxed text-slate-500">{node.hint}</p>
+              </div>
+            </div>
+
+            {nextPair && (
+              <div className="ml-5 flex items-center gap-2 py-1">
+                <span className={`h-7 w-px rounded-full ${activeLink ? 'bg-blue-600' : 'bg-slate-300'}`} />
+                <span
+                  className={`rounded-md border px-2 py-1 text-[11px] font-black ${
+                    activeLink ? 'border-blue-200 bg-blue-50 text-blue-700' : 'border-slate-200 bg-white text-slate-500'
+                  }`}
+                >
+                  {activeLink ? currentStep.packetLabel : '次の機器へ'}
+                </span>
+                <ChevronRight className={`h-3.5 w-3.5 rotate-90 ${activeLink ? 'text-blue-600' : 'text-slate-400'}`} aria-hidden="true" />
+              </div>
+            )}
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
 export default function PacketFlowVisualizer({
   scenario,
   title = '動く図解',
@@ -80,6 +133,7 @@ export default function PacketFlowVisualizer({
   )
   const arrowMarkerId = `${scenario.id}-packet-flow-arrow`
   const activeArrowMarkerId = `${scenario.id}-packet-flow-arrow-active`
+  const useMobileOptimizedPath = Boolean(scenario.mobileOptimized)
 
   const headerEntries = Object.entries(currentStep.headerFocus).filter(
     (entry): entry is [keyof PacketFlowStep['headerFocus'], string] => Boolean(entry[1]),
@@ -154,7 +208,9 @@ export default function PacketFlowVisualizer({
       </div>
 
       <div className="p-3 sm:p-4">
-        <div className="overflow-x-auto pb-1">
+        {useMobileOptimizedPath && <MobilePacketFlowPath nodes={scenario.nodes} pathPairs={pathPairs} currentStep={currentStep} />}
+
+        <div className={`${useMobileOptimizedPath ? 'hidden sm:block' : ''} overflow-x-auto pb-1`}>
           <div
             className="relative h-[230px] min-w-[720px] overflow-hidden rounded-lg border border-slate-200 bg-gradient-to-b from-slate-50 to-white sm:h-[270px]"
             aria-label={`${scenario.title}の通信フロー図`}

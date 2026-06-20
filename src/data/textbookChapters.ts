@@ -181,6 +181,7 @@ export interface VlanDesignDiagram extends DiagramBase {
 
 export interface ExamNetworkDiagram extends DiagramBase {
   type: 'exam-network'
+  mobileOptimized?: boolean
   viewBox: {
     width: number
     height: number
@@ -289,6 +290,7 @@ export interface PacketFlowScenario {
   id: string
   title: string
   description: string
+  mobileOptimized?: boolean
   nodes: PacketFlowNode[]
   steps: PacketFlowStep[]
 }

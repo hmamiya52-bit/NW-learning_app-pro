@@ -606,6 +606,87 @@ function linkTouchesNode(linkId: string, nodeId: string): boolean {
   return linkId.startsWith(`link-${nodeId}-`) || linkId.endsWith(`-${nodeId}`)
 }
 
+function MobileExamNetworkDiagram({
+  diagram,
+  currentStep,
+}: {
+  diagram: ExamNetworkDiagram
+  currentStep?: ExamNetworkStep
+}) {
+  const activeLinkIds = new Set(currentStep?.activeLinkIds ?? [])
+  const scopeZone = diagram.zones.find((zone) => zone.id === 'scope')
+  const sideZones = diagram.zones.filter((zone) => zone.id === 'client-side' || zone.id === 'service-side')
+
+  return (
+    <div className="space-y-3 rounded-lg border border-slate-200 bg-slate-50 p-3 sm:hidden" data-testid="mobile-exam-network-diagram">
+      <div className="flex flex-wrap items-center gap-2">
+        {scopeZone && (
+          <span className="rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] font-black text-slate-700">
+            {scopeZone.label}
+          </span>
+        )}
+        {sideZones.map((zone) => {
+          const tone = EXAM_TONES[zone.tone ?? 'slate']
+          return (
+            <span
+              key={zone.id}
+              className="rounded-md border px-2 py-1 text-[11px] font-black"
+              style={{ borderColor: tone.stroke, backgroundColor: tone.fill, color: tone.text }}
+            >
+              {zone.label}
+            </span>
+          )
+        })}
+      </div>
+
+      <div className="space-y-2">
+        {diagram.nodes.map((node, index) => {
+          const tone = EXAM_TONES[node.tone ?? ROLE_TONES[node.role]]
+          const activeNode = currentStep?.activeLinkIds.some((linkId) => linkTouchesNode(linkId, node.id))
+          const link = diagram.links[index]
+          const activeLink = Boolean(link && activeLinkIds.has(link.id))
+
+          return (
+            <div key={node.id} className="space-y-2">
+              <div
+                className="grid grid-cols-[42px_minmax(0,1fr)] gap-3 rounded-lg border px-3 py-3 shadow-sm"
+                style={{
+                  borderColor: activeNode ? '#2563eb' : tone.stroke,
+                  backgroundColor: activeNode ? '#dbeafe' : '#ffffff',
+                }}
+              >
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 text-slate-700">
+                  <RoleIcon role={node.role} />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-sm font-black leading-tight" style={{ color: tone.text }}>
+                    {node.label}
+                  </p>
+                  {node.caption && <p className="mt-1 text-xs font-bold leading-relaxed text-slate-600">{node.caption}</p>}
+                </div>
+              </div>
+
+              {link && (
+                <div className="ml-5 flex items-center gap-2 py-1">
+                  <span className={`h-7 w-px rounded-full ${activeLink ? 'bg-blue-600' : 'bg-slate-300'}`} />
+                  <span
+                    className={`rounded-md border px-2 py-1 text-[11px] font-black ${
+                      activeLink ? 'border-blue-200 bg-blue-50 text-blue-700' : 'border-slate-200 bg-white text-slate-500'
+                    }`}
+                  >
+                    {activeLink && currentStep ? currentStep.packetLabel : link.label}
+                  </span>
+                  <ArrowRight className={`h-3.5 w-3.5 rotate-90 ${activeLink ? 'text-blue-600' : 'text-slate-400'}`} aria-hidden="true" />
+                </div>
+              )}
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
 function ExamNetworkCapture({ step }: { step: ExamNetworkStep }) {
   return (
     <section className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
@@ -704,7 +785,9 @@ function ExamNetworkDiagramView({ diagram }: { diagram: ExamNetworkDiagram }) {
 
   return (
     <DiagramShell title={diagram.title} description={diagram.description} points={diagram.points}>
-      <div className="overflow-x-auto pb-1" data-testid="exam-network-diagram">
+      {diagram.mobileOptimized && <MobileExamNetworkDiagram diagram={diagram} currentStep={currentStep} />}
+
+      <div className={`${diagram.mobileOptimized ? 'hidden sm:block' : ''} overflow-x-auto pb-1`} data-testid="exam-network-diagram">
         <div
           className="relative min-w-[760px] overflow-hidden rounded-lg border border-slate-300 bg-white"
           style={{ aspectRatio: `${diagram.viewBox.width} / ${diagram.viewBox.height}` }}

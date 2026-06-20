@@ -71,43 +71,77 @@ function MobilePacketFlowPath({
   pathPairs: readonly (readonly [PacketFlowNode, PacketFlowNode])[]
   currentStep: PacketFlowStep
 }) {
+  const positionedNodes = nodes.map((node, index) => ({
+    ...node,
+    mobileX: nodes.length <= 1 ? 50 : 14 + (72 / (nodes.length - 1)) * index,
+    mobileY: 57,
+  }))
+  const positionById = new Map(positionedNodes.map((node) => [node.id, node]))
+  const activePair = pathPairs.find(([from, to]) => isActivePath(currentStep, from, to))
+  const activeFrom = activePair ? positionById.get(activePair[0].id) : undefined
+  const activeTo = activePair ? positionById.get(activePair[1].id) : undefined
+  const packetLeft = activeFrom && activeTo ? (activeFrom.mobileX + activeTo.mobileX) / 2 : 50
+
   return (
-    <div className="space-y-2 rounded-lg border border-slate-200 bg-slate-50 p-3 sm:hidden" data-testid="mobile-packet-flow">
-      {nodes.map((node, index) => {
-        const nextPair = pathPairs[index]
+    <div
+      className="relative -mx-3 h-[190px] overflow-hidden rounded-lg border border-slate-200 bg-gradient-to-b from-slate-50 to-white sm:mx-0 sm:hidden"
+      data-testid="mobile-packet-flow"
+    >
+      <svg className="absolute inset-0 h-full w-full" aria-hidden="true">
+        {pathPairs.map(([from, to]) => {
+          const fromNode = positionById.get(from.id)
+          const toNode = positionById.get(to.id)
+          if (!fromNode || !toNode) return null
+          const active = isActivePath(currentStep, from, to)
+          return (
+            <g key={`${from.id}-${to.id}`}>
+              <line
+                x1={`${fromNode.mobileX}%`}
+                y1={`${fromNode.mobileY}%`}
+                x2={`${toNode.mobileX}%`}
+                y2={`${toNode.mobileY}%`}
+                stroke="#ffffff"
+                strokeWidth={active ? 8 : 6}
+                strokeLinecap="round"
+              />
+              <line
+                x1={`${fromNode.mobileX}%`}
+                y1={`${fromNode.mobileY}%`}
+                x2={`${toNode.mobileX}%`}
+                y2={`${toNode.mobileY}%`}
+                stroke={active ? '#2563eb' : '#cbd5e1'}
+                strokeWidth={active ? 4 : 2.5}
+                strokeLinecap="round"
+                strokeDasharray={active ? undefined : '6 6'}
+              />
+            </g>
+          )
+        })}
+      </svg>
+
+      <div
+        className="absolute top-[20%] z-20 -translate-x-1/2 rounded-md border border-blue-200 bg-white px-2.5 py-1 text-[10px] font-black text-blue-700 shadow-lg shadow-blue-100"
+        style={{ left: `${packetLeft}%` }}
+      >
+        {currentStep.packetLabel}
+      </div>
+
+      {positionedNodes.map((node) => {
         const activeNode = node.id === currentStep.from || node.id === currentStep.to
-        const activeLink = Boolean(nextPair && isActivePath(currentStep, nextPair[0], nextPair[1]))
-
         return (
-          <div key={node.id} className="space-y-2">
-            <div
-              className={[
-                'grid grid-cols-[42px_minmax(0,1fr)] gap-3 rounded-lg border bg-white px-3 py-3 shadow-sm',
-                activeNode ? 'border-blue-300 ring-2 ring-blue-100' : 'border-slate-200',
-              ].join(' ')}
-            >
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 text-slate-700">
-                <RoleIcon role={node.role} />
-              </div>
-              <div className="min-w-0">
-                <p className="text-sm font-black leading-tight text-slate-800">{node.label}</p>
-                <p className="mt-1 text-xs font-bold leading-relaxed text-slate-500">{node.hint}</p>
-              </div>
+          <div
+            key={node.id}
+            className={[
+              'absolute z-10 w-[60px] -translate-x-1/2 -translate-y-1/2 rounded-lg border bg-white px-1 py-2 text-center shadow-sm',
+              activeNode ? 'border-blue-300 ring-2 ring-blue-100' : 'border-slate-200',
+            ].join(' ')}
+            style={{ left: `${node.mobileX}%`, top: `${node.mobileY}%` }}
+          >
+            <div className="mx-auto flex h-7 w-7 items-center justify-center rounded-lg bg-slate-100 text-slate-700">
+              <RoleIcon role={node.role} />
             </div>
-
-            {nextPair && (
-              <div className="ml-5 flex items-center gap-2 py-1">
-                <span className={`h-7 w-px rounded-full ${activeLink ? 'bg-blue-600' : 'bg-slate-300'}`} />
-                <span
-                  className={`rounded-md border px-2 py-1 text-[11px] font-black ${
-                    activeLink ? 'border-blue-200 bg-blue-50 text-blue-700' : 'border-slate-200 bg-white text-slate-500'
-                  }`}
-                >
-                  {activeLink ? currentStep.packetLabel : '次の機器へ'}
-                </span>
-                <ChevronRight className={`h-3.5 w-3.5 rotate-90 ${activeLink ? 'text-blue-600' : 'text-slate-400'}`} aria-hidden="true" />
-              </div>
-            )}
+            <p className="mt-1 text-[9.5px] font-black leading-tight text-slate-800">{node.label}</p>
+            <p className="mt-1 text-[7.5px] font-bold leading-tight text-slate-500">{node.hint}</p>
           </div>
         )
       })}

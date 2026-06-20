@@ -616,73 +616,131 @@ function MobileExamNetworkDiagram({
   const activeLinkIds = new Set(currentStep?.activeLinkIds ?? [])
   const scopeZone = diagram.zones.find((zone) => zone.id === 'scope')
   const sideZones = diagram.zones.filter((zone) => zone.id === 'client-side' || zone.id === 'service-side')
+  const viewBox = { width: 360, height: 248 }
+  const nodeWidth = 58
+  const nodeHeight = 50
+  const nodeCenterY = 154
+  const nodeCenters = diagram.nodes.map((node, index) => ({
+    node,
+    x: diagram.nodes.length <= 1 ? viewBox.width / 2 : 42 + (276 / (diagram.nodes.length - 1)) * index,
+    y: nodeCenterY,
+  }))
 
   return (
-    <div className="space-y-3 rounded-lg border border-slate-200 bg-slate-50 p-3 sm:hidden" data-testid="mobile-exam-network-diagram">
-      <div className="flex flex-wrap items-center gap-2">
+    <div className="-mx-3 sm:hidden" data-testid="mobile-exam-network-diagram">
+      <svg
+        className="h-auto w-full rounded-lg border border-slate-200 bg-white"
+        viewBox={`0 0 ${viewBox.width} ${viewBox.height}`}
+        role="img"
+        aria-label={`${diagram.title}のスマホ用構成図`}
+      >
+        <rect x="8" y="12" width="344" height="220" rx="8" fill="#f8fafc" stroke="#334155" strokeWidth="1.6" strokeDasharray="7 5" />
         {scopeZone && (
-          <span className="rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] font-black text-slate-700">
+          <text x="22" y="32" fill="#0f172a" fontSize="12" fontWeight="900">
             {scopeZone.label}
-          </span>
+          </text>
         )}
         {sideZones.map((zone) => {
           const tone = EXAM_TONES[zone.tone ?? 'slate']
+          const isService = zone.id === 'service-side'
           return (
-            <span
-              key={zone.id}
-              className="rounded-md border px-2 py-1 text-[11px] font-black"
-              style={{ borderColor: tone.stroke, backgroundColor: tone.fill, color: tone.text }}
-            >
-              {zone.label}
-            </span>
-          )
-        })}
-      </div>
-
-      <div className="space-y-2">
-        {diagram.nodes.map((node, index) => {
-          const tone = EXAM_TONES[node.tone ?? ROLE_TONES[node.role]]
-          const activeNode = currentStep?.activeLinkIds.some((linkId) => linkTouchesNode(linkId, node.id))
-          const link = diagram.links[index]
-          const activeLink = Boolean(link && activeLinkIds.has(link.id))
-
-          return (
-            <div key={node.id} className="space-y-2">
-              <div
-                className="grid grid-cols-[42px_minmax(0,1fr)] gap-3 rounded-lg border px-3 py-3 shadow-sm"
-                style={{
-                  borderColor: activeNode ? '#2563eb' : tone.stroke,
-                  backgroundColor: activeNode ? '#dbeafe' : '#ffffff',
-                }}
-              >
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 text-slate-700">
-                  <RoleIcon role={node.role} />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-sm font-black leading-tight" style={{ color: tone.text }}>
-                    {node.label}
-                  </p>
-                  {node.caption && <p className="mt-1 text-xs font-bold leading-relaxed text-slate-600">{node.caption}</p>}
-                </div>
-              </div>
-
-              {link && (
-                <div className="ml-5 flex items-center gap-2 py-1">
-                  <span className={`h-7 w-px rounded-full ${activeLink ? 'bg-blue-600' : 'bg-slate-300'}`} />
-                  <span
-                    className={`rounded-md border px-2 py-1 text-[11px] font-black ${
-                      activeLink ? 'border-blue-200 bg-blue-50 text-blue-700' : 'border-slate-200 bg-white text-slate-500'
-                    }`}
-                  >
-                    {activeLink && currentStep ? currentStep.packetLabel : link.label}
-                  </span>
-                  <ArrowRight className={`h-3.5 w-3.5 rotate-90 ${activeLink ? 'text-blue-600' : 'text-slate-400'}`} aria-hidden="true" />
-                </div>
+            <g key={zone.id}>
+              <rect
+                x={isService ? 202 : 14}
+                y="62"
+                width={isService ? 140 : 150}
+                height="126"
+                rx="7"
+                fill={tone.fill}
+                stroke={tone.stroke}
+                strokeWidth="1.4"
+                strokeDasharray="6 4"
+              />
+              <text x={isService ? 214 : 26} y="80" fill={tone.text} fontSize="11" fontWeight="900">
+                {zone.label}
+              </text>
+              {zone.caption && (
+                <text x={isService ? 214 : 26} y="96" fill={tone.text} fontSize="7.5" fontWeight="700">
+                  {zone.caption}
+                </text>
               )}
-            </div>
+            </g>
           )
         })}
-      </div>
+
+        {diagram.links.map((link, index) => {
+          const from = nodeCenters[index]
+          const to = nodeCenters[index + 1]
+          if (!from || !to) return null
+          const active = activeLinkIds.has(link.id)
+          const tone = EXAM_TONES[link.tone ?? 'slate']
+          const labelX = (from.x + to.x) / 2
+          const label = active && currentStep ? currentStep.packetLabel : link.label
+          const badgeWidth = Math.min(Math.max((label?.length ?? 0) * 6.2 + 16, 40), 70)
+          return (
+            <g key={link.id}>
+              <line
+                x1={from.x + nodeWidth / 2}
+                y1={nodeCenterY}
+                x2={to.x - nodeWidth / 2}
+                y2={nodeCenterY}
+                stroke="#ffffff"
+                strokeWidth={active ? 7 : 5}
+                strokeLinecap="round"
+              />
+              <line
+                x1={from.x + nodeWidth / 2}
+                y1={nodeCenterY}
+                x2={to.x - nodeWidth / 2}
+                y2={nodeCenterY}
+                stroke={active ? '#2563eb' : tone.link}
+                strokeWidth={active ? 4 : 2.5}
+                strokeLinecap="round"
+              />
+              {label && (
+                <g>
+                  <rect x={labelX - badgeWidth / 2} y="106" width={badgeWidth} height="18" rx="5" fill="#ffffff" stroke="#dbe4ef" />
+                  <text x={labelX} y="119" textAnchor="middle" fill={active ? '#1d4ed8' : tone.text} fontSize="8" fontWeight="900">
+                    {label}
+                  </text>
+                </g>
+              )}
+            </g>
+          )
+        })}
+
+        {nodeCenters.map(({ node, x, y }) => {
+          const tone = EXAM_TONES[node.tone ?? ROLE_TONES[node.role]]
+          const active = currentStep?.activeLinkIds.some((linkId) => linkTouchesNode(linkId, node.id))
+          const labelSize = node.label.length >= 5 ? 9.2 : 10.5
+          return (
+            <g key={node.id}>
+              <rect
+                x={x - nodeWidth / 2 + 3}
+                y={y - nodeHeight / 2 + 4}
+                width={nodeWidth}
+                height={nodeHeight}
+                rx="7"
+                fill="#0f172a"
+                fillOpacity="0.08"
+              />
+              <rect
+                x={x - nodeWidth / 2}
+                y={y - nodeHeight / 2}
+                width={nodeWidth}
+                height={nodeHeight}
+                rx="7"
+                fill={active ? '#dbeafe' : tone.fill}
+                stroke={active ? '#2563eb' : tone.stroke}
+                strokeWidth={active ? 2.4 : 1.8}
+              />
+              <text x={x} y={y + 4} textAnchor="middle" fill={tone.text} fontSize={labelSize} fontWeight="900">
+                {node.label}
+              </text>
+            </g>
+          )
+        })}
+      </svg>
     </div>
   )
 }

@@ -504,9 +504,9 @@ const vlanNetworkDiagram: ExamNetworkDiagram = {
 }
 
 export const layerOneThreeChapter: TextbookChapter = {
-  id: 'layer1-3',
+  id: 'osi-communication',
   order: 1,
-  title: 'OSI参照モデルと構成図の読み方',
+  title: 'OSI参照モデルと通信の全体像',
   description: 'ネスペで出るネットワーク構成図を題材に、L2/L3/L4、カプセル化、ARP、VLANを最初からつなげて理解します',
   status: 'published',
   estimatedMinutes: 38,

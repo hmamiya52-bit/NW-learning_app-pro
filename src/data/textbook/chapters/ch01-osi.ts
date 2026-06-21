@@ -53,10 +53,16 @@ const arpFigure: PacketFlowFigure = {
       explanation: 'L2SWは全員あてのフレームを、同じLANのポートすべてへ配ります。',
     },
     {
-      focus: { type: 'link', a: 'l3sw', b: 'pc' },
+      focus: { type: 'link', a: 'l3sw', b: 'l2sw' },
       packetLabel: 'ARP応答',
       headers: { l2: 'あて先MAC = PC', l3: 'IPヘッダなし' },
-      explanation: '出口ルータが「それは私です。MACはこれです」とPCへ返します。',
+      explanation: '出口ルータが「それは私です。MACはこれです」と応答します。今度は全員あてではなく、PCあての1対1です。',
+    },
+    {
+      focus: { type: 'link', a: 'l2sw', b: 'pc' },
+      packetLabel: 'ARP応答',
+      headers: { l2: 'あて先MAC = PC', l3: 'IPヘッダなし' },
+      explanation: 'PCは出口ルータのMACを受け取って記録します。これで、最初のフレームを作れる状態になりました。',
     },
   ],
 }
@@ -182,7 +188,7 @@ export const ch01Osi: TextbookChapter = {
             kind: 'encap',
             id: 'ch1-encap',
             title: 'フレーム・パケット・セグメントの入れ子',
-            caption: '同じデータを「どこまで包んだか」で呼び分けます。送信は外へ包み、受信は外から外します。',
+            caption: '「次へ」で1枚ずつ包み、受信側では外していきます。入れ子の形はそのまま残ります。',
             takeaway: '別々の3つではなく、ひとつのデータの「包んだ深さ」の違い。',
             dataLabel: 'データ',
             levels: [

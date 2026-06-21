@@ -73,7 +73,7 @@ function Connector({
   reverse: boolean
 }) {
   return (
-    <div className={`relative flex-shrink-0 ${narrow ? 'h-16 w-full' : 'h-8 min-w-[56px] flex-1'}`} aria-hidden="true">
+    <div className={`relative flex-shrink-0 ${narrow ? 'h-12 w-full' : 'h-8 min-w-[56px] flex-1'}`} aria-hidden="true">
       <div
         className={`absolute rounded-full transition-colors ${
           narrow ? 'left-1/2 top-0 h-full w-[3px] -translate-x-1/2' : 'left-0 top-1/2 h-[3px] w-full -translate-y-1/2'
@@ -87,15 +87,32 @@ function Connector({
 function NodeCard({ node, narrow, focused }: { node: TopoNode; narrow: boolean; focused: boolean }) {
   const Icon = ROLE_ICON[node.role]
   const tone = TONE[ROLE_TONE[node.role]]
-  return (
-    <div className={`flex flex-shrink-0 flex-col items-center text-center ${narrow ? 'w-28' : 'w-[84px]'}`}>
-      <div
-        className={`flex items-center justify-center rounded-lg border-2 transition-colors ${
-          narrow ? 'h-12 w-12' : 'h-11 w-11'
-        } ${focused ? 'border-blue-700 bg-blue-600' : `${tone.border} ${tone.fill}`}`}
-      >
-        <Icon className={`${narrow ? 'h-6 w-6' : 'h-5 w-5'} ${focused ? 'text-white' : tone.text}`} />
+  const iconBox = (
+    <div
+      className={`flex flex-shrink-0 items-center justify-center rounded-lg border-2 transition-colors ${
+        narrow ? 'h-10 w-10' : 'h-11 w-11'
+      } ${focused ? 'border-blue-700 bg-blue-600' : `${tone.border} ${tone.fill}`}`}
+    >
+      <Icon className={`h-5 w-5 ${focused ? 'text-white' : tone.text}`} />
+    </div>
+  )
+
+  // スマホは全幅カード（アイコン＋ラベル横並び）で横の死にスペースを埋める。
+  if (narrow) {
+    return (
+      <div className={`flex w-full items-center gap-3 rounded-lg border px-3 py-2 ${focused ? 'border-blue-300 bg-blue-50' : 'border-slate-200 bg-white'}`}>
+        {iconBox}
+        <div className="min-w-0 text-left">
+          <p className={`text-sm font-black leading-tight ${focused ? 'text-blue-800' : 'text-slate-800'}`}>{node.label}</p>
+          {node.sub && <p className="text-[11px] leading-tight text-slate-500">{node.sub}</p>}
+        </div>
       </div>
+    )
+  }
+
+  return (
+    <div className="flex w-[84px] flex-shrink-0 flex-col items-center text-center">
+      {iconBox}
       <p className={`mt-1 text-[11px] font-black leading-tight ${focused ? 'text-blue-800' : 'text-slate-800'}`}>{node.label}</p>
       {node.sub && <p className="text-[10px] leading-tight text-slate-500">{node.sub}</p>}
     </div>

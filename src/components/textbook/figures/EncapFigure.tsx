@@ -54,22 +54,22 @@ function Nest({ levels, idx, dataLabel, activeIdx, narrow }: { levels: Level[]; 
     idx < levels.length - 1 ? (
       <Nest levels={levels} idx={idx + 1} dataLabel={dataLabel} activeIdx={activeIdx} narrow={narrow} />
     ) : (
-      <div className="flex flex-1 items-center justify-center rounded-md border border-slate-300 bg-slate-50 px-2 py-2 text-center text-[11px] font-black text-slate-600">
+      <div className={`flex ${narrow ? '' : 'flex-1'} items-center justify-center rounded-md border border-slate-300 bg-slate-50 px-2 py-3 text-center text-[11px] font-black text-slate-600`}>
         {dataLabel}
       </div>
     )
   return (
-    <div className={`rounded-lg border-2 ${t.border} ${t.fill} p-2 ${active ? 'ring-2 ring-blue-400 ring-offset-1' : ''}`}>
+    <div className={`rounded-lg border-2 ${t.border} ${t.fill} p-2 ${!narrow ? 'flex-1 min-w-0' : ''} ${active ? 'ring-2 ring-blue-400 ring-offset-1' : ''}`}>
       <div className={`mb-1.5 text-[11px] font-black ${t.text}`}>
         {lv.unit} <span className="font-bold opacity-70">（{lv.layerLabel}）</span>
       </div>
       <div className={`flex gap-1.5 ${narrow ? 'flex-col' : 'flex-row items-stretch'}`}>
-        <div className={`flex items-center justify-center rounded-md border ${t.border} bg-white px-2 py-2 text-center text-[11px] font-black ${t.text}`}>
+        <div className={`flex flex-shrink-0 items-center justify-center rounded-md border ${t.border} bg-white px-2 py-2 text-center text-[11px] font-black ${t.text}`}>
           {lv.header}
         </div>
         {inner}
         {lv.trailer && (
-          <div className={`flex items-center justify-center rounded-md border ${t.border} bg-white px-2 py-2 text-center text-[11px] font-black ${t.text}`}>
+          <div className={`flex flex-shrink-0 items-center justify-center rounded-md border ${t.border} bg-white px-2 py-2 text-center text-[11px] font-black ${t.text}`}>
             {lv.trailer}
           </div>
         )}

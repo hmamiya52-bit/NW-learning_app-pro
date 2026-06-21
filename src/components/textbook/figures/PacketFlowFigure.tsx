@@ -1,3 +1,4 @@
+import { Mail } from 'lucide-react'
 import type { PacketFlowFigure as PacketFlowFigureData } from '../../../data/textbook/types'
 import FigureFrame from './FigureFrame'
 import StepperControls from './StepperControls'
@@ -29,18 +30,28 @@ function HeaderRow({
 }
 
 export default function PacketFlowFigure({ figure }: { figure: PacketFlowFigureData }) {
-  const { index, next, prev, playing, togglePlay, count } = useStepper(figure.steps.length)
+  const { index, next, prev, count } = useStepper(figure.steps.length)
   const step = figure.steps[index]
+
+  const labelOf = (id: string) => figure.topology.nodes.find((n) => n.id === id)?.label ?? id
+  const action =
+    step.focus.type === 'link'
+      ? `${labelOf(step.focus.a)} → ${labelOf(step.focus.b)}`
+      : `${labelOf(step.focus.id)} の中`
 
   return (
     <FigureFrame title={figure.title} caption={figure.caption} takeaway={figure.takeaway}>
-      <div className="rounded-lg border border-slate-200 bg-slate-50/60 px-3 py-3">
-        <div className="mb-2 flex items-center justify-between">
-          <span className="text-[11px] font-black text-slate-400">
-            ステップ {index + 1} / {count}
-          </span>
-        </div>
-        <TopologyView topology={figure.topology} focus={step.focus} packetLabel={step.packetLabel} stepKey={index} />
+      {/* いま何が流れているか（図の上に固定表示。動く封筒には文字を載せない） */}
+      <div className="mb-2 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-lg bg-blue-50 px-3 py-2">
+        <span className="inline-flex items-center gap-1 text-xs font-black text-blue-800">
+          <Mail className="h-3.5 w-3.5" aria-hidden="true" />
+          {step.packetLabel}
+        </span>
+        <span className="text-xs font-bold text-blue-700">{action}</span>
+      </div>
+
+      <div className="rounded-lg border border-slate-200 bg-slate-50/60 px-2 py-4 sm:px-3">
+        <TopologyView topology={figure.topology} focus={step.focus} stepKey={index} />
       </div>
 
       <div className="mt-3 overflow-hidden rounded-lg border border-slate-200">
@@ -58,7 +69,7 @@ export default function PacketFlowFigure({ figure }: { figure: PacketFlowFigureD
       <p className="mt-3 min-h-[3.5rem] text-sm leading-relaxed text-slate-700">{step.explanation}</p>
 
       <div className="mt-2">
-        <StepperControls index={index} count={count} playing={playing} onPrev={prev} onNext={next} onTogglePlay={togglePlay} />
+        <StepperControls index={index} count={count} onPrev={prev} onNext={next} />
       </div>
     </FigureFrame>
   )

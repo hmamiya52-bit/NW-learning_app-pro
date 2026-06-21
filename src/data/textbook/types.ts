@@ -115,6 +115,8 @@ export interface EncapFigure extends FigureBase {
     title: string
     desc: string
     parts: { label: string; tone: Tone }[]
+    // この段階で全体を何と呼ぶか（セグメント／パケット／フレームの範囲）
+    unit?: { label: string; tone: Tone }
   }[]
 }
 

@@ -35,7 +35,7 @@ const webTopology: Topology = {
 const arpFigure: PacketFlowFigure = {
   kind: 'packet-flow',
   id: 'ch1-arp',
-  title: '動く図：ARPで「隣のあて先」を調べる',
+  title: 'ARPでゲートウェイのMACを調べる',
   caption: 'ARP要求はLAN全体へ。GWが自分のMACを返します。',
   takeaway: '別ネットワーク宛てでも、最初に調べるMACは最終宛先ではなく[[green:GW]]。',
   topology: arpTopology,
@@ -45,25 +45,25 @@ const arpFigure: PacketFlowFigure = {
       packetLabel: 'ARP要求',
       headers: { l2: 'あて先MAC: ブロードキャスト', l3: 'IPヘッダなし（ARP）' },
       concept: { l2: 'LAN内だけに届く' },
-      explanation: 'PCが「192.168.10.1を持っている人、MACを教えて」とLAN全体へ呼びかけます。',
+      explanation: 'PCが「192.168.10.1を持っているのは誰ですか」と、LAN全体へ呼びかけます。',
     },
     {
       focus: { type: 'link', a: 'l2sw', b: 'l3sw' },
       packetLabel: 'ARP要求',
       headers: { l2: 'あて先MAC: ブロードキャスト', l3: 'IPヘッダなし（ARP）' },
-      explanation: 'L2SWはあて先MACを見て、同じLANの全ポートへフレームを配ります。',
+      explanation: 'L2SWはあて先MACを見て、同じLANのポートすべてへフレームを配ります。',
     },
     {
       focus: { type: 'link', a: 'l3sw', b: 'l2sw' },
       packetLabel: 'ARP応答',
       headers: { l2: 'あて先MAC: PC', l3: 'IPヘッダなし（ARP）' },
-      explanation: 'GW（L3SW）が「それは私です、MACはこれ」とPCへ返します。',
+      explanation: 'GW（L3SW）が「それは私です。MACはこれです」とPCへ返します。',
     },
     {
       focus: { type: 'link', a: 'l2sw', b: 'pc' },
       packetLabel: 'ARP応答',
       headers: { l2: 'あて先MAC: PC', l3: 'IPヘッダなし（ARP）' },
-      explanation: 'PCはGWのMACを覚えました。これでやっと、最初のフレームを作れます。',
+      explanation: 'PCはGWのMACを覚えました。これでようやく、最初のフレームを作れます。',
     },
   ],
 }
@@ -71,9 +71,9 @@ const arpFigure: PacketFlowFigure = {
 const webFlowFigure: PacketFlowFigure = {
   kind: 'packet-flow',
   id: 'ch1-web',
-  title: '動く図：PCからWebサーバまで通して見る',
+  title: 'PCからWebサーバへ届くまで',
   caption: '光っている区間が「いまの説明」。下の表でMACとIPの変化を見比べてください。',
-  takeaway: 'ルータ(L3SW)は[[green:L2を付け替える]]だけ。[[blue:あて先IP]]は最初から最後までWebサーバ。',
+  takeaway: 'ルータ（L3SW）は[[green:L2を付け替える]]だけ。[[blue:あて先IP]]は最初から最後までWebサーバ。',
   topology: webTopology,
   steps: [
     {
@@ -88,7 +88,7 @@ const webFlowFigure: PacketFlowFigure = {
       packetLabel: 'TCP SYN',
       headers: { l2: 'あて先MAC: GW(L3SW)', l3: 'あて先IP: 172.16.0.20', l4: 'あて先ポート: 443' },
       concept: { l2: '区間ごとに変わる', l3: '最終宛先のまま' },
-      explanation: 'L2SWはあて先MACだけを見てGWへ中継します。中のIPは見ていません。',
+      explanation: 'L2SWはあて先MACだけを見て、GWへ中継します。中のIPアドレスは見ていません。',
     },
     {
       focus: { type: 'node', id: 'l3sw' },
@@ -102,13 +102,13 @@ const webFlowFigure: PacketFlowFigure = {
       packetLabel: 'TCP SYN',
       headers: { l2: 'あて先MAC: Webサーバ', l3: 'あて先IP: 172.16.0.20', l4: 'あて先ポート: 443' },
       concept: { l2: 'また変わった', l3: 'まだ同じ' },
-      explanation: '新しいフレームでWebサーバへ。あて先MACはWebサーバ、あて先IPは最初からずっとWebサーバです。',
+      explanation: '新しいフレームでWebサーバへ届けます。あて先MACはWebサーバ、あて先IPは最初からずっとWebサーバです。',
     },
     {
       focus: { type: 'node', id: 'web' },
       packetLabel: '受信',
       headers: { l2: 'L2を外す', l3: 'L3を外す', l4: 'ポート443→HTTPSへ' },
-      explanation: 'Webサーバは外側からL2→L3→L4と開けて、ポート443のHTTPSへデータを渡します。',
+      explanation: 'Webサーバは外側からL2・L3・L4の順に外し、ポート443のHTTPSへデータを渡します。',
     },
   ],
 }
@@ -123,28 +123,28 @@ export const ch01Osi: TextbookChapter = {
   intro: [
     {
       kind: 'text',
-      text: 'ネットワークの勉強を始めて最初にぶつかる壁は、用語の多さそのものより「いま、構成図のどこの話をしているのか」が分からなくなることです。',
+      text: 'この教科書モードは、ネットワークの学習を始めたばかりの方に向けた、最初のインプット用の教材です。応用情報技術者試験に合格し、これからインフラの実務やネスペ対策に進んでいく方を想定しています。',
     },
     {
       kind: 'text',
-      text: 'MACアドレス、IPアドレス、ポート番号、フレーム、パケット…… これらがいっぺんに出てくると頭の中が散らかります。この章は、その散らかりを片付ける「地図」を最初に手に入れる回です。',
+      text: 'ねらいは、用語を一つずつ丸暗記することではありません。ネットワーク構成図を見たときに、[[blue:どの機器が、何を見て、どう判断して次へ渡すのか]]を、自分の言葉で説明できるようになることです。',
     },
     {
       kind: 'text',
-      text: '難しいコマンドや暗記はしません。小さな構成図の上で、パケットがPCからWebサーバへ届くまでを、実際に動かしながら追いかけます。',
+      text: '第1章のゴールは、PCからWebサーバへ通信が届くまでの流れを、構成図の上で一区間ずつたどれるようになること。OSI参照モデル、カプセル化、MAC・IP・ポート、ARPを、ばらばらの知識ではなく一本の線でつなげていきます。',
     },
   ],
   sections: [
     {
-      heading: '通信は「層」で見ると迷わない',
+      heading: 'まず全体の地図をつくる ―― OSI参照モデル',
       blocks: [
         {
           kind: 'text',
-          text: '通信は、役割ごとに層（レイヤ）が分かれています。この層分けの地図がOSI参照モデルです。7つの層に分けて、「いまはどの層の話か」を見分けるための物差しだと思ってください。',
+          text: '通信は、役割ごとにいくつもの層（レイヤ）に分かれています。その全体像を示した地図が、OSI参照モデルです。',
         },
         {
           kind: 'text',
-          text: '全部を一度に覚える必要はありません。この章で主役になるのは下の4つ ―― [[amber:L4]]・[[blue:L3]]・[[green:L2]]・L1です。上の3つ（L5〜L7）は名前と位置だけ押さえて先へ進みます。',
+          text: '層は全部で7つ。ただし、今すぐ全部を覚える必要はありません。この章の主役は、下から4つ ―― [[amber:L4]]・[[blue:L3]]・[[green:L2]]・L1です。上の3つ（L5〜L7）は、名前と位置だけ確認して先へ進みます。',
         },
         {
           kind: 'figure',
@@ -152,8 +152,8 @@ export const ch01Osi: TextbookChapter = {
             kind: 'osi-stack',
             id: 'ch1-osi-stack',
             title: 'OSI参照モデルの7層',
-            caption: 'まず7層の地図。この章では下の[[green:L1〜L4]]を中心に読みます。',
-            takeaway: 'OSIは暗記表ではなく、「いまどの層の話か」を指さすための地図。',
+            caption: 'まずは全体の地図。この章では下の[[green:L1〜L4]]を中心に読みます。',
+            takeaway: 'OSIは暗記表ではなく、いまどの層の話かを指さすための地図。',
             layers: [
               { label: 'L7', name: 'アプリケーション層', desc: 'HTTPやDNSなど、人やアプリに近い通信の意味を扱う', example: 'HTTP, DNS', tone: 'slate', highlight: false },
               { label: 'L6', name: 'プレゼンテーション層', desc: '文字コードや暗号化など、表現の変換を扱う', example: 'TLSの暗号化', tone: 'slate', highlight: false },
@@ -168,59 +168,95 @@ export const ch01Osi: TextbookChapter = {
       ],
     },
     {
-      heading: 'データは送るとき、順番に"包まれて"いく',
+      heading: 'データは「包んで」送る ―― カプセル化',
       blocks: [
         {
           kind: 'text',
-          text: 'アプリが送りたいデータは、そのままケーブルに流れるわけではありません。下の層へ渡すたびに、その層の宛名や制御情報を「ヘッダ」として外側に巻きつけていきます。これがカプセル化です。',
+          text: 'アプリが送るデータは、そのままケーブルに流れるわけではありません。下の層へ渡すたびに、その層の「あて名」や制御情報を、ヘッダとして外側に巻きつけていきます。この仕組みがカプセル化です。',
         },
         {
           kind: 'text',
-          text: '下の図の再生ボタンを押すと、データにL4→L3→L2の順でヘッダが付いていく様子が見えます。',
+          text: '下の図を「次へ」で進めてみてください。データにL4・L3・L2のヘッダが外側へ順に付き、どこまで包んだかによって、呼び名がセグメント・パケット・フレームと変わっていきます。',
         },
         {
           kind: 'figure',
           figure: {
             kind: 'encap',
             id: 'ch1-encap',
-            title: '動く図：ヘッダが外側へ1枚ずつ付く',
-            caption: '再生すると、ヘッダが外側へ1枚ずつ付いていきます。',
-            takeaway: '付ける順は内→外でL4→L3→L2。受け取った側は外側から順に開けます。',
+            title: 'ヘッダが付いていく順番',
+            caption: '「次へ」でヘッダが外側へ1枚ずつ付き、呼び名も変わります。',
+            takeaway: '付ける順は内から外へ。受け取った側は、外から順に開きます。',
             steps: [
-              { label: '送る前', title: 'アプリのデータ', desc: 'ブラウザが送りたい中身そのもの。', parts: [{ label: 'データ', tone: 'slate' }] },
-              { label: 'L4', title: 'ポート番号を付ける', desc: '「相手のどのアプリ宛てか」を示すL4ヘッダ。', parts: [{ label: 'L4', tone: 'amber' }, { label: 'データ', tone: 'slate' }] },
-              { label: 'L3', title: 'IPアドレスを付ける', desc: '「最終的にどの相手か」を示すL3ヘッダ。', parts: [{ label: 'L3', tone: 'blue' }, { label: 'L4', tone: 'amber' }, { label: 'データ', tone: 'slate' }] },
-              { label: 'L2', title: 'MACアドレスを付ける', desc: '「すぐ隣のどの相手へ渡すか」を示すL2ヘッダと、末尾の点検用FCS。', parts: [{ label: 'L2', tone: 'emerald' }, { label: 'L3', tone: 'blue' }, { label: 'L4', tone: 'amber' }, { label: 'データ', tone: 'slate' }, { label: 'FCS', tone: 'emerald' }] },
+              {
+                label: '送る前',
+                title: 'アプリのデータ',
+                desc: 'ブラウザが送りたい中身そのもの。',
+                parts: [{ label: 'データ', tone: 'slate' }],
+              },
+              {
+                label: 'L4',
+                title: 'L4ヘッダを付ける（ポート番号）',
+                desc: '「相手のどのアプリ宛てか」を示します。ここまで包んだ中身をセグメントと呼びます。',
+                parts: [
+                  { label: 'L4ヘッダ', tone: 'amber' },
+                  { label: 'データ', tone: 'slate' },
+                ],
+                unit: { label: 'TCPセグメント', tone: 'amber' },
+              },
+              {
+                label: 'L3',
+                title: 'L3ヘッダを付ける（IPアドレス）',
+                desc: '「最終的にどの相手か」を示します。ここまで包んだ中身をパケットと呼びます。',
+                parts: [
+                  { label: 'L3ヘッダ', tone: 'blue' },
+                  { label: 'L4ヘッダ', tone: 'amber' },
+                  { label: 'データ', tone: 'slate' },
+                ],
+                unit: { label: 'IPパケット', tone: 'blue' },
+              },
+              {
+                label: 'L2',
+                title: 'L2ヘッダとFCSを付ける（MACアドレス）',
+                desc: '「すぐ隣のどの相手へ渡すか」を示します。ここまで包めば、リンク上を流れるフレームの完成です。',
+                parts: [
+                  { label: 'L2ヘッダ', tone: 'emerald' },
+                  { label: 'L3ヘッダ', tone: 'blue' },
+                  { label: 'L4ヘッダ', tone: 'amber' },
+                  { label: 'データ', tone: 'slate' },
+                  { label: 'FCS', tone: 'emerald' },
+                ],
+                unit: { label: 'Ethernetフレーム', tone: 'emerald' },
+              },
             ],
           },
         },
         {
           kind: 'callout',
           tone: 'tip',
-          title: 'フレーム・パケット・セグメントは入れ子',
-          body: 'L2まで包んだものを[[green:フレーム]]、L3まで包んだ中身を[[blue:パケット]]、L4まで包んだ中身を[[amber:セグメント]]と呼びます。別物が3つあるのではなく、同じデータを「どこまで包んだ状態で呼んでいるか」の違いです。',
+          title: '呼び名は「どこまで包んだか」で変わる',
+          body: 'L4まで包んだ中身が[[amber:セグメント]]、L3まで包めば[[blue:パケット]]、L2まで包めば[[green:フレーム]]です。別々の3つがあるのではなく、同じデータを「どこまで包んだか」で呼び分けているだけ。',
         },
       ],
     },
     {
-      heading: 'MAC・IP・ポートは、似ているようで役割が違う',
+      heading: 'MAC・IP・ポートは役割が違う',
       blocks: [
         {
           kind: 'text',
-          text: 'ヘッダの中でとくに大事なのが、3つの「あて先」です。混同しやすいので、ここで一度きっぱり分けておきます。',
+          text: 'ヘッダの中でとくに大事なのが、3つの「あて先」です。よく混同するので、ここで一度きっぱり分けておきます。',
         },
         {
           kind: 'text',
-          text: 'ひとことで言うと ―― [[green:MACアドレスは「すぐ隣の相手」]]、[[blue:IPアドレスは「最終的な相手」]]、[[amber:ポート番号は「相手の中のどのアプリか」]]。',
+          text: '結論から言えば ―― [[green:MACアドレスは「すぐ隣の相手」]]、[[blue:IPアドレスは「最終的な相手」]]、[[amber:ポート番号は「相手の中のどのアプリか」]]。',
         },
         {
           kind: 'figure',
           figure: {
             kind: 'address-table',
             id: 'ch1-address',
-            title: '3つのあて先の早見表',
+            title: 'MAC・IPアドレス・ポート番号の早見表',
             caption: '3つのあて先を、同じ目線で並べました。',
-            takeaway: '[[green:MACは区間ごとに変わる]]。[[blue:IPは基本そのまま]]。ここが後で効いてきます。',
+            takeaway: '[[green:MACは区間ごとに変わる]]、[[blue:IPは基本そのまま]]。ここが後で効いてきます。',
             rows: [
               { name: 'MACアドレス', layer: 'L2', carries: 'すぐ隣の相手', scope: '同じリンクの中だけ。ルータを越えると次の区間用に変わる', example: '00:11:22:33:44:55', tone: 'emerald' },
               { name: 'IPアドレス', layer: 'L3', carries: '最終的な相手', scope: '端から端まで。基本的に途中で変わらない', example: '172.16.0.20', tone: 'blue' },
@@ -231,27 +267,27 @@ export const ch01Osi: TextbookChapter = {
       ],
     },
     {
-      heading: '通信の最初の一歩 ―― ARPで「隣のあて先」を調べる',
+      heading: '通信の最初の一歩 ―― ARP',
       blocks: [
         {
           kind: 'text',
-          text: 'PCが別ネットワークのWebサーバへ送りたいとき、最初に必要なのはWebサーバのMAC……ではありません。必要なのは、同じLANにいる出口、つまりデフォルトゲートウェイ（GW）のMACです。',
+          text: 'PCが別ネットワークのWebサーバへ送るとき、最初に要るのはWebサーバのMACではありません。同じLANにいる出口、つまりデフォルトゲートウェイ（GW）のMACです。',
         },
         {
           kind: 'text',
-          text: 'ところがPCは、まだGWのMACを知りません。そこで「192.168.10.1を持っている人、MACを教えて」とLAN全体に呼びかけます。これがARPです。下の図で動きを追ってみてください。',
+          text: 'でも、PCはまだGWのMACを知りません。そこで「192.168.10.1を持っているのは誰ですか。MACを教えてください」とLAN全体へ呼びかけます。これがARPです。下の図で、要求と応答の流れを追ってみてください。',
         },
         { kind: 'figure', figure: arpFigure },
         {
           kind: 'callout',
           tone: 'warn',
-          title: 'ここを間違えやすい',
+          title: 'よくある勘違い',
           body: '「IPが分かれば相手のMACもすぐ分かる」と思いがちですが、別ネットワークの相手のMACは調べません。最初のフレームのあて先MACは、いつも“すぐ隣”のGWです。',
         },
       ],
     },
     {
-      heading: 'PCからWebサーバまで、通して動かす',
+      heading: 'PCからWebサーバまで、通して見る',
       blocks: [
         {
           kind: 'text',
@@ -259,7 +295,7 @@ export const ch01Osi: TextbookChapter = {
         },
         {
           kind: 'text',
-          text: '注目してほしいのは2つだけ。[[green:あて先MACは区間ごとに変わる]]のに、[[blue:あて先IPはずっとWebサーバのまま]]だということ。再生して確かめてください。',
+          text: '見てほしいのは2つだけ。[[green:あて先MACは区間ごとに変わる]]のに、[[blue:あて先IPはずっとWebサーバのまま]]ということ。「次へ」で1区間ずつ確かめてください。',
         },
         { kind: 'figure', figure: webFlowFigure },
       ],
@@ -269,26 +305,26 @@ export const ch01Osi: TextbookChapter = {
       blocks: [
         {
           kind: 'text',
-          text: 'ここまで見てきた目線は、そのままネスペ午後の構成図読解に使えます。図を渡されたら、まず「どこがLANの境界か」「この通信の“次の一歩”はどの機器か」を探します。',
+          text: 'ここまでの見方は、そのままネスペ午後の構成図読解に使えます。図を渡されたら、まず「どこがLANの境界か」「この通信の“次の一歩”はどの機器か」を探します。',
         },
         {
           kind: 'text',
-          text: '「なぜ通信できないか」と問われたら、機器ごとに見ている情報へ戻ります。[[green:L2SWはMAC]]、[[blue:ルータ/L3SWはIP]]。どの層で詰まっているかを切り分けるのが、答えの根拠になります。',
+          text: '「なぜ通信できないのか」と問われたら、機器ごとの判断材料へ戻ります。[[green:L2SWはMAC]]、[[blue:ルータ／L3SWはIP]]。どの層で止まっているかを切り分けることが、答えの根拠になります。',
         },
         {
           kind: 'callout',
           tone: 'info',
           title: '実務でも順番は同じ',
-          body: '障害切り分けも考え方は同じです。GWまで届いているか、名前解決はできているか、相手のポートは開いているか。層で分けると、どこを調べればいいかが落ち着きます。',
+          body: '障害の切り分けも同じ考え方です。GWまで届いているか、名前解決はできているか、相手のポートは開いているか。層で分けると、どこを調べればよいかが見えてきます。',
         },
       ],
     },
   ],
   takeaways: [
-    'OSI参照モデルは暗記表ではなく、「いまどの層の話か」を指さす地図。',
-    '送るときは外側へ[[green:L2]]→[[blue:L3]]→[[amber:L4]]の中身を包み（カプセル化）、受けるときは外側から開ける。',
-    '[[green:MACは隣]]・[[blue:IPは最終相手]]・[[amber:ポートは相手の中のアプリ]]。',
-    '別ネットワーク宛ての最初のあて先MACは、最終宛先ではなくデフォルトゲートウェイ。',
-    'ルータを越えても[[blue:あて先IPは変わらない]]。変わるのは[[green:区間ごとのMAC]]。',
+    'OSI参照モデルは、いまどの層の話かを指さすための地図。',
+    '送るときは外へ向けてヘッダを重ねる「カプセル化」、受けるときは外から開く「デカプセル化」。',
+    '[[green:MACは隣]]・[[blue:IPは最終的な相手]]・[[amber:ポートは相手の中のアプリ]]。',
+    '別ネットワーク宛てでも、最初のあて先MACはデフォルトゲートウェイ。',
+    'ルータを越えても変わらない[[blue:あて先IP]]、区間ごとに変わる[[green:MAC]]。',
   ],
 }

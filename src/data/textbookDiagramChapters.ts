@@ -1,5 +1,6 @@
 import type {
   ComparisonDiagram,
+  DiagnosticMapDiagram,
   EncapsulationDiagram,
   ExamNetworkDiagram,
   LayerStackDiagram,
@@ -321,6 +322,52 @@ function makeInteractiveFlowDiagram(spec: ChapterSpec): TextbookDiagram {
   }
 }
 
+function makeDiagnosticMapDiagram(spec: ChapterSpec): DiagnosticMapDiagram {
+  return {
+    type: 'diagnostic-map',
+    title: `${spec.title}: 読解の足場を増やす`,
+    description: '構成図、判断材料、観測点、答案化の根拠を1枚でつなぎ、午後問題で何を見ればよいかを整理します。',
+    points: [
+      '経路を追うだけでなく、どの値や条件を確認するかまで同じ図で見ます。',
+      '観測点を先に置くことで、ログ、表、設定値、キャプチャのどこを見るかを迷いにくくします。',
+      '最後に、答案へ使う根拠を構成図上の位置と対応付けます。',
+    ],
+    path: spec.nodes.map((node) => ({
+      id: node.id,
+      label: node.label,
+      caption: node.hint,
+      role: node.role,
+      tone: ROLE_TONE[node.role],
+    })),
+    lanes: [
+      {
+        title: '通信経路',
+        subtitle: 'どこを通るか',
+        items: spec.linkLabels,
+        accent: 'sky',
+      },
+      {
+        title: '判断材料',
+        subtitle: 'どの値を見るか',
+        items: spec.keyFields.slice(0, 5),
+        accent: 'blue',
+      },
+      {
+        title: '観測点',
+        subtitle: 'どこで確かめるか',
+        items: spec.observationPoints.slice(0, 5),
+        accent: 'emerald',
+      },
+      {
+        title: '答案化',
+        subtitle: '何を根拠に書くか',
+        items: spec.compare.map((item) => `${item.title}: ${item.subtitle}`),
+        accent: 'amber',
+      },
+    ],
+  }
+}
+
 function makeChapter(spec: ChapterSpec): TextbookChapter {
   const overviewDiagrams: TextbookDiagram[] =
     spec.order === 1 ? [osiLayerDiagram, makeExamNetworkDiagram(spec)] : [makeExamNetworkDiagram(spec)]
@@ -339,6 +386,7 @@ function makeChapter(spec: ChapterSpec): TextbookChapter {
       { heading: '図解1: 構成図で見る範囲', body: [], diagrams: overviewDiagrams },
       { heading: '図解2: 見る情報を分ける', body: [], diagrams: informationDiagrams },
       { heading: '図解3: 動く手順', body: [], diagrams: [makeInteractiveFlowDiagram(spec)] },
+      { heading: '図解4: 読解の足場', body: [], diagrams: [makeDiagnosticMapDiagram(spec)] },
     ],
     examFocus: [],
     practicalFocus: [],

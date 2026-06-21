@@ -25,6 +25,7 @@ export type TextbookDiagram =
   | PacketFrameDiagram
   | EncapsulationDiagram
   | VlanDesignDiagram
+  | DiagnosticMapDiagram
   | ExamNetworkDiagram
   | InteractiveFlowDiagram
 
@@ -177,6 +178,23 @@ export interface VlanDesignDiagram extends DiagramBase {
     label: string
     description: string
   }
+}
+
+export interface DiagnosticMapDiagram extends DiagramBase {
+  type: 'diagnostic-map'
+  path: {
+    id: string
+    label: string
+    caption: string
+    role: PacketFlowNodeRole
+    tone?: 'slate' | 'sky' | 'blue' | 'emerald' | 'amber' | 'rose' | 'violet'
+  }[]
+  lanes: {
+    title: string
+    subtitle: string
+    items: string[]
+    accent: 'sky' | 'blue' | 'emerald' | 'amber'
+  }[]
 }
 
 export interface ExamNetworkDiagram extends DiagramBase {

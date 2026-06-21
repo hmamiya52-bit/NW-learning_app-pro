@@ -3,6 +3,7 @@ import { ArrowRight, Cable, Check, ChevronLeft, ChevronRight, Monitor, Network, 
 import type {
   AddressRoleTableDiagram,
   ComparisonDiagram,
+  DiagnosticMapDiagram,
   EncapsulationDiagram,
   ExamNetworkDiagram,
   ExamNetworkStep,
@@ -38,6 +39,13 @@ const SEGMENT_COLORS = {
   sky: 'border-sky-200 bg-sky-50 text-sky-900',
   emerald: 'border-emerald-200 bg-emerald-50 text-emerald-900',
   rose: 'border-rose-200 bg-rose-50 text-rose-900',
+} as const
+
+const DIAGNOSTIC_COLORS = {
+  sky: 'border-sky-200 bg-sky-50 text-sky-900',
+  blue: 'border-blue-200 bg-blue-50 text-blue-900',
+  emerald: 'border-emerald-200 bg-emerald-50 text-emerald-900',
+  amber: 'border-amber-200 bg-amber-50 text-amber-900',
 } as const
 
 const PACKET_FRAME_COLORS = {
@@ -471,7 +479,7 @@ function SegmentDiagramView({ diagram }: { diagram: SegmentDiagram }) {
 function PacketFrameDiagramView({ diagram }: { diagram: PacketFrameDiagram }) {
   return (
     <DiagramShell title={diagram.title} description={diagram.description} points={diagram.points}>
-      <div className="space-y-3">
+      <div className="space-y-3" data-testid="packet-frame-diagram">
         {diagram.layers.map((layer, index) => (
           <div
             key={layer.title}
@@ -592,6 +600,150 @@ function VlanDesignDiagramView({ diagram }: { diagram: VlanDesignDiagram }) {
               </div>
             ))}
           </div>
+        </div>
+      </div>
+    </DiagramShell>
+  )
+}
+
+function DiagnosticMapDiagramView({ diagram }: { diagram: DiagnosticMapDiagram }) {
+  const viewBox = { width: 720, height: 218 }
+  const nodeWidth = diagram.path.length >= 5 ? 94 : 108
+  const nodeHeight = 54
+  const centerY = 118
+  const usableWidth = 600
+  const startX = 60
+  const centers = diagram.path.map((node, index) => ({
+    node,
+    x: diagram.path.length <= 1 ? viewBox.width / 2 : startX + (usableWidth / (diagram.path.length - 1)) * index,
+    y: centerY,
+  }))
+  const motionPath = centers.map(({ x, y }, index) => `${index === 0 ? 'M' : 'L'} ${x} ${y}`).join(' ')
+
+  return (
+    <DiagramShell title={diagram.title} description={diagram.description} points={diagram.points}>
+      <div className="space-y-3" data-testid="diagnostic-map-diagram">
+        <svg
+          className="h-auto w-full rounded-lg border border-slate-200 bg-white"
+          viewBox={`0 0 ${viewBox.width} ${viewBox.height}`}
+          role="img"
+          aria-label={`${diagram.title}の読解マップ`}
+        >
+          <rect x="18" y="18" width="684" height="174" rx="12" fill="#f8fafc" stroke="#334155" strokeWidth="2" strokeDasharray="10 7" />
+          <text x="38" y="44" fill="#0f172a" fontSize="16" fontWeight="900">
+            構成図から答案根拠までをつなぐ
+          </text>
+          <text x="38" y="68" fill="#64748b" fontSize="12" fontWeight="700">
+            経路、判断材料、観測点を対応付けて読む
+          </text>
+
+          {centers.slice(0, -1).map(({ x }, index) => {
+            const next = centers[index + 1]
+            const laneTone = index % 2 === 0 ? EXAM_TONES.blue : EXAM_TONES.emerald
+            const label = diagram.lanes[0]?.items[index] ?? '次へ'
+            const labelX = (x + next.x) / 2
+            return (
+              <g key={`${diagram.path[index].id}-${next.node.id}`}>
+                <line
+                  x1={x + nodeWidth / 2 - 4}
+                  y1={centerY}
+                  x2={next.x - nodeWidth / 2 + 4}
+                  y2={centerY}
+                  stroke="#ffffff"
+                  strokeWidth="9"
+                  strokeLinecap="round"
+                />
+                <line
+                  x1={x + nodeWidth / 2 - 4}
+                  y1={centerY}
+                  x2={next.x - nodeWidth / 2 + 4}
+                  y2={centerY}
+                  stroke={laneTone.link}
+                  strokeWidth="4"
+                  strokeLinecap="round"
+                />
+                <rect x={labelX - 44} y="82" width="88" height="22" rx="7" fill="#ffffff" stroke="#dbe4ef" />
+                <text x={labelX} y="97" textAnchor="middle" fill={laneTone.text} fontSize="10" fontWeight="900">
+                  {label}
+                </text>
+              </g>
+            )
+          })}
+
+          {motionPath && (
+            <g aria-hidden="true">
+              <circle r="12" fill="#2563eb" opacity="0.14">
+                <animateMotion dur="5.2s" repeatCount="indefinite" path={motionPath} />
+              </circle>
+              <circle r="5" fill="#2563eb">
+                <animateMotion dur="5.2s" repeatCount="indefinite" path={motionPath} />
+              </circle>
+            </g>
+          )}
+
+          {centers.map(({ node, x, y }) => {
+            const tone = EXAM_TONES[node.tone ?? ROLE_TONES[node.role]]
+            const labelLines = compactLabelLines(node.label)
+            return (
+              <g key={node.id}>
+                <rect
+                  x={x - nodeWidth / 2 + 4}
+                  y={y - nodeHeight / 2 + 5}
+                  width={nodeWidth}
+                  height={nodeHeight}
+                  rx="9"
+                  fill="#0f172a"
+                  fillOpacity="0.08"
+                />
+                <rect
+                  x={x - nodeWidth / 2}
+                  y={y - nodeHeight / 2}
+                  width={nodeWidth}
+                  height={nodeHeight}
+                  rx="9"
+                  fill={tone.fill}
+                  stroke={tone.stroke}
+                  strokeWidth="2"
+                />
+                {labelLines.map((line, index) => (
+                  <text
+                    key={`${node.id}-${line}`}
+                    x={x}
+                    y={y + 4 + index * 12 - (labelLines.length - 1) * 6}
+                    textAnchor="middle"
+                    fill={tone.text}
+                    fontSize={labelLines.some((item) => item.length >= 7) ? 11 : 13}
+                    fontWeight="900"
+                  >
+                    {line}
+                  </text>
+                ))}
+              </g>
+            )
+          })}
+        </svg>
+
+        <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+          {diagram.lanes.map((lane, index) => (
+            <section key={lane.title} className={`rounded-lg border px-3 py-3 ${DIAGNOSTIC_COLORS[lane.accent]}`}>
+              <div className="flex items-start gap-2">
+                <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-md bg-white/75 text-xs font-black shadow-sm">
+                  {index + 1}
+                </span>
+                <div className="min-w-0">
+                  <h4 className="text-sm font-black leading-snug">{lane.title}</h4>
+                  <p className="mt-0.5 text-[11px] font-bold opacity-75">{lane.subtitle}</p>
+                </div>
+              </div>
+              <ul className="mt-3 space-y-1.5">
+                {lane.items.map((item) => (
+                  <li key={item} className="rounded-md bg-white/75 px-2 py-1.5 text-xs font-bold leading-relaxed shadow-sm">
+                    <TextbookRichText text={item} />
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))}
         </div>
       </div>
     </DiagramShell>
@@ -1184,6 +1336,7 @@ export default function TextbookDiagram({ diagram }: TextbookDiagramProps) {
   if (diagram.type === 'packet-frame') return <PacketFrameDiagramView diagram={diagram} />
   if (diagram.type === 'encapsulation-flow') return <EncapsulationDiagramView diagram={diagram} />
   if (diagram.type === 'vlan-design') return <VlanDesignDiagramView diagram={diagram} />
+  if (diagram.type === 'diagnostic-map') return <DiagnosticMapDiagramView diagram={diagram} />
   if (diagram.type === 'exam-network') return <ExamNetworkDiagramView diagram={diagram} />
   return (
     <PacketFlowVisualizer

@@ -1,5 +1,4 @@
 import { textbookDiagramChapters } from './textbookDiagramChapters'
-import { layerOneThreeChapter } from './textbookChapterOne'
 
 export type TextbookChapterStatus = 'published' | 'diagram' | 'draft'
 
@@ -329,11 +328,7 @@ export interface PacketFlowScenario {
   steps: PacketFlowStep[]
 }
 
-// 第1章は本文付きの完成版（textbookChapterOne.ts）を採用し、残りは図解先行版を使う。
-// 各章を完成させるたびに、ここで図解先行版から完成版へ差し替えていく。
-export const textbookChapters: TextbookChapter[] = textbookDiagramChapters.map((chapter) =>
-  chapter.order === 1 ? layerOneThreeChapter : chapter,
-)
+export const textbookChapters: TextbookChapter[] = textbookDiagramChapters
 
 export function getTextbookChapter(chapterId: string | undefined): TextbookChapter | undefined {
   if (!chapterId) return undefined

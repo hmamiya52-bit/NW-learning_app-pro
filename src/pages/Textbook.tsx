@@ -1,37 +1,15 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import {
-  BookOpenText,
-  CheckCircle2,
-  ChevronRight,
-  Clock3,
-  Construction,
-  Sparkles,
-} from 'lucide-react'
-import { textbookChapters, type TextbookChapter } from '../data/textbookChapters'
+import { BookOpenText, CheckCircle2, ChevronRight, Clock3, Construction, Sparkles } from 'lucide-react'
+import { textbookChapters, type TextbookChapter } from '../data/textbook'
 import { getTextbookReadState } from '../lib/textbookReadState'
-
-const STATUS_STYLES = {
-  published: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-  diagram: 'bg-amber-50 text-amber-800 border-amber-200',
-  draft: 'bg-slate-100 text-slate-500 border-slate-200',
-} as const
 
 function ChapterStatus({ chapter, isRead }: { chapter: TextbookChapter; isRead: boolean }) {
   if (chapter.status === 'draft') {
     return (
-      <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-1 text-[11px] font-bold ${STATUS_STYLES.draft}`}>
+      <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-100 px-2 py-1 text-[11px] font-bold text-slate-500">
         <Construction className="h-3.5 w-3.5" aria-hidden="true" />
         準備中
-      </span>
-    )
-  }
-
-  if (chapter.status === 'diagram') {
-    return (
-      <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-1 text-[11px] font-bold ${STATUS_STYLES.diagram}`}>
-        <Construction className="h-3.5 w-3.5" aria-hidden="true" />
-        図解先行
       </span>
     )
   }
@@ -46,7 +24,7 @@ function ChapterStatus({ chapter, isRead }: { chapter: TextbookChapter; isRead: 
   }
 
   return (
-    <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-1 text-[11px] font-bold ${STATUS_STYLES.published}`}>
+    <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-1 text-[11px] font-bold text-emerald-700">
       <BookOpenText className="h-3.5 w-3.5" aria-hidden="true" />
       公開中
     </span>
@@ -63,7 +41,7 @@ function ChapterCard({ chapter, isRead }: { chapter: TextbookChapter; isRead: bo
           </span>
           <div className="min-w-0">
             <h2 className="text-sm font-black leading-snug text-slate-800">{chapter.title}</h2>
-            <p className="mt-1 text-xs leading-relaxed text-slate-500">{chapter.description}</p>
+            <p className="mt-1 text-xs leading-relaxed text-slate-500">{chapter.summary}</p>
           </div>
         </div>
         {chapter.status !== 'draft' && (
@@ -83,11 +61,7 @@ function ChapterCard({ chapter, isRead }: { chapter: TextbookChapter; isRead: bo
   )
 
   if (chapter.status === 'draft') {
-    return (
-      <div className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-4 opacity-80">
-        {body}
-      </div>
-    )
+    return <div className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-4 opacity-80">{body}</div>
   }
 
   return (
@@ -104,7 +78,7 @@ function ChapterCard({ chapter, isRead }: { chapter: TextbookChapter; isRead: bo
 export default function Textbook() {
   const [readState] = useState(() => getTextbookReadState())
   const publishedCount = textbookChapters.filter((chapter) => chapter.status === 'published').length
-  const diagramCount = textbookChapters.filter((chapter) => chapter.status === 'diagram').length
+  const draftCount = textbookChapters.filter((chapter) => chapter.status === 'draft').length
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -117,17 +91,17 @@ export default function Textbook() {
                 <h1 className="text-2xl font-black text-slate-800">図解で学ぶ教科書</h1>
               </div>
               <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600">
-                ネスペ学習の入口として、通信の流れを図で追いながら基礎を固めます。暗記に入る前に、MAC/IP、L2/L3、ARP、VLANがどうつながるかをつかむための読み物です。
+                ネスペ学習の入口です。小さな構成図の上でパケットを動かしながら、MAC/IP、L2/L3、ARP、VLANがどうつながるかを、図を中心につかんでいきます。
               </p>
             </div>
             <div className="grid grid-cols-3 gap-2 text-center md:w-72">
-              <div className="rounded-lg border border-blue-100 bg-blue-50 px-3 py-2">
-                <p className="text-lg font-black text-blue-700">{diagramCount}</p>
-                <p className="text-[11px] font-bold text-blue-800">図解先行</p>
-              </div>
               <div className="rounded-lg border border-emerald-100 bg-emerald-50 px-3 py-2">
                 <p className="text-lg font-black text-emerald-700">{publishedCount}</p>
-                <p className="text-[11px] font-bold text-emerald-800">完成版</p>
+                <p className="text-[11px] font-bold text-emerald-800">公開中</p>
+              </div>
+              <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
+                <p className="text-lg font-black text-slate-600">{draftCount}</p>
+                <p className="text-[11px] font-bold text-slate-500">準備中</p>
               </div>
               <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
                 <p className="text-lg font-black text-slate-700">{textbookChapters.length}</p>
@@ -141,7 +115,7 @@ export default function Textbook() {
           <div className="flex gap-3">
             <Sparkles className="mt-0.5 h-5 w-5 flex-shrink-0 text-blue-600" aria-hidden="true" />
             <div className="min-w-0">
-              <h2 className="text-sm font-black text-blue-900">教科書は現在試験的に作成中です。完成は未定です。要望次第で作成時期を早める可能性有</h2>
+              <h2 className="text-sm font-black text-blue-900">教科書は現在作成中です。第1章から順番に公開していきます。</h2>
             </div>
           </div>
         </section>
@@ -152,7 +126,7 @@ export default function Textbook() {
               <h2 id="chapter-list-heading" className="text-xs font-bold uppercase tracking-wider text-slate-500">
                 章一覧
               </h2>
-              <p className="mt-1 text-xs text-slate-400">ノートモードと近い構成で、初学者向けの読み物として順番に追加します。</p>
+              <p className="mt-1 text-xs text-slate-400">初学者向けの読み物として、章を順番に追加していきます。</p>
             </div>
           </div>
 

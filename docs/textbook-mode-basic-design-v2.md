@@ -233,3 +233,10 @@ OSI スタック、カプセル化、フレーム入れ子、アドレス表、A
 - 動くパケット図: PC→L2SW→L3SW→Webサーバ（ゾーン=内部LAN/サーバLAN）。ホップ単位＋全体図常時表示＋PT感（モックアップ確定済みの方向）。
 - OSI 7層（段階ハイライト）／カプセル化（ヘッダが順に付く動き）／フレーム・パケット・セグメント入れ子／MAC・IP・ポート対応（縦リフロー）／ARP（要求→応答の動き）。
 - いずれもスマホ1画面・横スクロールなしで成立させる。
+
+## 11. 実装状況
+
+- 2026-06-21 フェーズ0完了: スクショ不能の原因は codex 図の `repeatCount="indefinite"`（無限SMILアニメ）と判明。新コンポーネントは**無限アニメ禁止・ステップ連動の有限トランジションのみ**とし、スクショ＋DOM計測の両方で検証可能にした。
+- 2026-06-21 フェーズ1完了（第1章）: 型（`src/data/textbook/types.ts`）＋共通図解（`src/components/textbook/figures/`：Stepper/FigureFrame/TopologyView/PacketFlowFigure/OsiStack/Encap/AddressTable）＋第1章データ（`chapters/ch01-osi.ts`）を実装。`TopologyView` は座標レスで、広い画面=横並び・スマホ=縦リフロー。旧 codex 図解一式（textbookDiagramChapters / textbookChapterOne / TextbookDiagram / PacketFlowVisualizer 等）は削除。
+- 検証: `npm run build` 成功・新ファイル lint 指摘なし。375px で `maxScrollX=0`・はみ出し要素0。動くパケット図のステップ送り・区間ハイライト・ヘッダ連動・縦リフロー・スクショをブラウザで確認。
+- 次: 第1章のレビュー反映 → §5.4 の段階的複雑化に沿って第2章以降へ展開。

@@ -6,13 +6,13 @@ import {
   CheckCircle2,
   ChevronLeft,
   ChevronRight,
+  Clock3,
   Construction,
   RotateCcw,
 } from 'lucide-react'
-import TextbookCallout from '../components/textbook/TextbookCallout'
-import TextbookDiagram from '../components/textbook/TextbookDiagram'
+import BlockList from '../components/textbook/figures/BlockList'
 import TextbookRichText from '../components/textbook/TextbookRichText'
-import { getTextbookChapter, textbookChapters, type TextbookChapter } from '../data/textbookChapters'
+import { getTextbookChapter, textbookChapters, type TextbookChapter } from '../data/textbook'
 import {
   getTextbookReadState,
   markTextbookChapterRead,
@@ -64,7 +64,7 @@ function DraftChapter({ chapter }: { chapter: TextbookChapter }) {
         <div className="mt-8 rounded-lg border border-slate-200 bg-white px-5 py-8 text-center shadow-sm">
           <Construction className="mx-auto h-10 w-10 text-slate-400" aria-hidden="true" />
           <h1 className="mt-3 text-xl font-black text-slate-800">{chapter.title}</h1>
-          <p className="mt-2 text-sm leading-relaxed text-slate-500">{chapter.description}</p>
+          <p className="mt-2 text-sm leading-relaxed text-slate-500">{chapter.summary}</p>
           <p className="mt-4 text-sm font-bold text-slate-400">この章は準備中です。</p>
         </div>
       </div>
@@ -127,25 +127,6 @@ function ChapterNavCard({ chapter, direction }: { chapter: TextbookChapter | und
   )
 }
 
-function FocusList({ title, items }: { title: string; items: string[] }) {
-  if (items.length === 0) return null
-  return (
-    <section className="rounded-lg border border-slate-200 bg-white px-4 py-4 shadow-sm">
-      <h2 className="text-sm font-black text-slate-800">{title}</h2>
-      <ul className="mt-3 space-y-2">
-        {items.map((item) => (
-          <li key={item} className="flex gap-2 text-sm leading-relaxed text-slate-600">
-            <span className="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-blue-500" />
-            <span>
-              <TextbookRichText text={item} />
-            </span>
-          </li>
-        ))}
-      </ul>
-    </section>
-  )
-}
-
 export default function TextbookChapter() {
   const { chapterId } = useParams()
   const chapter = getTextbookChapter(chapterId)
@@ -158,11 +139,10 @@ export default function TextbookChapter() {
   const currentIndex = textbookChapters.findIndex((item) => item.id === chapter.id)
   const prevChapter = currentIndex > 0 ? textbookChapters[currentIndex - 1] : undefined
   const nextChapter = currentIndex >= 0 ? textbookChapters[currentIndex + 1] : undefined
-  const hasFocusItems = chapter.examFocus.length > 0 || chapter.practicalFocus.length > 0 || chapter.pitfalls.length > 0
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <article className="mx-auto max-w-4xl px-4 pb-16 pt-6">
+      <article className="mx-auto max-w-3xl px-4 pb-16 pt-6">
         <nav className="mb-4" aria-label="パンくず">
           <Link to="/textbook" className="inline-flex items-center gap-1 text-sm font-bold text-blue-600 hover:text-blue-700">
             <ArrowLeft className="h-4 w-4" aria-hidden="true" />
@@ -175,7 +155,13 @@ export default function TextbookChapter() {
             <div className="min-w-0">
               <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Chapter {chapter.order}</p>
               <h1 className="mt-1 text-2xl font-black leading-tight text-slate-800">{chapter.title}</h1>
-              <p className="mt-2 text-sm leading-relaxed text-slate-600">{chapter.description}</p>
+              <p className="mt-2 text-sm leading-relaxed text-slate-600">{chapter.summary}</p>
+              {chapter.estimatedMinutes > 0 && (
+                <span className="mt-3 inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-bold text-slate-500">
+                  <Clock3 className="h-3.5 w-3.5" aria-hidden="true" />
+                  約{chapter.estimatedMinutes}分
+                </span>
+              )}
             </div>
             <div className="flex flex-shrink-0 items-center gap-2">
               {isRead && (
@@ -189,83 +175,35 @@ export default function TextbookChapter() {
           </div>
 
           {chapter.intro.length > 0 && (
-            <div className="mt-4 space-y-2 border-t border-slate-100 pt-4">
-              {chapter.intro.map((paragraph) => (
-                <p key={paragraph} className="text-sm leading-relaxed text-slate-700">
-                  <TextbookRichText text={paragraph} />
-                </p>
-              ))}
+            <div className="mt-4 border-t border-slate-100 pt-4">
+              <BlockList blocks={chapter.intro} />
             </div>
           )}
         </header>
 
-        {chapter.status === 'diagram' && (
-          <section className="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3">
-            <div className="flex gap-3">
-              <Construction className="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-700" aria-hidden="true" />
-              <div className="min-w-0">
-                <h2 className="text-sm font-black text-amber-950">工事中: この章は図解部分のみ先行公開中です</h2>
-                <p className="mt-1 text-xs font-bold leading-relaxed text-amber-900">
-                  説明文は後続工程で追加します。現在は構成図、観測点、動く図解を先に確認できる状態です。
-                </p>
-              </div>
-            </div>
-          </section>
-        )}
-
         <div className="mt-5 space-y-5">
           {chapter.sections.map((section, index) => (
-            <section key={section.heading} id={`textbook-section-${index + 1}`} className="scroll-mt-16 rounded-lg border border-slate-200 bg-white px-5 py-5 shadow-sm">
-              <div className="flex items-start gap-3">
+            <section
+              key={section.heading}
+              id={`textbook-section-${index + 1}`}
+              className="scroll-mt-16 rounded-lg border border-slate-200 bg-white px-4 py-5 shadow-sm sm:px-5"
+            >
+              <div className="mb-4 flex items-start gap-3">
                 <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-blue-50 text-sm font-black text-blue-700">
                   {index + 1}
                 </span>
-                <div className="min-w-0">
-                  <h2 className="text-lg font-black leading-snug text-slate-800">{section.heading}</h2>
-                  {section.body.length > 0 && (
-                    <div className="mt-3 space-y-3">
-                      {section.body.map((paragraph) => (
-                        <p key={paragraph} className="text-sm leading-7 text-slate-700">
-                          <TextbookRichText text={paragraph} />
-                        </p>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                <h2 className="pt-0.5 text-lg font-black leading-snug text-slate-800">{section.heading}</h2>
               </div>
-
-              {section.diagrams && section.diagrams.length > 0 && (
-                <div className="mt-5 space-y-4">
-                  {section.diagrams.map((diagram) => (
-                    <TextbookDiagram key={diagram.title} diagram={diagram} />
-                  ))}
-                </div>
-              )}
-
-              {section.callouts && section.callouts.length > 0 && (
-                <div className="mt-4 space-y-3">
-                  {section.callouts.map((callout) => (
-                    <TextbookCallout key={callout.title} callout={callout} />
-                  ))}
-                </div>
-              )}
+              <BlockList blocks={section.blocks} />
             </section>
           ))}
         </div>
 
-        {hasFocusItems && (
-          <div className="mt-5 grid gap-4 md:grid-cols-3">
-            <FocusList title="ネスペで見るところ" items={chapter.examFocus} />
-            <FocusList title="実務で効くところ" items={chapter.practicalFocus} />
-            <FocusList title="つまずきやすいところ" items={chapter.pitfalls} />
-          </div>
-        )}
-
-        {chapter.summary.length > 0 && (
+        {chapter.takeaways.length > 0 && (
           <section className="mt-5 rounded-lg border border-blue-100 bg-blue-50 px-5 py-5">
-            <h2 className="text-base font-black text-blue-900">この章のまとめ</h2>
+            <h2 className="text-base font-black text-blue-900">この章で持ち帰る考え方</h2>
             <ul className="mt-3 space-y-2">
-              {chapter.summary.map((item) => (
+              {chapter.takeaways.map((item) => (
                 <li key={item} className="flex gap-2 text-sm leading-relaxed text-blue-900">
                   <CheckCircle2 className="mt-0.5 h-4 w-4 flex-shrink-0 text-blue-600" aria-hidden="true" />
                   <span>

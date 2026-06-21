@@ -21,6 +21,7 @@ interface ChapterSpec {
   scope: string
   nodes: PacketFlowNode[]
   linkLabels: string[]
+  diagramLinks?: ChapterDiagramLink[]
   steps: PacketFlowStep[]
   keyFields: string[]
   observationPoints: string[]
@@ -30,6 +31,14 @@ interface ChapterSpec {
     items: string[]
     accent: 'teal' | 'indigo' | 'amber'
   }[]
+}
+
+interface ChapterDiagramLink {
+  from: string
+  to: string
+  label: string
+  dashed?: boolean
+  tone?: Tone
 }
 
 const ROLE_TONE: Record<PacketFlowNodeRole, Tone> = {
@@ -138,30 +147,71 @@ function centerX(index: number, total: number): number {
   return 128 + (744 / (total - 1)) * index
 }
 
+function diagramCenter(node: PacketFlowNode): { x: number; y: number } {
+  return {
+    x: 50 + node.x * 9,
+    y: 100 + node.y * (10 / 3),
+  }
+}
+
 function linkId(from: string, to: string): string {
   return `link-${from}-${to}`
 }
 
-function findAdjacentLinkId(nodes: PacketFlowNode[], from: string, to: string): string {
-  for (let index = 0; index < nodes.length - 1; index += 1) {
-    const left = nodes[index]
-    const right = nodes[index + 1]
-    if ((left.id === from && right.id === to) || (left.id === to && right.id === from)) {
-      return linkId(left.id, right.id)
+function defaultDiagramLinks(spec: ChapterSpec): ChapterDiagramLink[] {
+  return spec.nodes.slice(0, -1).map((node, index) => ({
+    from: node.id,
+    to: spec.nodes[index + 1].id,
+    label: spec.linkLabels[index],
+  }))
+}
+
+function edgePoint(from: { x: number; y: number }, to: { x: number; y: number }, halfWidth: number, halfHeight: number): { x: number; y: number } {
+  const dx = to.x - from.x
+  const dy = to.y - from.y
+  if (dx === 0 && dy === 0) return from
+  const scaleX = dx === 0 ? Number.POSITIVE_INFINITY : halfWidth / Math.abs(dx)
+  const scaleY = dy === 0 ? Number.POSITIVE_INFINITY : halfHeight / Math.abs(dy)
+  const scale = Math.min(scaleX, scaleY)
+  return {
+    x: from.x + dx * scale,
+    y: from.y + dy * scale,
+  }
+}
+
+function findLinkPathIds(links: ChapterDiagramLink[], from: string, to: string): string[] {
+  const direct = links.find((link) => (link.from === from && link.to === to) || (link.from === to && link.to === from))
+  if (direct) return [linkId(direct.from, direct.to)]
+
+  const queue: { node: string; path: string[] }[] = [{ node: from, path: [] }]
+  const visited = new Set<string>([from])
+
+  while (queue.length > 0) {
+    const current = queue.shift()
+    if (!current) break
+    for (const link of links) {
+      const next = link.from === current.node ? link.to : link.to === current.node ? link.from : undefined
+      if (!next || visited.has(next)) continue
+      const nextPath = [...current.path, linkId(link.from, link.to)]
+      if (next === to) return nextPath
+      visited.add(next)
+      queue.push({ node: next, path: nextPath })
     }
   }
-  return linkId(from, to)
+
+  return [linkId(from, to)]
 }
 
 function makeExamNetworkDiagram(spec: ChapterSpec): ExamNetworkDiagram {
-  const nodeCenterY = 280
   const nodeWidth = 136
   const nodeHeight = 76
   const nodeHalfWidth = nodeWidth / 2
+  const nodeHalfHeight = nodeHeight / 2
   const packetLaneY = 194
   const linkLabelY = 224
-  const centers = new Map(spec.nodes.map((node, index) => [node.id, { x: centerX(index, spec.nodes.length), y: nodeCenterY }]))
+  const centers = new Map(spec.nodes.map((node) => [node.id, diagramCenter(node)]))
   const nodeById = new Map(spec.nodes.map((node) => [node.id, node]))
+  const diagramLinks = spec.diagramLinks ?? defaultDiagramLinks(spec)
 
   return {
     type: 'exam-network',
@@ -210,7 +260,7 @@ function makeExamNetworkDiagram(spec: ChapterSpec): ExamNetworkDiagram {
       },
     ],
     nodes: spec.nodes.map((node, index) => {
-      const center = centers.get(node.id) ?? { x: centerX(index, spec.nodes.length), y: nodeCenterY }
+      const center = centers.get(node.id) ?? { x: centerX(index, spec.nodes.length), y: 280 }
       return {
         id: node.id,
         label: node.label,
@@ -223,33 +273,33 @@ function makeExamNetworkDiagram(spec: ChapterSpec): ExamNetworkDiagram {
         tone: ROLE_TONE[node.role],
       }
     }),
-    links: spec.nodes.slice(0, -1).map((node, index) => {
-      const next = spec.nodes[index + 1]
-      const from = centers.get(node.id) ?? { x: centerX(index, spec.nodes.length), y: nodeCenterY }
-      const to = centers.get(next.id) ?? { x: centerX(index + 1, spec.nodes.length), y: nodeCenterY }
+    links: diagramLinks.map((link, index) => {
+      const from = centers.get(link.from) ?? { x: centerX(index, spec.nodes.length), y: 280 }
+      const to = centers.get(link.to) ?? { x: centerX(index + 1, spec.nodes.length), y: 280 }
+      const start = edgePoint(from, to, nodeHalfWidth, nodeHalfHeight)
+      const end = edgePoint(to, from, nodeHalfWidth, nodeHalfHeight)
       return {
-        id: linkId(node.id, next.id),
-        points: [
-          { x: from.x + nodeHalfWidth, y: from.y },
-          { x: to.x - nodeHalfWidth, y: to.y },
-        ],
-        label: spec.linkLabels[index],
-        tone: index % 2 === 0 ? 'blue' : 'emerald',
-        labelPosition: { x: (from.x + to.x) / 2, y: linkLabelY },
+        id: linkId(link.from, link.to),
+        points: [start, end],
+        label: link.label,
+        dashed: link.dashed,
+        tone: link.tone ?? (index % 2 === 0 ? 'blue' : 'emerald'),
+        labelPosition: { x: (from.x + to.x) / 2, y: from.y === to.y ? linkLabelY : (from.y + to.y) / 2 - 18 },
       }
     }),
     steps: spec.steps.map((step) => {
-      const fromCenter = centers.get(step.from) ?? { x: 128, y: nodeCenterY }
-      const toCenter = centers.get(step.to) ?? { x: 872, y: nodeCenterY }
-      const from = { x: fromCenter.x, y: packetLaneY }
-      const to = { x: toCenter.x, y: packetLaneY }
+      const fromCenter = centers.get(step.from) ?? { x: 128, y: 280 }
+      const toCenter = centers.get(step.to) ?? { x: 872, y: 280 }
+      const sameLane = Math.abs(fromCenter.y - toCenter.y) < 8
+      const from = { x: fromCenter.x, y: sameLane ? packetLaneY : fromCenter.y - 68 }
+      const to = { x: toCenter.x, y: sameLane ? packetLaneY : toCenter.y - 68 }
       const fromNode = nodeById.get(step.from)
       const toNode = nodeById.get(step.to)
       return {
         id: step.id,
         title: step.title,
         packetLabel: step.packetLabel,
-        activeLinkIds: [findAdjacentLinkId(spec.nodes, step.from, step.to)],
+        activeLinkIds: findLinkPathIds(diagramLinks, step.from, step.to),
         packet: { from, to },
         description: step.explanation,
         deviceAction: step.deviceFocus,
@@ -302,6 +352,7 @@ function makeComparisonDiagram(spec: ChapterSpec): ComparisonDiagram {
 }
 
 function makeInteractiveFlowDiagram(spec: ChapterSpec): TextbookDiagram {
+  const diagramLinks = spec.diagramLinks ?? defaultDiagramLinks(spec)
   return {
     type: 'interactive-flow',
     title: `${spec.title}: 動く手順`,
@@ -317,12 +368,14 @@ function makeInteractiveFlowDiagram(spec: ChapterSpec): TextbookDiagram {
       description: spec.scope,
       mobileOptimized: true,
       nodes: spec.nodes,
+      links: diagramLinks.map((link) => ({ from: link.from, to: link.to, label: link.label })),
       steps: spec.steps,
     },
   }
 }
 
 function makeDiagnosticMapDiagram(spec: ChapterSpec): DiagnosticMapDiagram {
+  const diagramLinks = spec.diagramLinks ?? defaultDiagramLinks(spec)
   return {
     type: 'diagnostic-map',
     title: `${spec.title}: 読解の足場を増やす`,
@@ -337,7 +390,15 @@ function makeDiagnosticMapDiagram(spec: ChapterSpec): DiagnosticMapDiagram {
       label: node.label,
       caption: node.hint,
       role: node.role,
+      x: node.x,
+      y: node.y,
       tone: ROLE_TONE[node.role],
+    })),
+    links: diagramLinks.map((link) => ({
+      from: link.from,
+      to: link.to,
+      label: link.label,
+      tone: link.tone,
     })),
     lanes: [
       {
@@ -458,10 +519,15 @@ const chapterSpecs: ChapterSpec[] = [
     nodes: [
       makeNode('pc', 'PC', 'pc', '通信を始める端末', 10),
       makeNode('l2sw', 'L2SW', 'switch', '同一LANへ転送', 34),
-      makeNode('infra', 'DNS/DHCP', 'dns', '準備情報を返す', 58),
-      makeNode('gw', 'GW', 'router', '次ホップになる', 82),
+      makeNode('infra', 'DNS/DHCP', 'dns', '準備情報を返す', 62, 34),
+      makeNode('gw', 'GW', 'router', '次ホップになる', 62, 74),
     ],
-    linkLabels: ['ブロードキャスト/問い合わせ', '応答', 'ARP対象'],
+    linkLabels: ['同一LAN', 'DNS/DHCP', 'GW/ARP'],
+    diagramLinks: [
+      { from: 'pc', to: 'l2sw', label: '同一LAN', tone: 'blue' },
+      { from: 'l2sw', to: 'infra', label: 'DNS/DHCP', tone: 'violet' },
+      { from: 'l2sw', to: 'gw', label: 'GW/ARP', tone: 'emerald' },
+    ],
     keyFields: ['FQDN', '割当IP', 'デフォルトGW', '宛先MAC'],
     observationPoints: ['DNSキャッシュ', 'DHCPリース', 'ARPテーブル', 'MACアドレステーブル'],
     compare: [
@@ -471,8 +537,8 @@ const chapterSpecs: ChapterSpec[] = [
     ],
     steps: [
       makeStep('dhcp-discover', 'DHCP Discoverを送る', 'pc', 'l2sw', 'DHCP', '端末はまだ自分のIP設定を持たないため、同一LANへブロードキャストします。', 'L2ブロードキャストとして扱います。', { sourceMac: 'PC', destinationMac: 'ff:ff:ff:ff:ff:ff', sourceIp: '0.0.0.0', destinationIp: '255.255.255.255', protocol: 'UDP', port: '68 -> 67' }),
-      makeStep('dns-query', 'DNSで宛先IPを調べる', 'l2sw', 'infra', 'DNS', '通信先のFQDNからIPアドレスを得ます。', 'DNSは通信前の宛先IP確認です。', { sourceIp: '192.168.10.10', destinationIp: '192.168.10.53', protocol: 'UDP', port: '53000 -> 53' }),
-      makeStep('arp-gw', '次ホップのMACを調べる', 'l2sw', 'gw', 'ARP', '別ネットワークへ送る場合、PCはデフォルトゲートウェイのMACアドレスを調べます。', 'ARP対象は最終宛先サーバではなく、同一LAN内の次ホップです。', { sourceMac: 'PC', destinationMac: 'ff:ff:ff:ff:ff:ff', sourceIp: '192.168.10.10', destinationIp: '192.168.10.1', protocol: 'ARP' }),
+      makeStep('dns-query', 'DNS問い合わせをL2SWがサーバへ転送する', 'l2sw', 'infra', 'DNS', 'PCが送ったDNS問い合わせは、同一LAN上のDNSサーバへL2SW経由で届きます。', 'DNSサーバは経路上の中継装置ではなく、問い合わせの相手です。', { sourceIp: '192.168.10.10', destinationIp: '192.168.10.53', protocol: 'UDP', port: '53000 -> 53' }),
+      makeStep('arp-gw', 'ARP要求をL2SWがGW側へ転送する', 'l2sw', 'gw', 'ARP', '別ネットワークへ送る場合、PCは同一LAN上のデフォルトゲートウェイに対してARP要求を出します。', 'ARP対象は最終宛先サーバではなく、同一LAN内の次ホップです。', { sourceMac: 'PC', destinationMac: 'ff:ff:ff:ff:ff:ff', sourceIp: '192.168.10.10', destinationIp: '192.168.10.1', protocol: 'ARP' }),
     ],
   },
   {
@@ -499,7 +565,7 @@ const chapterSpecs: ChapterSpec[] = [
       makeStep('tcp-start', 'TCP接続を開始する', 'browser', 'gw', 'SYN', 'ブラウザはWebサーバの443番ポートへTCP接続を開始します。', 'まずL4接続が成立するかを見ます。', { sourceIp: '192.168.10.10', destinationIp: '203.0.113.20', protocol: 'TCP SYN', port: '53000 -> 443' }),
       makeStep('fw-forward', 'FWが許可して外部へ出す', 'gw', 'internet', 'TCP', 'FWは送信元、宛先、ポート、状態を見て通信を許可します。', '許可条件と戻り通信の状態を確認します。', { sourceIp: '192.168.10.10', destinationIp: '203.0.113.20', protocol: 'TCP', port: '53000 -> 443' }),
       makeStep('tls-handshake', 'TLSでサーバを確認する', 'internet', 'web', 'TLS', '証明書を受け取り、信頼できる相手かを確認します。', 'HTTP本文の前にTLSの確認があります。', { sourceIp: '192.168.10.10', destinationIp: '203.0.113.20', protocol: 'TLS', port: '443' }),
-      makeStep('http-request', 'HTTP要求を送る', 'browser', 'gw', 'HTTP', 'TLS上でHTTPリクエストを送ります。', 'HTTPとして見るのはTLS確立後です。', { sourceIp: '192.168.10.10', destinationIp: '203.0.113.20', protocol: 'HTTPS', port: 'GET /' }),
+      makeStep('http-request', 'HTTP要求を送る', 'browser', 'gw', 'HTTP', 'TLS上でHTTPリクエストを送ります。', 'HTTPメソッドはL7の情報であり、TCPの宛先ポートとは分けて見ます。', { sourceIp: '192.168.10.10', destinationIp: '203.0.113.20', protocol: 'HTTPS GET', port: '443' }),
     ],
   },
   {
@@ -692,12 +758,18 @@ const chapterSpecs: ChapterSpec[] = [
     description: '誰を確認し、何を許可するかを図で分けます。',
     scope: '利用者、サービス、IdP、証明書基盤の間で、認証情報やチケットがどう動くかを扱います。',
     nodes: [
-      makeNode('user', '利用者', 'pc', 'ブラウザ', 10),
-      makeNode('sp', 'SP', 'server', '利用先サービス', 34),
-      makeNode('idp', 'IdP', 'server', '認証基盤', 58),
-      makeNode('app', 'アプリ', 'server', '認可後に利用', 82),
+      makeNode('user', '利用者', 'pc', 'ブラウザ', 10, 60),
+      makeNode('sp', 'SP', 'server', '利用先サービス', 42, 42),
+      makeNode('idp', 'IdP', 'server', '認証基盤', 42, 78),
+      makeNode('app', 'アプリ', 'server', '認可後に利用', 74, 42),
     ],
-    linkLabels: ['アクセス', 'リダイレクト', 'アサーション'],
+    linkLabels: ['アクセス', 'IdPへ誘導', '認証結果', '認可後'],
+    diagramLinks: [
+      { from: 'user', to: 'sp', label: 'アクセス', tone: 'blue' },
+      { from: 'user', to: 'idp', label: 'IdPへ誘導', tone: 'violet' },
+      { from: 'idp', to: 'sp', label: '認証結果', tone: 'emerald' },
+      { from: 'sp', to: 'app', label: '認可後', tone: 'amber' },
+    ],
     keyFields: ['IDトークン', 'SAMLアサーション', '証明書チェーン', '権限情報'],
     observationPoints: ['認証ログ', '証明書', 'IdP設定', 'アプリ認可設定'],
     compare: [
@@ -707,8 +779,9 @@ const chapterSpecs: ChapterSpec[] = [
     ],
     steps: [
       makeStep('access-sp', '利用者がサービスへアクセスする', 'user', 'sp', 'HTTPS', '未認証の利用者はサービスへアクセスします。', 'サービスは認証済みかを確認します。', { sourceIp: 'Client', destinationIp: 'SP', protocol: 'HTTPS', port: '443' }),
-      makeStep('redirect-idp', 'IdPへ認証を委ねる', 'sp', 'idp', 'Redirect', 'SPは利用者をIdPへ誘導し、認証を行わせます。', '認証を担当する主体を分けます。', { sourceIp: 'SP', destinationIp: 'IdP', protocol: 'SAML/OIDC', port: '443' }),
-      makeStep('assertion', '認証結果をサービスへ渡す', 'idp', 'app', 'Assertion', 'IdPは認証結果や属性をサービスへ渡し、アプリは認可を判断します。', '認証結果と権限判断を混同しないように見ます。', { sourceIp: 'IdP', destinationIp: 'App', protocol: 'SAML/OIDC', port: '443' }),
+      makeStep('redirect-idp', 'ブラウザがIdPへ誘導される', 'user', 'idp', 'Redirect', 'SPはリダイレクト応答などで、利用者のブラウザをIdPへ誘導します。', 'SPとIdPが常に直接通信するとは限らず、ブラウザを経由する流れを分けて見ます。', { sourceIp: 'Client', destinationIp: 'IdP', protocol: 'SAML/OIDC', port: '443' }),
+      makeStep('assertion', '認証結果をSPへ戻す', 'idp', 'sp', 'Assertion', 'IdPで認証した結果は、SAMLアサーションやIDトークンとしてSPへ戻されます。', '認証結果とアプリ側の権限判断を混同しないように見ます。', { sourceIp: 'IdP', destinationIp: 'SP', protocol: 'SAML/OIDC', port: '443' }),
+      makeStep('authorize-app', 'SPがアプリ利用を許可する', 'sp', 'app', '認可', 'SPまたはアプリは、受け取った属性やロールに基づいて利用可否を判断します。', '認証は「誰か」、認可は「何を許すか」です。', { sourceIp: 'SP', destinationIp: 'App', protocol: 'HTTPS/API', port: '443' }),
     ],
   },
   {
@@ -759,7 +832,7 @@ const chapterSpecs: ChapterSpec[] = [
     ],
     steps: [
       makeStep('dad', 'DADで重複を確認する', 'host', 'switch', 'NS', '端末は利用予定のIPv6アドレスが重複していないか確認します。', 'NDPはICMPv6を使います。', { sourceIp: '::', destinationIp: 'ff02::1:ffxx:xxxx', protocol: 'ICMPv6 NS' }),
-      makeStep('ra', 'Router Advertisementを受ける', 'switch', 'router', 'RA', 'ルータはプレフィックスやデフォルトルータ情報を広告します。', 'RAによりSLAACの前提情報を得ます。', { sourceIp: 'fe80::1', destinationIp: 'ff02::1', protocol: 'ICMPv6 RA' }),
+      makeStep('ra', 'Router AdvertisementをL2SW側へ広告する', 'router', 'switch', 'RA', 'ルータはプレフィックスやデフォルトルータ情報を同一リンクへ広告します。', 'RAはルータから端末側へ送られ、SLAACの前提情報になります。', { sourceIp: 'fe80::1', destinationIp: 'ff02::1', protocol: 'ICMPv6 RA' }),
       makeStep('ipv6-traffic', 'IPv6でサーバへ通信する', 'router', 'server', 'IPv6', '設定後、IPv6アドレスを使ってサーバへ通信します。', 'DNSではAAAAレコードも確認します。', { sourceIp: '2001:db8:10::10', destinationIp: '2001:db8:20::20', protocol: 'TCP', port: '443' }),
     ],
   },
@@ -770,12 +843,17 @@ const chapterSpecs: ChapterSpec[] = [
     description: 'SMTP配送、DNSレコード、SPF/DKIM/DMARCを図で見ます。',
     scope: 'メールが送信者のMTAから宛先ドメインのMXへ配送され、認証結果で判定される流れです。',
     nodes: [
-      makeNode('mua', 'MUA', 'pc', '送信者', 10),
-      makeNode('mta', '送信MTA', 'server', 'SMTP送信', 34),
-      makeNode('dns', 'DNS', 'dns', 'MX/TXT', 58),
-      makeNode('mx', '受信MX', 'server', '受信判定', 82),
+      makeNode('mua', 'MUA', 'pc', '送信者', 10, 60),
+      makeNode('mta', '送信MTA', 'server', 'SMTP送信', 38, 60),
+      makeNode('dns', 'DNS', 'dns', 'MX/TXT', 66, 36),
+      makeNode('mx', '受信MX', 'server', '受信判定', 66, 76),
     ],
     linkLabels: ['投稿', 'MX/TXT照会', 'SMTP配送'],
+    diagramLinks: [
+      { from: 'mua', to: 'mta', label: '投稿', tone: 'blue' },
+      { from: 'mta', to: 'dns', label: 'MX/TXT照会', tone: 'violet' },
+      { from: 'mta', to: 'mx', label: 'SMTP配送', tone: 'emerald' },
+    ],
     keyFields: ['MX', 'SPF', 'DKIM-Signature', 'DMARC', 'Received'],
     observationPoints: ['メールヘッダ', 'DNS TXT', 'MTAログ', 'DMARCレポート'],
     compare: [
@@ -786,7 +864,7 @@ const chapterSpecs: ChapterSpec[] = [
     steps: [
       makeStep('submit', 'MUAが送信MTAへ投稿する', 'mua', 'mta', 'SMTP', '利用者のメールソフトは送信MTAへメールを投稿します。', '投稿と配送を分けます。', { sourceIp: 'Client', destinationIp: 'MTA', protocol: 'SMTP Submission', port: '587' }),
       makeStep('dns-mx', '宛先ドメインのMX/TXTを確認する', 'mta', 'dns', 'DNS', '送信MTAは宛先MXを引き、SPF/DKIM/DMARCに関わるTXTも確認されます。', 'メールはDNS設定と強く結び付きます。', { sourceIp: 'MTA', destinationIp: 'DNS', protocol: 'DNS', port: '53' }),
-      makeStep('deliver', '受信MXへ配送する', 'dns', 'mx', 'SMTP', '宛先MXへSMTPで配送され、認証結果やポリシーで判定されます。', '受信側ログとヘッダを見ます。', { sourceIp: 'MTA', destinationIp: 'MX', protocol: 'SMTP', port: '25' }),
+      makeStep('deliver', '受信MXへ配送する', 'mta', 'mx', 'SMTP', 'DNSで得た宛先MXへ、送信MTAがSMTPで配送します。', 'DNSは配送先を調べる相手であり、SMTP配送の中継点ではありません。', { sourceIp: 'MTA', destinationIp: 'MX', protocol: 'SMTP', port: '25' }),
     ],
   },
   {
@@ -823,12 +901,17 @@ const chapterSpecs: ChapterSpec[] = [
     description: '音声制御、音声データ、品質制御、配信木を図で見ます。',
     scope: 'SIPで呼制御を行い、RTPで音声を運び、QoSやマルチキャストで品質や配信効率を扱います。',
     nodes: [
-      makeNode('phone-a', '電話A', 'pc', '発信側', 10),
-      makeNode('call', 'Call Server', 'server', 'SIP制御', 34),
-      makeNode('wan', 'WAN', 'router', 'QoS制御', 58),
-      makeNode('phone-b', '電話B', 'pc', '着信側', 82),
+      makeNode('phone-a', '電話A', 'pc', '発信側', 10, 68),
+      makeNode('call', 'Call Server', 'server', 'SIP制御', 38, 36),
+      makeNode('wan', 'WAN', 'router', 'QoS制御', 50, 68),
+      makeNode('phone-b', '電話B', 'pc', '着信側', 82, 68),
     ],
-    linkLabels: ['SIP', 'QoS', 'RTP'],
+    linkLabels: ['SIP', 'RTP/QoS', 'RTP'],
+    diagramLinks: [
+      { from: 'phone-a', to: 'call', label: 'SIP', tone: 'violet' },
+      { from: 'phone-a', to: 'wan', label: 'RTP/QoS', tone: 'blue' },
+      { from: 'wan', to: 'phone-b', label: 'RTP', tone: 'emerald' },
+    ],
     keyFields: ['SIP', 'RTP', 'DSCP', 'CoS', '遅延/ジッタ/損失'],
     observationPoints: ['SIPログ', 'RTP統計', 'QoSキュー', 'interface counters'],
     compare: [
@@ -838,7 +921,7 @@ const chapterSpecs: ChapterSpec[] = [
     ],
     steps: [
       makeStep('sip-invite', 'SIP INVITEを送る', 'phone-a', 'call', 'SIP', '電話AはCall Serverへ発呼要求を送ります。', '呼制御と音声データを分けます。', { sourceIp: 'Phone A', destinationIp: 'Call Server', protocol: 'SIP', port: '5060/5061' }),
-      makeStep('qos-mark', 'WANでQoSを適用する', 'call', 'wan', 'DSCP', '音声系通信には優先制御のマーキングが使われます。', 'どこでマーキングし、どこでキュー制御するかを見ます。', { sourceIp: 'Phone A', destinationIp: 'Phone B', protocol: 'RTP', port: 'UDP dynamic' }),
+      makeStep('qos-mark', 'WANでQoSを適用する', 'phone-a', 'wan', 'DSCP', '音声データであるRTPには、優先制御のマーキングが使われます。', 'RTPはCall Serverを必ず経由するとは限らないため、呼制御と音声経路を分けて見ます。', { sourceIp: 'Phone A', destinationIp: 'Phone B', protocol: 'RTP', port: 'UDP dynamic' }),
       makeStep('rtp-media', 'RTPで音声を運ぶ', 'wan', 'phone-b', 'RTP', '呼が成立すると、音声データはRTPで相手へ届きます。', 'SIPとRTPの経路差に注意します。', { sourceIp: 'Phone A', destinationIp: 'Phone B', protocol: 'RTP', port: 'UDP dynamic' }),
     ],
   },
@@ -891,7 +974,7 @@ const chapterSpecs: ChapterSpec[] = [
     steps: [
       makeStep('ping-router', '監視サーバが到達性を見る', 'nms', 'router', 'ICMP', 'まずネットワーク機器まで到達できるかを確認します。', 'L3到達性の入口として見ます。', { sourceIp: 'NMS', destinationIp: 'Router', protocol: 'ICMP' }),
       makeStep('fw-log', 'FWログで遮断有無を見る', 'router', 'fw', 'Log', '経路上のFWで許可/遮断ログを確認します。', '通信が止まる境界を探します。', { sourceIp: 'Client', destinationIp: 'Server', protocol: 'TCP', port: '443' }),
-      makeStep('service-check', '業務サーバの応答を見る', 'fw', 'server', 'HTTP', 'ネットワークが通っていても、サービスが応答しているかを確認します。', 'ネットワークとアプリの切分けを行います。', { sourceIp: 'NMS', destinationIp: 'Server', protocol: 'HTTP', port: '200/500' }),
+      makeStep('service-check', '業務サーバの応答を見る', 'fw', 'server', 'HTTP', 'ネットワークが通っていても、サービスが正常なHTTPステータスを返しているかを確認します。', 'ポート番号とHTTPステータスコードを混同せず、ネットワークとアプリを切り分けます。', { sourceIp: 'NMS', destinationIp: 'Server', protocol: 'HTTP status 200/500', port: '80/443' }),
     ],
   },
   {

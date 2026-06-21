@@ -13,6 +13,7 @@ import {
   Shield,
 } from 'lucide-react'
 import type {
+  PacketFlowLink,
   PacketFlowNode,
   PacketFlowNodeRole,
   PacketFlowScenario,
@@ -95,10 +96,11 @@ function MobilePacketFlowPath({
   pathPairs: readonly (readonly [PacketFlowNode, PacketFlowNode])[]
   currentStep: PacketFlowStep
 }) {
+  const hasVerticalLayout = nodes.some((node) => node.y !== nodes[0]?.y)
   const positionedNodes = nodes.map((node, index) => ({
     ...node,
-    mobileX: nodes.length <= 1 ? 50 : 14 + (72 / (nodes.length - 1)) * index,
-    mobileY: 57,
+    mobileX: hasVerticalLayout ? Math.min(Math.max(node.x, 12), 88) : nodes.length <= 1 ? 50 : 14 + (72 / (nodes.length - 1)) * index,
+    mobileY: hasVerticalLayout ? Math.min(Math.max(20 + node.y * 0.72, 34), 82) : 57,
   }))
   const positionById = new Map(positionedNodes.map((node) => [node.id, node]))
   const activePair = pathPairs.find(([from, to]) => isActivePath(currentStep, from, to))
@@ -202,8 +204,13 @@ export default function PacketFlowVisualizer({
   const currentFrom = nodeById(scenario.nodes, currentStep.from)
   const currentTo = nodeById(scenario.nodes, currentStep.to)
   const pathPairs = useMemo(
-    () => scenario.nodes.slice(0, -1).map((node, index) => [node, scenario.nodes[index + 1]] as const),
-    [scenario.nodes],
+    () => {
+      if (scenario.links?.length) {
+        return scenario.links.map((link: PacketFlowLink) => [nodeById(scenario.nodes, link.from), nodeById(scenario.nodes, link.to)] as const)
+      }
+      return scenario.nodes.slice(0, -1).map((node, index) => [node, scenario.nodes[index + 1]] as const)
+    },
+    [scenario.links, scenario.nodes],
   )
   const arrowMarkerId = `${scenario.id}-packet-flow-arrow`
   const activeArrowMarkerId = `${scenario.id}-packet-flow-arrow-active`

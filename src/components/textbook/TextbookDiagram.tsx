@@ -607,54 +607,40 @@ function VlanDesignDiagramView({ diagram }: { diagram: VlanDesignDiagram }) {
 }
 
 function DiagnosticMapDiagramView({ diagram }: { diagram: DiagnosticMapDiagram }) {
-  const viewBox = { width: 720, height: 218 }
+  const viewBox = { width: 720, height: 250 }
   const nodeWidth = diagram.path.length >= 5 ? 94 : 108
   const nodeHeight = 54
-  const centerY = 118
-  const usableWidth = 600
-  const startX = 60
-  const centers = diagram.path.map((node, index) => ({
+  const centers = diagram.path.map((node) => ({
     node,
-    x: diagram.path.length <= 1 ? viewBox.width / 2 : startX + (usableWidth / (diagram.path.length - 1)) * index,
-    y: centerY,
+    x: 36 + node.x * 6.48,
+    y: 58 + node.y * 1.72,
   }))
-  const motionPath = centers.map(({ x, y }, index) => `${index === 0 ? 'M' : 'L'} ${x} ${y}`).join(' ')
+  const centerById = new Map(centers.map((item) => [item.node.id, item]))
+  const motionPoints = diagram.links.flatMap((link, index) => {
+    const from = centerById.get(link.from)
+    const to = centerById.get(link.to)
+    if (!from || !to) return []
+    if (index === 0) return [from, to]
+    return [from, to]
+  })
+  const motionPath = motionPoints.map(({ x, y }, index) => `${index === 0 ? 'M' : 'L'} ${x} ${y}`).join(' ')
   const mobileViewBox = { width: 320, height: diagram.path.length >= 5 ? 292 : 252 }
   const mobileNodeWidth = diagram.path.length >= 5 ? 74 : 72
   const mobileNodeHeight = 48
-  const mobileTopCount = diagram.path.length <= 4 ? diagram.path.length : Math.ceil(diagram.path.length / 2)
-  const mobileBottomCount = diagram.path.length - mobileTopCount
-  const mobileCenters = diagram.path.map((node, index) => {
-    if (mobileBottomCount === 0) {
-      const margin = diagram.path.length >= 4 ? 42 : 54
-      const usable = mobileViewBox.width - margin * 2
-      return {
-        node,
-        x: diagram.path.length <= 1 ? mobileViewBox.width / 2 : margin + (usable / (diagram.path.length - 1)) * index,
-        y: 150,
-      }
-    }
-
-    if (index < mobileTopCount) {
-      const margin = 48
-      const usable = mobileViewBox.width - margin * 2
-      return {
-        node,
-        x: mobileTopCount <= 1 ? mobileViewBox.width / 2 : margin + (usable / (mobileTopCount - 1)) * index,
-        y: 116,
-      }
-    }
-
-    const bottomIndex = index - mobileTopCount
-    const margin = 48
-    const usable = mobileViewBox.width - margin * 2
-    return {
-      node,
-      x: mobileBottomCount <= 1 ? mobileViewBox.width - margin : mobileViewBox.width - margin - (usable / (mobileBottomCount - 1)) * bottomIndex,
-      y: 224,
-    }
+  const mobileCenters = diagram.path.map((node) => ({
+    node,
+    x: 28 + node.x * 2.64,
+    y: 50 + node.y * 1.75,
+  }))
+  const mobileCenterById = new Map(mobileCenters.map((item) => [item.node.id, item]))
+  const mobileMotionPoints = diagram.links.flatMap((link, index) => {
+    const from = mobileCenterById.get(link.from)
+    const to = mobileCenterById.get(link.to)
+    if (!from || !to) return []
+    if (index === 0) return [from, to]
+    return [from, to]
   })
-  const mobileMotionPath = mobileCenters.map(({ x, y }, index) => `${index === 0 ? 'M' : 'L'} ${x} ${y}`).join(' ')
+  const mobileMotionPath = mobileMotionPoints.map(({ x, y }, index) => `${index === 0 ? 'M' : 'L'} ${x} ${y}`).join(' ')
 
   return (
     <DiagramShell title={diagram.title} description={diagram.description} points={diagram.points}>
@@ -683,21 +669,25 @@ function DiagnosticMapDiagramView({ diagram }: { diagram: DiagnosticMapDiagram }
             青い点が、見る場所を順番にたどります
           </text>
 
-          {mobileCenters.slice(0, -1).map(({ x, y }, index) => {
-            const next = mobileCenters[index + 1]
-            const laneTone = index % 2 === 0 ? EXAM_TONES.blue : EXAM_TONES.emerald
-            const label = diagram.lanes[0]?.items[index] ?? '次へ'
+          {diagram.links.map((link, index) => {
+            const from = mobileCenterById.get(link.from)
+            const next = mobileCenterById.get(link.to)
+            if (!from || !next) return null
+            const { x, y } = from
+            const laneTone = EXAM_TONES[link.tone ?? (index % 2 === 0 ? 'blue' : 'emerald')]
+            const label = link.label
             const labelLines = compactLabelLines(label, 2)
             const labelWidth = 112
             const labelHeight = labelLines.length > 1 ? 31 : 23
             const isVertical = Math.abs(next.y - y) > Math.abs(next.x - x)
             const midX = (x + next.x) / 2
             const midY = (y + next.y) / 2
-            const rawLabelY = mobileBottomCount === 0 ? (index % 2 === 0 ? 95 : 206) : isVertical ? midY : index % 2 === 0 ? y - 32 : y + 48
+            const rawLabelY = isVertical ? midY : index % 2 === 0 ? Math.min(y, next.y) - 30 : Math.max(y, next.y) + 30
             const labelX = Math.min(Math.max(midX, labelWidth / 2 + 12), mobileViewBox.width - labelWidth / 2 - 12)
             const labelY = Math.min(Math.max(rawLabelY, 78), mobileViewBox.height - 40)
+            const showLabel = Math.abs(next.y - y) < 6
             return (
-              <g key={`${diagram.path[index].id}-${next.node.id}-mobile`}>
+              <g key={`${link.from}-${link.to}-mobile`}>
                 <line
                   x1={x}
                   y1={y}
@@ -716,28 +706,32 @@ function DiagnosticMapDiagramView({ diagram }: { diagram: DiagnosticMapDiagram }
                   strokeWidth="4"
                   strokeLinecap="round"
                 />
-                <rect
-                  x={labelX - labelWidth / 2}
-                  y={labelY - labelHeight / 2}
-                  width={labelWidth}
-                  height={labelHeight}
-                  rx="7"
-                  fill="#ffffff"
-                  stroke="#dbe4ef"
-                />
-                {labelLines.map((line, lineIndex) => (
-                  <text
-                    key={`${diagram.path[index].id}-${line}-mobile`}
-                    x={labelX}
-                    y={labelY + 3 + (lineIndex - (labelLines.length - 1) / 2) * 10}
-                    textAnchor="middle"
-                    fill={laneTone.text}
-                    fontSize="10"
-                    fontWeight="900"
-                  >
-                    {line}
-                  </text>
-                ))}
+                {showLabel && (
+                  <g>
+                    <rect
+                      x={labelX - labelWidth / 2}
+                      y={labelY - labelHeight / 2}
+                      width={labelWidth}
+                      height={labelHeight}
+                      rx="7"
+                      fill="#ffffff"
+                      stroke="#dbe4ef"
+                    />
+                    {labelLines.map((line, lineIndex) => (
+                      <text
+                        key={`${link.from}-${link.to}-${line}-mobile`}
+                        x={labelX}
+                        y={labelY + 3 + (lineIndex - (labelLines.length - 1) / 2) * 10}
+                        textAnchor="middle"
+                        fill={laneTone.text}
+                        fontSize="10"
+                        fontWeight="900"
+                      >
+                        {line}
+                      </text>
+                    ))}
+                  </g>
+                )}
               </g>
             )
           })}
@@ -801,7 +795,7 @@ function DiagnosticMapDiagramView({ diagram }: { diagram: DiagnosticMapDiagram }
           role="img"
           aria-label={`${diagram.title}の読解マップ`}
         >
-          <rect x="18" y="18" width="684" height="174" rx="12" fill="#f8fafc" stroke="#334155" strokeWidth="2" strokeDasharray="10 7" />
+          <rect x="18" y="18" width="684" height="206" rx="12" fill="#f8fafc" stroke="#334155" strokeWidth="2" strokeDasharray="10 7" />
           <text x="38" y="44" fill="#0f172a" fontSize="16" fontWeight="900">
             構成図から答案根拠までをつなぐ
           </text>
@@ -809,33 +803,37 @@ function DiagnosticMapDiagramView({ diagram }: { diagram: DiagnosticMapDiagram }
             経路、判断材料、観測点を対応付けて読む
           </text>
 
-          {centers.slice(0, -1).map(({ x }, index) => {
-            const next = centers[index + 1]
-            const laneTone = index % 2 === 0 ? EXAM_TONES.blue : EXAM_TONES.emerald
-            const label = diagram.lanes[0]?.items[index] ?? '次へ'
+          {diagram.links.map((link, index) => {
+            const from = centerById.get(link.from)
+            const next = centerById.get(link.to)
+            if (!from || !next) return null
+            const { x, y } = from
+            const laneTone = EXAM_TONES[link.tone ?? (index % 2 === 0 ? 'blue' : 'emerald')]
+            const label = link.label
             const labelX = (x + next.x) / 2
+            const labelY = Math.abs(next.y - y) > 8 ? (y + next.y) / 2 - 16 : y - 32
             return (
-              <g key={`${diagram.path[index].id}-${next.node.id}`}>
+              <g key={`${link.from}-${link.to}`}>
                 <line
-                  x1={x + nodeWidth / 2 - 4}
-                  y1={centerY}
-                  x2={next.x - nodeWidth / 2 + 4}
-                  y2={centerY}
+                  x1={x}
+                  y1={y}
+                  x2={next.x}
+                  y2={next.y}
                   stroke="#ffffff"
                   strokeWidth="9"
                   strokeLinecap="round"
                 />
                 <line
-                  x1={x + nodeWidth / 2 - 4}
-                  y1={centerY}
-                  x2={next.x - nodeWidth / 2 + 4}
-                  y2={centerY}
+                  x1={x}
+                  y1={y}
+                  x2={next.x}
+                  y2={next.y}
                   stroke={laneTone.link}
                   strokeWidth="4"
                   strokeLinecap="round"
                 />
-                <rect x={labelX - 44} y="82" width="88" height="22" rx="7" fill="#ffffff" stroke="#dbe4ef" />
-                <text x={labelX} y="97" textAnchor="middle" fill={laneTone.text} fontSize="10" fontWeight="900">
+                <rect x={labelX - 48} y={labelY - 11} width="96" height="22" rx="7" fill="#ffffff" stroke="#dbe4ef" />
+                <text x={labelX} y={labelY + 4} textAnchor="middle" fill={laneTone.text} fontSize="10" fontWeight="900">
                   {label}
                 </text>
               </g>
@@ -1035,14 +1033,16 @@ function MobileExamNetworkDiagram({
   const activeLinkIds = new Set(currentStep?.activeLinkIds ?? [])
   const scopeZone = diagram.zones.find((zone) => zone.id === 'scope')
   const sideZones = diagram.zones.filter((zone) => zone.id === 'client-side' || zone.id === 'service-side')
-  const viewBox = { width: 360, height: 198 }
+  const viewBox = { width: 360, height: 220 }
   const nodeWidth = 58
-  const nodeHeight = 44
-  const nodeCenterY = 132
-  const nodeCenters = diagram.nodes.map((node, index) => ({
+  const nodeHeight = 42
+  const scalePoint = (point: { x: number; y: number }) => ({
+    x: 20 + (point.x / diagram.viewBox.width) * 320,
+    y: 34 + (point.y / diagram.viewBox.height) * 152,
+  })
+  const nodeCenters = diagram.nodes.map((node) => ({
     node,
-    x: diagram.nodes.length <= 1 ? viewBox.width / 2 : 42 + (276 / (diagram.nodes.length - 1)) * index,
-    y: nodeCenterY,
+    ...scalePoint({ x: node.x + node.width / 2, y: node.y + node.height / 2 }),
   }))
 
   return (
@@ -1053,7 +1053,7 @@ function MobileExamNetworkDiagram({
         role="img"
         aria-label={`${diagram.title}のスマホ用構成図`}
       >
-        <rect x="8" y="8" width="344" height="178" rx="8" fill="#f8fafc" stroke="#334155" strokeWidth="1.6" strokeDasharray="7 5" />
+        <rect x="8" y="8" width="344" height="202" rx="8" fill="#f8fafc" stroke="#334155" strokeWidth="1.6" strokeDasharray="7 5" />
         {scopeZone && (
           <text x="22" y="28" fill="#0f172a" fontSize="12" fontWeight="900">
             {scopeZone.label}
@@ -1087,39 +1087,37 @@ function MobileExamNetworkDiagram({
           )
         })}
 
-        {diagram.links.map((link, index) => {
-          const from = nodeCenters[index]
-          const to = nodeCenters[index + 1]
-          if (!from || !to) return null
+        {diagram.links.map((link) => {
           const active = activeLinkIds.has(link.id)
           const tone = EXAM_TONES[link.tone ?? 'slate']
-          const labelX = (from.x + to.x) / 2
+          const points = link.points.map(scalePoint)
+          const labelPoint = scalePoint(link.labelPosition ?? link.points[Math.floor(link.points.length / 2)])
           const label = active && currentStep ? currentStep.packetLabel : link.label
           const badgeWidth = Math.min(Math.max((label?.length ?? 0) * 6.2 + 16, 40), 70)
+          const mostlyHorizontal = points.length >= 2 && Math.abs(points[0].y - points[points.length - 1].y) < 6
           return (
             <g key={link.id}>
-              <line
-                x1={from.x + nodeWidth / 2}
-                y1={nodeCenterY}
-                x2={to.x - nodeWidth / 2}
-                y2={nodeCenterY}
+              <polyline
+                points={points.map((point) => `${point.x},${point.y}`).join(' ')}
+                fill="none"
                 stroke="#ffffff"
                 strokeWidth={active ? 7 : 5}
                 strokeLinecap="round"
+                strokeLinejoin="round"
               />
-              <line
-                x1={from.x + nodeWidth / 2}
-                y1={nodeCenterY}
-                x2={to.x - nodeWidth / 2}
-                y2={nodeCenterY}
+              <polyline
+                points={points.map((point) => `${point.x},${point.y}`).join(' ')}
+                fill="none"
                 stroke={active ? '#2563eb' : tone.link}
                 strokeWidth={active ? 4 : 2.5}
                 strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeDasharray={link.dashed ? '6 6' : undefined}
               />
-              {label && (
+              {label && mostlyHorizontal && (
                 <g>
-                  <rect x={labelX - badgeWidth / 2} y="92" width={badgeWidth} height="18" rx="5" fill="#ffffff" stroke="#dbe4ef" />
-                  <text x={labelX} y="105" textAnchor="middle" fill={active ? '#1d4ed8' : tone.text} fontSize="8" fontWeight="900">
+                  <rect x={labelPoint.x - badgeWidth / 2} y={labelPoint.y - 9} width={badgeWidth} height="18" rx="5" fill="#ffffff" stroke="#dbe4ef" />
+                  <text x={labelPoint.x} y={labelPoint.y + 4} textAnchor="middle" fill={active ? '#1d4ed8' : tone.text} fontSize="8" fontWeight="900">
                     {label}
                   </text>
                 </g>

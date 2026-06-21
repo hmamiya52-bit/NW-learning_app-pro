@@ -187,6 +187,14 @@ export interface DiagnosticMapDiagram extends DiagramBase {
     label: string
     caption: string
     role: PacketFlowNodeRole
+    x: number
+    y: number
+    tone?: 'slate' | 'sky' | 'blue' | 'emerald' | 'amber' | 'rose' | 'violet'
+  }[]
+  links: {
+    from: string
+    to: string
+    label: string
     tone?: 'slate' | 'sky' | 'blue' | 'emerald' | 'amber' | 'rose' | 'violet'
   }[]
   lanes: {
@@ -304,12 +312,19 @@ export interface PacketFlowStep {
   }
 }
 
+export interface PacketFlowLink {
+  from: string
+  to: string
+  label?: string
+}
+
 export interface PacketFlowScenario {
   id: string
   title: string
   description: string
   mobileOptimized?: boolean
   nodes: PacketFlowNode[]
+  links?: PacketFlowLink[]
   steps: PacketFlowStep[]
 }
 

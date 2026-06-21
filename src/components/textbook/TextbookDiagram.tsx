@@ -619,12 +619,184 @@ function DiagnosticMapDiagramView({ diagram }: { diagram: DiagnosticMapDiagram }
     y: centerY,
   }))
   const motionPath = centers.map(({ x, y }, index) => `${index === 0 ? 'M' : 'L'} ${x} ${y}`).join(' ')
+  const mobileViewBox = { width: 320, height: diagram.path.length >= 5 ? 292 : 252 }
+  const mobileNodeWidth = diagram.path.length >= 5 ? 74 : 72
+  const mobileNodeHeight = 48
+  const mobileTopCount = diagram.path.length <= 4 ? diagram.path.length : Math.ceil(diagram.path.length / 2)
+  const mobileBottomCount = diagram.path.length - mobileTopCount
+  const mobileCenters = diagram.path.map((node, index) => {
+    if (mobileBottomCount === 0) {
+      const margin = diagram.path.length >= 4 ? 42 : 54
+      const usable = mobileViewBox.width - margin * 2
+      return {
+        node,
+        x: diagram.path.length <= 1 ? mobileViewBox.width / 2 : margin + (usable / (diagram.path.length - 1)) * index,
+        y: 150,
+      }
+    }
+
+    if (index < mobileTopCount) {
+      const margin = 48
+      const usable = mobileViewBox.width - margin * 2
+      return {
+        node,
+        x: mobileTopCount <= 1 ? mobileViewBox.width / 2 : margin + (usable / (mobileTopCount - 1)) * index,
+        y: 116,
+      }
+    }
+
+    const bottomIndex = index - mobileTopCount
+    const margin = 48
+    const usable = mobileViewBox.width - margin * 2
+    return {
+      node,
+      x: mobileBottomCount <= 1 ? mobileViewBox.width - margin : mobileViewBox.width - margin - (usable / (mobileBottomCount - 1)) * bottomIndex,
+      y: 224,
+    }
+  })
+  const mobileMotionPath = mobileCenters.map(({ x, y }, index) => `${index === 0 ? 'M' : 'L'} ${x} ${y}`).join(' ')
 
   return (
     <DiagramShell title={diagram.title} description={diagram.description} points={diagram.points}>
       <div className="space-y-3" data-testid="diagnostic-map-diagram">
         <svg
-          className="h-auto w-full rounded-lg border border-slate-200 bg-white"
+          className="h-auto w-full rounded-lg border border-slate-200 bg-white sm:hidden"
+          viewBox={`0 0 ${mobileViewBox.width} ${mobileViewBox.height}`}
+          role="img"
+          aria-label={`${diagram.title}の読解マップ`}
+        >
+          <rect
+            x="10"
+            y="10"
+            width={mobileViewBox.width - 20}
+            height={mobileViewBox.height - 20}
+            rx="12"
+            fill="#f8fafc"
+            stroke="#334155"
+            strokeWidth="1.8"
+            strokeDasharray="8 6"
+          />
+          <text x="24" y="36" fill="#0f172a" fontSize="14" fontWeight="900">
+            読む順番を構成図で確認
+          </text>
+          <text x="24" y="56" fill="#64748b" fontSize="10.5" fontWeight="700">
+            青い点が、見る場所を順番にたどります
+          </text>
+
+          {mobileCenters.slice(0, -1).map(({ x, y }, index) => {
+            const next = mobileCenters[index + 1]
+            const laneTone = index % 2 === 0 ? EXAM_TONES.blue : EXAM_TONES.emerald
+            const label = diagram.lanes[0]?.items[index] ?? '次へ'
+            const labelLines = compactLabelLines(label, 2)
+            const labelWidth = 112
+            const labelHeight = labelLines.length > 1 ? 31 : 23
+            const isVertical = Math.abs(next.y - y) > Math.abs(next.x - x)
+            const midX = (x + next.x) / 2
+            const midY = (y + next.y) / 2
+            const rawLabelY = mobileBottomCount === 0 ? (index % 2 === 0 ? 95 : 206) : isVertical ? midY : index % 2 === 0 ? y - 32 : y + 48
+            const labelX = Math.min(Math.max(midX, labelWidth / 2 + 12), mobileViewBox.width - labelWidth / 2 - 12)
+            const labelY = Math.min(Math.max(rawLabelY, 78), mobileViewBox.height - 40)
+            return (
+              <g key={`${diagram.path[index].id}-${next.node.id}-mobile`}>
+                <line
+                  x1={x}
+                  y1={y}
+                  x2={next.x}
+                  y2={next.y}
+                  stroke="#ffffff"
+                  strokeWidth="9"
+                  strokeLinecap="round"
+                />
+                <line
+                  x1={x}
+                  y1={y}
+                  x2={next.x}
+                  y2={next.y}
+                  stroke={laneTone.link}
+                  strokeWidth="4"
+                  strokeLinecap="round"
+                />
+                <rect
+                  x={labelX - labelWidth / 2}
+                  y={labelY - labelHeight / 2}
+                  width={labelWidth}
+                  height={labelHeight}
+                  rx="7"
+                  fill="#ffffff"
+                  stroke="#dbe4ef"
+                />
+                {labelLines.map((line, lineIndex) => (
+                  <text
+                    key={`${diagram.path[index].id}-${line}-mobile`}
+                    x={labelX}
+                    y={labelY + 3 + (lineIndex - (labelLines.length - 1) / 2) * 10}
+                    textAnchor="middle"
+                    fill={laneTone.text}
+                    fontSize="10"
+                    fontWeight="900"
+                  >
+                    {line}
+                  </text>
+                ))}
+              </g>
+            )
+          })}
+
+          {mobileMotionPath && (
+            <g aria-hidden="true">
+              <circle r="12" fill="#2563eb" opacity="0.14">
+                <animateMotion dur="5.2s" repeatCount="indefinite" path={mobileMotionPath} />
+              </circle>
+              <circle r="5" fill="#2563eb">
+                <animateMotion dur="5.2s" repeatCount="indefinite" path={mobileMotionPath} />
+              </circle>
+            </g>
+          )}
+
+          {mobileCenters.map(({ node, x, y }) => {
+            const tone = EXAM_TONES[node.tone ?? ROLE_TONES[node.role]]
+            const labelLines = compactLabelLines(node.label)
+            return (
+              <g key={`${node.id}-mobile`}>
+                <rect
+                  x={x - mobileNodeWidth / 2 + 3}
+                  y={y - mobileNodeHeight / 2 + 4}
+                  width={mobileNodeWidth}
+                  height={mobileNodeHeight}
+                  rx="9"
+                  fill="#0f172a"
+                  fillOpacity="0.08"
+                />
+                <rect
+                  x={x - mobileNodeWidth / 2}
+                  y={y - mobileNodeHeight / 2}
+                  width={mobileNodeWidth}
+                  height={mobileNodeHeight}
+                  rx="9"
+                  fill={tone.fill}
+                  stroke={tone.stroke}
+                  strokeWidth="2"
+                />
+                {labelLines.map((line, index) => (
+                  <text
+                    key={`${node.id}-${line}-mobile`}
+                    x={x}
+                    y={y + 4 + index * 11 - (labelLines.length - 1) * 5.5}
+                    textAnchor="middle"
+                    fill={tone.text}
+                    fontSize={labelLines.some((item) => item.length >= 7) ? 10.5 : 12}
+                    fontWeight="900"
+                  >
+                    {line}
+                  </text>
+                ))}
+              </g>
+            )
+          })}
+        </svg>
+
+        <svg
+          className="hidden h-auto w-full rounded-lg border border-slate-200 bg-white sm:block"
           viewBox={`0 0 ${viewBox.width} ${viewBox.height}`}
           role="img"
           aria-label={`${diagram.title}の読解マップ`}

@@ -85,12 +85,15 @@ export interface TopoZone {
   tone: Tone
 }
 
+export type LayerStatus = 'change' | 'same' | 'strip'
+
 export interface PacketStep {
   // 経路（リンク）を流れる、または機器（ノード）内の処理
   focus: { type: 'link'; a: string; b: string } | { type: 'node'; id: string }
   packetLabel: string
   headers: { l2: string; l3: string; l4?: string }
-  concept?: { l2?: string; l3?: string; l4?: string } // 「区間ごとに変わる」等のタグ
+  // 各層がこのステップで「変わる／そのまま／外す」のどれか（カードで色分け表示）
+  status?: { l2?: LayerStatus; l3?: LayerStatus; l4?: LayerStatus }
   explanation: string
 }
 
@@ -107,16 +110,17 @@ export interface OsiStackFigure extends FigureBase {
   }[]
 }
 
-// カプセル化（ヘッダが順に付く・ステップ式）
+// カプセル化（フレーム⊃パケット⊃セグメント⊃データ のネストを一枚で見せる）
 export interface EncapFigure extends FigureBase {
   kind: 'encap'
-  steps: {
-    label: string
-    title: string
-    desc: string
-    parts: { label: string; tone: Tone }[]
-    // この段階で全体を何と呼ぶか（セグメント／パケット／フレームの範囲）
-    unit?: { label: string; tone: Tone }
+  dataLabel: string
+  // 外側→内側の順。各層の「呼び名」と付くヘッダ（必要ならトレーラ）を持つ
+  levels: {
+    unit: string // 例: Ethernetフレーム
+    layerLabel: string // 例: L2
+    header: string // 例: L2ヘッダ（MAC）
+    trailer?: string // 例: FCS
+    tone: Tone
   }[]
 }
 

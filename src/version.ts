@@ -1,6 +1,6 @@
 // アプリバージョン
 // ルール: コード修正ごとに +0.0.1、GitHubプッシュごとに +0.1.0、メジャーは手動で +1.0.0
-export const APP_VERSION = '1.1.5'
+export const APP_VERSION = '1.1.6'
 
 // 1.0.0 未満は体験版
 export const IS_TRIAL = APP_VERSION.startsWith('0.')

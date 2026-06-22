@@ -54,22 +54,22 @@ function Nest({ levels, idx, dataLabel, activeIdx, narrow }: { levels: Level[]; 
     idx < levels.length - 1 ? (
       <Nest levels={levels} idx={idx + 1} dataLabel={dataLabel} activeIdx={activeIdx} narrow={narrow} />
     ) : (
-      <div className={`flex ${narrow ? '' : 'flex-1'} items-center justify-center rounded-md border border-slate-300 bg-slate-50 px-2 py-3 text-center text-[11px] font-black text-slate-600`}>
+      <div className={`flex ${narrow ? '' : 'flex-1'} items-center justify-center rounded-md border border-slate-300 bg-slate-50 px-2 py-2 text-center text-[11px] font-black text-slate-600`}>
         {dataLabel}
       </div>
     )
   return (
-    <div className={`rounded-lg border-2 ${t.border} ${t.fill} p-2 ${!narrow ? 'flex-1 min-w-0' : ''} ${active ? 'ring-2 ring-blue-400 ring-offset-1' : ''}`}>
-      <div className={`mb-1.5 text-[11px] font-black ${t.text}`}>
+    <div className={`rounded-lg border-2 ${t.border} ${t.fill} p-1.5 ${!narrow ? 'flex-1 min-w-0' : ''} ${active ? 'ring-2 ring-blue-400 ring-offset-1' : ''}`}>
+      <div className={`mb-1 text-[11px] font-black ${t.text}`}>
         {lv.unit} <span className="font-bold opacity-70">（{lv.layerLabel}）</span>
       </div>
-      <div className={`flex gap-1.5 ${narrow ? 'flex-col' : 'flex-row items-stretch'}`}>
-        <div className={`flex flex-shrink-0 items-center justify-center rounded-md border ${t.border} bg-white px-2 py-2 text-center text-[11px] font-black ${t.text}`}>
+      <div className={`flex gap-1 ${narrow ? 'flex-col' : 'flex-row items-stretch'}`}>
+        <div className={`flex flex-shrink-0 items-center justify-center rounded-md border ${t.border} bg-white px-2 py-1.5 text-center text-[11px] font-black ${t.text}`}>
           {lv.header}
         </div>
         {inner}
         {lv.trailer && (
-          <div className={`flex flex-shrink-0 items-center justify-center rounded-md border ${t.border} bg-white px-2 py-2 text-center text-[11px] font-black ${t.text}`}>
+          <div className={`flex flex-shrink-0 items-center justify-center rounded-md border ${t.border} bg-white px-2 py-1.5 text-center text-[11px] font-black ${t.text}`}>
             {lv.trailer}
           </div>
         )}
@@ -112,7 +112,7 @@ export default function EncapFigure({ figure }: { figure: EncapFigureData }) {
         {step.phase === 'send' ? '送信側：包んでいく（カプセル化）' : '受信側：外していく（デカプセル化）'}
       </div>
 
-      <div className="flex min-h-[150px] items-center rounded-lg border border-slate-200 bg-slate-50/60 p-3">
+      <div className="flex h-[316px] items-center rounded-lg border border-slate-200 bg-slate-50/60 p-3">
         <div ref={stageRef} key={index} className="w-full">
           {step.depth === 0 ? (
             <div className="mx-auto flex max-w-[180px] items-center justify-center rounded-md border border-slate-300 bg-white px-3 py-4 text-center text-[11px] font-black text-slate-600">
@@ -124,8 +124,8 @@ export default function EncapFigure({ figure }: { figure: EncapFigureData }) {
         </div>
       </div>
 
-      <p className="mt-3 text-sm font-black text-slate-800">{step.action}</p>
-      <p className="mt-0.5 min-h-[2.5rem] text-xs leading-relaxed text-slate-600">{step.desc}</p>
+      <p className="mt-3 h-5 overflow-hidden text-sm font-black text-slate-800">{step.action}</p>
+      <p className="mt-0.5 flex h-10 items-start overflow-hidden text-xs leading-relaxed text-slate-600">{step.desc}</p>
 
       <div className="mt-2">
         <StepperControls index={index} count={count} onPrev={prev} onNext={next} />

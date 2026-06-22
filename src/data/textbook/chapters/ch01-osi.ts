@@ -1,12 +1,12 @@
 import type { PacketFlowFigure, TextbookChapter, Topology } from '../types'
 
-// 第1章で使う最小構成のトポロジ（PC—L2SW—L3SW—Webサーバ）
+// 第1章で使う最小構成のトポロジ（PC—L2SW—ルータ—Webサーバ）
 const arpTopology: Topology = {
   zones: [{ id: 'internal', label: '内部LAN 192.168.10.0/24', tone: 'sky' }],
   nodes: [
     { id: 'pc', label: 'PC', role: 'pc', zoneId: 'internal', sub: '192.168.10.10' },
     { id: 'l2sw', label: 'L2SW', role: 'switch', zoneId: 'internal', sub: '内部LAN' },
-    { id: 'l3sw', label: 'L3SW', role: 'router', zoneId: 'internal', sub: '出口ルータ 192.168.10.1' },
+    { id: 'l3sw', label: 'ルータ', role: 'router', zoneId: 'internal', sub: 'デフォルトGW・192.168.10.1' },
   ],
   links: [
     { a: 'pc', b: 'l2sw' },
@@ -22,7 +22,7 @@ const webTopology: Topology = {
   nodes: [
     { id: 'pc', label: 'PC', role: 'pc', zoneId: 'internal', sub: '192.168.10.10' },
     { id: 'l2sw', label: 'L2SW', role: 'switch', zoneId: 'internal', sub: '内部LAN' },
-    { id: 'l3sw', label: 'L3SW', role: 'router', sub: '出口ルータ' },
+    { id: 'l3sw', label: 'ルータ', role: 'router', sub: 'デフォルトGW' },
     { id: 'web', label: 'Webサーバ', role: 'server', zoneId: 'server', sub: '172.16.0.20' },
   ],
   links: [
@@ -35,34 +35,34 @@ const webTopology: Topology = {
 const arpFigure: PacketFlowFigure = {
   kind: 'packet-flow',
   id: 'ch1-arp',
-  title: 'PCが出口ルータのMACを調べる（ARP）',
-  caption: 'ARPの問い合わせは同じLANの全員へ。出口ルータが自分のMACを返します。',
-  takeaway: 'LANの外宛てでも、最初に調べるMACは相手ではなく[[green:出口ルータ]]のもの。',
+  title: 'PCがデフォルトゲートウェイのMACを調べる（ARP）',
+  caption: 'ARPの問い合わせは同じLANの全員へ。デフォルトゲートウェイが自分のMACを返します。',
+  takeaway: '別ネットワーク宛てのとき、最初に調べるMACは相手ではなく[[green:デフォルトゲートウェイ]]のもの。',
   topology: arpTopology,
   steps: [
     {
       focus: { type: 'link', a: 'pc', b: 'l2sw' },
       packetLabel: 'ARP要求',
       headers: { l2: 'あて先MAC = 全員あて（ブロードキャスト）', l3: 'IPヘッダなし（ARPはL2で動く）' },
-      explanation: 'PCが「192.168.10.1の人、MACを教えてください」と、同じLANの全員へ問い合わせます。',
+      explanation: 'PCが「192.168.10.1のMACを教えて」と、同じLANの全員へ問い合わせます。',
     },
     {
       focus: { type: 'link', a: 'l2sw', b: 'l3sw' },
       packetLabel: 'ARP要求',
       headers: { l2: 'あて先MAC = 全員あて（ブロードキャスト）', l3: 'IPヘッダなし' },
-      explanation: 'L2SWは全員あてのフレームを、同じLANのポートすべてへ配ります。',
+      explanation: 'L2SWは全員あてのフレームを、同じLANの全ポートへ配ります。',
     },
     {
       focus: { type: 'link', a: 'l3sw', b: 'l2sw' },
       packetLabel: 'ARP応答',
       headers: { l2: 'あて先MAC = PC', l3: 'IPヘッダなし' },
-      explanation: '出口ルータが「それは私です。MACはこれです」と応答します。今度は全員あてではなく、PCあての1対1です。',
+      explanation: 'デフォルトゲートウェイが「私です」と応答。今度は全員あてではなく、PCあての1対1です。',
     },
     {
       focus: { type: 'link', a: 'l2sw', b: 'pc' },
       packetLabel: 'ARP応答',
       headers: { l2: 'あて先MAC = PC', l3: 'IPヘッダなし' },
-      explanation: 'PCは出口ルータのMACを受け取って記録します。これで、最初のフレームを作れる状態になりました。',
+      explanation: 'PCはそのMACを受け取って記録。これで最初のフレームを作れる状態になりました。',
     },
   ],
 }
@@ -71,44 +71,44 @@ const webFlowFigure: PacketFlowFigure = {
   kind: 'packet-flow',
   id: 'ch1-web',
   title: 'PCからWebサーバへ届くまで',
-  caption: '青く光る区間が「いま」。封筒のあて名（下の表）で、何が変わり何が変わらないかを見比べてください。',
-  takeaway: '区間ごとに変わる[[green:あて先MAC]]、最後まで変わらない[[blue:あて先IP]]。ルータの仕事はMACの付け替え。',
+  caption: 'いま説明している区間が青く光ります。下の表（封筒のあて名）で、区間ごとに何が変わり何が変わらないかを見比べてください。',
+  takeaway: '区間ごとに変わる[[green:あて先MAC]]、最後まで変わらない[[blue:あて先IP]]。ルータは[[blue:あて先IP]]で道を選び、次の区間用に[[green:MAC]]を付け替える。',
   topology: webTopology,
   steps: [
     {
       focus: { type: 'link', a: 'pc', b: 'l2sw' },
       packetLabel: 'TCP SYN',
-      headers: { l2: 'あて先MAC = 出口ルータ', l3: 'あて先IP = 172.16.0.20（Webサーバ）', l4: 'あて先ポート = 443' },
-      status: { l3: 'same', l4: 'same' },
-      explanation: 'PCはあて先IPをWebサーバにしたまま、最初のフレームのあて先MACを出口ルータにして送り出します。',
+      headers: { l2: 'あて先MAC = ルータ', l3: 'あて先IP = 172.16.0.20（Webサーバ）', l4: 'あて先ポート = 443' },
+      status: { l2: 'same', l3: 'same', l4: 'same' },
+      explanation: 'あて先IPはWebサーバのまま、最初のあて先MACをルータにして送り出します。',
     },
     {
       focus: { type: 'link', a: 'l2sw', b: 'l3sw' },
       packetLabel: 'TCP SYN',
-      headers: { l2: 'あて先MAC = 出口ルータ', l3: 'あて先IP = 172.16.0.20', l4: 'あて先ポート = 443' },
+      headers: { l2: 'あて先MAC = ルータ', l3: 'あて先IP = 172.16.0.20', l4: 'あて先ポート = 443' },
       status: { l2: 'same', l3: 'same', l4: 'same' },
-      explanation: 'L2SWはあて先MACを見て中継するだけ。ヘッダは何も書き換えません。',
+      explanation: 'L2SWはあて先MACを見て中継するだけ。ヘッダは書き換えません。',
     },
     {
       focus: { type: 'node', id: 'l3sw' },
       packetLabel: 'MACを付け替え',
       headers: { l2: 'あて先MAC = Webサーバ（書き換え）', l3: 'あて先IP = 172.16.0.20（そのまま）', l4: 'あて先ポート = 443' },
       status: { l2: 'change', l3: 'same', l4: 'same' },
-      explanation: '出口ルータはL2をいったん外し、あて先IPを見て進む道を選び、次の区間用のL2を付け直します。書き換わるのはMACだけです。',
+      explanation: 'ルータはL2を外し、あて先IPで進む道を選んで、新しいL2を付け直します。',
     },
     {
       focus: { type: 'link', a: 'l3sw', b: 'web' },
       packetLabel: 'TCP SYN',
       headers: { l2: 'あて先MAC = Webサーバ', l3: 'あて先IP = 172.16.0.20', l4: 'あて先ポート = 443' },
-      status: { l3: 'same', l4: 'same' },
-      explanation: '新しいフレームでWebサーバへ届きます。あて先IPは、出発したときからずっとWebサーバのままです。',
+      status: { l2: 'same', l3: 'same', l4: 'same' },
+      explanation: '新しいフレームでWebサーバへ到着。あて先IPは出発時からずっと同じです。',
     },
     {
       focus: { type: 'node', id: 'web' },
       packetLabel: '受信して開封',
       headers: { l2: 'L2ヘッダを外す', l3: 'L3ヘッダを外す', l4: 'ポート443 → HTTPSへ渡す' },
       status: { l2: 'strip', l3: 'strip' },
-      explanation: 'Webサーバは外側からL2・L3の順に外し、最後にL4のポート443を見て、HTTPSのアプリへデータを渡します。これがデカプセル化です。',
+      explanation: 'L2・L3を外し、ポート443を見てHTTPSのアプリへ。これがデカプセル化です。',
     },
   ],
 }
@@ -144,7 +144,7 @@ export const ch01Osi: TextbookChapter = {
         },
         {
           kind: 'text',
-          text: '層は全部で7つ。ただし、今すぐ全部を覚える必要はありません。この章の主役は、下から4つ ―― [[amber:L4]]・[[blue:L3]]・[[green:L2]]・L1です。上の3つ（L5〜L7）は、名前と位置だけ確認して先へ進みます。',
+          text: '層は全部で7つ。ただし、今すぐ全部を覚える必要はありません。この章の主役は、下の4つ ―― L1・[[green:L2]]・[[blue:L3]]・[[amber:L4]]です。上の3つ（L5〜L7）は、名前と位置だけ確認して先へ進みます。',
         },
         {
           kind: 'figure',
@@ -188,7 +188,7 @@ export const ch01Osi: TextbookChapter = {
             kind: 'encap',
             id: 'ch1-encap',
             title: 'フレーム・パケット・セグメントの入れ子',
-            caption: '「次へ」で1枚ずつ包み、受信側では外していきます。入れ子の形はそのまま残ります。',
+            caption: '「次へ」で1枚ずつ包み、受信側では同じ順を逆にたどって外します。包む順と外す順は対称です。',
             takeaway: '別々の3つではなく、ひとつのデータの「包んだ深さ」の違い。',
             dataLabel: 'データ',
             levels: [
@@ -229,7 +229,7 @@ export const ch01Osi: TextbookChapter = {
       ],
     },
     {
-      heading: 'LANの外へ出る前に ―― 出口ルータとARP',
+      heading: 'LANの外へ出る前に ―― デフォルトゲートウェイとARP',
       blocks: [
         {
           kind: 'text',
@@ -237,18 +237,22 @@ export const ch01Osi: TextbookChapter = {
         },
         {
           kind: 'text',
-          text: 'LANの外宛ての通信は、まず[[blue:出口のルータ]]に預けます。この出口役のルータを、デフォルトゲートウェイと呼びます。PCには必ず1つ設定されていて、「自分のLAN以外への通信は、ここに渡す」という決まった出口です。',
+          text: 'では、PCはどうやって「同じLANか、外か」を見分けるのでしょうか。使うのはIPアドレスの[[blue:ネットワーク部]]です。192.168.10.0/24 の「/24」は「先頭24ビットが同じなら同じネットワーク（セグメント）」という意味。PCは相手のIPのこの部分を自分と見比べ、[[green:同じネットワークなら相手へ直接]]、[[blue:違えば出口（デフォルトゲートウェイ）へ]]渡します。ビット単位の計算は第6章で詳しく扱います。',
         },
         {
           kind: 'text',
-          text: 'つまりPCが最初にフレームを渡す相手は、Webサーバではなく出口ルータ。ところがPCは、その出口ルータのMACをまだ知りません。そこで「このIPの人、MACを教えて」と同じLANへ問い合わせます。これがARPです。',
+          text: '今回のWebサーバ（172.16.0.20）は、PC（192.168.10.10）とは別ネットワーク。だからまず[[blue:LANの出口にあるルータ]]に渡します。このルータを、デフォルトゲートウェイと呼びます。PCには「自分のネットワーク以外への通信は、ここへ渡す」という既定の渡し先として、1つ設定されています。',
+        },
+        {
+          kind: 'text',
+          text: 'つまりPCが最初にフレームを渡す相手は、Webサーバではなくデフォルトゲートウェイです。ところがPCは、そのMACをまだ知りません。そこで「このIPの人、MACを教えて」と同じLANへ問い合わせます。これがARPです。',
         },
         { kind: 'figure', figure: arpFigure },
         {
           kind: 'callout',
           tone: 'warn',
           title: 'よくある勘違い',
-          body: '「IPが分かれば相手のMACもすぐ分かる」と思いがちですが、LANの外にいる相手のMACは調べません。最初のフレームのあて先MACは、いつも“すぐ隣”の出口ルータです。',
+          body: '「IPが分かれば相手のMACもすぐ分かる」と思いがちですが、そうではありません。同じネットワークの相手なら直接そのMACを、別ネットワークならデフォルトゲートウェイのMACをARPで調べます。',
         },
       ],
     },
@@ -264,6 +268,12 @@ export const ch01Osi: TextbookChapter = {
           text: '見てほしいのは1点だけ。区間ごとに[[green:あて先MACは書き換わる]]のに、[[blue:あて先IPは最後までWebサーバのまま]]だということ。下の表の「変わる／そのまま」に注目しながら、「次へ」で進めてください。',
         },
         { kind: 'figure', figure: webFlowFigure },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '送信元も同じ規則',
+          body: '同じことが送信元側でも起きています。送信元MACは区間ごとに変わり、送信元IPはPCのまま。午後問題で「送信元／あて先」を問われたら、この対称性を思い出してください。',
+        },
       ],
     },
     {
@@ -281,7 +291,7 @@ export const ch01Osi: TextbookChapter = {
           kind: 'callout',
           tone: 'info',
           title: '実務でも順番は同じ',
-          body: '障害の切り分けも同じ考え方です。出口ルータまで届いているか、名前解決はできているか、相手のポートは開いているか。層で分けると、どこを調べればよいかが見えてきます。',
+          body: '障害の切り分けも同じ考え方です。デフォルトゲートウェイまで届いているか、名前解決（名前からIPを調べる手順）はできているか、相手のポートは開いているか。層で分けると、どこを調べればよいかが見えてきます。',
         },
       ],
     },
@@ -290,7 +300,7 @@ export const ch01Osi: TextbookChapter = {
     'OSI参照モデルは、いまどの層の話かを指さすための地図。',
     '通信は外へ包んで送り（カプセル化）、外から開いて受け取る（デカプセル化）。送って終わりではありません。',
     '[[green:MACはすぐ隣]]・[[blue:IPは最終的な相手]]・[[amber:ポートは相手の中のアプリ]]。',
-    'LANの外宛ての最初のあて先MACは、相手ではなく出口ルータ（デフォルトゲートウェイ）。',
+    '別ネットワーク宛ての最初のあて先MACは、相手ではなくデフォルトゲートウェイ（LANの出口にあるルータ）。',
     'ルータを越えても変わらない[[blue:あて先IP]]、区間ごとに書き換わる[[green:MAC]]。',
   ],
 }

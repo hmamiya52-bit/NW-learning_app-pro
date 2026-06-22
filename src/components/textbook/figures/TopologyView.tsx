@@ -73,7 +73,7 @@ function Connector({
   reverse: boolean
 }) {
   return (
-    <div className={`relative flex-shrink-0 ${narrow ? 'h-12 w-full' : 'h-8 min-w-[56px] flex-1'}`} aria-hidden="true">
+    <div className={`relative flex-shrink-0 ${narrow ? 'h-8 w-full' : 'h-8 min-w-[56px] flex-1'}`} aria-hidden="true">
       <div
         className={`absolute rounded-full transition-colors ${
           narrow ? 'left-1/2 top-0 h-full w-[3px] -translate-x-1/2' : 'left-0 top-1/2 h-[3px] w-full -translate-y-1/2'
@@ -90,7 +90,7 @@ function NodeCard({ node, narrow, focused }: { node: TopoNode; narrow: boolean; 
   const iconBox = (
     <div
       className={`flex flex-shrink-0 items-center justify-center rounded-lg border-2 transition-colors ${
-        narrow ? 'h-10 w-10' : 'h-11 w-11'
+        narrow ? 'h-8 w-8' : 'h-11 w-11'
       } ${focused ? 'border-blue-700 bg-blue-600' : `${tone.border} ${tone.fill}`}`}
     >
       <Icon className={`h-5 w-5 ${focused ? 'text-white' : tone.text}`} />
@@ -100,7 +100,7 @@ function NodeCard({ node, narrow, focused }: { node: TopoNode; narrow: boolean; 
   // スマホは全幅カード（アイコン＋ラベル横並び）で横の死にスペースを埋める。
   if (narrow) {
     return (
-      <div className={`flex w-full items-center gap-3 rounded-lg border px-3 py-2 ${focused ? 'border-blue-300 bg-blue-50' : 'border-slate-200 bg-white'}`}>
+      <div className={`flex w-full items-center gap-2.5 rounded-lg border px-2.5 py-1.5 ${focused ? 'border-blue-300 bg-blue-50' : 'border-slate-200 bg-white'}`}>
         {iconBox}
         <div className="min-w-0 text-left">
           <p className={`text-sm font-black leading-tight ${focused ? 'text-blue-800' : 'text-slate-800'}`}>{node.label}</p>
@@ -170,7 +170,7 @@ export default function TopologyView({ topology, focus, packetLabel, stepKey }: 
           items.push(
             <div
               key={group.key}
-              className={`relative flex ${narrow ? 'w-full flex-col' : 'flex-row flex-wrap'} items-center justify-center gap-1.5 rounded-xl border-2 border-dashed ${tone.border} ${tone.fill} px-3 pb-2 pt-5`}
+              className={`relative flex ${narrow ? 'w-full flex-col' : 'flex-row flex-wrap'} items-center justify-center gap-1.5 rounded-xl border-2 border-dashed ${tone.border} ${tone.fill} px-2.5 pb-1.5 pt-5`}
             >
               <span className={`absolute -top-2.5 left-3 rounded bg-white px-1.5 text-[10px] font-black ${tone.text}`}>
                 {group.zone.label}
@@ -180,7 +180,7 @@ export default function TopologyView({ topology, focus, packetLabel, stepKey }: 
           )
         } else {
           items.push(
-            <div key={group.key} className={`flex ${narrow ? 'flex-col' : 'flex-row'} items-center gap-1.5`}>
+            <div key={group.key} className={`flex ${narrow ? 'w-full flex-col' : 'flex-row'} items-center gap-1.5`}>
               {inner}
             </div>,
           )

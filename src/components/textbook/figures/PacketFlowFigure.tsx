@@ -26,7 +26,7 @@ function HeaderRow({
   const chip = status ? STATUS_CHIP[status] : null
   const rowBg = status === 'change' ? 'bg-amber-50' : status === 'strip' ? 'bg-rose-50' : ''
   return (
-    <div className={`flex items-center gap-2 px-3 py-2 ${rowBg}`}>
+    <div className={`flex h-10 items-center gap-2 px-3 ${rowBg}`}>
       <span className={`flex-shrink-0 rounded-md border ${t.border} ${t.fill} px-2 py-0.5 text-[11px] font-black ${t.text}`}>
         {layer}
       </span>
@@ -44,7 +44,7 @@ export default function PacketFlowFigure({ figure }: { figure: PacketFlowFigureD
 
   return (
     <FigureFrame title={figure.title} caption={figure.caption} takeaway={figure.takeaway}>
-      <div className="rounded-lg border border-slate-200 bg-slate-50/60 px-2 py-4 sm:px-3">
+      <div className="rounded-lg border border-slate-200 bg-slate-50/60 px-2 py-2.5 sm:px-3">
         <TopologyView topology={figure.topology} focus={step.focus} packetLabel={step.packetLabel} stepKey={index} />
       </div>
 
@@ -63,7 +63,7 @@ export default function PacketFlowFigure({ figure }: { figure: PacketFlowFigureD
         )}
       </div>
 
-      <p className="mt-3 min-h-[3.5rem] text-sm leading-relaxed text-slate-700">{step.explanation}</p>
+      <p className="mt-2 flex h-12 items-start text-sm leading-relaxed text-slate-700">{step.explanation}</p>
 
       <div className="mt-2">
         <StepperControls index={index} count={count} onPrev={prev} onNext={next} />

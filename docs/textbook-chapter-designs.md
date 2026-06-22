@@ -10,7 +10,7 @@
 - **節構成**（見出し順。各節: 本文の要点 → 図[種類・見せる内容・動き] → つまずき）
 - **まとめ（takeaways）** と **技術正確性メモ／午後フック**
 
-図の種類は現状 `packet-flow` / `osi-stack` / `encap` / `address-table`。新種が要る箇所は「★新図」で明示し、実装時に `TopologyView` 流用かコンポーネント追加かを判断する。
+**図の選択と画面仕様は `docs/textbook-figure-spec.md` を正とする。** 本書の各節が挙げる図は、図解仕様書の使い分け・カタログに従って確定する。とくに **プロトコルの往復（DHCP DORA／TCP3way／TLS／HTTP要求応答／RADIUS）は `packet-flow` ではなく新図 `sequence`（縦のシーケンス／ラダー）を使う**（順序を主役にする方が圧倒的に読みやすい）。新図 kind は `sequence` / `record-table` / `subnet-calc` / `timeline`。
 
 ---
 

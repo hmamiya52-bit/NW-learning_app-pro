@@ -122,7 +122,7 @@
 
 ---
 
-## 4. 章 × 図 割り当て（第1〜12章）
+## 4. 章 × 図 割り当て（第1〜13章。第14章以降も §2 の使い分けに従う）
 
 「概念 → 図 → 見せ方の要点」。`sequence`/`record-table`/`subnet-calc`/`timeline` は §3 の新図。
 
@@ -139,31 +139,33 @@
 | 4 | HTTP要求応答 | **sequence** | GET→200、ヘッダ＋本文 |
 | 4 | 1リクエスト全景 | **timeline** | 第1部の総まとめ |
 | 5 | MAC学習 | **record-table**＋packet-flow | MAC→ポート表／学習→ユニキャスト転送 |
-| 5 | VLAN（ブロードキャストドメイン）| packet-flow（VLAN色分け）| 同VLANだけに広がる／別VLANへ出ない |
-| 5 | STP | packet-flow/topology | 冗長リンクの片側を block 表示 |
-| 6 | サブネット | **subnet-calc** | ネットワーク部=緑/ホスト部=グレー、境界線 |
-| 6 | 経路表・ロンゲストマッチ | **record-table**＋packet-flow | 一致する最長行を強調、次ホップ選択を連動 |
-| 6 | OSPF（概要）| topology | 2ルータが経路を学び合う |
-| 7 | NAT/NAPT | packet-flow（書換）＋**record-table** | 送信元IP:port を書換 status=change／変換表 |
-| 7 | private/global | address-table | 範囲の対比 |
-| 7 | AS/BGP（概要）| topology | 自AS—ISP AS—他AS |
-| 8 | FWルール | **record-table** | 番号/送信元/宛先/ポート/動作 |
-| 8 | 許可・遮断 | packet-flow（**verdict**）| FWノードで pass/block チップ |
-| 8 | ステートフル | packet-flow | 行き=ルール照合／戻り=状態で通過 |
-| 8 | DMZ（三層）| packet-flow/topology | 外→DMZ=可／外→内部=不可 |
-| 9 | LB振り分け | packet-flow | クライアント→VIP→プール内の1台 |
-| 9 | L4/L7 | address-table | アドレス振り分け vs 中身振り分け |
-| 9 | リバース/フォワード | topology | 代理の「向き」の違い |
-| 9 | CDN | topology | 近いエッジから返す |
-| 10 | VRRPフェイルオーバー | packet-flow（**down**）| 正常/故障の2状態で経路が迂回 |
-| 10 | リンクアグリ | topology | 2本を束ねる／片方故障で残りが運ぶ |
-| 10 | 無停止更改 | **timeline** | 片系切離→更改→戻す→もう片系 |
-| 11 | IPsec（包む/開く）| encap | 元IPパケットを新IP＋IPsecで包む |
-| 11 | 拠点間トンネル | packet-flow/topology | 本社—トンネル—支社、トンネル区間を強調 |
-| 11 | SD-WAN | topology | 複数WAN回線を束ね最適経路 |
-| 12 | 認証/認可 | address-table | 「誰か」vs「何をしてよいか」 |
-| 12 | RADIUS | **sequence**（3者）| 利用者→認証装置→RADIUS→可否 |
-| 12 | 証明書チェーン | **timeline** | ルートCA→中間→サーバ証明書 |
+| 5 | VLAN（ブロードキャストドメイン）| packet-flow（VLAN色分け・有限）| 同色ノードを順に光らせる／別VLANへ出ない |
+| 5 | STP | topology（2状態）| ループ発生→片ポートblockの有限2ステップ |
+| 6 | サブネット/CIDR | **subnet-calc** | ネットワーク部=緑/ホスト部=グレー、/24→/26で境界が動く |
+| 6 | アドレス設計(VLSM) | **record-table** | セグメント→必要数→割当プレフィックス |
+| 7 | 経路表・ロンゲストマッチ | **record-table**＋packet-flow | 一致する最長行を強調、次ホップ選択を連動 |
+| 7 | スタティック/ダイナミック | **record-table** | スタティック例／経路源と優先度(AD) |
+| 7 | OSPF（概要）| topology | 2ルータが隣接→最短経路を学ぶ |
+| 8 | NAT/NAPT | packet-flow（書換）＋**record-table** | 送信元IP:port を書換 status=change／変換表 |
+| 8 | private/global | address-table | 範囲の対比 |
+| 8 | AS/BGP（概要）| topology | 自AS—ISP AS—他AS |
+| 9 | FWルール | **record-table** | 番号/送信元/宛先/ポート/動作 |
+| 9 | 許可・遮断 | packet-flow（**verdict**）| FWノードで pass/block チップ |
+| 9 | ステートフル | packet-flow | 行き=ルール照合／戻り=状態で通過 |
+| 9 | DMZ（三層）| packet-flow/topology | 外→DMZ=可／外→内部=不可 |
+| 10 | LB振り分け | packet-flow | クライアント→VIP→プール内の1台 |
+| 10 | L4/L7 | address-table | アドレス振り分け vs 中身振り分け |
+| 10 | リバース/フォワード | topology | 代理の「向き」の違い |
+| 10 | CDN | topology | 近いエッジから返す |
+| 11 | VRRPフェイルオーバー | packet-flow（**down**）| 正常/故障の2状態で経路が迂回 |
+| 11 | リンクアグリ | topology | 2本を束ねる／片方故障で残りが運ぶ |
+| 11 | 無停止更改 | **timeline** | 片系切離→更改→戻す→もう片系 |
+| 12 | IPsec（包む/開く）| encap | 元IPパケットを新IP＋IPsecで包む |
+| 12 | 拠点間トンネル | packet-flow/topology | 本社—トンネル—支社、トンネル区間を強調 |
+| 12 | SD-WAN | topology | 複数WAN回線を束ね最適経路 |
+| 13 | 認証/認可 | address-table | 「誰か」vs「何をしてよいか」 |
+| 13 | RADIUS | **sequence**（3者）| 利用者→認証装置→RADIUS→可否 |
+| 13 | 証明書チェーン | **timeline** | ルートCA→中間→サーバ証明書 |
 
 ---
 

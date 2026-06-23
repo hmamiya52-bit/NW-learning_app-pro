@@ -52,6 +52,8 @@ export type Figure =
   | OsiStackFigure
   | EncapFigure
   | AddressTableFigure
+  | SequenceFigure
+  | TimelineFigure
 
 // 動くパケット図（中核）。トポロジ＋ステップ。ARP もこの型で表現する。
 export interface PacketFlowFigure extends FigureBase {
@@ -135,4 +137,24 @@ export interface AddressTableFigure extends FigureBase {
     example: string
     tone: Tone
   }[]
+}
+
+// シーケンス（ラダー）図: 2〜3者のやり取りを縦に。ハンドシェイク/要求応答/認証で使う。
+// 全メッセージを描画し現在だけ強調するので、ステップしてもボタンは動かない。
+export interface SequenceFigure extends FigureBase {
+  kind: 'sequence'
+  actors: { id: string; label: string; sub?: string; role?: NodeRole }[]
+  messages: {
+    from: string
+    to: string
+    label: string // 矢印に出す短いラベル
+    note?: string // 現在ステップのとき下に出す補足（1〜2文）
+    style?: 'normal' | 'broadcast'
+  }[]
+}
+
+// 手順の俯瞰タイムライン（縦）。各項目「段階バッジ＋何を」。
+export interface TimelineFigure extends FigureBase {
+  kind: 'timeline'
+  items: { badge: string; label: string; detail?: string; tone?: Tone }[]
 }

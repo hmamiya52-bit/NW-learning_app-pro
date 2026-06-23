@@ -3,6 +3,8 @@ import AddressTableFigure from './AddressTableFigure'
 import EncapFigure from './EncapFigure'
 import OsiStackFigure from './OsiStackFigure'
 import PacketFlowFigure from './PacketFlowFigure'
+import SequenceFigure from './SequenceFigure'
+import TimelineFigure from './TimelineFigure'
 
 export default function FigureRenderer({ figure }: { figure: Figure }) {
   switch (figure.kind) {
@@ -14,6 +16,10 @@ export default function FigureRenderer({ figure }: { figure: Figure }) {
       return <EncapFigure figure={figure} />
     case 'address-table':
       return <AddressTableFigure figure={figure} />
+    case 'sequence':
+      return <SequenceFigure figure={figure} />
+    case 'timeline':
+      return <TimelineFigure figure={figure} />
     default:
       return null
   }

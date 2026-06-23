@@ -1,5 +1,6 @@
 import { ch01Osi } from './chapters/ch01-osi'
 import { ch02DnsDhcp } from './chapters/ch02-dns-dhcp'
+import { ch03TcpUdpPort } from './chapters/ch03-tcp-udp-port'
 import type { TextbookChapter } from './types'
 
 export type { TextbookChapter, Block, Section, Figure } from './types'
@@ -8,7 +9,6 @@ export type { TextbookChapter, Block, Section, Figure } from './types'
 // 構成図の段階的成長）に沿って順に作る。順序＝学習の積み上げ＋構成図が育つ順。
 const DRAFTS: [number, string, string, string][] = [
   // 第1部 まず1つの通信を最後まで（最小構成のままズーム）
-  [3, 'tcp-udp-port', 'TCP・UDPとポート番号', 'コネクションを張るTCPの3wayハンドシェイク、UDPとの違い、ポートと5タプルを読めるようにします。'],
   [4, 'web-tls-http', 'Web通信の中身（TLS・HTTP）', 'HTTPSの443の中で起きるTLSハンドシェイクと証明書、HTTPの要求応答を追います。'],
   // 第2部 ネットワークの土台を組む（構成図を育てる）
   [5, 'l2-vlan-stp', 'L2スイッチング・VLAN・STP', 'MAC学習・VLAN・タグVLAN・STPで、L2の広がりとループ防止を扱います。'],
@@ -43,7 +43,7 @@ const drafts: TextbookChapter[] = DRAFTS.map(([order, id, title, summary]) => ({
   takeaways: [],
 }))
 
-export const textbookChapters: TextbookChapter[] = [ch01Osi, ch02DnsDhcp, ...drafts].sort((a, b) => a.order - b.order)
+export const textbookChapters: TextbookChapter[] = [ch01Osi, ch02DnsDhcp, ch03TcpUdpPort, ...drafts].sort((a, b) => a.order - b.order)
 
 export function getTextbookChapter(chapterId: string | undefined): TextbookChapter | undefined {
   if (!chapterId) return undefined

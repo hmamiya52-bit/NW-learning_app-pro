@@ -54,6 +54,7 @@ export type Figure =
   | AddressTableFigure
   | SequenceFigure
   | TimelineFigure
+  | RecordTableFigure
 
 // 動くパケット図（中核）。トポロジ＋ステップ。ARP もこの型で表現する。
 export interface PacketFlowFigure extends FigureBase {
@@ -157,4 +158,12 @@ export interface SequenceFigure extends FigureBase {
 export interface TimelineFigure extends FigureBase {
   kind: 'timeline'
   items: { badge: string; label: string; detail?: string; tone?: Tone }[]
+}
+
+// 規則／対応表（経路表・FWルール・NAT変換表・5タプル等）。スマホは1行=1カードに縦積み、PCは表。
+export interface RecordTableFigure extends FigureBase {
+  kind: 'record-table'
+  columns: { key: string; label: string }[]
+  rows: Record<string, string>[]
+  highlightRow?: number // 強調する行（ロンゲストマッチの一致行など）
 }

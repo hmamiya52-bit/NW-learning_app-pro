@@ -77,6 +77,27 @@ const tupleFigure: RecordTableFigure = {
   ],
 }
 
+const portsFigure: RecordTableFigure = {
+  kind: 'record-table',
+  id: 'ch3-ports',
+  title: 'まず覚える代表的なポート',
+  caption: 'FWの許可ルールで頻出。応用情報レベルの必須だけに絞りました。',
+  takeaway: '公開サーバ（Web・メール・DNS）はDMZ。これがFW問題を読む鍵。',
+  rowHeader: true,
+  columns: [
+    { key: 'cat', label: '分類' },
+    { key: 'ports', label: 'ポート' },
+    { key: 'memo', label: 'メモ' },
+  ],
+  rows: [
+    { cat: 'Web', ports: '80 HTTP ／ 443 HTTPS', memo: '公開サーバはDMZ。443は暗号化' },
+    { cat: 'メール', ports: '25 SMTP ／ 110 POP3 ／ 143 IMAP', memo: '送信25（DMZ）／受信110・143' },
+    { cat: '名前解決', ports: '53 DNS', memo: 'TCP/UDP両方。公開DNSはDMZ' },
+    { cat: 'ファイル転送', ports: '21 FTP（制御）／ 20 FTP（データ）', memo: '制御と転送でポートが別' },
+    { cat: 'リモート操作', ports: '22 SSH ／ 23 Telnet', memo: 'SSH＝暗号化／Telnet＝平文' },
+  ],
+}
+
 export const ch03TcpUdpPort: TextbookChapter = {
   id: 'tcp-udp-port',
   order: 3,
@@ -150,6 +171,22 @@ export const ch03TcpUdpPort: TextbookChapter = {
       ],
     },
     {
+      heading: 'FWで効く、まず覚えるポート',
+      blocks: [
+        {
+          kind: 'text',
+          text: 'ポート番号は数えきれないほどありますが、午後で問われる顔ぶれは決まっています。とくにファイアウォールの許可ルールは、この番号で「何を通すか」を書きます。応用情報レベルで絶対に押さえる分だけ、ここで覚えてしまいましょう。',
+        },
+        { kind: 'figure', figure: portsFigure },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: 'DMZに置くサーバを意識する',
+          body: '社外に公開するWeb・メール・DNSは、内部から切り離したDMZに置きます（第9章）。そのため「外からDMZの80・443・25・53は許可、内部へは通さない」という形の許可ルールを読むことになります。ポートとDMZをセットで覚えると、FW問題が一気に読めます。',
+        },
+      ],
+    },
+    {
       heading: '午後問題では5つの情報で通信を特定する',
       blocks: [
         {
@@ -171,5 +208,6 @@ export const ch03TcpUdpPort: TextbookChapter = {
     'ポート番号で相手のサービスを指定（[[amber:443＝HTTPS]]）。よく使う番号は決まっています。',
     '1本の通信は次の5つ（[[blue:送信元IP・宛先IP・プロトコル・送信元ポート・宛先ポート]]）で一意。',
     '同じ相手への複数同時通信は、送信元ポートで見分けます。NAT・FWの土台。',
+    'FW頻出の代表ポートはDMZとセットで ―― Web 80/443・メール 25/110/143・DNS 53・FTP 20/21・SSH 22/Telnet 23。',
   ],
 }

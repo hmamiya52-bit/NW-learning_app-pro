@@ -1,6 +1,7 @@
 import { ch01Osi } from './chapters/ch01-osi'
 import { ch02DnsDhcp } from './chapters/ch02-dns-dhcp'
 import { ch03TcpUdpPort } from './chapters/ch03-tcp-udp-port'
+import { ch04WebTlsHttp } from './chapters/ch04-web-tls-http'
 import type { TextbookChapter } from './types'
 
 export type { TextbookChapter, Block, Section, Figure } from './types'
@@ -8,8 +9,6 @@ export type { TextbookChapter, Block, Section, Figure } from './types'
 // 第2章以降は準備中（draft）。docs/textbook-curriculum-design.md のマップ（4部構成・
 // 構成図の段階的成長）に沿って順に作る。順序＝学習の積み上げ＋構成図が育つ順。
 const DRAFTS: [number, string, string, string][] = [
-  // 第1部 まず1つの通信を最後まで（最小構成のままズーム）
-  [4, 'web-tls-http', 'Web通信の中身（TLS・HTTP）', 'HTTPSの443の中で起きるTLSハンドシェイクと証明書、HTTPの要求応答を追います。'],
   // 第2部 ネットワークの土台を組む（構成図を育てる）
   [5, 'l2-vlan-stp', 'L2スイッチング・VLAN・STP', 'MAC学習・VLAN・タグVLAN・STPで、L2の広がりとループ防止を扱います。'],
   [6, 'ip-subnet', 'IPアドレス設計とサブネット', 'IPの構造・サブネット計算・CIDR・VLSMで、アドレス設計を読めるようにします。'],
@@ -43,7 +42,7 @@ const drafts: TextbookChapter[] = DRAFTS.map(([order, id, title, summary]) => ({
   takeaways: [],
 }))
 
-export const textbookChapters: TextbookChapter[] = [ch01Osi, ch02DnsDhcp, ch03TcpUdpPort, ...drafts].sort((a, b) => a.order - b.order)
+export const textbookChapters: TextbookChapter[] = [ch01Osi, ch02DnsDhcp, ch03TcpUdpPort, ch04WebTlsHttp, ...drafts].sort((a, b) => a.order - b.order)
 
 export function getTextbookChapter(chapterId: string | undefined): TextbookChapter | undefined {
   if (!chapterId) return undefined

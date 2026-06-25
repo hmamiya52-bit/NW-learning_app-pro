@@ -166,4 +166,6 @@ export interface RecordTableFigure extends FigureBase {
   columns: { key: string; label: string }[]
   rows: Record<string, string>[]
   highlightRow?: number // 強調する行（ロンゲストマッチの一致行など）
+  rowHeader?: boolean // 先頭列を「カードの見出し」にする（スマホ）
+  emphasizeKey?: string // この列の値を強調表示する（差分を目立たせる）
 }

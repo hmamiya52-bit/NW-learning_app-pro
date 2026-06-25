@@ -40,6 +40,7 @@ const tcpUdpFigure: RecordTableFigure = {
   title: 'TCPとUDPの違い',
   caption: '確実さをとるか、速さをとるか。同じL4でも性格が逆です。',
   takeaway: 'TCP＝確実（確認・順序・再送）、UDP＝軽快（確認しない）。',
+  rowHeader: true,
   columns: [
     { key: 'item', label: '項目' },
     { key: 'tcp', label: 'TCP' },
@@ -60,6 +61,8 @@ const tupleFigure: RecordTableFigure = {
   title: '1本の通信を見分ける5つ（5タプル）',
   caption: '同じPCから同じサーバへの2本も、[[amber:送信元ポート]]が違えば別物。',
   takeaway: '送信元IP・宛先IP・プロトコル・送信元ポート・宛先ポートの5つで通信は一意。',
+  rowHeader: true,
+  emphasizeKey: 'srcport',
   columns: [
     { key: 'name', label: '通信' },
     { key: 'srcip', label: '送信元IP' },

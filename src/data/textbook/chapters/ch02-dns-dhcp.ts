@@ -46,8 +46,8 @@ const dnsFigure: SequenceFigure = {
   kind: 'sequence',
   id: 'ch2-dns',
   title: '名前をIPに変える（DNS）',
-  caption: 'PCはキャッシュDNSに丸投げ（[[green:再帰]]）、キャッシュは上位をたどる（[[green:反復]]）。',
-  takeaway: 'PCが自分でたどるのではなく、キャッシュDNSが代わりに調べてくれる。',
+  caption: 'PCはキャッシュDNSに丸投げ（[[green:再帰]]）、キャッシュが上位をたどります（[[green:反復]]）。',
+  takeaway: 'PCが自分でたどるのではなく、キャッシュDNSが代わりに調べてくれます。',
   actors: [
     { id: 'pc', label: 'PC', role: 'pc' },
     { id: 'cache', label: 'キャッシュDNS', sub: '代わりに調べる', role: 'dns' },
@@ -63,7 +63,7 @@ const dnsFigure: SequenceFigure = {
     {
       from: 'cache',
       to: 'upper',
-      label: '② たどって探す',
+      label: '② ルート→TLD→権威へ',
       note: 'キャッシュDNSが、ルート→TLD（.comの担当）→権威（その名前の正解を持つ）の順にたどって聞きます（反復）。上位DNSはインターネット側で、つなぎ方は第8章。',
     },
     {
@@ -86,12 +86,12 @@ const panoramaFigure: TimelineFigure = {
   id: 'ch2-panorama',
   title: '通信が始まるまでの準備',
   caption: '第1章の通信は、この順番の準備の上に成り立っていました。',
-  takeaway: 'URLを開く裏側で、住所→名前→出口→接続の順に整っていく。',
+  takeaway: 'URLを開く裏側で、住所→名前→出口→接続の順に整っていきます。',
   items: [
-    { badge: 'DHCP', label: '自分の住所をもらう', detail: 'IP・マスク・GW・DNSの4点セット', tone: 'emerald' },
-    { badge: 'DNS', label: '相手の住所を調べる', detail: 'www.example.com → 172.16.0.20', tone: 'violet' },
-    { badge: 'ARP', label: '出口（GW）のMACを調べる', detail: '第1章。最初のフレームのあて先MAC', tone: 'emerald' },
-    { badge: 'TCP', label: 'つないでから送る', detail: '3wayハンドシェイク（第3章）', tone: 'blue' },
+    { badge: 'DHCP', label: '自分の住所の取得', detail: 'IP・マスク・GW・DNSの4点セット', tone: 'emerald' },
+    { badge: 'DNS', label: '相手の住所の確認', detail: 'www.example.com → 172.16.0.20', tone: 'violet' },
+    { badge: 'ARP', label: '出口（GW）のMAC解決', detail: '第1章。最初のフレームのあて先MAC', tone: 'emerald' },
+    { badge: 'TCP', label: '接続して送信', detail: '3wayハンドシェイク（第3章）', tone: 'blue' },
   ],
 }
 
@@ -188,10 +188,10 @@ export const ch02DnsDhcp: TextbookChapter = {
     },
   ],
   takeaways: [
-    '通信の前に「自分の住所（DHCP）」と「相手の住所（DNS）」を用意する。',
+    '通信の前に「自分の住所（DHCP）」と「相手の住所（DNS）」を用意します。',
     'DHCPでもらうのは4点セット ―― [[blue:IP・サブネットマスク・デフォルトゲートウェイ・DNSサーバ]]。',
-    'DNSは名前→IPの変換。PCはキャッシュDNSに頼み（再帰）、上位DNSをたどって（反復）答えを得る。',
-    '一度引いた名前はしばらく覚える（キャッシュ／TTL）。だから二度目は速い。',
-    '第1章の通信は、[[green:DHCP→DNS→ARP→TCP]]という準備の上に成り立っていた。',
+    'DNSは名前→IPの変換。PCはキャッシュDNSに頼み（再帰）、上位DNSをたどって（反復）答えを得ます。',
+    '一度引いた名前はしばらく覚えます（キャッシュ／TTL）。だから二度目は速くなります。',
+    '第1章の通信は、[[green:DHCP→DNS→ARP→TCP]]という準備の上に成り立っていました。',
   ],
 }

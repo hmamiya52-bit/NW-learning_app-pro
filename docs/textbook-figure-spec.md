@@ -134,7 +134,7 @@
 | 2 | 旅の前段の俯瞰 | **timeline** | DHCP→DNS→（第1章）ARP→TCP |
 | 3 | TCP 3way | **sequence** | PC｜Web、SYN→SYN・ACK→ACK |
 | 3 | TCP/UDP対比 | address-table | 信頼性/順序/速度/用途 |
-| 3 | 5タプル | **record-table**（1行）| 送信元IP/宛先IP/プロト/送信元ポート/宛先ポート |
+| 3 | 5つの情報 | **record-table**（1行）| 送信元IP/宛先IP/プロト/送信元ポート/宛先ポート |
 | 4 | TLSハンドシェイク | **sequence** | 暗号合意＋サーバ証明書 |
 | 4 | HTTP要求応答 | **sequence** | GET→200、ヘッダ＋本文 |
 | 4 | 1リクエスト全景 | **timeline** | 第1部の総まとめ |

@@ -6,8 +6,8 @@ const handshakeFigure: SequenceFigure = {
   kind: 'sequence',
   id: 'ch3-3way',
   title: 'つなぐ（3wayハンドシェイク）',
-  caption: 'SYN→SYN・ACK→ACK の3往復。[[green:データはまだ載っていません]]。',
-  takeaway: '3回の合図で「準備できたね」を確認してから、本当のデータを送る。',
+  caption: 'データを送る前の、つなぐための3往復（SYN→SYN・ACK→ACK）。',
+  takeaway: '送る前にまず「つなぐ」。3往復で互いの準備を確かめます。',
   actors: [
     { id: 'pc', label: 'PC', role: 'pc' },
     { id: 'web', label: 'Webサーバ', role: 'server' },
@@ -47,10 +47,10 @@ const tcpUdpFigure: RecordTableFigure = {
     { key: 'udp', label: 'UDP' },
   ],
   rows: [
-    { item: 'つなぐ', tcp: '3wayで接続してから送る', udp: 'いきなり送る' },
-    { item: '届いたか', tcp: '確認して、抜けたら送り直す', udp: '確認しない（取りこぼし許容）' },
-    { item: '順序', tcp: '順番を整える', udp: '整えない' },
-    { item: '速さ・重さ', tcp: '確実な代わりにやや重い', udp: '軽くて速い' },
+    { item: 'つなぐ', tcp: 'つないでから送信', udp: 'いきなり送信' },
+    { item: '届いたか', tcp: '確認し、抜けたら再送', udp: '確認なし（取りこぼし許容）' },
+    { item: '順序', tcp: '順番どおりに整列', udp: '整列なし' },
+    { item: '速さ・重さ', tcp: '確実だがやや重め', udp: '軽量・高速' },
     { item: '主な用途', tcp: 'Web・メール・ファイル転送', udp: '音声・動画・DNS' },
   ],
 }
@@ -58,7 +58,7 @@ const tcpUdpFigure: RecordTableFigure = {
 const tupleFigure: RecordTableFigure = {
   kind: 'record-table',
   id: 'ch3-tuple',
-  title: '1本の通信を見分ける5つ（5タプル）',
+  title: '1本の通信を見分ける5つの情報',
   caption: '同じPCから同じサーバへの2本も、[[amber:送信元ポート]]が違えば別物。',
   takeaway: '送信元IP・宛先IP・プロトコル・送信元ポート・宛先ポートの5つで通信は一意。',
   rowHeader: true,
@@ -81,7 +81,7 @@ export const ch03TcpUdpPort: TextbookChapter = {
   id: 'tcp-udp-port',
   order: 3,
   title: 'TCP・UDPとポート番号',
-  summary: 'コネクションを張るTCPの3wayハンドシェイク、UDPとの違い、ポートと5タプルを読めるようにします。',
+  summary: 'コネクションを張るTCPの3wayハンドシェイク、UDPとの違い、ポートでの通信の見分け方を読めるようにします。',
   status: 'published',
   estimatedMinutes: 18,
   intro: [
@@ -104,15 +104,9 @@ export const ch03TcpUdpPort: TextbookChapter = {
         },
         {
           kind: 'text',
-          text: 'これが3wayハンドシェイク。SYN（つなぎたい）→ SYN・ACK（いいよ、そちらは）→ ACK（こちらもOK）の3往復で接続が成立します。',
+          text: 'これが3wayハンドシェイク。SYN（つなぎたい）→ SYN・ACK（いいですよ、そちらは）→ ACK（こちらもOK）の3往復で接続が成立し、ここからデータを送れます。',
         },
         { kind: 'figure', figure: handshakeFigure },
-        {
-          kind: 'callout',
-          tone: 'warn',
-          title: 'まだデータは流れていない',
-          body: 'この3回は[[blue:合図]]のやり取りで、中身のデータはまだ載っていません。本当のデータが流れ始めるのは、握手が終わってからです。届いた範囲を示すシーケンス番号もここで扱いますが、いまは「つないでから送る」だけ押さえれば十分です。',
-        },
       ],
     },
     {
@@ -120,7 +114,7 @@ export const ch03TcpUdpPort: TextbookChapter = {
       blocks: [
         {
           kind: 'text',
-          text: 'TCPは、送ったデータが届いたかを確認し、順番を整え、抜けていれば送り直します。確実な代わりに、やり取りが増えて少し重い。',
+          text: 'TCPは、送ったデータが届いたかを確認し、順番を整え、抜けていれば送り直します。確実な代わりに、やり取りが増えて少し重くなります。',
         },
         {
           kind: 'text',
@@ -136,7 +130,7 @@ export const ch03TcpUdpPort: TextbookChapter = {
       ],
     },
     {
-      heading: 'どのサービスへ？ ―― ポートと5タプル',
+      heading: 'どのサービスへ？ ―― ポートと5つの情報',
       blocks: [
         {
           kind: 'text',
@@ -144,7 +138,7 @@ export const ch03TcpUdpPort: TextbookChapter = {
         },
         {
           kind: 'text',
-          text: '宛先ポートで「相手のどのサービスか」、送信元ポートで「自分のどの通信か」を区別します。結局、1本の通信は次の5つで一意に決まります ―― [[blue:送信元IP・宛先IP・プロトコル・送信元ポート・宛先ポート]]。これを5タプルと呼びます。',
+          text: '宛先ポートで「相手のどのサービスか」、送信元ポートで「自分のどの通信か」を区別します。結局、1本の通信は次の5つで一意に決まります ―― [[blue:送信元IP・宛先IP・プロトコル・送信元ポート・宛先ポート]]。この5つの組み合わせで、通信を1本ずつ区別できます。',
         },
         { kind: 'figure', figure: tupleFigure },
         {
@@ -156,26 +150,26 @@ export const ch03TcpUdpPort: TextbookChapter = {
       ],
     },
     {
-      heading: '午後問題では5タプルで通信を特定する',
+      heading: '午後問題では5つの情報で通信を特定する',
       blocks: [
         {
           kind: 'text',
-          text: 'ネスペ午後では、通信を5タプルで特定し、「この通信は許可されるか」「どのサービス宛てか」を読ませる問題が定番です。',
+          text: 'ネスペ午後では、通信を5つの情報で特定し、「この通信は許可されるか」「どのサービス宛てか」を読ませる問題が定番です。',
         },
         {
           kind: 'callout',
           tone: 'info',
           title: '後半セキュリティ章の土台',
-          body: 'ファイアウォールの許可ルールも、NATの変換表も、見ているのはこの5タプル。さらにTCPには「つながっている最中（ESTABLISHED）」という状態があり、これを利用した制御を第9章で扱います。ポートと5タプルは、後半の土台です。',
+          body: 'ファイアウォールの許可ルールも、NATの変換表も、見ているのはこの5つの情報。さらにTCPには「つながっている最中（ESTABLISHED）」という状態があり、これを利用した制御を第9章で扱います。ポートとこの5つは、後半の土台です。',
         },
       ],
     },
   ],
   takeaways: [
-    'TCPは3wayハンドシェイクでつないでから送る。最初の3回は合図で、データは無い。',
+    'TCPは3wayハンドシェイクで、つないでからデータを送ります。',
     'TCP＝確実（確認・順序・再送）、UDP＝軽快（確認しない）。速さがほしい通信はUDP。',
-    'ポート番号で相手のサービスを指定（[[amber:443＝HTTPS]]）。よく使う番号は決まっている。',
-    '1本の通信は[[blue:5タプル]]（送信元IP・宛先IP・プロトコル・送信元ポート・宛先ポート）で一意。',
-    '同じ相手への複数同時通信は送信元ポートで見分ける。NAT・FWの土台。',
+    'ポート番号で相手のサービスを指定（[[amber:443＝HTTPS]]）。よく使う番号は決まっています。',
+    '1本の通信は次の5つ（[[blue:送信元IP・宛先IP・プロトコル・送信元ポート・宛先ポート]]）で一意。',
+    '同じ相手への複数同時通信は、送信元ポートで見分けます。NAT・FWの土台。',
   ],
 }

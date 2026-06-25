@@ -160,7 +160,7 @@ export interface TimelineFigure extends FigureBase {
   items: { badge: string; label: string; detail?: string; tone?: Tone }[]
 }
 
-// 規則／対応表（経路表・FWルール・NAT変換表・5タプル等）。スマホは1行=1カードに縦積み、PCは表。
+// 規則／対応表（経路表・FWルール・NAT変換表・通信の見分け等）。スマホは1行=1カードに縦積み、PCは表。
 export interface RecordTableFigure extends FigureBase {
   kind: 'record-table'
   columns: { key: string; label: string }[]

@@ -55,6 +55,7 @@ export type Figure =
   | SequenceFigure
   | TimelineFigure
   | RecordTableFigure
+  | SubnetCalcFigure
 
 // 動くパケット図（中核）。トポロジ＋ステップ。ARP もこの型で表現する。
 export interface PacketFlowFigure extends FigureBase {
@@ -180,4 +181,12 @@ export interface RecordTableFigure extends FigureBase {
   highlightRow?: number // 強調する行（ロンゲストマッチの一致行など）
   rowHeader?: boolean // 先頭列を「カードの見出し」にする（スマホ）
   emphasizeKey?: string // この列の値を強調表示する（差分を目立たせる）
+}
+
+// サブネット（アドレス構造）。IPを10進＋2進で並べ、ネットワーク部=緑/ホスト部=グレーに色分け。
+// steps でプレフィックスを変える（/24→/26→/27 で境界が動き、使えるホスト数が変わる）。
+export interface SubnetCalcFigure extends FigureBase {
+  kind: 'subnet-calc'
+  ip: string // 例: '192.168.10.10'
+  steps: { prefix: number; note: string }[]
 }

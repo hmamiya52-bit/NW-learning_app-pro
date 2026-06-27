@@ -5,6 +5,7 @@ import OsiStackFigure from './OsiStackFigure'
 import PacketFlowFigure from './PacketFlowFigure'
 import RecordTableFigure from './RecordTableFigure'
 import SequenceFigure from './SequenceFigure'
+import SubnetCalcFigure from './SubnetCalcFigure'
 import TimelineFigure from './TimelineFigure'
 
 export default function FigureRenderer({ figure }: { figure: Figure }) {
@@ -23,6 +24,8 @@ export default function FigureRenderer({ figure }: { figure: Figure }) {
       return <TimelineFigure figure={figure} />
     case 'record-table':
       return <RecordTableFigure figure={figure} />
+    case 'subnet-calc':
+      return <SubnetCalcFigure figure={figure} />
     default:
       return null
   }

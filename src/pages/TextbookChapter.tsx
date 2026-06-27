@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import {
   ArrowLeft,
@@ -131,6 +131,12 @@ export default function TextbookChapter() {
   const { chapterId } = useParams()
   const chapter = getTextbookChapter(chapterId)
   const [readState, setReadState] = useState(() => getTextbookReadState())
+
+  // 章を切り替えたら（前/次の章ボタン・一覧からの遷移）ページ先頭から表示する。
+  // ハッシュ（節アンカー）が付いているときは、その位置への移動を妨げない。
+  useEffect(() => {
+    if (!window.location.hash) window.scrollTo(0, 0)
+  }, [chapterId])
 
   if (!chapter) return <MissingChapter />
   if (chapter.status === 'draft') return <DraftChapter chapter={chapter} />

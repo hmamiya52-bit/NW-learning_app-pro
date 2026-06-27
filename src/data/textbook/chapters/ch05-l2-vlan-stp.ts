@@ -1,4 +1,4 @@
-import type { PacketFlowFigure, RecordTableFigure, TextbookChapter, Topology } from '../types'
+import type { PacketFlowFigure, TextbookChapter, Topology } from '../types'
 
 // 第5章 第1章の「L2SWはMACを見て中継」の中身を開く。MAC学習・VLAN・STP。ここから構成図が横に育つ。
 
@@ -17,17 +17,19 @@ const macTopology: Topology = {
 }
 
 // VLAN用。VLAN10（業務）はSW1とSW2の両方に、VLAN20（管理）はSW2に。トランクで2台を接続。
+// graph レイアウト: スイッチ＝幹、PC＝枝（VLAN色）。
 const vlanTopology: Topology = {
+  layout: 'graph',
   zones: [
     { id: 'vlan10', label: 'VLAN10（業務）', tone: 'emerald' },
     { id: 'vlan20', label: 'VLAN20（管理）', tone: 'violet' },
   ],
   nodes: [
-    { id: 'pcA', label: 'PC-A', role: 'pc', zoneId: 'vlan10' },
-    { id: 'sw1', label: 'SW1', role: 'switch', sub: 'L2スイッチ' },
-    { id: 'sw2', label: 'SW2', role: 'switch', sub: 'L2スイッチ' },
-    { id: 'pcB', label: 'PC-B', role: 'pc', zoneId: 'vlan10' },
-    { id: 'mpc', label: '管理PC', role: 'pc', zoneId: 'vlan20' },
+    { id: 'pcA', label: 'PC-A', role: 'pc', zoneId: 'vlan10', sub: 'VLAN10' },
+    { id: 'sw1', label: 'SW1', role: 'switch', sub: 'L2SW' },
+    { id: 'sw2', label: 'SW2', role: 'switch', sub: 'L2SW' },
+    { id: 'pcB', label: 'PC-B', role: 'pc', zoneId: 'vlan10', sub: 'VLAN10' },
+    { id: 'mpc', label: '管理PC', role: 'pc', zoneId: 'vlan20', sub: 'VLAN20' },
   ],
   links: [
     { a: 'pcA', b: 'sw1' },
@@ -37,70 +39,82 @@ const vlanTopology: Topology = {
   ],
 }
 
-// STP用。SW1とSW2を冗長リンクで結ぶ（ループ題材）。PCがブロードキャストの起点。
+// STP用。SW1とSW2を冗長リンク（2本）で結ぶ＝ループ。PCがブロードキャストの起点。
 const stpTopology: Topology = {
+  layout: 'graph',
   zones: [{ id: 'lan', label: '内部LAN', tone: 'sky' }],
   nodes: [
     { id: 'pc', label: 'PC', role: 'pc', zoneId: 'lan', sub: '192.168.10.10' },
-    { id: 'sw1', label: 'SW1', role: 'switch', zoneId: 'lan', sub: 'L2スイッチ' },
-    { id: 'sw2', label: 'SW2', role: 'switch', zoneId: 'lan', sub: 'L2スイッチ' },
+    { id: 'sw1', label: 'SW1', role: 'switch', zoneId: 'lan', sub: 'L2SW' },
+    { id: 'sw2', label: 'SW2', role: 'switch', zoneId: 'lan', sub: 'L2SW' },
   ],
   links: [
     { a: 'pc', b: 'sw1' },
     { a: 'sw1', b: 'sw2' },
+    { a: 'sw1', b: 'sw2' },
   ],
 }
+
+const MAC_A = '00-1A-2B-00-00-A1'
+const MAC_B = '00-1A-2B-00-00-B2'
 
 const macFlowFigure: PacketFlowFigure = {
   kind: 'packet-flow',
   id: 'ch5-mac-learn',
   title: 'MAC学習とユニキャスト転送',
-  caption: '宛先がまだ表にないうちは全ポートへ。一度覚えれば、次は該当ポートだけへ。',
+  caption: '下の表が、ステップごとに1行ずつ埋まります。覚えた宛先には、必要なポートだけへ。',
   takeaway: 'スイッチは[[green:送信元MAC]]とポートを学習し、覚えた宛先には必要なポートだけへ送ります。',
   topology: macTopology,
+  sideTable: {
+    title: 'スイッチが覚えたMACアドレステーブル',
+    columns: [
+      { key: 'port', label: 'ポート' },
+      { key: 'mac', label: '学習したMACアドレス' },
+    ],
+  },
   steps: [
     {
       focus: { type: 'link', a: 'pcA', b: 'l2sw' },
       packetLabel: 'フレーム',
       headers: { l2: '宛先MAC = PC-B ／ 送信元MAC = PC-A', l3: '宛先IP = 192.168.10.11' },
-      explanation: 'PC-Aがフレームを送出。スイッチは、入ってきたポートと送信元MAC（PC-A）を対応づけて記録します。',
+      tableRows: [
+        { port: 'ポート1', mac: `${MAC_A}（PC-A）` },
+        { port: 'ポート2', mac: '（未学習）' },
+      ],
+      tableHighlightRow: 0,
+      explanation: 'PC-Aがフレームを送出。スイッチは、入ってきたポート1と送信元MAC（PC-A）を対応づけて記録します。',
     },
     {
       focus: { type: 'link', a: 'l2sw', b: 'pcB' },
       packetLabel: 'フレーム',
       headers: { l2: '宛先MAC = PC-B ／ 送信元MAC = PC-A', l3: '宛先IP = 192.168.10.11' },
+      tableRows: [
+        { port: 'ポート1', mac: `${MAC_A}（PC-A）` },
+        { port: 'ポート2', mac: '（未学習）' },
+      ],
       explanation: '宛先MAC（PC-B）はまだ表にないため、届いたポート以外の全ポートへ配ります（フラッディング）。PC-Bに届きます。',
     },
     {
       focus: { type: 'link', a: 'pcB', b: 'l2sw' },
       packetLabel: '返信',
       headers: { l2: '宛先MAC = PC-A ／ 送信元MAC = PC-B', l3: '宛先IP = 192.168.10.10' },
-      explanation: 'PC-Bが返信。今度は送信元MAC（PC-B）とポートを記録します。これで両方のMACを覚えました。',
+      tableRows: [
+        { port: 'ポート1', mac: `${MAC_A}（PC-A）` },
+        { port: 'ポート2', mac: `${MAC_B}（PC-B）` },
+      ],
+      tableHighlightRow: 1,
+      explanation: 'PC-Bが返信。今度は送信元MAC（PC-B）をポート2として記録します。これで両方のMACを覚えました。',
     },
     {
       focus: { type: 'link', a: 'l2sw', b: 'pcA' },
       packetLabel: '返信',
       headers: { l2: '宛先MAC = PC-A ／ 送信元MAC = PC-B', l3: '宛先IP = 192.168.10.10' },
-      explanation: '宛先MAC（PC-A）は学習済みなので、対応するポート1つだけへ送ります（ユニキャスト）。',
+      tableRows: [
+        { port: 'ポート1', mac: `${MAC_A}（PC-A）` },
+        { port: 'ポート2', mac: `${MAC_B}（PC-B）` },
+      ],
+      explanation: '宛先MAC（PC-A）は学習済みなので、対応するポート1だけへ送ります（ユニキャスト）。',
     },
-  ],
-}
-
-const macTableFigure: RecordTableFigure = {
-  kind: 'record-table',
-  id: 'ch5-mac-table',
-  title: 'スイッチが覚えるMACアドレステーブル',
-  caption: '「どのポートの先に、どのMACがいるか」の対応表。',
-  takeaway: '宛先MACがこの表にあれば該当ポートだけへ、無ければ全ポートへ（フラッディング）。',
-  rowHeader: true,
-  columns: [
-    { key: 'port', label: 'ポート' },
-    { key: 'mac', label: 'MACアドレス' },
-    { key: 'dev', label: 'つながる機器' },
-  ],
-  rows: [
-    { port: 'ポート1', mac: '00-1A-2B-00-00-A1', dev: 'PC-A' },
-    { port: 'ポート2', mac: '00-1A-2B-00-00-B2', dev: 'PC-B' },
   ],
 }
 
@@ -186,18 +200,21 @@ const stpFigure: PacketFlowFigure = {
       focus: { type: 'link', a: 'pc', b: 'sw1' },
       packetLabel: 'ブロードキャスト',
       headers: { l2: '宛先MAC = 全員あて（ブロードキャスト）', l3: 'IPは省略（L2に注目）' },
+      blockedLink: { a: 'sw1', b: 'sw2' },
       explanation: 'STPを有効にすると、SW1とSW2の間の片方のポートがブロック（通信を止めた状態）になります。PCがブロードキャストを送出。',
     },
     {
       focus: { type: 'link', a: 'sw1', b: 'sw2' },
       packetLabel: 'ブロードキャスト',
       headers: { l2: '宛先MAC = 全員あて（ブロードキャスト）', l3: 'IPは省略（L2に注目）' },
+      blockedLink: { a: 'sw1', b: 'sw2' },
       explanation: 'いまは1本だけが有効。SW1からSW2へ、1回だけ届きます。',
     },
     {
       focus: { type: 'node', id: 'sw2' },
       packetLabel: 'ブロードキャスト',
       headers: { l2: '宛先MAC = 全員あて（ブロードキャスト）', l3: 'IPは省略（L2に注目）' },
+      blockedLink: { a: 'sw1', b: 'sw2' },
       explanation: 'もう片方はブロックされているため、フレームは戻ってきません。全員に1回ずつ届いて終わり。物理的には2本でも、論理的には1本です。',
     },
   ],
@@ -233,11 +250,6 @@ export const ch05L2VlanStp: TextbookChapter = {
           text: 'スイッチは、フレームが届くたびに[[green:送信元MAC]]と「入ってきたポート」の対応を表に記録します。これがMAC学習です。次に同じMACあてのフレームが来たら、その表を見て、対応する1つのポートだけへ送ります。',
         },
         { kind: 'figure', figure: macFlowFigure },
-        {
-          kind: 'text',
-          text: 'やり取りを重ねると、スイッチの中の表（MACアドレステーブル）は、このように埋まっていきます。',
-        },
-        { kind: 'figure', figure: macTableFigure },
         {
           kind: 'callout',
           tone: 'warn',

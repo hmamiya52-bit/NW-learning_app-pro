@@ -61,12 +61,19 @@ export interface PacketFlowFigure extends FigureBase {
   kind: 'packet-flow'
   topology: Topology
   steps: PacketStep[]
+  // 学習表など、ステップに連動して埋まる小さな表（MACアドレステーブル等）。任意。
+  sideTable?: {
+    title: string
+    columns: { key: string; label: string }[]
+  }
 }
 
 export interface Topology {
   nodes: TopoNode[]
   links: TopoLink[]
   zones: TopoZone[]
+  // 'chain'（既定・第1〜4章の一直線）／'graph'（links を使い、スイッチ＝幹・端末＝枝・冗長＝ループを描く）
+  layout?: 'chain' | 'graph'
 }
 
 export interface TopoNode {
@@ -97,6 +104,11 @@ export interface PacketStep {
   headers: { l2: string; l3: string; l4?: string }
   // 各層がこのステップで「変わる／そのまま／外す」のどれか（カードで色分け表示）
   status?: { l2?: LayerStatus; l3?: LayerStatus; l4?: LayerStatus }
+  // graph レイアウトで、このステップにおいてブロック中の冗長リンク（STP の片ポート停止）
+  blockedLink?: { a: string; b: string }
+  // sideTable をこのステップ時点までに埋まった状態にする（学習が進む表現）
+  tableRows?: Record<string, string>[]
+  tableHighlightRow?: number
   explanation: string
 }
 

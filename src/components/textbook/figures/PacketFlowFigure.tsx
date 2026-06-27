@@ -1,5 +1,6 @@
 import type { LayerStatus, PacketFlowFigure as PacketFlowFigureData } from '../../../data/textbook/types'
 import FigureFrame from './FigureFrame'
+import GraphTopology from './GraphTopology'
 import StepperControls from './StepperControls'
 import TopologyView from './TopologyView'
 import { TONE } from './figureTokens'
@@ -41,11 +42,22 @@ function HeaderRow({
 export default function PacketFlowFigure({ figure }: { figure: PacketFlowFigureData }) {
   const { index, next, prev, count } = useStepper(figure.steps.length)
   const step = figure.steps[index]
+  const sideTable = figure.sideTable
 
   return (
     <FigureFrame title={figure.title} caption={figure.caption} takeaway={figure.takeaway}>
       <div className="rounded-lg border border-slate-200 bg-slate-50/60 px-2 py-2.5 sm:px-3">
-        <TopologyView topology={figure.topology} focus={step.focus} packetLabel={step.packetLabel} stepKey={index} />
+        {figure.topology.layout === 'graph' ? (
+          <GraphTopology
+            topology={figure.topology}
+            focus={step.focus}
+            packetLabel={step.packetLabel}
+            stepKey={index}
+            blockedLink={step.blockedLink}
+          />
+        ) : (
+          <TopologyView topology={figure.topology} focus={step.focus} packetLabel={step.packetLabel} stepKey={index} />
+        )}
       </div>
 
       <div className="mt-3 overflow-hidden rounded-lg border border-slate-200">
@@ -62,6 +74,42 @@ export default function PacketFlowFigure({ figure }: { figure: PacketFlowFigureD
           </>
         )}
       </div>
+
+      {sideTable && (
+        <div className="mt-3 overflow-hidden rounded-lg border border-slate-200">
+          <div className="border-b border-slate-100 bg-slate-50 px-3 py-1.5 text-[11px] font-black text-slate-500">
+            {sideTable.title}
+          </div>
+          <table className="w-full table-fixed text-left text-[11px]">
+            <thead className="bg-slate-50/60 text-slate-400">
+              <tr>
+                {sideTable.columns.map((c) => (
+                  <th key={c.key} className="px-3 py-1 font-bold">
+                    {c.label}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {(step.tableRows ?? []).map((row, i) => {
+                const hl = i === step.tableHighlightRow
+                return (
+                  <tr key={i} className={`border-t border-slate-100 ${hl ? 'bg-blue-50' : ''}`}>
+                    {sideTable.columns.map((c) => (
+                      <td
+                        key={c.key}
+                        className={`h-9 break-words px-3 align-middle font-bold ${hl ? 'text-blue-800' : 'text-slate-600'}`}
+                      >
+                        {row[c.key] ?? ''}
+                      </td>
+                    ))}
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       <p className="mt-2 flex h-12 items-start text-sm leading-relaxed text-slate-700">{step.explanation}</p>
 

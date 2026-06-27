@@ -1,26 +1,25 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { PacketStep, Topology, TopoNode } from '../../../data/textbook/types'
 
-// links を実際に使う構成図描画。スイッチ／ルータ＝幹（spine）、PC等＝枝（leaf）。
-// 冗長リンク（同じ2ノード間の2本）はループとして描き、ブロックされた1本は✕で表す。
+// links を実際に使う構成図描画。スイッチ／ルータ＝幹、PC等＝枝（スイッチの下に縦積み）。
+// 冗長リンク（同じ2ノード間の2本）は縦並びスイッチ＋曲線2本のループで描く。ブロックは破線＋✕。
 // 座標は viewBox 内で算出し、SVGを width:100% で収める（横スクロールなし）。
 
 const SPINE_ROLES = new Set(['switch', 'router', 'firewall', 'internet', 'cloud'])
 
-// Tailwind 相当の生の色（SVG用）。tone→塗り/枠/文字。
 const TONE_COLOR: Record<string, { fill: string; stroke: string; text: string }> = {
   emerald: { fill: '#ecfdf5', stroke: '#34d399', text: '#065f46' },
   violet: { fill: '#f5f3ff', stroke: '#a78bfa', text: '#5b21b6' },
-  sky: { fill: '#f0f9ff', stroke: '#38bdf8', text: '#075985' },
+  sky: { fill: '#eff6ff', stroke: '#60a5fa', text: '#1e40af' },
   blue: { fill: '#eff6ff', stroke: '#60a5fa', text: '#1e40af' },
   amber: { fill: '#fffbeb', stroke: '#fbbf24', text: '#92400e' },
   rose: { fill: '#fff1f2', stroke: '#fb7185', text: '#9f1239' },
-  slate: { fill: '#f8fafc', stroke: '#cbd5e1', text: '#334155' },
+  slate: { fill: '#f1f5f9', stroke: '#94a3b8', text: '#334155' },
 }
 const FOCUS = { fill: '#2563eb', stroke: '#1d4ed8', text: '#ffffff' }
 const LINE_IDLE = '#cbd5e1'
 const LINE_ACTIVE = '#2563eb'
-const LINE_TRUNK = '#94a3b8'
+const LINE_TRUNK = '#64748b'
 const LINE_BLOCK = '#f43f5e'
 
 interface Pos {
@@ -39,166 +38,84 @@ interface Props {
 }
 
 const W = 320
-const SPINE_W = 74
-const SPINE_H = 34
-const LEAF_W = 80
-const LEAF_H = 42
-const SPINE_Y = 40
-const LEAF_Y = 132
+const SW_W = 92
+const SW_H = 34
+const LEAF_W = 104
+const LEAF_H = 44
 
 function samePair(a: string, b: string, x: string, y: string) {
   return (a === x && b === y) || (a === y && b === x)
 }
 
 export default function GraphTopology({ topology, focus, packetLabel, stepKey, blockedLink }: Props) {
-  const layout = useMemo(() => {
-    const { nodes, links, zones } = topology
-    const zoneTone = new Map(zones.map((z) => [z.id, z.tone]))
-    const spine = nodes.filter((n) => SPINE_ROLES.has(n.role))
-    const leaves = nodes.filter((n) => !SPINE_ROLES.has(n.role))
-
-    // 各 leaf の親 spine（最初に link で結ばれている spine）
-    const parentOf = new Map<string, string>()
-    leaves.forEach((leaf) => {
-      const link = links.find(
-        (l) => (l.a === leaf.id && spine.some((s) => s.id === l.b)) || (l.b === leaf.id && spine.some((s) => s.id === l.a)),
-      )
-      if (link) parentOf.set(leaf.id, link.a === leaf.id ? link.b : link.a)
-    })
-
-    // spine 間リンクの本数（2本＝ループ）
-    const spineLinks: { a: string; b: string; count: number }[] = []
-    for (let i = 0; i < spine.length - 1; i++) {
-      const a = spine[i].id
-      const b = spine[i + 1].id
-      const count = links.filter((l) => samePair(l.a, l.b, a, b)).length
-      spineLinks.push({ a, b, count: Math.max(1, count) })
-    }
-    const hasLoop = spineLinks.some((sl) => sl.count >= 2)
-
-    const pos = new Map<string, Pos>()
-    const leafX = new Map<string, number>()
-
-    if (spine.length === 2 && hasLoop) {
-      // ループ配置: 2スイッチを横に近づけ、間に2本。leaf はその下。
-      pos.set(spine[0].id, { x: 92, y: SPINE_Y, w: SPINE_W, h: SPINE_H })
-      pos.set(spine[1].id, { x: 228, y: SPINE_Y, w: SPINE_W, h: SPINE_H })
-      const byParent = new Map<string, TopoNode[]>()
-      leaves.forEach((lf) => {
-        const p = parentOf.get(lf.id) ?? spine[0].id
-        byParent.set(p, [...(byParent.get(p) ?? []), lf])
-      })
-      byParent.forEach((lfs, p) => {
-        const px = pos.get(p)!.x
-        lfs.forEach((lf, i) => {
-          const x = px + (i - (lfs.length - 1) / 2) * (LEAF_W + 10)
-          pos.set(lf.id, { x, y: LEAF_Y, w: LEAF_W, h: LEAF_H })
-          leafX.set(lf.id, x)
-        })
-      })
-    } else {
-      // ツリー配置: leaf を横に等間隔、spine はその子 leaf の平均 x の上に。
-      const L = Math.max(1, leaves.length)
-      leaves.forEach((lf, i) => {
-        const x = ((i + 0.5) / L) * W
-        pos.set(lf.id, { x, y: LEAF_Y, w: LEAF_W, h: LEAF_H })
-        leafX.set(lf.id, x)
-      })
-      spine.forEach((s, i) => {
-        const children = leaves.filter((lf) => parentOf.get(lf.id) === s.id)
-        const x = children.length
-          ? children.reduce((sum, c) => sum + leafX.get(c.id)!, 0) / children.length
-          : ((i + 0.5) / spine.length) * W
-        pos.set(s.id, { x, y: SPINE_Y, w: SPINE_W, h: SPINE_H })
-      })
-    }
-
-    const leafLinks = leaves
-      .filter((lf) => parentOf.has(lf.id))
-      .map((lf) => ({ leaf: lf.id, spine: parentOf.get(lf.id)! }))
-
-    const toneOf = (n: TopoNode): string =>
-      SPINE_ROLES.has(n.role) ? 'slate' : (n.zoneId && zoneTone.get(n.zoneId)) || 'sky'
-
-    const height = LEAF_Y + LEAF_H / 2 + 16
-    return { nodes, spine, leaves, pos, spineLinks, leafLinks, toneOf, height }
-  }, [topology])
-
-  const { nodes, pos, spineLinks, leafLinks, toneOf, height } = layout
+  const layout = useMemo(() => buildLayout(topology), [topology])
+  const { nodes, pos, trunk, leafSegs, loop, toneOf, height, trunkLabel } = layout
 
   const focusedNodeId = focus.type === 'node' ? focus.id : null
   const isLinkFocused = (a: string, b: string) =>
     focus.type === 'link' && samePair(focus.a, focus.b, a, b)
-  const isBlocked = (a: string, b: string) => !!blockedLink && samePair(blockedLink.a, blockedLink.b, a, b)
+
+  const sLinkFocusedFwd = loop && focus.type === 'link' && focus.a === loop.a && focus.b === loop.b
+  const sLinkFocusedRev = loop && focus.type === 'link' && focus.a === loop.b && focus.b === loop.a
+  const blocked = !!blockedLink && loop && samePair(blockedLink.a, blockedLink.b, loop.a, loop.b)
 
   return (
     <svg
       viewBox={`0 0 ${W} ${height}`}
-      style={{ width: '100%', maxWidth: 400, height: 'auto', display: 'block', margin: '0 auto' }}
+      style={{ width: '100%', maxWidth: 380, height: 'auto', display: 'block', margin: '0 auto' }}
       role="img"
     >
-      {/* spine 間リンク（トランク or ループ） */}
-      {spineLinks.map((sl, i) => {
-        const pa = pos.get(sl.a)!
-        const pb = pos.get(sl.b)!
-        const x1 = pa.x + pa.w / 2
-        const x2 = pb.x - pb.w / 2
-        const focused = isLinkFocused(sl.a, sl.b)
-        const blocked = isBlocked(sl.a, sl.b)
-        if (sl.count >= 2) {
-          // ループ: 2本の平行線。下の1本はブロック対象になりうる。
-          const yTop = SPINE_Y - 7
-          const yBot = SPINE_Y + 7
-          return (
-            <g key={`sl${i}`}>
-              <line x1={x1} y1={yTop} x2={x2} y2={yTop} stroke={focused ? LINE_ACTIVE : LINE_TRUNK} strokeWidth={2.5} />
-              <line
-                x1={x1}
-                y1={yBot}
-                x2={x2}
-                y2={yBot}
-                stroke={blocked ? LINE_BLOCK : focused ? LINE_ACTIVE : LINE_TRUNK}
-                strokeWidth={2.5}
-                strokeDasharray={blocked ? '5 4' : undefined}
-              />
-              {blocked && (
-                <text x={(x1 + x2) / 2} y={yBot + 4} textAnchor="middle" fontSize="13" fontWeight="700" fill={LINE_BLOCK}>
-                  ✕
-                </text>
-              )}
-            </g>
-          )
-        }
-        return (
-          <line
-            key={`sl${i}`}
-            x1={x1}
-            y1={SPINE_Y}
-            x2={x2}
-            y2={SPINE_Y}
-            stroke={focused ? LINE_ACTIVE : LINE_TRUNK}
-            strokeWidth={2.5}
-          />
-        )
-      })}
+      {/* トランク（幹どうしの線・ツリー時） */}
+      {trunk && (
+        <>
+          <line x1={trunk.x1} y1={trunk.y} x2={trunk.x2} y2={trunk.y} stroke={LINE_TRUNK} strokeWidth={2.5} />
+          {trunkLabel && (
+            <text x={(trunk.x1 + trunk.x2) / 2} y={trunk.y - 6} textAnchor="middle" fontSize="10" fill="#64748b">
+              {trunkLabel}
+            </text>
+          )}
+        </>
+      )}
 
-      {/* leaf リンク（spine から枝） */}
-      {leafLinks.map((ll, i) => {
-        const ps = pos.get(ll.spine)!
-        const pl = pos.get(ll.leaf)!
-        const focused = isLinkFocused(ll.spine, ll.leaf)
+      {/* 枝（スイッチ→端末の縦線） */}
+      {leafSegs.map((seg, i) => {
+        const focused = isLinkFocused(seg.from, seg.to)
         return (
           <line
-            key={`ll${i}`}
-            x1={ps.x}
-            y1={ps.y + ps.h / 2}
-            x2={pl.x}
-            y2={pl.y - pl.h / 2}
+            key={`seg${i}`}
+            x1={seg.x1}
+            y1={seg.y1}
+            x2={seg.x2}
+            y2={seg.y2}
             stroke={focused ? LINE_ACTIVE : LINE_IDLE}
             strokeWidth={2}
           />
         )
       })}
+
+      {/* ループ（曲線2本） */}
+      {loop && (
+        <>
+          <path
+            d={loop.leftPath}
+            fill="none"
+            stroke={sLinkFocusedFwd ? LINE_ACTIVE : LINE_TRUNK}
+            strokeWidth={2.6}
+          />
+          <path
+            d={loop.rightPath}
+            fill="none"
+            stroke={blocked ? LINE_BLOCK : sLinkFocusedRev ? LINE_ACTIVE : LINE_TRUNK}
+            strokeWidth={2.6}
+            strokeDasharray={blocked ? '6 5' : undefined}
+          />
+          {blocked && (
+            <text x={loop.xMark} y={loop.yMark + 6} textAnchor="middle" fontSize="17" fontWeight="700" fill={LINE_BLOCK}>
+              ✕
+            </text>
+          )}
+        </>
+      )}
 
       {/* ノード */}
       {nodes.map((n) => {
@@ -216,23 +133,23 @@ export default function GraphTopology({ topology, focus, packetLabel, stepKey, b
               y={p.y - p.h / 2}
               width={p.w}
               height={p.h}
-              rx={8}
+              rx={9}
               fill={fill}
               stroke={stroke}
-              strokeWidth={focused ? 2 : 1.4}
+              strokeWidth={focused ? 2.4 : 1.6}
             />
             <text
               x={p.x}
-              y={n.sub ? p.y - 1 : p.y + 4}
+              y={n.sub ? p.y - 2 : p.y + 4}
               textAnchor="middle"
-              fontSize="12"
+              fontSize="13"
               fontWeight="700"
               fill={textColor}
             >
               {n.label}
             </text>
             {n.sub && (
-              <text x={p.x} y={p.y + 12} textAnchor="middle" fontSize="9.5" fill={focused ? '#dbeafe' : '#64748b'}>
+              <text x={p.x} y={p.y + 12} textAnchor="middle" fontSize="10" fill={focused ? '#dbeafe' : '#64748b'}>
                 {n.sub}
               </text>
             )}
@@ -240,55 +157,191 @@ export default function GraphTopology({ topology, focus, packetLabel, stepKey, b
         )
       })}
 
+      {/* 移動するパケット（有限アニメ・現在ステップのみ） */}
       {focus.type === 'link' && (
         <TravelingDot
           key={stepKey}
-          from={pos.get(focus.a)}
-          to={pos.get(focus.b)}
           label={packetLabel}
-          loop={spineLinks.find((sl) => samePair(sl.a, sl.b, focus.a, focus.b) && sl.count >= 2)}
-          reverse={!!spineLinks.find((sl) => sl.a === focus.b && sl.b === focus.a)}
+          travel={resolveTravel(focus, pos, loop, sLinkFocusedFwd || false, sLinkFocusedRev || false)}
         />
       )}
     </svg>
   )
 }
 
-// 有限アニメ: マウント直後に start→end へ1回だけ transition。reduced-motion 時は即 end。
-function TravelingDot({
-  from,
-  to,
-  label,
-  loop,
-  reverse,
-}: {
-  from?: Pos
-  to?: Pos
-  label: string
-  loop?: { count: number } | undefined
-  reverse: boolean
-}) {
+interface Layout {
+  nodes: TopoNode[]
+  pos: Map<string, Pos>
+  mode: 'tree' | 'loop'
+  trunk: { x1: number; x2: number; y: number } | null
+  trunkLabel: string | null
+  leafSegs: { from: string; to: string; x1: number; y1: number; x2: number; y2: number }[]
+  loop: { a: string; b: string; leftPath: string; rightPath: string; xMark: number; yMark: number } | null
+  toneOf: (n: TopoNode) => string
+  height: number
+}
+
+function buildLayout(topology: Topology): Layout {
+  const { nodes, links, zones } = topology
+  const zoneTone = new Map(zones.map((z) => [z.id, z.tone]))
+  const spine = nodes.filter((n) => SPINE_ROLES.has(n.role))
+  const leaves = nodes.filter((n) => !SPINE_ROLES.has(n.role))
+
+  const parentOf = new Map<string, string>()
+  leaves.forEach((leaf) => {
+    const link = links.find(
+      (l) => (l.a === leaf.id && spine.some((s) => s.id === l.b)) || (l.b === leaf.id && spine.some((s) => s.id === l.a)),
+    )
+    if (link) parentOf.set(leaf.id, link.a === leaf.id ? link.b : link.a)
+  })
+
+  const leavesOf = (sid: string) => leaves.filter((lf) => parentOf.get(lf.id) === sid)
+
+  // spine 間に2本のリンクがあればループ
+  let loopPair: { a: string; b: string } | null = null
+  if (spine.length === 2) {
+    const a = spine[0].id
+    const b = spine[1].id
+    if (links.filter((l) => samePair(l.a, l.b, a, b)).length >= 2) loopPair = { a, b }
+  }
+
+  const toneOf = (n: TopoNode): string =>
+    SPINE_ROLES.has(n.role) ? 'slate' : (n.zoneId && zoneTone.get(n.zoneId)) || 'sky'
+
+  const pos = new Map<string, Pos>()
+  const leafSegs: Layout['leafSegs'] = []
+
+  if (loopPair) {
+    // ループ配置: スイッチ縦並び＋曲線2本。sw1 の枝は上、sw2 の枝は下。
+    const cx = W / 2
+    const sw1 = spine[0]
+    const sw2 = spine[1]
+    const sw1y = 92
+    const sw2y = 172
+    pos.set(sw1.id, { x: cx, y: sw1y, w: SW_W, h: SW_H })
+    pos.set(sw2.id, { x: cx, y: sw2y, w: SW_W, h: SW_H })
+    // sw1 の枝（上方向に積む）
+    leavesOf(sw1.id).forEach((lf, i) => {
+      const y = sw1y - SW_H / 2 - 22 - i * (LEAF_H + 16) - LEAF_H / 2
+      pos.set(lf.id, { x: cx, y, w: LEAF_W, h: LEAF_H })
+      leafSegs.push({ from: sw1.id, to: lf.id, x1: cx, y1: sw1y - SW_H / 2, x2: cx, y2: y + LEAF_H / 2 })
+    })
+    // sw2 の枝（下方向に積む）
+    leavesOf(sw2.id).forEach((lf, i) => {
+      const y = sw2y + SW_H / 2 + 22 + i * (LEAF_H + 16) + LEAF_H / 2
+      pos.set(lf.id, { x: cx, y, w: LEAF_W, h: LEAF_H })
+      leafSegs.push({ from: sw2.id, to: lf.id, x1: cx, y1: sw2y + SW_H / 2, x2: cx, y2: y - LEAF_H / 2 })
+    })
+    const topY = sw1y + SW_H / 2
+    const botY = sw2y - SW_H / 2
+    const midY = (topY + botY) / 2
+    const bulge = 66
+    const loop = {
+      a: sw1.id,
+      b: sw2.id,
+      leftPath: `M ${cx} ${topY} Q ${cx - bulge} ${midY} ${cx} ${botY}`,
+      rightPath: `M ${cx} ${topY} Q ${cx + bulge} ${midY} ${cx} ${botY}`,
+      xMark: cx + bulge * 0.78,
+      yMark: midY,
+    }
+    const minLeafTop = Math.min(sw1y, ...[...pos.values()].map((p) => p.y - p.h / 2))
+    const maxLeafBot = Math.max(sw2y + SW_H / 2, ...[...pos.values()].map((p) => p.y + p.h / 2))
+    // viewBox は 0 始まりにそろえる（上方向の枝があれば下げる）
+    const offset = minLeafTop < 10 ? 10 - minLeafTop : 0
+    if (offset) {
+      pos.forEach((p) => (p.y += offset))
+      leafSegs.forEach((s) => {
+        s.y1 += offset
+        s.y2 += offset
+      })
+      loop.leftPath = shiftPathY(loop.leftPath, offset)
+      loop.rightPath = shiftPathY(loop.rightPath, offset)
+      loop.yMark += offset
+    }
+    return { nodes, pos, mode: 'loop', trunk: null, trunkLabel: null, leafSegs, loop, toneOf, height: maxLeafBot + offset + 12 }
+  }
+
+  // ツリー配置: スイッチを横一列、その下に端末を縦積み。
+  const swY = 34
+  const nSpine = Math.max(1, spine.length)
+  const spineX = (i: number) => ((i + 0.5) / nSpine) * W
+  spine.forEach((s, i) => pos.set(s.id, { x: spineX(i), y: swY, w: SW_W, h: SW_H }))
+  let maxBottom = swY + SW_H / 2
+  spine.forEach((s, i) => {
+    const x = spineX(i)
+    let prevBottom = swY + SW_H / 2
+    let prevId = s.id
+    leavesOf(s.id).forEach((lf, k) => {
+      const y = swY + SW_H / 2 + 26 + k * (LEAF_H + 18) + LEAF_H / 2
+      pos.set(lf.id, { x, y, w: LEAF_W, h: LEAF_H })
+      leafSegs.push({ from: prevId, to: lf.id, x1: x, y1: prevBottom, x2: x, y2: y - LEAF_H / 2 })
+      prevBottom = y + LEAF_H / 2
+      prevId = lf.id
+      maxBottom = Math.max(maxBottom, y + LEAF_H / 2)
+    })
+  })
+
+  let trunk: Layout['trunk'] = null
+  if (spine.length >= 2) {
+    const p0 = pos.get(spine[0].id)!
+    const p1 = pos.get(spine[1].id)!
+    trunk = { x1: p0.x + p0.w / 2, x2: p1.x - p1.w / 2, y: swY }
+  }
+
+  return { nodes, pos, mode: 'tree', trunk, trunkLabel: trunk ? 'トランク' : null, leafSegs, loop: null, toneOf, height: maxBottom + 12 }
+}
+
+function shiftPathY(d: string, dy: number) {
+  // "M x y Q x y x y" の y 値（偶数番目の数値）を +dy する単純シフト
+  const n = d.match(/-?\d+(\.\d+)?/g)!.map(Number)
+  return `M ${n[0]} ${n[1] + dy} Q ${n[2]} ${n[3] + dy} ${n[4]} ${n[5] + dy}`
+}
+
+interface Travel {
+  sx: number
+  sy: number
+  ex: number
+  ey: number
+}
+
+function resolveTravel(
+  focus: { type: 'link'; a: string; b: string },
+  pos: Map<string, Pos>,
+  loop: Layout['loop'],
+  fwd: boolean,
+  rev: boolean,
+): Travel | null {
+  // ループの幹リンクは曲線の左右に沿って縦移動（往路=左・復路=右）
+  if (loop && (fwd || rev)) {
+    const pa = pos.get(loop.a)!
+    const pb = pos.get(loop.b)!
+    const topY = pa.y + pa.h / 2
+    const botY = pb.y - pb.h / 2
+    const offX = 40
+    if (fwd) return { sx: pa.x - offX, sy: topY, ex: pb.x - offX, ey: botY }
+    return { sx: pb.x + offX, sy: botY, ex: pa.x + offX, ey: topY }
+  }
+  const pa = pos.get(focus.a)
+  const pb = pos.get(focus.b)
+  if (!pa || !pb) return null
+  return { sx: pa.x, sy: pa.y, ex: pb.x, ey: pb.y }
+}
+
+function TravelingDot({ label, travel }: { label: string; travel: Travel | null }) {
   const [moved, setMoved] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches)
   useEffect(() => {
     if (moved) return
     const t = window.setTimeout(() => setMoved(true), 60)
     return () => window.clearTimeout(t)
   }, [moved])
-  if (!from || !to) return null
-
-  // ループ時は往路=上の線、復路=下の線にずらして「回っている」ことを示す。
-  const yOffset = loop ? (reverse ? 7 : -7) : 0
-  const sx = from.x
-  const sy = (from.y === to.y ? from.y : from.y + from.h / 2) + yOffset
-  const ex = to.x
-  const ey = (from.y === to.y ? to.y : to.y - to.h / 2) + yOffset
-  const x = moved ? ex : sx
-  const y = moved ? ey : sy
-
+  if (!travel) return null
+  const x = moved ? travel.ex : travel.sx
+  const y = moved ? travel.ey : travel.sy
+  const halfW = Math.max(18, label.length * 3.6)
   return (
     <g style={{ transform: `translate(${x}px, ${y}px)`, transition: 'transform .7s ease' }} aria-hidden="true">
-      <rect x={-Math.max(16, label.length * 3.4)} y={-9} width={Math.max(32, label.length * 6.8)} height={18} rx={5} fill="#ffffff" stroke="#2563eb" strokeWidth={1.6} />
-      <text x={0} y={4} textAnchor="middle" fontSize="9.5" fontWeight="700" fill="#1d4ed8">
+      <rect x={-halfW} y={-9} width={halfW * 2} height={18} rx={5} fill="#ffffff" stroke="#2563eb" strokeWidth={1.6} />
+      <text x={0} y={4} textAnchor="middle" fontSize="10" fontWeight="700" fill="#1d4ed8">
         {label}
       </text>
     </g>

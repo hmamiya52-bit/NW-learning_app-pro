@@ -1,4 +1,4 @@
-import type { EncapFigure, RecordTableFigure, SequenceFigure, TextbookChapter, TimelineFigure } from '../types'
+import type { RecordTableFigure, SequenceFigure, TextbookChapter, TimelineFigure } from '../types'
 
 // 第4章 ポート443の中身を開く。TCP(第3章)の上にTLS、その中にHTTP。第1部の締め。
 
@@ -82,19 +82,6 @@ const panoramaFigure: TimelineFigure = {
   ],
 }
 
-const httpsEncapFigure: EncapFigure = {
-  kind: 'encap',
-  id: 'ch4-https-encap',
-  title: 'HTTPSの入れ子 ―― TCP・TLS・HTTP',
-  caption: '送信側は内側から包み、受信側は外側から開きます。いちばん内側が、本来のHTTP。',
-  takeaway: 'HTTPSは、[[blue:HTTPをTLSで包み、TCPで運ぶ]]入れ子。新しい別物ではありません。',
-  dataLabel: 'HTTP（GET / 200）',
-  levels: [
-    { unit: 'TCPセグメント', layerLabel: 'L4', header: 'TCPヘッダ（ポート443）', tone: 'amber' },
-    { unit: 'TLSレコード', layerLabel: 'TLS', header: 'TLSで暗号化', tone: 'violet' },
-  ],
-}
-
 const httpTableFigure: RecordTableFigure = {
   kind: 'record-table',
   id: 'ch4-http-table',
@@ -134,20 +121,6 @@ export const ch04WebTlsHttp: TextbookChapter = {
     },
   ],
   sections: [
-    {
-      heading: 'HTTPSの正体 ―― TCPの上のTLSの中のHTTP',
-      blocks: [
-        {
-          kind: 'text',
-          text: 'まず、443の封を開けてみます。中は3つの層の入れ子です。いちばん外がTCP（第3章）、その内側にTLS、いちばん内側に本来のHTTP。',
-        },
-        { kind: 'figure', figure: httpsEncapFigure },
-        {
-          kind: 'text',
-          text: 'つまりHTTPSは、HTTPが別物に変わったわけではありません。[[blue:HTTPに「暗号化の包み（TLS）」を一枚かけ、TCPで運ぶ]]姿。この包みが何をしているのかを、次に見ます。',
-        },
-      ],
-    },
     {
       heading: '本物だと確かめ、盗み見を防ぐ ―― TLS',
       blocks: [

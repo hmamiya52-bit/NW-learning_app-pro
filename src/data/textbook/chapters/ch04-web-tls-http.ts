@@ -1,4 +1,4 @@
-import type { SequenceFigure, TextbookChapter, TimelineFigure } from '../types'
+import type { EncapFigure, RecordTableFigure, SequenceFigure, TextbookChapter, TimelineFigure } from '../types'
 
 // 第4章 ポート443の中身を開く。TCP(第3章)の上にTLS、その中にHTTP。第1部の締め。
 
@@ -82,13 +82,47 @@ const panoramaFigure: TimelineFigure = {
   ],
 }
 
+const httpsEncapFigure: EncapFigure = {
+  kind: 'encap',
+  id: 'ch4-https-encap',
+  title: 'HTTPSの入れ子 ―― TCP・TLS・HTTP',
+  caption: '送信側は内側から包み、受信側は外側から開きます。いちばん内側が、本来のHTTP。',
+  takeaway: 'HTTPSは、[[blue:HTTPをTLSで包み、TCPで運ぶ]]入れ子。新しい別物ではありません。',
+  dataLabel: 'HTTP（GET / 200）',
+  levels: [
+    { unit: 'TCPセグメント', layerLabel: 'L4', header: 'TCPヘッダ（ポート443）', tone: 'amber' },
+    { unit: 'TLSレコード', layerLabel: 'TLS', header: 'TLSで暗号化', tone: 'violet' },
+  ],
+}
+
+const httpTableFigure: RecordTableFigure = {
+  kind: 'record-table',
+  id: 'ch4-http-table',
+  title: 'HTTPのメソッドとステータスコード',
+  caption: 'GET・POSTが要求の[[amber:メソッド]]、数字が応答の[[blue:ステータスコード]]。',
+  takeaway: 'メソッドで「何をしたいか」、ステータスで「結果」が分かります。',
+  rowHeader: true,
+  columns: [
+    { key: 'ex', label: 'メソッド／コード' },
+    { key: 'mean', label: '意味' },
+  ],
+  rows: [
+    { ex: 'GET', mean: 'ページやデータの取得を求める要求' },
+    { ex: 'POST', mean: 'データの送信・登録を求める要求' },
+    { ex: '200 OK', mean: '成功' },
+    { ex: '301 / 302', mean: '別のURLへ転送（リダイレクト）' },
+    { ex: '404', mean: '見つからない' },
+    { ex: '500', mean: 'サーバ側でエラーが発生' },
+  ],
+}
+
 export const ch04WebTlsHttp: TextbookChapter = {
   id: 'web-tls-http',
   order: 4,
   title: 'Web通信の中身（TLS・HTTP）',
-  summary: 'HTTPSの443の中で起きるTLSハンドシェイクと証明書、HTTPの要求応答を追います。',
+  summary: 'HTTPSの443の中で起きるTLSハンドシェイクと証明書、HTTPの要求応答とメソッド・ステータスを追います。',
   status: 'published',
-  estimatedMinutes: 16,
+  estimatedMinutes: 20,
   intro: [
     {
       kind: 'text',
@@ -101,6 +135,20 @@ export const ch04WebTlsHttp: TextbookChapter = {
   ],
   sections: [
     {
+      heading: 'HTTPSの正体 ―― TCPの上のTLSの中のHTTP',
+      blocks: [
+        {
+          kind: 'text',
+          text: 'まず、443の封を開けてみます。中は3つの層の入れ子です。いちばん外がTCP（第3章）、その内側にTLS、いちばん内側に本来のHTTP。',
+        },
+        { kind: 'figure', figure: httpsEncapFigure },
+        {
+          kind: 'text',
+          text: 'つまりHTTPSは、HTTPが別物に変わったわけではありません。[[blue:HTTPに「暗号化の包み（TLS）」を一枚かけ、TCPで運ぶ]]姿。この包みが何をしているのかを、次に見ます。',
+        },
+      ],
+    },
+    {
       heading: '本物だと確かめ、盗み見を防ぐ ―― TLS',
       blocks: [
         {
@@ -112,6 +160,10 @@ export const ch04WebTlsHttp: TextbookChapter = {
           text: '通信を始める前に、TLSがこの2つを用意します。暗号化の方式を取り決め、サーバの[[blue:証明書]]を受け取って「本物か」を確かめます。この一連のやり取りがTLSハンドシェイクです。',
         },
         { kind: 'figure', figure: tlsFigure },
+        {
+          kind: 'text',
+          text: 'はじめの「あいさつ」では、どの暗号方式を使うかをPCとサーバですり合わせます。方式の名前は数多くありますが、ここでは「最初に方式をそろえてから暗号化を始める」とだけ押さえれば十分です。',
+        },
         {
           kind: 'callout',
           tone: 'warn',
@@ -137,6 +189,22 @@ export const ch04WebTlsHttp: TextbookChapter = {
           tone: 'tip',
           title: 'HTTPSはHTTPの置き換えではない',
           body: 'HTTPSは、HTTPが別物に変わったわけではありません。[[blue:HTTPを、TLSのトンネルで包んだもの]]。中を流れているのは、同じHTTPです。',
+        },
+      ],
+    },
+    {
+      heading: 'メソッドとステータス、そして状態を持たないHTTP',
+      blocks: [
+        {
+          kind: 'text',
+          text: '要求の先頭には「何をしたいか」を表す[[amber:メソッド]]、応答の先頭には「結果」を表す[[blue:ステータスコード]]が付きます。よく出る顔ぶれは決まっています。',
+        },
+        { kind: 'figure', figure: httpTableFigure },
+        {
+          kind: 'callout',
+          tone: 'info',
+          title: '1回ごとに完結するHTTP（ステートレス）',
+          body: 'HTTPは、1回の要求と応答で完結し、前のやり取りを覚えません（ステートレス）。「ログインしたまま」を保つために、ブラウザとサーバはクッキーなどで合言葉をやり取りします。複数のWebサーバへ振り分けるとき、この合言葉を毎回どのサーバへ届けるか（セッション維持）が課題になります。詳しくは第10章で扱います。',
         },
       ],
     },
@@ -174,6 +242,7 @@ export const ch04WebTlsHttp: TextbookChapter = {
     'HTTPSは、TCPの上にTLS、その中にHTTP。',
     'TLSの役割は2つ ―― [[blue:暗号化]]（盗み見を防ぐ）と、[[blue:証明書]]による本人確認（なりすましを防ぐ）。',
     'HTTPは要求（GET）と応答（200）の1往復が基本。HTTPSでも中身は同じHTTP。',
+    '要求の種類は[[amber:メソッド]]（GET・POST）、応答の結果は[[blue:ステータスコード]]（200・404・500）。HTTPは1回ごとに完結（ステートレス）。',
     '第1部で、URLを開いてページが返るまでの全段がひとつに ―― [[green:DHCP→DNS→ARP→TCP→TLS→HTTP]]。',
   ],
 }

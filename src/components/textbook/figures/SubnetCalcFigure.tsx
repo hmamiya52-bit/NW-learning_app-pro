@@ -49,6 +49,17 @@ export default function SubnetCalcFigure({ figure }: { figure: SubnetCalcFigureD
 
       {/* 4オクテット × 8ビット */}
       <div className="mt-2 space-y-1">
+        {/* 各ビットの重み（位）。1のビットを足すと左の10進になる */}
+        <div className="flex items-center gap-2">
+          <span className="w-9 flex-shrink-0 text-right text-[9px] font-bold text-slate-400">重み</span>
+          <div className="flex flex-1 gap-0.5">
+            {[128, 64, 32, 16, 8, 4, 2, 1].map((v) => (
+              <span key={v} className="flex flex-1 items-center justify-center text-[9px] font-bold tabular-nums text-slate-400">
+                {v}
+              </span>
+            ))}
+          </div>
+        </div>
         {octets.map((o, oi) => {
           const bits = o.toString(2).padStart(8, '0').split('')
           return (

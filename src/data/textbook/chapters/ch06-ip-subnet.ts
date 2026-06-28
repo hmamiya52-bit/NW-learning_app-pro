@@ -25,16 +25,16 @@ const subnetFigure: SubnetCalcFigure = {
   ],
 }
 
-// 構成図の差分: 内部LANに加え2つ目のセグメント（別フロア 192.168.30.0/24）。別セグメント間はルータ（L3）。
+// 構成図の差分: 内部LANに加え2つ目のセグメント（別フロア）。各PCのホストIPから所属ネットワークを導く。
 const segmentTopology: Topology = {
   zones: [
-    { id: 'uchi', label: '内部LAN 192.168.10.0/24', tone: 'sky' },
-    { id: 'floor2', label: '別フロア 192.168.30.0/24', tone: 'emerald' },
+    { id: 'uchi', label: '内部LAN（業務）', tone: 'sky' },
+    { id: 'floor2', label: '別フロア', tone: 'emerald' },
   ],
   nodes: [
-    { id: 'pc1', label: '業務PC', role: 'pc', zoneId: 'uchi', sub: '192.168.10.10' },
-    { id: 'router', label: 'ルータ', role: 'router', sub: 'セグメント間を中継' },
-    { id: 'pc2', label: '別フロアPC', role: 'pc', zoneId: 'floor2', sub: '192.168.30.10' },
+    { id: 'pc1', label: '業務PC', role: 'pc', zoneId: 'uchi', sub: '192.168.10.10/24' },
+    { id: 'router', label: 'ルータ', role: 'router', sub: 'デフォルトGW' },
+    { id: 'pc2', label: '別フロアPC', role: 'pc', zoneId: 'floor2', sub: '192.168.30.10/24' },
   ],
   links: [
     { a: 'pc1', b: 'router' },
@@ -45,9 +45,9 @@ const segmentTopology: Topology = {
 const segmentFlowFigure: PacketFlowFigure = {
   kind: 'packet-flow',
   id: 'ch6-segments',
-  title: '別ネットワークどうしをルータがつなぐ',
-  caption: 'ネットワーク部が違う2つのセグメント（[[green:192.168.10]] と [[green:192.168.30]]）。間を[[blue:ルータ]]がつなぎます。',
-  takeaway: 'セグメントが違えばネットワーク部が違う。別セグメント間はルータ（L3）経由。詳しくは第7章。',
+  title: 'ホストのIPから所属ネットワークを読む',
+  caption: 'PCのIP（/24）から、属するネットワーク（先頭＝[[blue:ネットワークアドレス]]）が分かります。別ネットワークどうしは[[blue:ルータ]]が中継。',
+  takeaway: 'ホストのIPとマスクから、属するネットワーク（ネットワークアドレス）が決まる。別セグメント間はルータ（L3）経由（第7章）。',
   topology: segmentTopology,
   hideHeaders: true,
   steps: [
@@ -55,19 +55,19 @@ const segmentFlowFigure: PacketFlowFigure = {
       focus: { type: 'node', id: 'pc1' },
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: '内部LAN（192.168.10.0/24）。ネットワーク部は 192.168.10 です。',
+      explanation: '業務PCは 192.168.10.10/24。先頭24ビットが同じ範囲が1つのネットワークで、その先頭＝ネットワークアドレスは 192.168.10.0 です。',
     },
     {
       focus: { type: 'node', id: 'pc2' },
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: '別フロア（192.168.30.0/24）。ネットワーク部は 192.168.30 で、内部LANとは別のネットワークです。',
+      explanation: '別フロアPCは 192.168.30.10/24。同じように求めると、ネットワークアドレスは 192.168.30.0。内部LANとは別のネットワークです。',
     },
     {
       focus: { type: 'node', id: 'router' },
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: 'ネットワーク部が違うので、直接はやり取りできません。この2つを、間のルータ（L3）がつなぎます。',
+      explanation: '別ネットワークどうしは直接やり取りできません。ルータが各セグメントに足を持ち（192.168.10.1 / 192.168.30.1）、それぞれのデフォルトゲートウェイとして中継します。',
     },
   ],
 }

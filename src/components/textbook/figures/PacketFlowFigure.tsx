@@ -60,20 +60,22 @@ export default function PacketFlowFigure({ figure }: { figure: PacketFlowFigureD
         )}
       </div>
 
-      <div className="mt-3 overflow-hidden rounded-lg border border-slate-200">
-        <div className="border-b border-slate-100 bg-slate-50 px-3 py-1.5 text-[11px] font-black text-slate-500">
-          このときのヘッダ（封筒のあて名）
+      {!figure.hideHeaders && (
+        <div className="mt-3 overflow-hidden rounded-lg border border-slate-200">
+          <div className="border-b border-slate-100 bg-slate-50 px-3 py-1.5 text-[11px] font-black text-slate-500">
+            このときのヘッダ（封筒のあて名）
+          </div>
+          <HeaderRow layer="L2" tone="emerald" value={step.headers.l2} status={step.status?.l2} />
+          <div className="border-t border-slate-100" />
+          <HeaderRow layer="L3" tone="blue" value={step.headers.l3} status={step.status?.l3} />
+          {step.headers.l4 && (
+            <>
+              <div className="border-t border-slate-100" />
+              <HeaderRow layer="L4" tone="amber" value={step.headers.l4} status={step.status?.l4} />
+            </>
+          )}
         </div>
-        <HeaderRow layer="L2" tone="emerald" value={step.headers.l2} status={step.status?.l2} />
-        <div className="border-t border-slate-100" />
-        <HeaderRow layer="L3" tone="blue" value={step.headers.l3} status={step.status?.l3} />
-        {step.headers.l4 && (
-          <>
-            <div className="border-t border-slate-100" />
-            <HeaderRow layer="L4" tone="amber" value={step.headers.l4} status={step.status?.l4} />
-          </>
-        )}
-      </div>
+      )}
 
       {sideTable && (
         <div className="mt-3 overflow-hidden rounded-lg border border-slate-200">

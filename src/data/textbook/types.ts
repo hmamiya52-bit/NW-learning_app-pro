@@ -67,6 +67,8 @@ export interface PacketFlowFigure extends FigureBase {
     title: string
     columns: { key: string; label: string }[]
   }
+  // L2/L3 ヘッダ表を出さない（構成の説明が主役で、ヘッダ詳細が不要な図）。
+  hideHeaders?: boolean
 }
 
 export interface Topology {

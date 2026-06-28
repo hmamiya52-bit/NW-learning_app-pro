@@ -56,6 +56,7 @@ export type Figure =
   | TimelineFigure
   | RecordTableFigure
   | SubnetCalcFigure
+  | SegmentMapFigure
 
 // 動くパケット図（中核）。トポロジ＋ステップ。ARP もこの型で表現する。
 export interface PacketFlowFigure extends FigureBase {
@@ -191,4 +192,15 @@ export interface SubnetCalcFigure extends FigureBase {
   kind: 'subnet-calc'
   ip: string // 例: '192.168.10.10'
   steps: { prefix: number; note: string }[]
+}
+
+// セグメント構成図（ルータが2つのネットワークをつなぐ）。各セグメントのホストIPから
+// ネットワークアドレスをステップで導き、ルータの両端IP（GW）も図に書き込む。
+export interface SegmentMapFigure extends FigureBase {
+  kind: 'segment-map'
+  routerLabel: string
+  segments: { label: string; tone: Tone; nodeLabel: string; host: string; network: string; gw: string }[]
+  // networks: ネットワークアドレスを表示するセグメント数。gateways: ルータ両端IPを表示。
+  // highlight: 強調（0..segments-1=セグメント、segments.length=ルータ）。
+  steps: { note: string; networks: number; gateways: boolean; highlight: number }[]
 }

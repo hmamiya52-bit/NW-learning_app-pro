@@ -4,6 +4,7 @@ import EncapFigure from './EncapFigure'
 import OsiStackFigure from './OsiStackFigure'
 import PacketFlowFigure from './PacketFlowFigure'
 import RecordTableFigure from './RecordTableFigure'
+import SegmentMapFigure from './SegmentMapFigure'
 import SequenceFigure from './SequenceFigure'
 import SubnetCalcFigure from './SubnetCalcFigure'
 import TimelineFigure from './TimelineFigure'
@@ -26,6 +27,8 @@ export default function FigureRenderer({ figure }: { figure: Figure }) {
       return <RecordTableFigure figure={figure} />
     case 'subnet-calc':
       return <SubnetCalcFigure figure={figure} />
+    case 'segment-map':
+      return <SegmentMapFigure figure={figure} />
     default:
       return null
   }

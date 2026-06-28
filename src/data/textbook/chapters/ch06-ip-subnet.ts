@@ -1,4 +1,4 @@
-import type { PacketFlowFigure, RecordTableFigure, SubnetCalcFigure, TextbookChapter, Topology } from '../types'
+import type { RecordTableFigure, SegmentMapFigure, SubnetCalcFigure, TextbookChapter } from '../types'
 
 // 第6章 第1章の「ネットワーク部で同一/別を判定」を正式化。IPの構造・サブネット・CIDR・VLSM。
 
@@ -25,49 +25,37 @@ const subnetFigure: SubnetCalcFigure = {
   ],
 }
 
-// 構成図の差分: 内部LANに加え2つ目のセグメント（別フロア）。各PCのホストIPから所属ネットワークを導く。
-const segmentTopology: Topology = {
-  zones: [
-    { id: 'uchi', label: '内部LAN（業務）', tone: 'sky' },
-    { id: 'floor2', label: '別フロア', tone: 'emerald' },
-  ],
-  nodes: [
-    { id: 'pc1', label: '業務PC', role: 'pc', zoneId: 'uchi', sub: '192.168.10.10/24' },
-    { id: 'router', label: 'ルータ', role: 'router', sub: 'デフォルトGW' },
-    { id: 'pc2', label: '別フロアPC', role: 'pc', zoneId: 'floor2', sub: '192.168.30.10/24' },
-  ],
-  links: [
-    { a: 'pc1', b: 'router' },
-    { a: 'router', b: 'pc2' },
-  ],
-}
-
-const segmentFlowFigure: PacketFlowFigure = {
-  kind: 'packet-flow',
+// 構成図の差分: 内部LANに加え2つ目のセグメント（別フロア）。ホストIPからネットワークアドレスを導き、
+// ルータの両端IP（GW）も図に書き込む。
+const segmentMapFigure: SegmentMapFigure = {
+  kind: 'segment-map',
   id: 'ch6-segments',
   title: 'ホストのIPから所属ネットワークを読む',
-  caption: 'PCのIP（/24）から、属するネットワーク（先頭＝[[blue:ネットワークアドレス]]）が分かります。別ネットワークどうしは[[blue:ルータ]]が中継。',
+  caption: 'PCのIP（/24）から、属するネットワーク（先頭＝[[blue:ネットワークアドレス]]）を導いて図に書き込みます。ルータの両端IPが各セグメントのGW。',
   takeaway: 'ホストのIPとマスクから、属するネットワーク（ネットワークアドレス）が決まる。別セグメント間はルータ（L3）経由（第7章）。',
-  topology: segmentTopology,
-  hideHeaders: true,
+  routerLabel: 'ルータ',
+  segments: [
+    { label: '内部LAN（業務）', tone: 'sky', nodeLabel: '業務PC', host: '192.168.10.10/24', network: '192.168.10.0/24', gw: '192.168.10.1' },
+    { label: '別フロア', tone: 'emerald', nodeLabel: '別フロアPC', host: '192.168.30.10/24', network: '192.168.30.0/24', gw: '192.168.30.1' },
+  ],
   steps: [
     {
-      focus: { type: 'node', id: 'pc1' },
-      packetLabel: '',
-      headers: { l2: '', l3: '' },
-      explanation: '業務PCは 192.168.10.10/24。先頭24ビットが同じ範囲が1つのネットワークで、その先頭＝ネットワークアドレスは 192.168.10.0 です。',
+      networks: 1,
+      gateways: false,
+      highlight: 0,
+      note: '業務PCは 192.168.10.10/24。先頭24ビットが同じ範囲のネットワークアドレス（先頭）は 192.168.10.0。図に書き込みます。',
     },
     {
-      focus: { type: 'node', id: 'pc2' },
-      packetLabel: '',
-      headers: { l2: '', l3: '' },
-      explanation: '別フロアPCは 192.168.30.10/24。同じように求めると、ネットワークアドレスは 192.168.30.0。内部LANとは別のネットワークです。',
+      networks: 2,
+      gateways: false,
+      highlight: 1,
+      note: '別フロアPC 192.168.30.10/24 も同様に、ネットワークアドレスは 192.168.30.0。内部LANとは別のネットワークです。',
     },
     {
-      focus: { type: 'node', id: 'router' },
-      packetLabel: '',
-      headers: { l2: '', l3: '' },
-      explanation: '別ネットワークどうしは直接やり取りできません。ルータが各セグメントに足を持ち（192.168.10.1 / 192.168.30.1）、それぞれのデフォルトゲートウェイとして中継します。',
+      networks: 2,
+      gateways: true,
+      highlight: 2,
+      note: '別ネットワークどうしはルータが中継。両端にIP（192.168.10.1 / 192.168.30.1）を持ち、各セグメントのデフォルトゲートウェイです。',
     },
   ],
 }
@@ -149,7 +137,7 @@ export const ch06IpSubnet: TextbookChapter = {
           kind: 'text',
           text: 'セグメントが違うと[[green:ネットワーク部]]が違います。だから別セグメントの相手へは直接は届かず、いったん[[blue:ルータ（L3）]]を通ります——第1章でデフォルトゲートウェイに渡したのと同じ理屈です。',
         },
-        { kind: 'figure', figure: segmentFlowFigure },
+        { kind: 'figure', figure: segmentMapFigure },
       ],
     },
     {

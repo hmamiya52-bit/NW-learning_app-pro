@@ -4,6 +4,7 @@ import { ch03TcpUdpPort } from './chapters/ch03-tcp-udp-port'
 import { ch04WebTlsHttp } from './chapters/ch04-web-tls-http'
 import { ch05L2VlanStp } from './chapters/ch05-l2-vlan-stp'
 import { ch06IpSubnet } from './chapters/ch06-ip-subnet'
+import { ch07Routing } from './chapters/ch07-routing'
 import type { TextbookChapter } from './types'
 
 export type { TextbookChapter, Block, Section, Figure } from './types'
@@ -12,7 +13,6 @@ export type { TextbookChapter, Block, Section, Figure } from './types'
 // 構成図の段階的成長）に沿って順に作る。順序＝学習の積み上げ＋構成図が育つ順。
 const DRAFTS: [number, string, string, string][] = [
   // 第2部 ネットワークの土台を組む（構成図を育てる）
-  [7, 'routing', 'ルーティング（経路制御）', '経路表・ロンゲストマッチ・スタティック/ダイナミック(OSPF)・経路集約・経路選択を厚く扱います。'],
   [8, 'internet-nat-bgp', 'インターネット接続・NAT・BGP', 'プライベート/グローバル、NAPT、AS・BGPによる外部到達性を扱います。'],
   // 第3部 現実の構成へ（境界・拡張・冗長：午後スケール）
   [9, 'security-fw-dmz', 'セキュリティ境界・ファイアウォール・DMZ', 'FWの許可条件とステートフル、DMZによる三層境界の読み方を扱います。'],
@@ -42,7 +42,7 @@ const drafts: TextbookChapter[] = DRAFTS.map(([order, id, title, summary]) => ({
   takeaways: [],
 }))
 
-export const textbookChapters: TextbookChapter[] = [ch01Osi, ch02DnsDhcp, ch03TcpUdpPort, ch04WebTlsHttp, ch05L2VlanStp, ch06IpSubnet, ...drafts].sort((a, b) => a.order - b.order)
+export const textbookChapters: TextbookChapter[] = [ch01Osi, ch02DnsDhcp, ch03TcpUdpPort, ch04WebTlsHttp, ch05L2VlanStp, ch06IpSubnet, ch07Routing, ...drafts].sort((a, b) => a.order - b.order)
 
 export function getTextbookChapter(chapterId: string | undefined): TextbookChapter | undefined {
   if (!chapterId) return undefined

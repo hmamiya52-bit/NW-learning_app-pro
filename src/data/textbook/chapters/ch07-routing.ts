@@ -27,16 +27,16 @@ const routeTableTopology: Topology = {
 }
 
 const R1_TABLE = [
-  { dst: '192.168.10.0/24', nh: '直結', kind: 'connected' },
-  { dst: '192.168.30.0/24', nh: '直結', kind: 'connected' },
-  { dst: '172.16.0.0/24', nh: '192.168.99.2（R2）', kind: 'OSPF' },
-  { dst: '0.0.0.0/0', nh: '境界へ（第8章）', kind: 'static' },
+  { dst: '192.168.10.0/24', nh: '直結' },
+  { dst: '192.168.30.0/24', nh: '直結' },
+  { dst: '172.16.0.0/24', nh: '192.168.99.2（R2）' },
+  { dst: '0.0.0.0/0', nh: '境界へ（第8章）' },
 ]
 const R2_TABLE = [
-  { dst: '172.16.0.0/24', nh: '直結', kind: 'connected' },
-  { dst: '192.168.10.0/24', nh: '192.168.99.1（R1）', kind: 'OSPF' },
-  { dst: '192.168.30.0/24', nh: '192.168.99.1（R1）', kind: 'OSPF' },
-  { dst: '0.0.0.0/0', nh: '192.168.99.1（R1）', kind: 'static' },
+  { dst: '172.16.0.0/24', nh: '直結' },
+  { dst: '192.168.10.0/24', nh: '192.168.99.1（R1）' },
+  { dst: '192.168.30.0/24', nh: '192.168.99.1（R1）' },
+  { dst: '0.0.0.0/0', nh: '192.168.99.1（R1）' },
 ]
 
 const routeTableFigure: PacketFlowFigure = {
@@ -52,7 +52,6 @@ const routeTableFigure: PacketFlowFigure = {
     columns: [
       { key: 'dst', label: '宛先' },
       { key: 'nh', label: '次ホップ' },
-      { key: 'kind', label: '種別' },
     ],
   },
   steps: [
@@ -144,7 +143,8 @@ const staticRouteFigure: RecordTableFigure = {
   ],
 }
 
-// §5 OSPF・冗長2経路。3ルータ三角形。直結(1ホップ・遅い)よりR2経由(2ホップ・速い)がコスト小。
+// §5 OSPF・冗長2経路。3ルータ三角形。R1→R2(サーバ側)へ、直結(1ホップ・遅い)よりR3経由(2ホップ・速い)がコスト小。
+// R2はサーバ側ルータ（§2と一致）、R3は新しい中継ルータ。spine順=node配列順なので r1, r3, r2 の順に並べる。
 const ospfTopology: Topology = {
   layout: 'graph',
   zones: [
@@ -153,22 +153,22 @@ const ospfTopology: Topology = {
   ],
   nodes: [
     { id: 'r1', label: 'R1', role: 'router', sub: '本社ルータ' },
-    { id: 'r2', label: 'R2', role: 'router', sub: '中継ルータ' },
-    { id: 'r3', label: 'R3', role: 'router', sub: 'サーバ側' },
+    { id: 'r3', label: 'R3', role: 'router', sub: '中継ルータ' },
+    { id: 'r2', label: 'R2', role: 'router', sub: 'サーバ側' },
     { id: 'pc', label: '業務PC', role: 'pc', zoneId: 'lan', sub: '192.168.10.10' },
     { id: 'web', label: 'Webサーバ', role: 'server', zoneId: 'srv', sub: '172.16.0.20' },
   ],
   links: [
-    { a: 'r1', b: 'r2' },
-    { a: 'r2', b: 'r3' },
     { a: 'r1', b: 'r3' },
+    { a: 'r3', b: 'r2' },
+    { a: 'r1', b: 'r2' },
     { a: 'pc', b: 'r1' },
-    { a: 'r3', b: 'web' },
+    { a: 'r2', b: 'web' },
   ],
   edgeLabels: [
-    { a: 'r1', b: 'r2', label: '1G・コスト10' },
-    { a: 'r2', b: 'r3', label: '1G・コスト10' },
-    { a: 'r1', b: 'r3', label: '100M・コスト100' },
+    { a: 'r1', b: 'r3', label: '1G・コスト10' },
+    { a: 'r3', b: 'r2', label: '1G・コスト10' },
+    { a: 'r1', b: 'r2', label: '100M・コスト100' },
   ],
 }
 
@@ -185,38 +185,38 @@ const ospfFigure: PacketFlowFigure = {
       focus: { type: 'link', a: 'pc', b: 'r1' },
       packetLabel: 'パケット',
       headers: { l2: '', l3: '' },
-      explanation: '業務PCがサーバ（172.16.0.20）あてを送出。R1は、サーバ側のR3へ届く2つの経路を地図から知っています。',
-    },
-    {
-      focus: { type: 'link', a: 'r1', b: 'r2' },
-      packetLabel: 'パケット',
-      headers: { l2: '', l3: '' },
-      explanation: 'R1はコストを比べ、速いR2経由（コスト10＋10＝20）を選択。直結（コスト100）より小さいコストです。まず1ホップ目。',
-    },
-    {
-      focus: { type: 'link', a: 'r2', b: 'r3' },
-      packetLabel: 'パケット',
-      headers: { l2: '', l3: '' },
-      explanation: '2ホップ目。ホップ数は多くても、帯域が太い経路の方がコストは小さく、OSPFはこちらを「近い」と見ます。',
-    },
-    {
-      focus: { type: 'link', a: 'r3', b: 'web' },
-      packetLabel: 'パケット',
-      headers: { l2: '', l3: '' },
-      explanation: 'R3からサーバLANのWebサーバへ到達。OSPFが選んだコスト最小の経路で届きました。',
+      explanation: '業務PCがサーバ（172.16.0.20）あてを送出。R1は、サーバ側のR2へ届く2つの経路を地図から知っています。',
     },
     {
       focus: { type: 'link', a: 'r1', b: 'r3' },
       packetLabel: 'パケット',
       headers: { l2: '', l3: '' },
-      blockedLink: { a: 'r1', b: 'r2' },
-      explanation: '主経路（R1–R2）が切れると、OSPFが地図を更新して再計算。直結（コスト100）が新しい最短として選ばれます。',
+      explanation: 'R1はコストを比べ、速いR3経由（コスト10＋10＝20）を選択。直結（コスト100）より小さいコストです。まず1ホップ目。',
     },
     {
-      focus: { type: 'link', a: 'r3', b: 'web' },
+      focus: { type: 'link', a: 'r3', b: 'r2' },
       packetLabel: 'パケット',
       headers: { l2: '', l3: '' },
-      blockedLink: { a: 'r1', b: 'r2' },
+      explanation: '2ホップ目。ホップ数は多くても、帯域が太い経路の方がコストは小さく、OSPFはこちらを「近い」と見ます。',
+    },
+    {
+      focus: { type: 'link', a: 'r2', b: 'web' },
+      packetLabel: 'パケット',
+      headers: { l2: '', l3: '' },
+      explanation: 'R2からサーバLANのWebサーバへ到達。OSPFが選んだコスト最小の経路で届きました。',
+    },
+    {
+      focus: { type: 'link', a: 'r1', b: 'r2' },
+      packetLabel: 'パケット',
+      headers: { l2: '', l3: '' },
+      blockedLink: { a: 'r1', b: 'r3' },
+      explanation: '速い主経路（R1–R3）が切れると、OSPFが地図を更新して再計算。直結（コスト100）が新しい最短として選ばれます。',
+    },
+    {
+      focus: { type: 'link', a: 'r2', b: 'web' },
+      packetLabel: 'パケット',
+      headers: { l2: '', l3: '' },
+      blockedLink: { a: 'r1', b: 'r3' },
       explanation: '切り替わった直結経路でも、Webサーバへ到達。冗長な経路があるので、1本切れても通信は止まりません。',
     },
   ],
@@ -289,7 +289,7 @@ export const ch07Routing: TextbookChapter = {
       blocks: [
         {
           kind: 'text',
-          text: 'ルータは、あて先のネットワークごとに「どこへ渡せばよいか」をまとめた表を持ちます。これが[[blue:経路表]]（ルーティングテーブル）で、宛先プレフィックス・次ホップ・出口インタフェース・種別が並びます。',
+          text: 'ルータは、あて先のネットワークごとに「どこへ渡せばよいか」をまとめた表を持ちます。これが[[blue:経路表]]（ルーティングテーブル）。出口インタフェースや種別も並びますが、読み解きの中心は[[blue:宛先プレフィックス]]と[[blue:次ホップ]]です。',
         },
         {
           kind: 'text',

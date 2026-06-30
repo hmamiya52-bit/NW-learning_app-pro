@@ -56,7 +56,7 @@ export default function PacketFlowFigure({ figure }: { figure: PacketFlowFigureD
             blockedLink={step.blockedLink}
           />
         ) : (
-          <TopologyView topology={figure.topology} focus={step.focus} packetLabel={step.packetLabel} stepKey={index} />
+          <TopologyView topology={figure.topology} focus={step.focus} packetLabel={step.packetLabel} stepKey={index} zoneId={step.zoneId} />
         )}
       </div>
 

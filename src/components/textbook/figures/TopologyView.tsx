@@ -9,6 +9,7 @@ interface Props {
   focus: PacketStep['focus']
   packetLabel: string
   stepKey: number
+  zoneId?: string // 領域フォーカスで詳細表示する現在ゾーン
 }
 
 interface Group {
@@ -119,10 +120,87 @@ function NodeCard({ node, narrow, focused }: { node: TopoNode; narrow: boolean; 
   )
 }
 
-export default function TopologyView({ topology, focus, packetLabel, stepKey }: Props) {
+// 領域フォーカス: 上＝ゾーン地図（俯瞰・現在ゾーンを強調）／下＝現在ゾーンのノード詳細。
+// 複数セグメントの構成図をスマホ1画面で「全体も現在地も」見せる（figure-spec §3.9）。
+function deriveZoneId(topology: Topology, focus: PacketStep['focus']): string | undefined {
+  if (focus.type === 'node') return topology.nodes.find((n) => n.id === focus.id)?.zoneId
+  const b = topology.nodes.find((n) => n.id === focus.b)
+  return b?.zoneId ?? topology.nodes.find((n) => n.id === focus.a)?.zoneId
+}
+
+function ZoneFocusView({ topology, focus, packetLabel, stepKey, zoneId }: Props) {
+  const zones = topology.zones
+  const curId = zoneId ?? deriveZoneId(topology, focus)
+  const cur = zones.find((z) => z.id === curId) ?? zones[0]
+  const zoneNodes = topology.nodes.filter((n) => n.zoneId === cur?.id)
+
+  const focusedNodeId =
+    focus.type === 'node'
+      ? focus.id
+      : zoneNodes.some((n) => n.id === focus.b)
+        ? focus.b
+        : zoneNodes.some((n) => n.id === focus.a)
+          ? focus.a
+          : null
+
+  return (
+    <div className="mx-auto w-full max-w-[360px]">
+      {/* 俯瞰（ゾーン地図） */}
+      <div className="rounded-lg border border-slate-200 bg-white px-2.5 py-2">
+        <p className="mb-1.5 text-[10px] font-bold text-slate-400">ネットワーク全体（俯瞰）</p>
+        <div className="flex items-stretch justify-center gap-1">
+          {zones.map((z, i) => {
+            const active = z.id === cur?.id
+            const tone = TONE[z.tone]
+            return (
+              <div key={z.id} className="flex items-stretch" style={{ flex: '1 1 0', minWidth: 0 }}>
+                {i > 0 && <div className="my-auto h-[2px] w-3 flex-shrink-0 bg-slate-300" aria-hidden="true" />}
+                <div
+                  className={`flex-1 rounded-lg border px-1 py-1 text-center ${
+                    active ? `border-2 ${tone.border} ${tone.fill}` : 'border border-slate-200 bg-white'
+                  }`}
+                >
+                  <p className={`truncate text-[11px] font-black ${active ? tone.text : 'text-slate-400'}`}>{z.label}</p>
+                  {z.sub && <p className={`truncate text-[9px] ${active ? tone.text : 'text-slate-300'}`}>{z.sub}</p>}
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* 詳細（現在ゾーンのノード） */}
+      <div className="mt-2 rounded-lg border border-slate-200 bg-slate-50/60 px-2.5 py-2">
+        <p className="mb-1.5 text-[10px] font-bold text-sky-700">いまここ：{cur?.label}</p>
+        <div className="flex flex-col items-stretch">
+          {zoneNodes.map((node, ni) => {
+            const items: React.ReactNode[] = []
+            if (ni > 0) {
+              const active = node.id === focusedNodeId && focus.type === 'link'
+              items.push(
+                <div key={`c-${node.id}`} className="relative mx-auto h-7 w-full" aria-hidden="true">
+                  <div className={`absolute left-1/2 top-0 h-full w-[3px] -translate-x-1/2 rounded-full ${active ? 'bg-blue-500' : 'bg-slate-300'}`} />
+                  {active && <TravelingPacket key={stepKey} narrow label={packetLabel} reverse={false} />}
+                </div>,
+              )
+            }
+            items.push(<NodeCard key={node.id} node={node} narrow focused={node.id === focusedNodeId} />)
+            return items
+          })}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default function TopologyView({ topology, focus, packetLabel, stepKey, zoneId }: Props) {
   // 横一列が収まらない幅（タブレット〜小型PC含む）では縦リフローにする。
   const narrow = useIsNarrow(720)
   const groups = useMemo(() => buildGroups(topology.nodes, topology.zones), [topology])
+
+  if (topology.zoneFocus) {
+    return <ZoneFocusView topology={topology} focus={focus} packetLabel={packetLabel} stepKey={stepKey} zoneId={zoneId} />
+  }
 
   // ノードの濃い青塗りは「機器内の処理」ステップ（node focus）だけ。リンク段は回線とパケットで示す。
   const focusedNodeId = focus.type === 'node' ? focus.id : null

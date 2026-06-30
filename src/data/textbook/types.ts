@@ -76,8 +76,12 @@ export interface Topology {
   nodes: TopoNode[]
   links: TopoLink[]
   zones: TopoZone[]
-  // 'chain'（既定・第1〜4章の一直線）／'graph'（links を使い、スイッチ＝幹・端末＝枝・冗長＝ループを描く）
+  // 'chain'（既定・第1〜4章の一直線）／'graph'（links を使い、スイッチ＝幹・端末＝枝・冗長＝ループ・3ルータ三角形を描く）
   layout?: 'chain' | 'graph'
+  // graph(三角形)で、ルータ間リンクに添えるラベル（帯域・コスト等）。a/b は順不同。
+  edgeLabels?: { a: string; b: string; label: string }[]
+  // chain で領域フォーカス表示にする（俯瞰＝ゾーン地図＋詳細＝現在ゾーンのノード）。スマホ幅で有効。
+  zoneFocus?: boolean
 }
 
 export interface TopoNode {
@@ -97,6 +101,7 @@ export interface TopoZone {
   id: string
   label: string
   tone: Tone
+  sub?: string // 領域フォーカスの俯瞰に出すネットワークアドレス等
 }
 
 export type LayerStatus = 'change' | 'same' | 'strip'
@@ -108,8 +113,10 @@ export interface PacketStep {
   headers: { l2: string; l3: string; l4?: string }
   // 各層がこのステップで「変わる／そのまま／外す」のどれか（カードで色分け表示）
   status?: { l2?: LayerStatus; l3?: LayerStatus; l4?: LayerStatus }
-  // graph レイアウトで、このステップにおいてブロック中の冗長リンク（STP の片ポート停止）
+  // graph レイアウトで、このステップにおいてブロック中のリンク（STP の片ポート停止・経路の切断）
   blockedLink?: { a: string; b: string }
+  // 領域フォーカス（zoneFocus）で、このステップの「現在ゾーン」。詳細側に表示するゾーンを明示する。
+  zoneId?: string
   // sideTable をこのステップ時点までに埋まった状態にする（学習が進む表現）
   tableRows?: Record<string, string>[]
   tableHighlightRow?: number

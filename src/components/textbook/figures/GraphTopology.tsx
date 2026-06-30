@@ -54,9 +54,27 @@ function ArrowUp({ x, y, color }: { x: number; y: number; color: string }) {
   return <polygon points={`${x - 5.5},${y + 5} ${x + 5.5},${y + 5} ${x},${y - 6}`} fill={color} />
 }
 
+// 任意方向の線分上に進行方向の矢印（55%地点）。三角形のルータ間リンクで使う。
+function ArrowOnSeg({ x1, y1, x2, y2, color }: { x1: number; y1: number; x2: number; y2: number; color: string }) {
+  const t = 0.55
+  const cx = x1 + (x2 - x1) * t
+  const cy = y1 + (y2 - y1) * t
+  const len = Math.hypot(x2 - x1, y2 - y1) || 1
+  const ux = (x2 - x1) / len
+  const uy = (y2 - y1) / len
+  const px = -uy
+  const py = ux
+  const h = 7
+  const w = 5
+  const tip = `${cx + ux * h},${cy + uy * h}`
+  const b1 = `${cx - ux * h + px * w},${cy - uy * h + py * w}`
+  const b2 = `${cx - ux * h - px * w},${cy - uy * h - py * w}`
+  return <polygon points={`${tip} ${b1} ${b2}`} fill={color} />
+}
+
 export default function GraphTopology({ topology, focus, blockedLink }: Props) {
   const layout = useMemo(() => buildLayout(topology), [topology])
-  const { nodes, pos, trunk, leafSegs, loop, toneOf, height, trunkLabel } = layout
+  const { nodes, pos, trunk, leafSegs, loop, spineEdges, toneOf, height, trunkLabel } = layout
 
   const focusedNodeId = focus.type === 'node' ? focus.id : null
   const isLinkFocused = (a: string, b: string) =>
@@ -101,6 +119,48 @@ export default function GraphTopology({ topology, focus, blockedLink }: Props) {
               strokeWidth={focused ? 3 : 2}
             />
             {focused && (down ? <ArrowDown x={mx} y={my} color={LINE_ACTIVE} /> : <ArrowUp x={mx} y={my} color={LINE_ACTIVE} />)}
+          </g>
+        )
+      })}
+
+      {/* ルータ間リンク（三角形の辺）＋コストラベル・進行方向矢印・切断✕ */}
+      {spineEdges.map((e, i) => {
+        const focused = isLinkFocused(e.a, e.b)
+        const isBlocked = !!blockedLink && samePair(blockedLink.a, blockedLink.b, e.a, e.b)
+        const color = isBlocked ? LINE_BLOCK : focused ? LINE_ACTIVE : LINE_TRUNK
+        const dir = focus.type === 'link' && focus.a === e.b // 逆向きフォーカスなら矢印も逆
+        const [ax1, ay1, ax2, ay2] = dir ? [e.x2, e.y2, e.x1, e.y1] : [e.x1, e.y1, e.x2, e.y2]
+        return (
+          <g key={`sp${i}`}>
+            <line
+              x1={e.x1}
+              y1={e.y1}
+              x2={e.x2}
+              y2={e.y2}
+              stroke={color}
+              strokeWidth={focused || isBlocked ? 3.4 : 3}
+              strokeDasharray={isBlocked ? '7 5' : undefined}
+            />
+            {focused && !isBlocked && <ArrowOnSeg x1={ax1} y1={ay1} x2={ax2} y2={ay2} color={LINE_ACTIVE} />}
+            {isBlocked && (
+              <text x={(e.x1 + e.x2) / 2} y={(e.y1 + e.y2) / 2 + 6} textAnchor="middle" fontSize="18" fontWeight="700" fill={LINE_BLOCK}>
+                ✕
+              </text>
+            )}
+            {e.label &&
+              e.lines.map((ln, k) => (
+                <text
+                  key={k}
+                  x={e.lx}
+                  y={e.ly + k * 12}
+                  textAnchor={e.lanchor}
+                  fontSize="10"
+                  fontWeight={focused ? 700 : 400}
+                  fill={focused ? '#185fa5' : '#64748b'}
+                >
+                  {ln}
+                </text>
+              ))}
           </g>
         )
       })}
@@ -167,6 +227,20 @@ export default function GraphTopology({ topology, focus, blockedLink }: Props) {
   )
 }
 
+interface SpineEdge {
+  a: string
+  b: string
+  x1: number
+  y1: number
+  x2: number
+  y2: number
+  label?: string
+  lines: string[]
+  lx: number
+  ly: number
+  lanchor: 'start' | 'middle' | 'end'
+}
+
 interface Layout {
   nodes: TopoNode[]
   pos: Map<string, Pos>
@@ -174,6 +248,7 @@ interface Layout {
   trunkLabel: string | null
   leafSegs: { from: string; to: string; x1: number; y1: number; x2: number; y2: number }[]
   loop: { a: string; b: string; leftPath: string; rightPath: string; xLeft: number; xRight: number; yMid: number } | null
+  spineEdges: SpineEdge[]
   toneOf: (n: TopoNode) => string
   height: number
 }
@@ -202,6 +277,16 @@ function buildLayout(topology: Topology): Layout {
 
   const toneOf = (n: TopoNode): string =>
     SPINE_ROLES.has(n.role) ? 'slate' : (n.zoneId && zoneTone.get(n.zoneId)) || 'sky'
+
+  // 三角形（ルータ3台が相互リンク）: OSPF の冗長2経路・コスト最短を描く。
+  if (spine.length === 3 && !loopPair) {
+    const [s0, s1, s2] = spine
+    const tri =
+      links.some((l) => samePair(l.a, l.b, s0.id, s1.id)) &&
+      links.some((l) => samePair(l.a, l.b, s1.id, s2.id)) &&
+      links.some((l) => samePair(l.a, l.b, s0.id, s2.id))
+    if (tri) return buildTriangle({ nodes, spine, leavesOf, toneOf, links, edgeLabels: topology.edgeLabels ?? [] })
+  }
 
   const pos = new Map<string, Pos>()
   const leafSegs: Layout['leafSegs'] = []
@@ -251,7 +336,7 @@ function buildLayout(topology: Topology): Layout {
       loop.yMid += offset
     }
     const maxBot = Math.max(...[...pos.values()].map((p) => p.y + p.h / 2))
-    return { nodes, pos, trunk: null, trunkLabel: null, leafSegs, loop, toneOf, height: maxBot + 14 }
+    return { nodes, pos, trunk: null, trunkLabel: null, leafSegs, loop, spineEdges: [], toneOf, height: maxBot + 14 }
   }
 
   // ツリー配置: スイッチを横一列、その下に端末を縦積み。
@@ -281,7 +366,87 @@ function buildLayout(topology: Topology): Layout {
     trunk = { x1: p0.x + p0.w / 2, x2: p1.x - p1.w / 2, y: swY }
   }
 
-  return { nodes, pos, trunk, trunkLabel: trunk ? 'トランク' : null, leafSegs, loop: null, toneOf, height: maxBottom + 14 }
+  return { nodes, pos, trunk, trunkLabel: trunk ? 'トランク' : null, leafSegs, loop: null, spineEdges: [], toneOf, height: maxBottom + 14 }
+}
+
+// 三角形レイアウト: spine[0]=左上 / spine[2]=左下 / spine[1]=右中。端末は親の外側（上/下）へ。
+function buildTriangle({
+  nodes,
+  spine,
+  leavesOf,
+  toneOf,
+  links,
+  edgeLabels,
+}: {
+  nodes: TopoNode[]
+  spine: TopoNode[]
+  leavesOf: (sid: string) => TopoNode[]
+  toneOf: (n: TopoNode) => string
+  links: Topology['links']
+  edgeLabels: NonNullable<Topology['edgeLabels']>
+}): Layout {
+  const LX = 112
+  const [r1, r2, r3] = spine
+  const pos = new Map<string, Pos>()
+  pos.set(r1.id, { x: LX, y: 122, w: SW_W, h: SW_H })
+  pos.set(r3.id, { x: LX, y: 234, w: SW_W, h: SW_H })
+  pos.set(r2.id, { x: 252, y: 178, w: SW_W, h: SW_H })
+  const centerY = 178
+
+  const leafSegs: Layout['leafSegs'] = []
+  spine.forEach((s) => {
+    const sp = pos.get(s.id)!
+    const above = sp.y < centerY
+    leavesOf(s.id).forEach((lf, i) => {
+      if (above) {
+        const y = sp.y - SW_H / 2 - 30 - i * (LEAF_H + 14) - LEAF_H / 2
+        pos.set(lf.id, { x: sp.x, y, w: LEAF_W, h: LEAF_H })
+        leafSegs.push({ from: s.id, to: lf.id, x1: sp.x, y1: y + LEAF_H / 2, x2: sp.x, y2: sp.y - SW_H / 2 })
+      } else {
+        const y = sp.y + SW_H / 2 + 30 + i * (LEAF_H + 14) + LEAF_H / 2
+        pos.set(lf.id, { x: sp.x, y, w: LEAF_W, h: LEAF_H })
+        leafSegs.push({ from: s.id, to: lf.id, x1: sp.x, y1: sp.y + SW_H / 2, x2: sp.x, y2: y - LEAF_H / 2 })
+      }
+    })
+  })
+
+  const spineEdges: SpineEdge[] = []
+  const pairs: [TopoNode, TopoNode][] = [
+    [r1, r2],
+    [r2, r3],
+    [r1, r3],
+  ]
+  pairs.forEach(([a, b]) => {
+    if (!links.some((l) => samePair(l.a, l.b, a.id, b.id))) return
+    const pa = pos.get(a.id)!
+    const pb = pos.get(b.id)!
+    const label = edgeLabels.find((e) => samePair(e.a, e.b, a.id, b.id))?.label
+    const x1 = pa.x
+    const y1 = pa.y
+    const x2 = pb.x
+    const y2 = pb.y
+    const vertical = Math.abs(x1 - x2) < 8
+    let lx: number
+    let ly: number
+    let lanchor: SpineEdge['lanchor']
+    let lines: string[]
+    if (vertical) {
+      lx = Math.min(x1, x2) - 50
+      ly = (y1 + y2) / 2 - 4
+      lanchor = 'end'
+      lines = label ? label.split('・') : []
+    } else {
+      const my = (y1 + y2) / 2
+      lx = (x1 + x2) / 2
+      ly = my < centerY ? my - 8 : my + 16
+      lanchor = 'middle'
+      lines = label ? [label] : []
+    }
+    spineEdges.push({ a: a.id, b: b.id, x1, y1, x2, y2, label, lines, lx, ly, lanchor })
+  })
+
+  const maxBot = Math.max(...[...pos.values()].map((p) => p.y + p.h / 2))
+  return { nodes, pos, trunk: null, trunkLabel: null, leafSegs, loop: null, spineEdges, toneOf, height: maxBot + 14 }
 }
 
 function shiftPathY(d: string, dy: number) {

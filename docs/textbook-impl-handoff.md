@@ -12,7 +12,7 @@
 
 ## 最初にやること（必ず順守）
 1. `git pull`（main）。**ファイルはユーザーが直接手編集することがある**ので、編集前に必ず最新を Read する。
-2. 設計の「正」を読む（この5つが唯一の正。古い設計文書は削除済み）:
+2. 設計の「正」を読む（この5つが唯一の正。古い設計文書は削除済み。なお `docs/` には `textbook-mode-research.md`・`textbook-afternoon-exam-research.md`・`textbook-ch1-review-handoff.md` など research／レビュー引継ぎ系の補助文書が残っているが、これらは設計の「正」ではない）:
    - `docs/textbook-mode-requirements.md`（要件）
    - `docs/textbook-mode-basic-design-v2.md`（基本設計。§6 文体、§7 検証フロー）
    - `docs/textbook-curriculum-design.md`（全体マップ・4部構成・topology ramp）
@@ -72,7 +72,7 @@
 
 ## 1章を起こす手順
 1. `chapters/chNN-xxx.ts` を作成（ch01/ch04/ch06 を雛形に）。本文の要点・図・構成図差分をデータで記述。`estimatedMinutes` も設定。
-2. `index.ts` で該当 draft（`[N,'id',…]`）を DRAFTS から外し、`chNNxxx` を import → `textbookChapters` 配列に追加（published 化）。
+2. `index.ts` で該当 draft（`DRAFTS` の `[order, id, title, summary]` 4要素タプル。第7章は `[7, 'routing', …]`）を DRAFTS から外し、`chNNxxx` を import → `textbookChapters` 配列に追加（published 化）。
 3. 新 kind/role が要れば types→FigureRenderer→component、figureTokens を追加。
 4. 検証（下記）→ 細かい単位でコミット＆プッシュ。
 

@@ -78,8 +78,10 @@ export interface Topology {
   zones: TopoZone[]
   // 'chain'（既定・第1〜4章の一直線）／'graph'（links を使い、スイッチ＝幹・端末＝枝・冗長＝ループ・3ルータ三角形を描く）
   layout?: 'chain' | 'graph'
-  // graph(三角形)で、ルータ間リンクに添えるラベル（帯域・コスト等）。a/b は順不同。
+  // graph(三角形/縦積み)で、ルータ間リンクに添えるラベル（帯域・コスト等）。a/b は順不同。
   edgeLabels?: { a: string; b: string; label: string }[]
+  // graph で縦積みレイアウト（ルータ2台を縦に並べ、上ルータの端末は上・下ルータの端末は下に枝分かれ）。
+  stack?: boolean
   // chain で領域フォーカス表示にする（俯瞰＝ゾーン地図＋詳細＝現在ゾーンのノード）。スマホ幅で有効。
   zoneFocus?: boolean
 }

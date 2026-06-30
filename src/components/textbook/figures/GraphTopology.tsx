@@ -74,7 +74,7 @@ function ArrowOnSeg({ x1, y1, x2, y2, color }: { x1: number; y1: number; x2: num
 
 export default function GraphTopology({ topology, focus, blockedLink }: Props) {
   const layout = useMemo(() => buildLayout(topology), [topology])
-  const { nodes, pos, trunk, leafSegs, loop, spineEdges, toneOf, height, trunkLabel } = layout
+  const { nodes, pos, trunk, leafSegs, loop, spineEdges, zoneLabels, toneOf, height, trunkLabel } = layout
 
   const focusedNodeId = focus.type === 'node' ? focus.id : null
   const isLinkFocused = (a: string, b: string) =>
@@ -102,12 +102,16 @@ export default function GraphTopology({ topology, focus, blockedLink }: Props) {
         </>
       )}
 
-      {/* 枝（スイッチ→端末の線）＋進行方向の矢印 */}
+      {/* 枝（スイッチ／ルータ→端末の線）＋進行方向の矢印 */}
       {leafSegs.map((seg, i) => {
         const focused = isLinkFocused(seg.from, seg.to)
+        const vertical = Math.abs(seg.x1 - seg.x2) < 6
         const down = seg.y2 >= seg.y1
         const mx = (seg.x1 + seg.x2) / 2
         const my = (seg.y1 + seg.y2) / 2
+        // 斜めの枝（縦積みレイアウトでR1の上に並ぶ端末）は、進行方向に沿った角度付き矢印。
+        const fa = focus.type === 'link' ? pos.get(focus.a) : undefined
+        const fb = focus.type === 'link' ? pos.get(focus.b) : undefined
         return (
           <g key={`seg${i}`}>
             <line
@@ -118,7 +122,12 @@ export default function GraphTopology({ topology, focus, blockedLink }: Props) {
               stroke={focused ? LINE_ACTIVE : LINE_IDLE}
               strokeWidth={focused ? 3 : 2}
             />
-            {focused && (down ? <ArrowDown x={mx} y={my} color={LINE_ACTIVE} /> : <ArrowUp x={mx} y={my} color={LINE_ACTIVE} />)}
+            {focused &&
+              (vertical ? (
+                down ? <ArrowDown x={mx} y={my} color={LINE_ACTIVE} /> : <ArrowUp x={mx} y={my} color={LINE_ACTIVE} />
+              ) : fa && fb ? (
+                <ArrowOnSeg x1={fa.x} y1={fa.y} x2={fb.x} y2={fb.y} color={LINE_ACTIVE} />
+              ) : null)}
           </g>
         )
       })}
@@ -191,6 +200,19 @@ export default function GraphTopology({ topology, focus, blockedLink }: Props) {
         </>
       )}
 
+      {/* セグメント名ラベル（縦積みレイアウトで端末の上に表示・白チップで線と重ねない） */}
+      {zoneLabels.map((z, i) => {
+        const w = z.text.length * 9 + 6
+        return (
+          <g key={`zl${i}`}>
+            <rect x={z.x - w / 2} y={z.y - 10} width={w} height={13} rx={3} fill="#ffffff" />
+            <text x={z.x} y={z.y} textAnchor="middle" fontSize="10" fontWeight="700" fill={z.color}>
+              {z.text}
+            </text>
+          </g>
+        )
+      })}
+
       {/* ノード */}
       {nodes.map((n) => {
         const p = pos.get(n.id)
@@ -249,6 +271,7 @@ interface Layout {
   leafSegs: { from: string; to: string; x1: number; y1: number; x2: number; y2: number }[]
   loop: { a: string; b: string; leftPath: string; rightPath: string; xLeft: number; xRight: number; yMid: number } | null
   spineEdges: SpineEdge[]
+  zoneLabels: { x: number; y: number; text: string; color: string }[]
   toneOf: (n: TopoNode) => string
   height: number
 }
@@ -277,6 +300,11 @@ function buildLayout(topology: Topology): Layout {
 
   const toneOf = (n: TopoNode): string =>
     SPINE_ROLES.has(n.role) ? 'slate' : (n.zoneId && zoneTone.get(n.zoneId)) || 'sky'
+
+  // 縦積み（ルータ2台を縦に並べ上下に枝）: 経路表連動の packet-flow（第7章 §2）。明示フラグ。
+  if (topology.stack && spine.length === 2 && !loopPair) {
+    return buildStack({ spine, leavesOf, toneOf, links, edgeLabels: topology.edgeLabels ?? [], zones, allNodes: nodes })
+  }
 
   // 三角形（ルータ3台が相互リンク）: OSPF の冗長2経路・コスト最短を描く。
   if (spine.length === 3 && !loopPair) {
@@ -336,7 +364,7 @@ function buildLayout(topology: Topology): Layout {
       loop.yMid += offset
     }
     const maxBot = Math.max(...[...pos.values()].map((p) => p.y + p.h / 2))
-    return { nodes, pos, trunk: null, trunkLabel: null, leafSegs, loop, spineEdges: [], toneOf, height: maxBot + 14 }
+    return { nodes, pos, trunk: null, trunkLabel: null, leafSegs, loop, spineEdges: [], zoneLabels: [], toneOf, height: maxBot + 14 }
   }
 
   // ツリー配置: スイッチを横一列、その下に端末を縦積み。
@@ -366,7 +394,7 @@ function buildLayout(topology: Topology): Layout {
     trunk = { x1: p0.x + p0.w / 2, x2: p1.x - p1.w / 2, y: swY }
   }
 
-  return { nodes, pos, trunk, trunkLabel: trunk ? 'トランク' : null, leafSegs, loop: null, spineEdges: [], toneOf, height: maxBottom + 14 }
+  return { nodes, pos, trunk, trunkLabel: trunk ? 'トランク' : null, leafSegs, loop: null, spineEdges: [], zoneLabels: [], toneOf, height: maxBottom + 14 }
 }
 
 // 三角形レイアウト: spine[0]=左上 / spine[2]=左下 / spine[1]=右中。端末は親の外側（上/下）へ。
@@ -446,7 +474,95 @@ function buildTriangle({
   })
 
   const maxBot = Math.max(...[...pos.values()].map((p) => p.y + p.h / 2))
-  return { nodes, pos, trunk: null, trunkLabel: null, leafSegs, loop: null, spineEdges, toneOf, height: maxBot + 14 }
+  return { nodes, pos, trunk: null, trunkLabel: null, leafSegs, loop: null, spineEdges, zoneLabels: [], toneOf, height: maxBot + 14 }
+}
+
+// 縦積みレイアウト: ルータ2台を縦に並べ、上ルータの端末は上に・下ルータの端末は下に枝分かれ。
+// 経路が上→下へ素直に流れる。経路表連動の packet-flow（第7章 §2）で使用。
+function buildStack({
+  spine,
+  leavesOf,
+  toneOf,
+  links,
+  edgeLabels,
+  zones,
+  allNodes,
+}: {
+  spine: TopoNode[]
+  leavesOf: (sid: string) => TopoNode[]
+  toneOf: (n: TopoNode) => string
+  links: Topology['links']
+  edgeLabels: NonNullable<Topology['edgeLabels']>
+  zones: Topology['zones']
+  allNodes: TopoNode[]
+}): Layout {
+  const cx = W / 2
+  const top = spine[0]
+  const bot = spine[1]
+  const zoneById = new Map(zones.map((z) => [z.id, z]))
+  const pos = new Map<string, Pos>()
+  const leafSegs: Layout['leafSegs'] = []
+  const zoneLabels: Layout['zoneLabels'] = []
+
+  const topLeaves = leavesOf(top.id)
+  const botLeaves = leavesOf(bot.id)
+
+  const rowWidth = (n: number) => n * LEAF_W + (n - 1) * 12
+  // 端末を横一列に並べる中心X
+  const rowXs = (n: number) => {
+    const start = cx - rowWidth(n) / 2 + LEAF_W / 2
+    return Array.from({ length: n }, (_, i) => start + i * (LEAF_W + 12))
+  }
+
+  const topLeafY = 14 + LEAF_H / 2 + 14 // ゾーンラベル分の余白を上に確保
+  const topY = topLeafY + LEAF_H / 2 + 34 + SW_H / 2
+  const botY = topY + SW_H / 2 + 46 + SW_H / 2
+  const botLeafY = botY + SW_H / 2 + 34 + LEAF_H / 2
+
+  pos.set(top.id, { x: cx, y: topY, w: SW_W, h: SW_H })
+  pos.set(bot.id, { x: cx, y: botY, w: SW_W, h: SW_H })
+
+  // 上ルータの端末（上に横並び）
+  const txs = rowXs(topLeaves.length)
+  topLeaves.forEach((lf, i) => {
+    const x = txs[i]
+    pos.set(lf.id, { x, y: topLeafY, w: LEAF_W, h: LEAF_H })
+    leafSegs.push({ from: top.id, to: lf.id, x1: x, y1: topLeafY + LEAF_H / 2, x2: cx, y2: topY - SW_H / 2 })
+    const z = lf.zoneId ? zoneById.get(lf.zoneId) : undefined
+    if (z) zoneLabels.push({ x, y: topLeafY - LEAF_H / 2 - 6, text: z.label, color: (TONE_COLOR[z.tone] ?? TONE_COLOR.slate).text })
+  })
+
+  // 下ルータの端末（下に横並び）
+  const bxs = rowXs(botLeaves.length)
+  botLeaves.forEach((lf, i) => {
+    const x = bxs[i]
+    pos.set(lf.id, { x, y: botLeafY, w: LEAF_W, h: LEAF_H })
+    leafSegs.push({ from: bot.id, to: lf.id, x1: cx, y1: botY + SW_H / 2, x2: x, y2: botLeafY - LEAF_H / 2 })
+    const z = lf.zoneId ? zoneById.get(lf.zoneId) : undefined
+    if (z) zoneLabels.push({ x, y: botLeafY - LEAF_H / 2 - 6, text: z.label, color: (TONE_COLOR[z.tone] ?? TONE_COLOR.slate).text })
+  })
+
+  // ルータ間リンク（単一・縦）。ラベルは右側に1行で。
+  const spineEdges: SpineEdge[] = []
+  if (links.some((l) => samePair(l.a, l.b, top.id, bot.id))) {
+    const label = edgeLabels.find((e) => samePair(e.a, e.b, top.id, bot.id))?.label
+    spineEdges.push({
+      a: top.id,
+      b: bot.id,
+      x1: cx,
+      y1: topY,
+      x2: cx,
+      y2: botY,
+      label,
+      lines: label ? [label] : [],
+      lx: cx + 10,
+      ly: (topY + botY) / 2 + 4,
+      lanchor: 'start',
+    })
+  }
+
+  const maxBot = Math.max(...[...pos.values()].map((p) => p.y + p.h / 2))
+  return { nodes: allNodes, pos, trunk: null, trunkLabel: null, leafSegs, loop: null, spineEdges, zoneLabels, toneOf, height: maxBot + 14 }
 }
 
 function shiftPathY(d: string, dy: number) {

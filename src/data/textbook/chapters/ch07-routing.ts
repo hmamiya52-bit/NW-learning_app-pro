@@ -3,19 +3,22 @@ import type { PacketFlowFigure, RecordTableFigure, TextbookChapter, Topology } f
 // 第7章 ルーティング（経路制御）。第6章で設計したアドレスの間を、ルータがどう繋ぐか。
 // 経路表＋ロンゲストマッチ・スタティック/ダイナミック(OSPF)・経路集約・経路選択(AD→メトリック)。
 
-// §2 構成図: 2台目のルータ(R2)とサーバLANを追加。R1-R2は点対点リンク(/30)。領域フォーカスで表示。
+// §2 構成図: 2台目のルータ(R2)とサーバLANを追加。R1-R2は点対点リンク(/30)。
+// 縦積みレイアウト（stack）で全ノードを1枚に表示。内部LAN/別フロアはR1の上、サーバLANはR2の下に枝分かれ。
 const routeTableTopology: Topology = {
-  zoneFocus: true,
+  layout: 'graph',
+  stack: true,
+  edgeLabels: [{ a: 'r1', b: 'r2', label: 'ルータ間リンク /30' }],
   zones: [
-    { id: 'lan', label: '内部LAN', tone: 'sky', sub: '192.168.10.0/24' },
-    { id: 'fl2', label: '別フロア', tone: 'emerald', sub: '192.168.30.0/24' },
-    { id: 'srv', label: 'サーバLAN', tone: 'amber', sub: '172.16.0.0/24' },
+    { id: 'lan', label: '内部LAN', tone: 'sky' },
+    { id: 'fl2', label: '別フロア', tone: 'emerald' },
+    { id: 'srv', label: 'サーバLAN', tone: 'amber' },
   ],
   nodes: [
     { id: 'pc', label: '業務PC', role: 'pc', zoneId: 'lan', sub: '192.168.10.10' },
     { id: 'r1', label: 'R1', role: 'router', zoneId: 'lan', sub: '本社ルータ' },
     { id: 'fl2pc', label: '別フロアPC', role: 'pc', zoneId: 'fl2', sub: '192.168.30.10' },
-    { id: 'r2', label: 'R2', role: 'router', zoneId: 'srv', sub: 'サーバ側ルータ' },
+    { id: 'r2', label: 'R2', role: 'router', zoneId: 'srv', sub: 'サーバ側' },
     { id: 'web', label: 'Webサーバ', role: 'server', zoneId: 'srv', sub: '172.16.0.20' },
   ],
   links: [
@@ -43,7 +46,7 @@ const routeTableFigure: PacketFlowFigure = {
   kind: 'packet-flow',
   id: 'ch7-route-table',
   title: 'あて先IPを経路表と照合して次ホップへ',
-  caption: '上が[[blue:ネットワーク全体の地図]]（現在ゾーンを強調）、下が現在ゾーンの中身。表は通過するルータの経路表で、一致した行を強調します。',
+  caption: '[[blue:ネットワーク全体を1枚で表示]]。表はいまいるルータの経路表で、あて先IPと一致した行を強調します。',
   takeaway: 'ルータはあて先IPを経路表と照合し、一致行の[[blue:次ホップ]]へ渡すだけ。次ホップは最終あて先でなく「次の1歩」。',
   topology: routeTableTopology,
   hideHeaders: true,
@@ -57,7 +60,6 @@ const routeTableFigure: PacketFlowFigure = {
   steps: [
     {
       focus: { type: 'link', a: 'pc', b: 'r1' },
-      zoneId: 'lan',
       packetLabel: 'あて先 172.16.0.20',
       headers: { l2: '', l3: '' },
       tableRows: R1_TABLE,
@@ -65,7 +67,6 @@ const routeTableFigure: PacketFlowFigure = {
     },
     {
       focus: { type: 'node', id: 'r1' },
-      zoneId: 'lan',
       packetLabel: 'あて先 172.16.0.20',
       headers: { l2: '', l3: '' },
       tableRows: R1_TABLE,
@@ -74,7 +75,6 @@ const routeTableFigure: PacketFlowFigure = {
     },
     {
       focus: { type: 'link', a: 'r1', b: 'r2' },
-      zoneId: 'srv',
       packetLabel: 'あて先 172.16.0.20',
       headers: { l2: '', l3: '' },
       tableRows: R1_TABLE,
@@ -83,7 +83,6 @@ const routeTableFigure: PacketFlowFigure = {
     },
     {
       focus: { type: 'node', id: 'r2' },
-      zoneId: 'srv',
       packetLabel: 'あて先 172.16.0.20',
       headers: { l2: '', l3: '' },
       tableRows: R2_TABLE,
@@ -92,7 +91,6 @@ const routeTableFigure: PacketFlowFigure = {
     },
     {
       focus: { type: 'link', a: 'r2', b: 'web' },
-      zoneId: 'srv',
       packetLabel: 'あて先 172.16.0.20',
       headers: { l2: '', l3: '' },
       tableRows: R2_TABLE,

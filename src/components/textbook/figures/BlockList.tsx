@@ -1,5 +1,6 @@
 import { AlertTriangle, Info, Lightbulb } from 'lucide-react'
 import type { Block, CalloutTone } from '../../../data/textbook/types'
+import CheckList from '../CheckList'
 import TextbookRichText from '../TextbookRichText'
 import FigureRenderer from './FigureRenderer'
 
@@ -34,6 +35,9 @@ export default function BlockList({ blocks }: { blocks: Block[] }) {
               </div>
             </div>
           )
+        }
+        if (block.kind === 'check') {
+          return <CheckList key={i} items={block.items} badge={block.label ?? '確認'} />
         }
         return <FigureRenderer key={i} figure={block.figure} />
       })}

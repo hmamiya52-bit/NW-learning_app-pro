@@ -11,7 +11,7 @@ function toDotted(n: number): string {
 }
 
 export default function SubnetCalcFigure({ figure }: { figure: SubnetCalcFigureData }) {
-  const { index, next, prev, count } = useStepper(figure.steps.length)
+  const { index, setIndex, next, prev, count } = useStepper(figure.steps.length)
   const step = figure.steps[index]
   const prefix = step.prefix
 
@@ -105,10 +105,10 @@ export default function SubnetCalcFigure({ figure }: { figure: SubnetCalcFigureD
         </div>
       </dl>
 
-      <p className="mt-2 flex h-10 items-start text-sm leading-relaxed text-slate-700">{step.note}</p>
+      <p aria-live="polite" className="mt-2 flex h-10 items-start text-sm leading-relaxed text-slate-700">{step.note}</p>
 
       <div className="mt-2">
-        <StepperControls index={index} count={count} onPrev={prev} onNext={next} />
+        <StepperControls index={index} count={count} onPrev={prev} onNext={next} onSelect={setIndex} />
       </div>
     </FigureFrame>
   )

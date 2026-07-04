@@ -25,6 +25,15 @@ export interface TextbookChapter {
   intro: Block[]
   sections: Section[]
   takeaways: string[]
+  // 章末の「理解の確認」（2〜3問）。答えはタップで開く。
+  checks?: CheckItem[]
+}
+
+// 確認問題・設問例の1問（本文の check ブロックと章末 checks で共用）。
+export interface CheckItem {
+  question: string
+  answer: string
+  note?: string
 }
 
 export interface Section {
@@ -39,6 +48,8 @@ export type Block =
   | { kind: 'text'; text: string }
   | { kind: 'callout'; tone: CalloutTone; title: string; body: string }
   | { kind: 'figure'; figure: Figure }
+  // 設問例など、本文中の開閉式の問い（label 例: '設問例'。省略時は '確認'）。
+  | { kind: 'check'; label?: string; items: CheckItem[] }
 
 export interface FigureBase {
   id: string
@@ -94,6 +105,8 @@ export interface TopoNode {
   role: NodeRole
   zoneId?: string
   sub?: string // IP など
+  // この章で構成図に新しく加わったノード（graph 描画で「追加」チップを表示）。
+  isNew?: boolean
 }
 
 export interface TopoLink {

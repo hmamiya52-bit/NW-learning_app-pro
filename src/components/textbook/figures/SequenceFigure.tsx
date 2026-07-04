@@ -73,7 +73,7 @@ function MessageRow({ m, fromX, toX, active }: { m: Message; fromX: number; toX:
 
 export default function SequenceFigure({ figure }: { figure: SequenceFigureData }) {
   const { actors, messages } = figure
-  const { index, next, prev, count } = useStepper(messages.length)
+  const { index, setIndex, next, prev, count } = useStepper(messages.length)
   const n = actors.length
   const indexOf = (id: string) => actors.findIndex((a) => a.id === id)
   const centerX = (i: number) => ((i + 0.5) / n) * 100
@@ -106,10 +106,10 @@ export default function SequenceFigure({ figure }: { figure: SequenceFigureData 
         </div>
       </div>
 
-      <p className="mt-2 flex h-12 items-start text-sm leading-relaxed text-slate-700">{messages[index].note}</p>
+      <p aria-live="polite" className="mt-2 flex h-12 items-start text-sm leading-relaxed text-slate-700">{messages[index].note}</p>
 
       <div className="mt-2">
-        <StepperControls index={index} count={count} onPrev={prev} onNext={next} />
+        <StepperControls index={index} count={count} onPrev={prev} onNext={next} onSelect={setIndex} />
       </div>
     </FigureFrame>
   )

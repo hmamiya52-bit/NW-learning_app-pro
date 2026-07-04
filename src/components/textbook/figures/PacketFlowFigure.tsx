@@ -40,7 +40,7 @@ function HeaderRow({
 }
 
 export default function PacketFlowFigure({ figure }: { figure: PacketFlowFigureData }) {
-  const { index, next, prev, count } = useStepper(figure.steps.length)
+  const { index, setIndex, next, prev, count } = useStepper(figure.steps.length)
   const step = figure.steps[index]
   const sideTable = figure.sideTable
 
@@ -113,10 +113,10 @@ export default function PacketFlowFigure({ figure }: { figure: PacketFlowFigureD
         </div>
       )}
 
-      <p className="mt-2 flex h-12 items-start text-sm leading-relaxed text-slate-700">{step.explanation}</p>
+      <p aria-live="polite" className="mt-2 flex h-12 items-start text-sm leading-relaxed text-slate-700">{step.explanation}</p>
 
       <div className="mt-2">
-        <StepperControls index={index} count={count} onPrev={prev} onNext={next} />
+        <StepperControls index={index} count={count} onPrev={prev} onNext={next} onSelect={setIndex} />
       </div>
     </FigureFrame>
   )

@@ -242,6 +242,15 @@ export default function GraphTopology({ topology, focus, blockedLink }: Props) {
                 {n.sub}
               </text>
             )}
+            {/* この章で加わったノードの「追加」チップ（右上角） */}
+            {n.isNew && (
+              <>
+                <rect x={p.x + p.w / 2 - 26} y={p.y - p.h / 2 - 7} width={26} height={14} rx={7} fill="#fffbeb" stroke="#fbbf24" strokeWidth={1} />
+                <text x={p.x + p.w / 2 - 13} y={p.y - p.h / 2 + 3.5} textAnchor="middle" fontSize="9" fontWeight="700" fill="#92400e">
+                  追加
+                </text>
+              </>
+            )}
           </g>
         )
       })}
@@ -397,7 +406,11 @@ function buildLayout(topology: Topology): Layout {
     trunk = { x1: p0.x + p0.w / 2, x2: p1.x - p1.w / 2, y: swY }
   }
 
-  return { nodes, pos, trunk, trunkLabel: trunk ? 'トランク' : null, leafSegs, loop: null, spineEdges: [], zoneLabels: [], toneOf, height: maxBottom + 14 }
+  // 幹どうしの線のラベル。edgeLabels があればそれを優先（'' で非表示）、無ければ従来どおり「トランク」。
+  const trunkEdgeLabel =
+    spine.length >= 2 ? (topology.edgeLabels ?? []).find((e) => samePair(e.a, e.b, spine[0].id, spine[1].id))?.label : undefined
+
+  return { nodes, pos, trunk, trunkLabel: trunk ? (trunkEdgeLabel ?? 'トランク') : null, leafSegs, loop: null, spineEdges: [], zoneLabels: [], toneOf, height: maxBottom + 14 }
 }
 
 // 三角形レイアウト: spine[0]=左上 / spine[2]=左下 / spine[1]=右中。端末は親の外側（上/下）へ。

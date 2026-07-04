@@ -81,7 +81,7 @@ function Nest({ levels, idx, dataLabel, activeIdx, narrow }: { levels: Level[]; 
 export default function EncapFigure({ figure }: { figure: EncapFigureData }) {
   const narrow = useIsNarrow(480)
   const steps = useMemo(() => buildSteps(figure.levels), [figure.levels])
-  const { index, next, prev, count } = useStepper(steps.length)
+  const { index, setIndex, next, prev, count } = useStepper(steps.length)
   const step = steps[index]
   const n = figure.levels.length
   const startIdx = n - step.depth // 現在の最も外側の層
@@ -124,11 +124,11 @@ export default function EncapFigure({ figure }: { figure: EncapFigureData }) {
         </div>
       </div>
 
-      <p className="mt-3 h-5 overflow-hidden text-sm font-black text-slate-800">{step.action}</p>
+      <p aria-live="polite" className="mt-3 h-5 overflow-hidden text-sm font-black text-slate-800">{step.action}</p>
       <p className="mt-0.5 flex h-10 items-start overflow-hidden text-xs leading-relaxed text-slate-600">{step.desc}</p>
 
       <div className="mt-2">
-        <StepperControls index={index} count={count} onPrev={prev} onNext={next} />
+        <StepperControls index={index} count={count} onPrev={prev} onNext={next} onSelect={setIndex} />
       </div>
     </FigureFrame>
   )

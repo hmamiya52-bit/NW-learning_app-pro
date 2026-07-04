@@ -11,6 +11,7 @@ import {
   RotateCcw,
 } from 'lucide-react'
 import BlockList from '../components/textbook/figures/BlockList'
+import CheckList from '../components/textbook/CheckList'
 import TextbookRichText from '../components/textbook/TextbookRichText'
 import { getTextbookChapter, textbookChapters, type TextbookChapter } from '../data/textbook'
 import {
@@ -185,6 +186,27 @@ export default function TextbookChapter() {
               <BlockList blocks={chapter.intro} />
             </div>
           )}
+
+          {chapter.sections.length > 0 && (
+            <details className="mt-4 rounded-lg border border-slate-100 bg-slate-50/70 px-3.5 py-2.5">
+              <summary className="cursor-pointer select-none text-sm font-bold text-slate-700">この章の内容</summary>
+              <ol className="mt-2 space-y-1.5">
+                {chapter.sections.map((section, index) => (
+                  <li key={section.heading}>
+                    <a
+                      href={`#textbook-section-${index + 1}`}
+                      className="flex items-start gap-2 rounded text-sm font-bold text-slate-600 hover:text-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                    >
+                      <span className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded bg-blue-50 text-[11px] font-black text-blue-700">
+                        {index + 1}
+                      </span>
+                      <span className="leading-snug">{section.heading}</span>
+                    </a>
+                  </li>
+                ))}
+              </ol>
+            </details>
+          )}
         </header>
 
         <div className="mt-5 space-y-5">
@@ -204,6 +226,16 @@ export default function TextbookChapter() {
             </section>
           ))}
         </div>
+
+        {chapter.checks && chapter.checks.length > 0 && (
+          <section className="mt-5 rounded-lg border border-slate-200 bg-white px-4 py-5 shadow-sm sm:px-5">
+            <h2 className="text-base font-black text-slate-800">理解の確認</h2>
+            <p className="mt-1 text-xs font-bold text-slate-400">答えを思い浮かべてから、開いて確かめてください</p>
+            <div className="mt-3">
+              <CheckList items={chapter.checks} badge="Q" />
+            </div>
+          </section>
+        )}
 
         {chapter.takeaways.length > 0 && (
           <section className="mt-5 rounded-lg border border-blue-100 bg-blue-50 px-5 py-5">

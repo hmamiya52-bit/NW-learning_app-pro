@@ -82,7 +82,7 @@ function Segment({
 }
 
 export default function SegmentMapFigure({ figure }: { figure: SegmentMapFigureData }) {
-  const { index, next, prev, count } = useStepper(figure.steps.length)
+  const { index, setIndex, next, prev, count } = useStepper(figure.steps.length)
   const step = figure.steps[index]
   const segs = figure.segments
   const routerHi = step.highlight === segs.length
@@ -143,10 +143,10 @@ export default function SegmentMapFigure({ figure }: { figure: SegmentMapFigureD
         </svg>
       </div>
 
-      <p className="mt-2 flex h-12 items-start text-sm leading-relaxed text-slate-700">{step.note}</p>
+      <p aria-live="polite" className="mt-2 flex h-12 items-start text-sm leading-relaxed text-slate-700">{step.note}</p>
 
       <div className="mt-2">
-        <StepperControls index={index} count={count} onPrev={prev} onNext={next} />
+        <StepperControls index={index} count={count} onPrev={prev} onNext={next} onSelect={setIndex} />
       </div>
     </FigureFrame>
   )

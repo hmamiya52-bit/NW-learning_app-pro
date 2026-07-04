@@ -17,8 +17,8 @@ const overviewTopology: Topology = {
     { id: 'srv', label: 'サーバLAN', tone: 'amber' },
   ],
   nodes: [
-    { id: 'inet', label: 'インターネット', role: 'internet', isNew: true },
-    { id: 'br', label: '境界ルータ', role: 'router', sub: '外側 203.0.113.1', isNew: true },
+    { id: 'inet', label: 'インターネット', role: 'internet' },
+    { id: 'br', label: '境界ルータ', role: 'router', sub: '外側 203.0.113.1' },
     { id: 'r1', label: 'R1', role: 'router', sub: '本社ルータ' },
     { id: 'pc', label: '業務PC', role: 'pc', zoneId: 'lan', sub: '192.168.10.10' },
     { id: 'fl2pc', label: '別フロアPC', role: 'pc', zoneId: 'fl2', sub: '192.168.30.10' },

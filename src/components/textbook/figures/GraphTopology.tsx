@@ -242,15 +242,6 @@ export default function GraphTopology({ topology, focus, blockedLink }: Props) {
                 {n.sub}
               </text>
             )}
-            {/* この章で加わったノードの「追加」チップ（右上角） */}
-            {n.isNew && (
-              <>
-                <rect x={p.x + p.w / 2 - 26} y={p.y - p.h / 2 - 7} width={26} height={14} rx={7} fill="#fffbeb" stroke="#fbbf24" strokeWidth={1} />
-                <text x={p.x + p.w / 2 - 13} y={p.y - p.h / 2 + 3.5} textAnchor="middle" fontSize="9" fontWeight="700" fill="#92400e">
-                  追加
-                </text>
-              </>
-            )}
           </g>
         )
       })}

@@ -18,7 +18,7 @@ const routeTableTopology: Topology = {
     { id: 'pc', label: '業務PC', role: 'pc', zoneId: 'lan', sub: '192.168.10.10' },
     { id: 'r1', label: 'R1', role: 'router', zoneId: 'lan', sub: '本社ルータ' },
     { id: 'fl2pc', label: '別フロアPC', role: 'pc', zoneId: 'fl2', sub: '192.168.30.10' },
-    { id: 'r2', label: 'R2', role: 'router', zoneId: 'srv', sub: 'サーバ側', isNew: true },
+    { id: 'r2', label: 'R2', role: 'router', zoneId: 'srv', sub: 'サーバ側' },
     { id: 'web', label: 'Webサーバ', role: 'server', zoneId: 'srv', sub: '172.16.0.20' },
   ],
   links: [

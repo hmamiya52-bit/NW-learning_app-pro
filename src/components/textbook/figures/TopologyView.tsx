@@ -32,8 +32,8 @@ function buildGroups(nodes: TopoNode[], zones: TopoZone[]): Group[] {
   return groups
 }
 
-// ラベル付きパケットが回線上を1区間ぶん流れる（長い回線で余白を確保＝文字に重ならない／有限アニメ）。
-function TravelingPacket({ narrow, label, reverse }: { narrow: boolean; label: string; reverse: boolean }) {
+// パケットが回線上を1区間ぶん流れる（有限アニメ）。線上を動くのは小さな封筒マークだけ。
+function TravelingPacket({ narrow, reverse }: { narrow: boolean; reverse: boolean }) {
   const [moved, setMoved] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches)
   useEffect(() => {
     if (moved) return
@@ -49,13 +49,40 @@ function TravelingPacket({ narrow, label, reverse }: { narrow: boolean; label: s
     : { top: '50%', left: pos, transform: 'translate(-50%, -50%)', transition: 'left .7s ease' }
 
   return (
+    <span className="pointer-events-none absolute z-10" style={style} aria-hidden="true">
+      <span className="flex h-5 w-6 items-center justify-center rounded-md border-2 border-blue-500 bg-white shadow-sm">
+        <Mail className="h-3 w-3 text-blue-700" />
+      </span>
+    </span>
+  )
+}
+
+// アドレス:ポートなどのラベルは、線やノードを覆わない吹き出しに分けて回線の中央に固定表示する
+// （マークが線上を通過し、吹き出しが内容を示す）。「送信元/宛先 ＋ 値」は2行に分けて幅を抑える。
+function PacketBubble({ narrow, label }: { narrow: boolean; label: string }) {
+  const split = label.match(/^(送信元|宛先) (.+)$/)
+  return (
     <span
-      className="pointer-events-none absolute z-10 inline-flex items-center gap-1 whitespace-nowrap rounded-md border-2 border-blue-500 bg-white px-1.5 py-0.5 text-[10px] font-black text-blue-700 shadow-sm"
-      style={style}
+      className={`pointer-events-none absolute z-20 flex flex-col items-center whitespace-nowrap rounded-md border border-blue-400 bg-white px-1 py-0.5 leading-tight shadow-sm ${
+        narrow ? 'left-[calc(50%+16px)] top-1/2 -translate-y-1/2' : 'bottom-[calc(50%+16px)] left-1/2 -translate-x-1/2'
+      }`}
       aria-hidden="true"
     >
-      <Mail className="h-3 w-3" />
-      {label}
+      {split ? (
+        <>
+          <span className="text-[9px] font-black text-blue-500">{split[1]}</span>
+          <span className="text-[10px] font-black tracking-tight text-blue-700">{split[2]}</span>
+        </>
+      ) : (
+        <span className="text-[10px] font-black text-blue-700">{label}</span>
+      )}
+      <span
+        className={`absolute h-0 w-0 ${
+          narrow
+            ? '-left-[6px] top-1/2 -translate-y-1/2 border-y-4 border-y-transparent border-r-[6px] border-r-blue-400'
+            : '-bottom-[6px] left-1/2 -translate-x-1/2 border-x-4 border-x-transparent border-t-[6px] border-t-blue-400'
+        }`}
+      />
     </span>
   )
 }
@@ -80,7 +107,12 @@ function Connector({
           narrow ? 'left-1/2 top-0 h-full w-[3px] -translate-x-1/2' : 'left-0 top-1/2 h-[3px] w-full -translate-y-1/2'
         } ${focused ? 'bg-blue-500' : 'bg-slate-300'}`}
       />
-      {packetLabel && <TravelingPacket key={stepKey} narrow={narrow} label={packetLabel} reverse={reverse} />}
+      {packetLabel && (
+        <>
+          <TravelingPacket key={stepKey} narrow={narrow} reverse={reverse} />
+          <PacketBubble narrow={narrow} label={packetLabel} />
+        </>
+      )}
     </div>
   )
 }
@@ -180,7 +212,12 @@ function ZoneFocusView({ topology, focus, packetLabel, stepKey, zoneId }: Props)
               items.push(
                 <div key={`c-${node.id}`} className="relative mx-auto h-7 w-full" aria-hidden="true">
                   <div className={`absolute left-1/2 top-0 h-full w-[3px] -translate-x-1/2 rounded-full ${active ? 'bg-blue-500' : 'bg-slate-300'}`} />
-                  {active && <TravelingPacket key={stepKey} narrow label={packetLabel} reverse={false} />}
+                  {active && (
+                    <>
+                      <TravelingPacket key={stepKey} narrow reverse={false} />
+                      {packetLabel && <PacketBubble narrow label={packetLabel} />}
+                    </>
+                  )}
                 </div>,
               )
             }
@@ -249,6 +286,7 @@ export default function TopologyView({ topology, focus, packetLabel, stepKey, zo
             <div
               key={group.key}
               className={`relative flex ${narrow ? 'w-full flex-col' : 'flex-row flex-wrap'} items-center justify-center gap-1.5 rounded-xl border-2 border-dashed ${tone.border} ${tone.fill} px-2.5 pb-1.5 pt-5`}
+              style={narrow ? undefined : { flexGrow: group.nodes.length > 1 ? group.nodes.length : 0 }}
             >
               <span className={`absolute -top-2.5 left-3 rounded bg-white px-1.5 text-[10px] font-black ${tone.text}`}>
                 {group.zone.label}
@@ -258,7 +296,11 @@ export default function TopologyView({ topology, focus, packetLabel, stepKey, zo
           )
         } else {
           items.push(
-            <div key={group.key} className={`flex ${narrow ? 'w-full flex-col' : 'flex-row'} items-center gap-1.5`}>
+            <div
+              key={group.key}
+              className={`flex ${narrow ? 'w-full flex-col' : 'flex-row'} items-center justify-center gap-1.5`}
+              style={narrow ? undefined : { flexGrow: group.nodes.length > 1 ? group.nodes.length : 0 }}
+            >
               {inner}
             </div>,
           )

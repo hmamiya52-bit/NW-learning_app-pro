@@ -105,8 +105,6 @@ export interface TopoNode {
   role: NodeRole
   zoneId?: string
   sub?: string // IP など
-  // この章で構成図に新しく加わったノード（graph 描画で「追加」チップを表示）。
-  isNew?: boolean
 }
 
 export interface TopoLink {

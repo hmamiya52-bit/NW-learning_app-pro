@@ -17,8 +17,8 @@ const overviewTopology: Topology = {
     { id: 'srv', label: 'サーバLAN', tone: 'amber' },
   ],
   nodes: [
-    { id: 'inet', label: 'インターネット', role: 'internet' },
-    { id: 'br', label: '境界ルータ', role: 'router', sub: '外側 203.0.113.1' },
+    { id: 'inet', label: 'インターネット', role: 'internet', isNew: true },
+    { id: 'br', label: '境界ルータ', role: 'router', sub: '外側 203.0.113.1', isNew: true },
     { id: 'r1', label: 'R1', role: 'router', sub: '本社ルータ' },
     { id: 'pc', label: '業務PC', role: 'pc', zoneId: 'lan', sub: '192.168.10.10' },
     { id: 'fl2pc', label: '別フロアPC', role: 'pc', zoneId: 'fl2', sub: '192.168.30.10' },
@@ -114,7 +114,7 @@ const NAT_TWO = [
 
 const naptTopology: Topology = {
   zones: [
-    { id: 'lan', label: '内部LAN', tone: 'sky' },
+    { id: 'lan', label: '内部LAN 192.168.10.0/24', tone: 'sky' },
     { id: 'edge', label: 'インターネット境界', tone: 'violet' },
     { id: 'inet', label: 'インターネット', tone: 'slate' },
   ],
@@ -193,14 +193,14 @@ const naptFigure: PacketFlowFigure = {
     },
     {
       focus: { type: 'link', a: 'extweb', b: 'br' },
-      packetLabel: 'あて先 203.0.113.1:62000',
+      packetLabel: '宛先 203.0.113.1:62000',
       headers: { l2: '', l3: '' },
       tableRows: NAT_TWO,
       explanation: 'サーバは 203.0.113.1:62000 あてに応答。相手から見えるのは、境界ルータの外側の住所だけです。',
     },
     {
       focus: { type: 'node', id: 'br' },
-      packetLabel: 'あて先 192.168.10.10:51000',
+      packetLabel: '宛先 192.168.10.10:51000',
       headers: { l2: '', l3: '' },
       tableRows: NAT_TWO,
       tableHighlightRow: 0,
@@ -208,7 +208,7 @@ const naptFigure: PacketFlowFigure = {
     },
     {
       focus: { type: 'link', a: 'r1', b: 'pc' },
-      packetLabel: 'あて先 192.168.10.10:51000',
+      packetLabel: '宛先 192.168.10.10:51000',
       headers: { l2: '', l3: '' },
       tableRows: NAT_TWO,
       explanation: '社内の住所に戻った応答が、行きと逆の道で業務PCへ。NAPTの変換表が、往復を1本につなぎました。',
@@ -310,8 +310,8 @@ const natDirectionFigure: RecordTableFigure = {
     { key: 'keep', label: '変わらないもの' },
   ],
   rows: [
-    { dir: '行き（社内→社外）', chg: '送信元IPとポート（プライベート→グローバル）', keep: 'あて先IPとポート' },
-    { dir: '戻り（社外→社内）', chg: 'あて先IPとポート（グローバル→プライベート）', keep: '送信元IPとポート' },
+    { dir: '行き（社内→社外）', chg: '送信元IPとポート（プライベート→グローバル）', keep: '宛先IPとポート' },
+    { dir: '戻り（社外→社内）', chg: '宛先IPとポート（グローバル→プライベート）', keep: '送信元IPとポート' },
   ],
 }
 
@@ -321,7 +321,7 @@ export const ch08InternetNatBgp: TextbookChapter = {
   title: 'インターネット接続・NAT・BGP',
   summary: '社内のプライベートIPと世界のグローバルIP、境界ルータでのNAPT変換、AS・BGPによる世界規模の経路交換——構成図をインターネットまで広げて理解します。',
   status: 'published',
-  estimatedMinutes: 18,
+  estimatedMinutes: 20,
   intro: [
     {
       kind: 'text',
@@ -378,11 +378,11 @@ export const ch08InternetNatBgp: TextbookChapter = {
       blocks: [
         {
           kind: 'text',
-          text: 'プライベートIPのまま、外には出られません。そこで[[blue:境界ルータ]]が、出ていく通信の[[blue:送信元IPとポート番号]]を、自分のグローバルIPと空きポートに書き換えます。IPだけを1対1で変換する仕組みが[[blue:NAT]]、ポートも使って多数の通信を1つのグローバルIPで共有させる方式が[[blue:NAPT]]です。',
+          text: 'プライベートIPのまま、外には出られません。そこで[[blue:境界ルータ]]が、出ていく通信の[[blue:送信元IPとポート番号]]を、自分のグローバルIPと空きポートに書き換えます。IPだけを1対1で変換する仕組みが[[blue:NAT]]、ポートも使って多数の通信を1つのグローバルIPで共有させる方式が[[blue:NAPT]]（IPマスカレードとも呼びます）です。',
         },
         {
           kind: 'text',
-          text: '書き換えた対応は[[blue:変換表]]に記録します。戻ってきた応答は変換表を引き、あて先を元の社内IP:ポートへ[[blue:書き戻し]]。この往復の対応づけがNAPTの心臓部です。',
+          text: '書き換えた対応は[[blue:変換表]]に記録します。戻ってきた応答は変換表を引き、あて先を元の社内IP:ポートへ[[blue:書き戻し]]。この往復の対応づけがNAPTの心臓部です。なお図では 192.168.10.10:51000 のように、IPアドレスとポート番号をコロンでつないで書きます。',
         },
         { kind: 'figure', figure: naptFigure },
         {
@@ -429,6 +429,16 @@ export const ch08InternetNatBgp: TextbookChapter = {
           kind: 'text',
           text: '外から公開サーバあての通信（静的NATの出番）では、[[blue:戻り経路]]——応答がどの経路で・どの住所で帰るか——も問われます。公開サーバの置き場所（DMZ）とあわせて、第9章で完成させます。',
         },
+        {
+          kind: 'check',
+          label: '設問例',
+          items: [
+            {
+              question: 'NAPTの変換表に「192.168.10.10:51000 → 203.0.113.1:62000」の行があるとき、社外Webサーバが受信したパケットの送信元IPアドレスとポート番号は何か。',
+              answer: '203.0.113.1:62000。行き（社内→社外）では送信元が書き換わり、相手に見えるのは境界ルータの外側の住所だけです。',
+            },
+          ],
+        },
       ],
     },
   ],
@@ -438,5 +448,19 @@ export const ch08InternetNatBgp: TextbookChapter = {
     '第1章の「あて先IPは基本変わらない」の例外が[[blue:NAT]]。行きは送信元・戻りはあて先が書き換わります（午後頻出）。',
     'インターネットは[[blue:AS]]（組織ごとのネットワークのかたまり）の集まりで、AS間の経路交換が[[blue:BGP]]。名前と役割だけで十分です。',
     '外から始まる通信は変換表に無く、そのままでは入れません。公開サーバに使う[[blue:静的NAT]]は、第9章のDMZとセットで扱います。',
+  ],
+  checks: [
+    {
+      question: 'プライベートIPの3つの範囲は？',
+      answer: '10.0.0.0/8・172.16.0.0/12・192.168.0.0/16。',
+    },
+    {
+      question: 'NAPTで、多数のPCが1つのグローバルIPを共有できる鍵は何か。',
+      answer: 'ポート番号。境界ルータが通信ごとに別のポートへ書き換え、変換表で対応づけます。',
+    },
+    {
+      question: '社外から始まる通信が、NAPTの境界をそのままでは越えられないのはなぜか。',
+      answer: '変換表に対応する行が無いから。外から受けたい公開サーバには静的NATを使います（第9章）。',
+    },
   ],
 }

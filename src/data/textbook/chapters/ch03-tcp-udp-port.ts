@@ -5,8 +5,8 @@ import type { RecordTableFigure, SequenceFigure, TextbookChapter } from '../type
 const handshakeFigure: SequenceFigure = {
   kind: 'sequence',
   id: 'ch3-3way',
-  title: 'つなぐ（3wayハンドシェイク）',
-  caption: 'データを送る前の、つなぐための3往復（SYN→SYN・ACK→ACK）。',
+  title: 'つなぐ（3ウェイハンドシェイク）',
+  caption: 'データを送る前の、つなぐための3往復（SYN→SYN/ACK→ACK）。',
   takeaway: '送る前にまず「つなぐ」。3往復で互いの準備を確かめます。',
   actors: [
     { id: 'pc', label: 'PC', role: 'pc' },
@@ -22,7 +22,7 @@ const handshakeFigure: SequenceFigure = {
     {
       from: 'web',
       to: 'pc',
-      label: '② SYN・ACK',
+      label: '② SYN/ACK',
       note: 'Webサーバが「いいですよ。そちらも準備できていますか？」と応えます。',
     },
     {
@@ -102,9 +102,9 @@ export const ch03TcpUdpPort: TextbookChapter = {
   id: 'tcp-udp-port',
   order: 3,
   title: 'TCP・UDPとポート番号',
-  summary: 'コネクションを張るTCPの3wayハンドシェイク、UDPとの違い、ポートでの通信の見分け方を読めるようにします。',
+  summary: 'コネクションを張るTCPの3ウェイハンドシェイク、UDPとの違い、ポートでの通信の見分け方を読めるようにします。',
   status: 'published',
-  estimatedMinutes: 18,
+  estimatedMinutes: 15,
   intro: [
     {
       kind: 'text',
@@ -112,12 +112,12 @@ export const ch03TcpUdpPort: TextbookChapter = {
     },
     {
       kind: 'text',
-      text: 'データをいきなり送りつけるのではなく、TCPはまず[[blue:つなぐ]]作業から始めます。つないでから送る ―― その仕組みと、似て非なるUDP、そして通信を見分ける[[amber:ポート]]を扱います。',
+      text: 'データをいきなり送りつけるのではなく、TCPはまず[[blue:つなぐ]]作業から始めます。つないでから送る——その仕組みと、似て非なるUDP、そして通信を見分ける[[amber:ポート]]を扱います。',
     },
   ],
   sections: [
     {
-      heading: 'まず「つなぐ」 ―― 3wayハンドシェイク',
+      heading: 'まず「つなぐ」——3ウェイハンドシェイク',
       blocks: [
         {
           kind: 'text',
@@ -125,9 +125,13 @@ export const ch03TcpUdpPort: TextbookChapter = {
         },
         {
           kind: 'text',
-          text: 'これが3wayハンドシェイク。SYN（つなぎたい）→ SYN・ACK（いいですよ、そちらは）→ ACK（こちらもOK）の3往復で接続が成立し、ここからデータを送れます。',
+          text: 'これが3ウェイハンドシェイク。SYN（つなぎたい）→ SYN/ACK（いいですよ、そちらは）→ ACK（こちらもOK）の3往復で接続が成立し、ここからデータを送れます。',
         },
         { kind: 'figure', figure: handshakeFigure },
+        {
+          kind: 'text',
+          text: '終わるときにも合図があります。FINという「終わりたい」の合図を交わして、接続を閉じます。始まりも終わりも、合図で確かめ合うのがTCPです。',
+        },
       ],
     },
     {
@@ -139,7 +143,7 @@ export const ch03TcpUdpPort: TextbookChapter = {
         },
         {
           kind: 'text',
-          text: '対するUDPは、確認も送り直しもしません。届いたかは気にせず、軽く速く送ります。取りこぼしてもよいから速さがほしい通信 ―― 音声や動画、DNSの問い合わせ ―― に向きます。',
+          text: '対するUDPは、確認も送り直しもしません。届いたかは気にせず、軽く速く送ります。取りこぼしてもよいから速さがほしい通信——音声や動画、DNSの問い合わせ——に向きます。',
         },
         { kind: 'figure', figure: tcpUdpFigure },
         {
@@ -151,15 +155,15 @@ export const ch03TcpUdpPort: TextbookChapter = {
       ],
     },
     {
-      heading: 'どのサービスへ？ ―― ポートと5つの情報',
+      heading: 'どのサービスへ？——ポートと5つの情報',
       blocks: [
         {
           kind: 'text',
-          text: '1台のサーバでは、Webやメールなど複数のサービスが同時に動いています。届いたデータをどのサービスへ渡すか ―― それを決めるのが[[amber:ポート番号]]です。443ならHTTPS、というように、よく使う番号は決まっています（ウェルノウンポート）。',
+          text: '1台のサーバでは、Webやメールなど複数のサービスが同時に動いています。届いたデータをどのサービスへ渡すか——それを決めるのが[[amber:ポート番号]]です。443ならHTTPS、というように、よく使う番号は決まっています（ウェルノウンポート）。',
         },
         {
           kind: 'text',
-          text: '宛先ポートで「相手のどのサービスか」、送信元ポートで「自分のどの通信か」を区別します。結局、1本の通信は次の5つで一意に決まります ―― [[blue:送信元IP・宛先IP・プロトコル・送信元ポート・宛先ポート]]。この5つの組み合わせで、通信を1本ずつ区別できます。',
+          text: '宛先ポートで「相手のどのサービスか」、送信元ポートで「自分のどの通信か」を区別します。送信元ポートは、PCが通信のたびに空いている番号から自動で選びます（エフェメラルポート）。結局、1本の通信は次の5つで一意に決まります——[[blue:送信元IP・宛先IP・プロトコル・送信元ポート・宛先ポート]]。',
         },
         { kind: 'figure', figure: tupleFigure },
         {
@@ -175,14 +179,14 @@ export const ch03TcpUdpPort: TextbookChapter = {
       blocks: [
         {
           kind: 'text',
-          text: 'ポート番号は数えきれないほどありますが、午後で問われる顔ぶれは決まっています。とくにファイアウォールの許可ルールは、この番号で「何を通すか」を書きます。応用情報レベルで絶対に押さえる分だけ、ここで覚えてしまいましょう。',
+          text: 'ポート番号は数えきれないほどありますが、午後で問われる顔ぶれは決まっています。とくにファイアウォールの許可ルールは、この番号で「何を通すか」を書きます。応用情報レベルで絶対に押さえる分だけ、ここで覚えてしまいましょう。なお表にあるDMZは、社外に公開するサーバを内部から切り離して置く区画のこと（詳しくは第9章）。',
         },
         { kind: 'figure', figure: portsFigure },
         {
           kind: 'callout',
           tone: 'tip',
           title: 'DMZに置くサーバを意識する',
-          body: '社外に公開するWeb・メール・DNSは、内部から切り離したDMZに置きます（第9章）。そのため「外からDMZの80・443・25・53は許可、内部へは通さない」という形の許可ルールを読むことになります。ポートとDMZをセットで覚えると、FW問題が一気に読めます。',
+          body: '公開用のWeb・メール・DNSがDMZに集まるため、午後では「外からDMZの80・443・25・53は許可、内部へは通さない」という形の許可ルールを読むことになります。ポートとDMZをセットで覚えると、FW問題が一気に読めます。',
         },
       ],
     },
@@ -199,15 +203,39 @@ export const ch03TcpUdpPort: TextbookChapter = {
           title: '後半セキュリティ章の土台',
           body: 'ファイアウォールの許可ルールも、NATの変換表も、見ているのはこの5つの情報。さらにTCPには「つながっている最中（ESTABLISHED）」という状態があり、これを利用した制御を第9章で扱います。ポートとこの5つは、後半の土台です。',
         },
+        {
+          kind: 'check',
+          label: '設問例',
+          items: [
+            {
+              question: '同じPCから同じサーバへ、HTTPS通信を2本同時に張っています。この2本を見分けられる情報は、5つのうちどれか。',
+              answer: '送信元ポート番号。残りの4つ（送信元IP・宛先IP・プロトコル・宛先ポート）は2本とも同じです。',
+            },
+          ],
+        },
       ],
     },
   ],
   takeaways: [
-    'TCPは3wayハンドシェイクで、つないでからデータを送ります。',
+    'TCPは3ウェイハンドシェイクで、つないでからデータを送ります。',
     'TCP＝確実（確認・順序・再送）、UDP＝軽快（確認しない）。速さがほしい通信はUDP。',
     'ポート番号で相手のサービスを指定（[[amber:443＝HTTPS]]）。よく使う番号は決まっています。',
     '1本の通信は次の5つ（[[blue:送信元IP・宛先IP・プロトコル・送信元ポート・宛先ポート]]）で一意。',
     '同じ相手への複数同時通信は、送信元ポートで見分けます。NAT・FWの土台。',
-    'FW頻出の代表ポートはDMZとセットで ―― Web 80/443・メール 25/110/143・DNS 53・FTP 20/21・SSH 22/Telnet 23。',
+    'FW頻出の代表ポートはDMZとセットで——Web 80/443・メール 25/110/143・DNS 53・FTP 20/21・SSH 22/Telnet 23。',
+  ],
+  checks: [
+    {
+      question: '3ウェイハンドシェイクの3つの合図を、順に挙げると？',
+      answer: 'SYN → SYN/ACK → ACK。つないでから、データを送ります。',
+    },
+    {
+      question: '音声・動画やDNSの問い合わせにUDPが向くのは、なぜか。',
+      answer: '確認も再送もしない軽い運び方だから。やり直すより速さが大事な通信に合います。',
+    },
+    {
+      question: '1本の通信を一意に決める「5つの情報」とは何か。',
+      answer: '送信元IP・宛先IP・プロトコル・送信元ポート・宛先ポート。',
+    },
   ],
 }

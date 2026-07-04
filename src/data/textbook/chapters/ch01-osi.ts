@@ -43,25 +43,25 @@ const arpFigure: PacketFlowFigure = {
     {
       focus: { type: 'link', a: 'pc', b: 'l2sw' },
       packetLabel: 'ARP要求',
-      headers: { l2: 'あて先MAC = 全員あて（ブロードキャスト）', l3: 'IPヘッダなし（ARPはL2で動く）' },
+      headers: { l2: '宛先MAC = 全員あて（ブロードキャスト）', l3: 'IPヘッダなし（ARPはL2で動く）' },
       explanation: 'PCが「192.168.10.1のMACを教えて」と、同じLANの全員へ問い合わせます。',
     },
     {
       focus: { type: 'link', a: 'l2sw', b: 'l3sw' },
       packetLabel: 'ARP要求',
-      headers: { l2: 'あて先MAC = 全員あて（ブロードキャスト）', l3: 'IPヘッダなし' },
+      headers: { l2: '宛先MAC = 全員あて（ブロードキャスト）', l3: 'IPヘッダなし' },
       explanation: 'L2SWは全員あてのフレームを、同じLANの全ポートへ配ります。',
     },
     {
       focus: { type: 'link', a: 'l3sw', b: 'l2sw' },
       packetLabel: 'ARP応答',
-      headers: { l2: 'あて先MAC = PC', l3: 'IPヘッダなし' },
+      headers: { l2: '宛先MAC = PC', l3: 'IPヘッダなし' },
       explanation: 'デフォルトゲートウェイが「私です」と応答。今度は全員あてではなく、PCあての1対1です。',
     },
     {
       focus: { type: 'link', a: 'l2sw', b: 'pc' },
       packetLabel: 'ARP応答',
-      headers: { l2: 'あて先MAC = PC', l3: 'IPヘッダなし' },
+      headers: { l2: '宛先MAC = PC', l3: 'IPヘッダなし' },
       explanation: 'PCはそのMACを受け取って記録。これで最初のフレームを作れる状態になりました。',
     },
   ],
@@ -78,28 +78,28 @@ const webFlowFigure: PacketFlowFigure = {
     {
       focus: { type: 'link', a: 'pc', b: 'l2sw' },
       packetLabel: 'TCP SYN',
-      headers: { l2: 'あて先MAC = ルータ', l3: 'あて先IP = 172.16.0.20（Webサーバ）', l4: 'あて先ポート = 443' },
+      headers: { l2: '宛先MAC = ルータ', l3: '宛先IP = 172.16.0.20（Webサーバ）', l4: '宛先ポート = 443' },
       status: { l2: 'same', l3: 'same', l4: 'same' },
       explanation: 'あて先IPはWebサーバのまま、最初のあて先MACをルータにして送り出します。',
     },
     {
       focus: { type: 'link', a: 'l2sw', b: 'l3sw' },
       packetLabel: 'TCP SYN',
-      headers: { l2: 'あて先MAC = ルータ', l3: 'あて先IP = 172.16.0.20', l4: 'あて先ポート = 443' },
+      headers: { l2: '宛先MAC = ルータ', l3: '宛先IP = 172.16.0.20', l4: '宛先ポート = 443' },
       status: { l2: 'same', l3: 'same', l4: 'same' },
       explanation: 'L2SWはあて先MACを見て中継するだけ。ヘッダは書き換えません。',
     },
     {
       focus: { type: 'node', id: 'l3sw' },
       packetLabel: 'MACを付け替え',
-      headers: { l2: 'あて先MAC = Webサーバ（書き換え）', l3: 'あて先IP = 172.16.0.20（そのまま）', l4: 'あて先ポート = 443' },
+      headers: { l2: '宛先MAC = Webサーバ（書き換え）', l3: '宛先IP = 172.16.0.20（そのまま）', l4: '宛先ポート = 443' },
       status: { l2: 'change', l3: 'same', l4: 'same' },
       explanation: 'ルータはL2を外し、あて先IPで進む道を選んで、新しいL2を付け直します。',
     },
     {
       focus: { type: 'link', a: 'l3sw', b: 'web' },
       packetLabel: 'TCP SYN',
-      headers: { l2: 'あて先MAC = Webサーバ', l3: 'あて先IP = 172.16.0.20', l4: 'あて先ポート = 443' },
+      headers: { l2: '宛先MAC = Webサーバ', l3: '宛先IP = 172.16.0.20', l4: '宛先ポート = 443' },
       status: { l2: 'same', l3: 'same', l4: 'same' },
       explanation: '新しいフレームでWebサーバへ到着。あて先IPは出発時からずっと同じです。',
     },
@@ -119,7 +119,7 @@ export const ch01Osi: TextbookChapter = {
   title: 'OSI参照モデルと通信の全体像',
   summary: '小さな構成図の上でパケットを動かしながら、L2/L3/L4・カプセル化・ARPを最初からつなげて理解します。',
   status: 'published',
-  estimatedMinutes: 25,
+  estimatedMinutes: 20,
   intro: [
     {
       kind: 'text',
@@ -136,7 +136,7 @@ export const ch01Osi: TextbookChapter = {
   ],
   sections: [
     {
-      heading: 'まず全体の地図をつくる ―― OSI参照モデル',
+      heading: 'まず全体の地図をつくる——OSI参照モデル',
       blocks: [
         {
           kind: 'text',
@@ -144,7 +144,7 @@ export const ch01Osi: TextbookChapter = {
         },
         {
           kind: 'text',
-          text: '層は全部で7つ。ただし、今すぐ全部を覚える必要はありません。この章の主役は、下の4つ ―― L1・[[green:L2]]・[[blue:L3]]・[[amber:L4]]です。上の3つ（L5〜L7）は、名前と位置だけ確認して先へ進みます。',
+          text: '層は全部で7つ。ただし、今すぐ全部を覚える必要はありません。この章の主役は、下の4つ——L1・[[green:L2]]・[[blue:L3]]・[[amber:L4]]です。上の3つ（L5〜L7）は、名前と位置だけ確認して先へ進みます。',
         },
         {
           kind: 'figure',
@@ -209,7 +209,7 @@ export const ch01Osi: TextbookChapter = {
         },
         {
           kind: 'text',
-          text: '結論から言えば ―― [[green:MACアドレスは「すぐ隣の相手」]]、[[blue:IPアドレスは「最終的な相手」]]、[[amber:ポート番号は「相手の中のどのアプリか」]]。',
+          text: '結論から言えば——[[green:MACアドレスは「すぐ隣の相手」]]、[[blue:IPアドレスは「最終的な相手」]]、[[amber:ポート番号は「相手の中のどのアプリか」]]。',
         },
         {
           kind: 'figure',
@@ -220,7 +220,7 @@ export const ch01Osi: TextbookChapter = {
             caption: '3つのあて名を、同じ目線で並べました。',
             takeaway: '[[green:MACは区間ごとに変わり]]、[[blue:IPは基本そのまま]]。この違いが次の節で効いてきます。',
             rows: [
-              { name: 'MACアドレス', layer: 'L2', carries: 'すぐ隣の相手', scope: '同じリンクの中だけ。ルータを越えるたびに次の区間用へ付け替え', example: '00:11:22:33:44:55', tone: 'emerald' },
+              { name: 'MACアドレス', layer: 'L2', carries: 'すぐ隣の相手', scope: '同じリンクの中だけ。ルータを越えるたびに次の区間用へ付け替え', example: '00-11-22-33-44-55', tone: 'emerald' },
               { name: 'IPアドレス', layer: 'L3', carries: '最終的な相手', scope: '端から端まで。途中では基本的に不変', example: '172.16.0.20', tone: 'blue' },
               { name: 'ポート番号', layer: 'L4', carries: '相手の中のアプリ', scope: '相手の端末の中。443ならHTTPS', example: 'TCP/443', tone: 'amber' },
             ],
@@ -229,7 +229,7 @@ export const ch01Osi: TextbookChapter = {
       ],
     },
     {
-      heading: 'LANの外へ出る前に ―― デフォルトゲートウェイとARP',
+      heading: 'LANの外へ出る前に——デフォルトゲートウェイとARP',
       blocks: [
         {
           kind: 'text',
@@ -293,6 +293,16 @@ export const ch01Osi: TextbookChapter = {
           title: '実務でも順番は同じ',
           body: '障害の切り分けも同じ考え方です。デフォルトゲートウェイまで届いているか、名前解決（名前からIPを調べる手順）はできているか、相手のポートは開いているか。層で分けると、どこを調べればよいかが見えてきます。',
         },
+        {
+          kind: 'check',
+          label: '設問例',
+          items: [
+            {
+              question: 'PC（192.168.10.0/24）から別セグメントのWebサーバ（172.16.0.20）へ送るとき、PCが送出するフレームの宛先MACアドレスはどの機器のものか。',
+              answer: 'デフォルトゲートウェイ（ルータ）のもの。[[blue:宛先IP]]はWebサーバのまま変わらない、という対称もあわせて問われます。',
+            },
+          ],
+        },
       ],
     },
   ],
@@ -302,5 +312,19 @@ export const ch01Osi: TextbookChapter = {
     '[[green:MACはすぐ隣]]・[[blue:IPは最終的な相手]]・[[amber:ポートは相手の中のアプリ]]。',
     '別ネットワーク宛ての最初のあて先MACは、相手ではなくデフォルトゲートウェイ（LANの出口にあるルータ）。',
     'ルータを越えても変わらない[[blue:あて先IP]]、区間ごとに書き換わる[[green:MAC]]。',
+  ],
+  checks: [
+    {
+      question: 'ルータを1台越えるたびに変わるあて名と、端から端まで変わらないあて名は、それぞれどれか。',
+      answer: '変わるのは[[green:MACアドレス]]（区間ごとに付け替え）、変わらないのは[[blue:IPアドレス]]。',
+    },
+    {
+      question: 'L2SWとルータは、それぞれ何を見て転送先を決めるか。',
+      answer: 'L2SWは[[green:宛先MAC]]、ルータは[[blue:宛先IP]]。機器ごとに見る情報（層）が違います。',
+    },
+    {
+      question: 'データを送るとき、L4→L3→L2の順にヘッダで包んでいく作業を何と呼ぶか。',
+      answer: 'カプセル化。受け取った側は逆の順で外します（デカプセル化）。',
+    },
   ],
 }

@@ -156,7 +156,7 @@ const vlanFlowFigure: PacketFlowFigure = {
 const stormFigure: PacketFlowFigure = {
   kind: 'packet-flow',
   id: 'ch5-storm',
-  title: 'STPがないと――ループでストーム',
+  title: 'STPがないと——ループでストーム',
   caption: 'SW1とSW2は2本のケーブルでつないでいます（冗長）。1回のブロードキャストが回り続けます。',
   takeaway: 'ループがあると、1回のブロードキャストが[[red:増え続けて]]ネットワークを埋め尽くします（ブロードキャストストーム）。',
   topology: stpTopology,
@@ -191,7 +191,7 @@ const stormFigure: PacketFlowFigure = {
 const stpFigure: PacketFlowFigure = {
   kind: 'packet-flow',
   id: 'ch5-stp',
-  title: 'STPあり――片方を止めて1本道に',
+  title: 'STPあり——片方を止めて1本道に',
   caption: 'STPが片方のポートをブロックし、ループのない1本道に整えます。',
   takeaway: '物理的に2本でも、STPが片方を止めて[[blue:論理的に1本]]に。だからループが起きません。',
   topology: stpTopology,
@@ -226,7 +226,7 @@ export const ch05L2VlanStp: TextbookChapter = {
   title: 'L2スイッチング・VLAN・STP',
   summary: 'L2スイッチのMAC学習、VLANによる分割、STPによるループ防止を、構成図の上で動かしながら理解します。',
   status: 'published',
-  estimatedMinutes: 18,
+  estimatedMinutes: 15,
   intro: [
     {
       kind: 'text',
@@ -243,7 +243,7 @@ export const ch05L2VlanStp: TextbookChapter = {
       blocks: [
         {
           kind: 'text',
-          text: '第1章で、L2スイッチは「MACアドレスを見て中継する機器」として登場しました。では、宛先のMACを見たあと、どのポートへ送ればよいと、どうやって分かるのでしょうか。',
+          text: 'L2スイッチの仕事は、宛先MACを見て正しいポートへ中継すること。では、どのポートへ送ればよいと、どうやって分かるのでしょうか。',
         },
         {
           kind: 'text',
@@ -271,7 +271,7 @@ export const ch05L2VlanStp: TextbookChapter = {
         },
         {
           kind: 'text',
-          text: '各ポートには「このポートはVLAN10」のようにVLANを割り当てます（アクセスポート）。スイッチをまたぐときは、1本の線に複数のVLANをまとめて流す[[amber:トランク]]を使い、どのVLANのフレームかを[[amber:タグ（付箋）]]で見分けます（タグVLAN、IEEE802.1Q）。',
+          text: '各ポートには「このポートはVLAN10」のようにVLANを割り当てます（アクセスポート）。スイッチをまたぐときは、1本の線に複数のVLANをまとめて流す[[amber:トランク]]を使い、どのVLANのフレームかを[[amber:タグ（付箋）]]で見分けます（タグVLAN、IEEE802.1Q）。タグを付けずに運ぶ特別扱い（ネイティブVLAN）もありますが、名前だけで十分です。',
         },
         { kind: 'figure', figure: vlanFlowFigure },
         {
@@ -328,7 +328,17 @@ export const ch05L2VlanStp: TextbookChapter = {
           kind: 'callout',
           tone: 'info',
           title: '第7章への橋渡し',
-          body: '別のVLANどうしの通信は、L3（IPでのルーティング）を通る必要があります。「VLANで分けた先を、どうつなぎ直すか」は、次の第6章（アドレス設計）と第7章（ルーティング）で扱います。L2で分け、L3でつなぐ――この役割分担が、午後の構成図を読む土台になります。',
+          body: '別のVLANどうしの通信は、L3（IPでのルーティング）を通る必要があります。「VLANで分けた先を、どうつなぎ直すか」は、次の第6章（アドレス設計）と第7章（ルーティング）で扱います。L2で分け、L3でつなぐ——この役割分担が、午後の構成図を読む土台になります。',
+        },
+        {
+          kind: 'check',
+          label: '設問例',
+          items: [
+            {
+              question: 'L2スイッチが、宛先MACアドレスをまだ学習していないフレームを受け取ったときの動作は何か。',
+              answer: 'フラッディング——届いたポート以外の全ポートへ配ります。相手が応答すれば学習し、次からはユニキャストです。',
+            },
+          ],
         },
       ],
     },
@@ -340,5 +350,19 @@ export const ch05L2VlanStp: TextbookChapter = {
     'スイッチをまたいでVLANを運ぶ線がトランク、どのVLANかを見分ける付箋がタグ（IEEE802.1Q）。',
     'STPは冗長リンクのループを[[blue:論理的に1本]]に整え、ブロードキャストストームを防ぎます。',
     '別のVLANどうしはL3でつなぎます（第7章へ）。「L2で分け、L3でつなぐ」が午後の土台。',
+  ],
+  checks: [
+    {
+      question: 'MACアドレステーブルは、何と何の対応を覚える表か。',
+      answer: '送信元MACアドレスと、フレームが入ってきたポート。',
+    },
+    {
+      question: 'VLANが論理的に分割する「ドメイン」とは何か。',
+      answer: 'ブロードキャストドメイン。別のVLANへは、ブロードキャストもふつうの通信も届きません。',
+    },
+    {
+      question: 'STPは、二重化したケーブルが生むループをどうやって防ぐか。',
+      answer: '片方のポートをブロックして、論理的に1本道へ。物理は2本、論理は1本。',
+    },
   ],
 }

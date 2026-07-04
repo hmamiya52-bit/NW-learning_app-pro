@@ -18,7 +18,7 @@ const routeTableTopology: Topology = {
     { id: 'pc', label: '業務PC', role: 'pc', zoneId: 'lan', sub: '192.168.10.10' },
     { id: 'r1', label: 'R1', role: 'router', zoneId: 'lan', sub: '本社ルータ' },
     { id: 'fl2pc', label: '別フロアPC', role: 'pc', zoneId: 'fl2', sub: '192.168.30.10' },
-    { id: 'r2', label: 'R2', role: 'router', zoneId: 'srv', sub: 'サーバ側' },
+    { id: 'r2', label: 'R2', role: 'router', zoneId: 'srv', sub: 'サーバ側', isNew: true },
     { id: 'web', label: 'Webサーバ', role: 'server', zoneId: 'srv', sub: '172.16.0.20' },
   ],
   links: [
@@ -60,14 +60,14 @@ const routeTableFigure: PacketFlowFigure = {
   steps: [
     {
       focus: { type: 'link', a: 'pc', b: 'r1' },
-      packetLabel: 'あて先 172.16.0.20',
+      packetLabel: '宛先 172.16.0.20',
       headers: { l2: '', l3: '' },
       tableRows: R1_TABLE,
       explanation: '業務PCは、あて先 172.16.0.20 が自分のネットワーク（192.168.10.0/24）の外と判断し、デフォルトゲートウェイのR1へ送ります。',
     },
     {
       focus: { type: 'node', id: 'r1' },
-      packetLabel: 'あて先 172.16.0.20',
+      packetLabel: '宛先 172.16.0.20',
       headers: { l2: '', l3: '' },
       tableRows: R1_TABLE,
       tableHighlightRow: 2,
@@ -75,7 +75,7 @@ const routeTableFigure: PacketFlowFigure = {
     },
     {
       focus: { type: 'link', a: 'r1', b: 'r2' },
-      packetLabel: 'あて先 172.16.0.20',
+      packetLabel: '宛先 172.16.0.20',
       headers: { l2: '', l3: '' },
       tableRows: R1_TABLE,
       tableHighlightRow: 2,
@@ -83,7 +83,7 @@ const routeTableFigure: PacketFlowFigure = {
     },
     {
       focus: { type: 'node', id: 'r2' },
-      packetLabel: 'あて先 172.16.0.20',
+      packetLabel: '宛先 172.16.0.20',
       headers: { l2: '', l3: '' },
       tableRows: R2_TABLE,
       tableHighlightRow: 0,
@@ -91,7 +91,7 @@ const routeTableFigure: PacketFlowFigure = {
     },
     {
       focus: { type: 'link', a: 'r2', b: 'web' },
-      packetLabel: 'あて先 172.16.0.20',
+      packetLabel: '宛先 172.16.0.20',
       headers: { l2: '', l3: '' },
       tableRows: R2_TABLE,
       tableHighlightRow: 0,
@@ -257,7 +257,7 @@ const adFigure: RecordTableFigure = {
     { key: 'note', label: '説明' },
   ],
   rows: [
-    { src: '直結（connected）', ad: '0', note: '自分につながる。最優先' },
+    { src: '直結（connected）', ad: '0', note: '自分に直接つながるネットワーク。最優先' },
     { src: 'スタティック', ad: '1', note: '手で書いた経路' },
     { src: 'OSPF', ad: '110', note: '自動で学んだ経路' },
   ],
@@ -270,7 +270,7 @@ export const ch07Routing: TextbookChapter = {
   title: 'ルーティング（経路制御）',
   summary: '経路表とロンゲストマッチで次ホップを選ぶ仕組み、スタティック/ダイナミック(OSPF)、経路集約と経路選択を、構成図の上で動かしながら理解します。',
   status: 'published',
-  estimatedMinutes: 22,
+  estimatedMinutes: 20,
   intro: [
     {
       kind: 'text',
@@ -295,7 +295,7 @@ export const ch07Routing: TextbookChapter = {
         },
         {
           kind: 'text',
-          text: '構成図は第6章から育ち、2台目のルータ（R2）とサーバLAN（172.16.0.0/24）が加わりました。R1とR2は、第6章で学んだ点対点リンク（/30。ここでは 192.168.99.0/30）でつながります。',
+          text: '構成図は第6章から育ち、2台目のルータ（R2）とサーバLAN（172.16.0.0/24）が加わりました。第6章まで「ルータ」と呼んでいた本社のルータは、区別のため以後[[blue:R1]]と呼びます。R1とR2は、第6章で学んだ点対点リンク（/30。ここでは 192.168.99.0/30）でつながります。',
         },
         { kind: 'figure', figure: routeTableFigure },
         {
@@ -342,7 +342,7 @@ export const ch07Routing: TextbookChapter = {
           kind: 'callout',
           tone: 'tip',
           title: 'フローティングスタティックは名前だけ',
-          body: '普段は使わない予備の経路に、わざと大きな距離（メトリック）を付けておき、主経路が消えたときだけ使う書き方を、フローティングスタティックと呼びます。名前だけ押さえれば十分です。',
+          body: '普段は使わない予備の経路に、わざと大きな距離（メトリック）を付けておき、主経路が消えたときだけ使う書き方を、フローティングスタティックと呼びます。名前だけ押さえておけば、先へ進めます。',
         },
       ],
     },
@@ -371,7 +371,7 @@ export const ch07Routing: TextbookChapter = {
       ],
     },
     {
-      heading: '経路をまとめる・複数の経路源から選ぶ',
+      heading: '連続する経路を1行にまとめる（経路集約）',
       blocks: [
         {
           kind: 'text',
@@ -382,9 +382,14 @@ export const ch07Routing: TextbookChapter = {
           kind: 'text',
           text: 'ただし、まとめすぎると、その範囲の細かい経路が1行に隠れてしまいます。実在しないネットワークまで含めてしまう点には、注意が要ります。',
         },
+      ],
+    },
+    {
+      heading: '複数の経路源からは優先度で選ぶ（AD）',
+      blocks: [
         {
           kind: 'text',
-          text: '一方、同じあて先に複数の経路源（直結・スタティック・OSPF）から経路が来ることもあります。このときは、まず[[blue:AD（アドミニストレーティブディスタンス）]]——経路源の信頼度＝優先順位——で選び、同じ経路源どうしなら[[blue:メトリック]]（距離）で選びます。',
+          text: '経路表には、同じあて先が複数の経路源（直結・スタティック・OSPF）から届くこともあります。このときは、まず[[blue:AD（アドミニストレーティブディスタンス）]]——経路源の信頼度＝優先順位——で選び、同じ経路源どうしなら[[blue:メトリック]]（距離）で選びます。',
         },
         { kind: 'figure', figure: adFigure },
       ],
@@ -406,6 +411,16 @@ export const ch07Routing: TextbookChapter = {
           title: 'TTLと、ping・traceroute',
           body: 'ルータを1台越えるたび、パケットのTTL（生存時間）が1ずつ減り、0になると破棄されます。経路がループしても、無限に回り続けないための仕組みです。到達確認のping、経路を1ホップずつ調べるtracerouteは、ICMPという仕組みを使います。障害切り分けでの活用は第19章で扱います。社外（インターネット）との経路交換を担うBGPは第8章です。',
         },
+        {
+          kind: 'check',
+          label: '設問例',
+          items: [
+            {
+              question: 'R1の経路表に 0.0.0.0/0、192.168.0.0/16、192.168.30.0/24 の3行があります。宛先 192.168.30.10 のパケットは、どの行に従うか。',
+              answer: '192.168.30.0/24 の行。複数が一致したら、最長プレフィックス（ロンゲストマッチ）で決まります。',
+            },
+          ],
+        },
       ],
     },
   ],
@@ -415,5 +430,19 @@ export const ch07Routing: TextbookChapter = {
     'OSPFはリンクステート＝全員が同じ地図を持ち、[[blue:コスト（帯域）で最短]]を選びます。ホップ数ではなく帯域。エリアは名前だけ。',
     '冗長な2経路があれば、主経路が切れても[[blue:自動で予備へ切替]]（午後頻出）。',
     '[[blue:経路集約]]で経路表を小さく、複数経路源は[[blue:AD→メトリック]]で選びます。デフォルトルート 0.0.0.0/0 ＝第1章のデフォルトゲートウェイ（最後の砦）。',
+  ],
+  checks: [
+    {
+      question: '経路表の「次ホップ」は、最終あて先のことか。',
+      answer: '違います。次に渡す相手＝[[blue:次の1歩]]だけ。各ルータの1歩の積み重ねで端まで届きます。',
+    },
+    {
+      question: 'OSPFが「最短」を選ぶ基準は何か。',
+      answer: 'コスト（帯域から決まる距離）。ホップ数ではないので、太い回線の遠回りが選ばれることもあります。',
+    },
+    {
+      question: '同じあて先を直結・スタティック・OSPFが知らせてきたら、どれを採用するか。',
+      answer: 'AD（優先順位）が最小の直結。同じ経路源どうしなら、メトリックで選びます。',
+    },
   ],
 }

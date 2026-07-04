@@ -71,12 +71,12 @@ const panoramaFigure: TimelineFigure = {
   id: 'ch4-panorama',
   title: 'URLを開いてからページが返るまで',
   caption: '第1部の全段。1本のWebアクセスに、1〜4章のすべてが乗っています。',
-  takeaway: 'ばらばらの仕組みが、ぜんぶ「1本のWebアクセス」につながる。',
+  takeaway: 'ばらばらの仕組みが、ぜんぶ「1本のWebアクセス」につながります。',
   items: [
     { badge: 'DHCP', label: '自分の住所の取得', detail: '第2章', tone: 'emerald' },
     { badge: 'DNS', label: '相手の住所の確認', detail: '第2章', tone: 'violet' },
     { badge: 'ARP', label: '出口（GW）のMAC解決', detail: '第1章', tone: 'emerald' },
-    { badge: 'TCP', label: '3wayで接続', detail: '第3章', tone: 'blue' },
+    { badge: 'TCP', label: '3ウェイで接続', detail: '第3章', tone: 'blue' },
     { badge: 'TLS', label: '暗号トンネルの確立', detail: 'この章', tone: 'amber' },
     { badge: 'HTTP', label: 'ページの要求と受信', detail: 'この章', tone: 'amber' },
   ],
@@ -109,7 +109,7 @@ export const ch04WebTlsHttp: TextbookChapter = {
   title: 'Web通信の中身（TLS・HTTP）',
   summary: 'HTTPSの443の中で起きるTLSハンドシェイクと証明書、HTTPの要求応答とメソッド・ステータスを追います。',
   status: 'published',
-  estimatedMinutes: 20,
+  estimatedMinutes: 15,
   intro: [
     {
       kind: 'text',
@@ -122,7 +122,7 @@ export const ch04WebTlsHttp: TextbookChapter = {
   ],
   sections: [
     {
-      heading: '本物だと確かめ、盗み見を防ぐ ―― TLS',
+      heading: '本物だと確かめ、盗み見を防ぐ——TLS',
       blocks: [
         {
           kind: 'text',
@@ -135,7 +135,7 @@ export const ch04WebTlsHttp: TextbookChapter = {
         { kind: 'figure', figure: tlsFigure },
         {
           kind: 'text',
-          text: 'はじめの「あいさつ」では、どの暗号方式を使うかをPCとサーバですり合わせます。方式の名前は数多くありますが、ここでは「最初に方式をそろえてから暗号化を始める」とだけ押さえれば十分です。',
+          text: 'はじめの「あいさつ」では、どの暗号方式を使うかをPCとサーバですり合わせます。方式の名前は数多くありますが、「最初に方式をそろえてから暗号化を始める」という流れがつかめれば先へ進めます。',
         },
         {
           kind: 'callout',
@@ -146,7 +146,7 @@ export const ch04WebTlsHttp: TextbookChapter = {
       ],
     },
     {
-      heading: 'ページを要求して受け取る ―― HTTP',
+      heading: 'ページを要求して受け取る——HTTP',
       blocks: [
         {
           kind: 'text',
@@ -200,7 +200,7 @@ export const ch04WebTlsHttp: TextbookChapter = {
       blocks: [
         {
           kind: 'text',
-          text: 'ネスペ午後では、HTTPSの構成図がよく登場します。どの区間が暗号化されているか、証明書をどの機器に置くか ―― そこが読みどころです。',
+          text: 'ネスペ午後では、HTTPSの構成図がよく登場します。どの区間が暗号化されているか、証明書をどの機器に置くか——そこが読みどころです。',
         },
         {
           kind: 'callout',
@@ -208,14 +208,38 @@ export const ch04WebTlsHttp: TextbookChapter = {
           title: 'TLSをどこでほどくか',
           body: 'TLSの暗号化を、Webサーバの手前の機器（リバースプロキシやロードバランサ）でほどく構成もよく出ます（第10章）。「暗号はどの区間か」「証明書はどの機器か」を読めると、HTTPSの構成図が見通せます。',
         },
+        {
+          kind: 'check',
+          label: '設問例',
+          items: [
+            {
+              question: 'TLSハンドシェイクで、サーバの「なりすまし」を防ぐためにPCが確かめるものは何か。',
+              answer: 'サーバ証明書。暗号化（盗み見の防止）とは別の役割です。',
+            },
+          ],
+        },
       ],
     },
   ],
   takeaways: [
     'HTTPSは、TCPの上にTLS、その中にHTTP。',
-    'TLSの役割は2つ ―― [[blue:暗号化]]（盗み見を防ぐ）と、[[blue:証明書]]による本人確認（なりすましを防ぐ）。',
+    'TLSの役割は2つ——[[blue:暗号化]]（盗み見を防ぐ）と、[[blue:証明書]]による本人確認（なりすましを防ぐ）。',
     'HTTPは要求（GET）と応答（200）の1往復が基本。HTTPSでも中身は同じHTTP。',
     '要求の種類は[[amber:メソッド]]（GET・POST）、応答の結果は[[blue:ステータスコード]]（200・404・500）。HTTPは1回ごとに完結（ステートレス）。',
-    '第1部で、URLを開いてページが返るまでの全段がひとつに ―― [[green:DHCP→DNS→ARP→TCP→TLS→HTTP]]。',
+    '第1部で、URLを開いてページが返るまでの全段がひとつに——[[green:DHCP→DNS→ARP→TCP→TLS→HTTP]]。',
+  ],
+  checks: [
+    {
+      question: 'HTTPSの中身を、下の層から順に並べると？',
+      answer: 'TCP → TLS → HTTP。TLSのトンネルの中を、同じHTTPが流れます。',
+    },
+    {
+      question: 'TLSが用意する「2つの安全」とは何か。',
+      answer: '暗号化（盗み見を防ぐ）と、サーバ証明書による本人確認（なりすましを防ぐ）。',
+    },
+    {
+      question: 'GET と 200 は、それぞれ何を表すか。',
+      answer: 'GETは要求のメソッド（取得したい）、200は応答のステータスコード（成功）。',
+    },
   ],
 }

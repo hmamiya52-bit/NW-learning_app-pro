@@ -80,8 +80,10 @@ export interface Topology {
   layout?: 'chain' | 'graph'
   // graph(三角形/縦積み)で、ルータ間リンクに添えるラベル（帯域・コスト等）。a/b は順不同。
   edgeLabels?: { a: string; b: string; label: string }[]
-  // graph で縦積みレイアウト（ルータ2台を縦に並べ、上ルータの端末は上・下ルータの端末は下に枝分かれ）。
+  // graph で縦積みレイアウト（spine を縦一列に並べ、最上段の端末は上・最下段の端末は下・中間段の端末は左右に枝分かれ）。
   stack?: boolean
+  // graph で、ロールに関わらず葉（枝側）として扱うノードid（例: 第8章BGP図で境界ルータをISPの雲にぶら下げる）。
+  leafIds?: string[]
   // chain で領域フォーカス表示にする（俯瞰＝ゾーン地図＋詳細＝現在ゾーンのノード）。スマホ幅で有効。
   zoneFocus?: boolean
 }

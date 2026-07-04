@@ -279,8 +279,11 @@ interface Layout {
 function buildLayout(topology: Topology): Layout {
   const { nodes, links, zones } = topology
   const zoneTone = new Map(zones.map((z) => [z.id, z.tone]))
-  const spine = nodes.filter((n) => SPINE_ROLES.has(n.role))
-  const leaves = nodes.filter((n) => !SPINE_ROLES.has(n.role))
+  // leafIds はロールに関わらず葉として扱う（例: 境界ルータをISPの雲の枝にする）。
+  const forcedLeaf = new Set(topology.leafIds ?? [])
+  const isSpine = (n: TopoNode) => SPINE_ROLES.has(n.role) && !forcedLeaf.has(n.id)
+  const spine = nodes.filter(isSpine)
+  const leaves = nodes.filter((n) => !isSpine(n))
 
   const parentOf = new Map<string, string>()
   leaves.forEach((leaf) => {
@@ -299,10 +302,10 @@ function buildLayout(topology: Topology): Layout {
   }
 
   const toneOf = (n: TopoNode): string =>
-    SPINE_ROLES.has(n.role) ? 'slate' : (n.zoneId && zoneTone.get(n.zoneId)) || 'sky'
+    isSpine(n) ? 'slate' : (n.zoneId && zoneTone.get(n.zoneId)) || 'sky'
 
-  // 縦積み（ルータ2台を縦に並べ上下に枝）: 経路表連動の packet-flow（第7章 §2）。明示フラグ。
-  if (topology.stack && spine.length === 2 && !loopPair) {
+  // 縦積み（spine を縦一列・上下＋左右に枝）: 経路表連動（第7章 §2）・境界の全体図（第8章 §1）。明示フラグ。
+  if (topology.stack && spine.length >= 2 && !loopPair) {
     return buildStack({ spine, leavesOf, toneOf, links, edgeLabels: topology.edgeLabels ?? [], zones, allNodes: nodes })
   }
 
@@ -477,8 +480,9 @@ function buildTriangle({
   return { nodes, pos, trunk: null, trunkLabel: null, leafSegs, loop: null, spineEdges, zoneLabels: [], toneOf, height: maxBot + 14 }
 }
 
-// 縦積みレイアウト: ルータ2台を縦に並べ、上ルータの端末は上に・下ルータの端末は下に枝分かれ。
-// 経路が上→下へ素直に流れる。経路表連動の packet-flow（第7章 §2）で使用。
+// 縦積みレイアウト: spine（ルータ等）を縦一列に並べ、最上段の端末は上・最下段の端末は下・
+// 中間段の端末は左右の短い水平枝にする（最大2つ＝左・右）。経路が上→下へ素直に流れる。
+// 第7章 §2（2段・経路表連動）と第8章 §1（4段・インターネット境界）で使用。2段時の描画は従来と同一。
 function buildStack({
   spine,
   leavesOf,
@@ -497,13 +501,13 @@ function buildStack({
   allNodes: TopoNode[]
 }): Layout {
   const cx = W / 2
-  const top = spine[0]
-  const bot = spine[1]
   const zoneById = new Map(zones.map((z) => [z.id, z]))
   const pos = new Map<string, Pos>()
   const leafSegs: Layout['leafSegs'] = []
   const zoneLabels: Layout['zoneLabels'] = []
 
+  const top = spine[0]
+  const bot = spine[spine.length - 1]
   const topLeaves = leavesOf(top.id)
   const botLeaves = leavesOf(bot.id)
 
@@ -513,53 +517,76 @@ function buildStack({
     const start = cx - rowWidth(n) / 2 + LEAF_W / 2
     return Array.from({ length: n }, (_, i) => start + i * (LEAF_W + 12))
   }
+  const pushZoneChip = (lf: TopoNode, x: number, leafY: number) => {
+    const z = lf.zoneId ? zoneById.get(lf.zoneId) : undefined
+    if (z) zoneLabels.push({ x, y: leafY - LEAF_H / 2 - 6, text: z.label, color: (TONE_COLOR[z.tone] ?? TONE_COLOR.slate).text })
+  }
 
   const topLeafY = 14 + LEAF_H / 2 + 14 // ゾーンラベル分の余白を上に確保
-  const topY = topLeafY + LEAF_H / 2 + 34 + SW_H / 2
-  const botY = topY + SW_H / 2 + 46 + SW_H / 2
-  const botLeafY = botY + SW_H / 2 + 34 + LEAF_H / 2
+  // 最上段に端末が無ければ上の余白を詰めて spine から始める
+  const firstY = topLeaves.length > 0 ? topLeafY + LEAF_H / 2 + 34 + SW_H / 2 : 14 + SW_H / 2
+  const spineY = (i: number) => firstY + i * (SW_H + 46)
+  spine.forEach((s, i) => pos.set(s.id, { x: cx, y: spineY(i), w: SW_W, h: SW_H }))
 
-  pos.set(top.id, { x: cx, y: topY, w: SW_W, h: SW_H })
-  pos.set(bot.id, { x: cx, y: botY, w: SW_W, h: SW_H })
-
-  // 上ルータの端末（上に横並び）
+  // 最上段の端末（上に横並び）
   const txs = rowXs(topLeaves.length)
   topLeaves.forEach((lf, i) => {
     const x = txs[i]
     pos.set(lf.id, { x, y: topLeafY, w: LEAF_W, h: LEAF_H })
-    leafSegs.push({ from: top.id, to: lf.id, x1: x, y1: topLeafY + LEAF_H / 2, x2: cx, y2: topY - SW_H / 2 })
-    const z = lf.zoneId ? zoneById.get(lf.zoneId) : undefined
-    if (z) zoneLabels.push({ x, y: topLeafY - LEAF_H / 2 - 6, text: z.label, color: (TONE_COLOR[z.tone] ?? TONE_COLOR.slate).text })
+    leafSegs.push({ from: top.id, to: lf.id, x1: x, y1: topLeafY + LEAF_H / 2, x2: cx, y2: firstY - SW_H / 2 })
+    pushZoneChip(lf, x, topLeafY)
   })
 
-  // 下ルータの端末（下に横並び）
+  // 中間段の端末（左右の短い水平枝。幅を絞って320内に収める）
+  const SIDE_W = 96
+  spine.slice(1, -1).forEach((s, si) => {
+    const y = spineY(si + 1)
+    leavesOf(s.id).forEach((lf, i) => {
+      const left = i % 2 === 0
+      const x = left ? cx - 110 : cx + 110
+      pos.set(lf.id, { x, y, w: SIDE_W, h: LEAF_H })
+      leafSegs.push(
+        left
+          ? { from: s.id, to: lf.id, x1: x + SIDE_W / 2, y1: y, x2: cx - SW_W / 2, y2: y }
+          : { from: s.id, to: lf.id, x1: cx + SW_W / 2, y1: y, x2: x - SIDE_W / 2, y2: y },
+      )
+      pushZoneChip(lf, x, y)
+    })
+  })
+
+  // 最下段の端末（下に横並び）
+  const botY = spineY(spine.length - 1)
+  const botLeafY = botY + SW_H / 2 + 34 + LEAF_H / 2
   const bxs = rowXs(botLeaves.length)
   botLeaves.forEach((lf, i) => {
     const x = bxs[i]
     pos.set(lf.id, { x, y: botLeafY, w: LEAF_W, h: LEAF_H })
     leafSegs.push({ from: bot.id, to: lf.id, x1: cx, y1: botY + SW_H / 2, x2: x, y2: botLeafY - LEAF_H / 2 })
-    const z = lf.zoneId ? zoneById.get(lf.zoneId) : undefined
-    if (z) zoneLabels.push({ x, y: botLeafY - LEAF_H / 2 - 6, text: z.label, color: (TONE_COLOR[z.tone] ?? TONE_COLOR.slate).text })
+    pushZoneChip(lf, x, botLeafY)
   })
 
-  // ルータ間リンク（単一・縦）。ラベルは右側に1行で。
+  // 隣接する spine 間のリンク（縦・単一）。ラベルは右側に1行で。
   const spineEdges: SpineEdge[] = []
-  if (links.some((l) => samePair(l.a, l.b, top.id, bot.id))) {
-    const label = edgeLabels.find((e) => samePair(e.a, e.b, top.id, bot.id))?.label
+  spine.slice(0, -1).forEach((a, i) => {
+    const b = spine[i + 1]
+    if (!links.some((l) => samePair(l.a, l.b, a.id, b.id))) return
+    const label = edgeLabels.find((e) => samePair(e.a, e.b, a.id, b.id))?.label
+    const y1 = spineY(i)
+    const y2 = spineY(i + 1)
     spineEdges.push({
-      a: top.id,
-      b: bot.id,
+      a: a.id,
+      b: b.id,
       x1: cx,
-      y1: topY,
+      y1,
       x2: cx,
-      y2: botY,
+      y2,
       label,
       lines: label ? [label] : [],
       lx: cx + 10,
-      ly: (topY + botY) / 2 + 4,
+      ly: (y1 + y2) / 2 + 4,
       lanchor: 'start',
     })
-  }
+  })
 
   const maxBot = Math.max(...[...pos.values()].map((p) => p.y + p.h / 2))
   return { nodes: allNodes, pos, trunk: null, trunkLabel: null, leafSegs, loop: null, spineEdges, zoneLabels, toneOf, height: maxBot + 14 }

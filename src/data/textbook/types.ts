@@ -12,6 +12,8 @@ export type NodeRole =
   | 'firewall'
   | 'internet'
   | 'cloud'
+  | 'lb'
+  | 'proxy'
 
 export type ChapterStatus = 'published' | 'draft'
 
@@ -135,6 +137,8 @@ export interface PacketStep {
   blockedLink?: { a: string; b: string }
   // FWなどノード処理ステップの判定。ノードフォーカス時、そのノード脇に通過/遮断チップを表示（第9章FW）。
   verdict?: 'pass' | 'block'
+  // 停止中として灰色表示するノードid（第10章LBのヘルスチェック・第11章フェイルオーバー）。
+  downNodes?: string[]
   // graph図（中央縦spine）で、パケットの宛先/送信元を図中に出す吹き出し。「宛先 X」「送信元 Y」形式・最大2。第9章。
   bubbles?: string[]
   // 領域フォーカス（zoneFocus）で、このステップの「現在ゾーン」。詳細側に表示するゾーンを明示する。

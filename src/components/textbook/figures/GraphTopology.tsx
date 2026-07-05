@@ -5,7 +5,7 @@ import type { PacketStep, Topology, TopoNode } from '../../../data/textbook/type
 // 冗長リンク（同じ2ノード間の2本）は縦並びスイッチ＋曲線2本のループで描く。
 // 動きは「アクティブな線・アークの強調＋進行方向の矢印」で表す（ノードを覆う吹き出しは使わない）。
 
-const SPINE_ROLES = new Set(['switch', 'router', 'firewall', 'internet', 'cloud'])
+const SPINE_ROLES = new Set(['switch', 'router', 'firewall', 'internet', 'cloud', 'lb', 'proxy'])
 
 const TONE_COLOR: Record<string, { fill: string; stroke: string; text: string }> = {
   emerald: { fill: '#ecfdf5', stroke: '#34d399', text: '#065f46' },
@@ -37,7 +37,11 @@ interface Props {
   blockedLink?: { a: string; b: string }
   verdict?: 'pass' | 'block'
   bubbles?: string[]
+  downNodes?: string[]
 }
+
+// 停止中ノードの灰色トーン（第10章LBヘルスチェック・第11章フェイルオーバー）。
+const DOWN = { fill: '#f8fafc', stroke: '#cbd5e1', text: '#94a3b8', sub: '#cbd5e1' }
 
 // FWの通過/遮断チップ（第9章）。ノードを覆わず、右脇（幅が足りなければ左脇）に置く。
 const VERDICT_STYLE = {
@@ -80,7 +84,7 @@ function ArrowOnSeg({ x1, y1, x2, y2, color }: { x1: number; y1: number; x2: num
   return <polygon points={`${tip} ${b1} ${b2}`} fill={color} />
 }
 
-export default function GraphTopology({ topology, focus, blockedLink, verdict, bubbles }: Props) {
+export default function GraphTopology({ topology, focus, blockedLink, verdict, bubbles, downNodes }: Props) {
   const layout = useMemo(() => buildLayout(topology), [topology])
   const { nodes, pos, trunk, leafSegs, loop, spineEdges, zoneLabels, toneOf, height, trunkLabel } = layout
 
@@ -234,10 +238,11 @@ export default function GraphTopology({ topology, focus, blockedLink, verdict, b
         const p = pos.get(n.id)
         if (!p) return null
         const focused = n.id === focusedNodeId
+        const isDown = !!downNodes?.includes(n.id)
         const tone = TONE_COLOR[toneOf(n)] ?? TONE_COLOR.slate
-        const fill = focused ? FOCUS.fill : tone.fill
-        const stroke = focused ? FOCUS.stroke : tone.stroke
-        const textColor = focused ? FOCUS.text : tone.text
+        const fill = isDown ? DOWN.fill : focused ? FOCUS.fill : tone.fill
+        const stroke = isDown ? DOWN.stroke : focused ? FOCUS.stroke : tone.stroke
+        const textColor = isDown ? DOWN.text : focused ? FOCUS.text : tone.text
         return (
           <g key={n.id}>
             <rect
@@ -254,7 +259,7 @@ export default function GraphTopology({ topology, focus, blockedLink, verdict, b
               {n.label}
             </text>
             {n.sub && (
-              <text x={p.x} y={p.y + 12} textAnchor="middle" fontSize="10" fill={focused ? '#dbeafe' : '#64748b'}>
+              <text x={p.x} y={p.y + 12} textAnchor="middle" fontSize="10" fill={isDown ? DOWN.sub : focused ? '#dbeafe' : '#64748b'}>
                 {n.sub}
               </text>
             )}
@@ -666,8 +671,15 @@ function buildStack({
     const x = bxs[i]
     pos.set(lf.id, { x, y: botLeafY, w: LEAF_W, h: LEAF_H })
     leafSegs.push({ from: bot.id, to: lf.id, x1: cx, y1: botY + SW_H / 2, x2: x, y2: botLeafY - LEAF_H / 2 })
-    pushZoneChip(lf, x, botLeafY)
   })
+  // 同一ゾーンの複数末端（LBのWebサーバプール等）は、ゾーンラベルを1つに集約して中央に置く。
+  const botSameZone = botLeaves.length >= 2 && botLeaves.every((l) => l.zoneId && l.zoneId === botLeaves[0].zoneId)
+  if (botSameZone) {
+    const z = zoneById.get(botLeaves[0].zoneId!)
+    if (z) zoneLabels.push({ x: cx, y: botLeafY - LEAF_H / 2 - 6, text: z.label, color: (TONE_COLOR[z.tone] ?? TONE_COLOR.slate).text })
+  } else {
+    botLeaves.forEach((lf, i) => pushZoneChip(lf, bxs[i], botLeafY))
+  }
 
   // 隣接する spine 間のリンク（縦・単一）。ラベルは右側に1行で。
   const spineEdges: SpineEdge[] = []

@@ -61,7 +61,7 @@
 - `steps[]` の `focus`（link/node）で現在区間・処理を指す。`explanation` は固定高（約2行・全角換算50字目安）。
 - **ヘッダ表**（L2/L3/L4 の現在値＋「変わる/そのまま/外す」チップ）は付け替え・書き換えが主題の図で使う。不要なら `hideHeaders`。
 - **sideTable**（ステップ連動で埋まる表）: 経路表・MAC表・NAPT変換表に。**行数は全ステップで固定**（未記録は「—」）にしてボタン不動を保つ。`tableHighlightRow` で現在行を強調。ヘッダ表と sideTable の併用はしない（縦に重すぎる）。
-- 拡張予約: `verdict?: 'pass'|'block'`（第9章FW）／ノード `down`（第11章フェイルオーバー）。
+- 拡張: `verdict?: 'pass'|'block'`（第9章FW・実装済み。ノードフォーカス時に、そのノード脇へ通過/遮断チップ＝ノードは覆わない）。予約: ノード `down`（第11章フェイルオーバー）。
 
 ### 3.5 chain レイアウト（`TopologyView`・既定）
 - 座標レスの一直線。ノードは zone ごとに破線ボックスで囲む（zone ラベルに CIDR を含めてよい: 「内部LAN 192.168.10.0/24」）。
@@ -70,7 +70,7 @@
 - Don't: ノードを覆う長いチップ（差し戻し実績）。吹き出しとノードアイコンの重なりは検証で0を確認する。
 
 ### 3.6 graph レイアウト（`GraphTopology`・SVG 320幅）
-`Topology.layout:'graph'`。スイッチ/ルータ/FW/雲=幹（spine）、PC・サーバ等=枝（leaf）。動きは**アクティブな線＋進行方向の矢印**（チップは出さない）。`Topology.leafIds` でロールに関わらず葉に格下げできる（例: BGP図で境界ルータを雲の枝に）。4モード:
+`Topology.layout:'graph'`。スイッチ/ルータ/FW/雲=幹（spine）、PC・サーバ等=枝（leaf）。動きは**アクティブな線＋進行方向の矢印**（チップは出さない。ただしFWの判定は `verdict` チップを脇に）。`Topology.leafIds` でロールに関わらず葉に格下げできる（例: BGP図で境界ルータを雲の枝に）。5モード:
 
 | モード | 判定 | 用途・要点 |
 |---|---|---|
@@ -78,6 +78,7 @@
 | **loop** | 同一2ノード間に links 2本 | スイッチ縦並び＋曲線アーク2本（第5章STP）。`PacketStep.blockedLink` で片アーク破線＋✕ |
 | **triangle** | spine 3台が相互リンク | ルータ/AS 3つの三角形（第7章OSPF、第8章BGP）。`edgeLabels[{a,b,label}]` でコスト/帯域/BGPラベル、`blockedLink` で切断→迂回 |
 | **stack N段** | `stack:true`・spine 2台以上 | spine（nodes配列順=上→下）を縦一列。最上段の葉=上の横並び・最下段=下・**中間段=左右の短い水平枝（最大2）**。最上段に葉が無ければ余白を詰める。全ノード1枚の全体図・経路表連動に（第7章§2=2段、第8章§1=4段） |
+| **tiers（三方向FW）** | `tiers:true`・spine 2台以上 | spine を縦一列（上=外部・下=内部）＋**最下段のノード（FW）から zone ごとに左右の列へ枝分かれ**（列は zone 初出順に左→右。列内は縦積み）。第9章 内部/DMZ/外部の三層境界。枝は `blockedLink` で赤破線＋✕、`PacketStep.verdict` でFW脇に通過/遮断チップ |
 
 - ゾーンは葉の色分け＋白チップのセグメント名ラベル（短く。CIDRは入れない）。
 - Do: 検証で全 `<text>` が viewBox 内にあること。 Don't: 実トポロジを chain の一直線に潰す。
@@ -117,7 +118,7 @@
 
 ## 5. 章 × 図 割り当て
 
-### 実績（第1〜8章・公開済み）
+### 実績（第1〜9章・公開済み）
 
 | 章 | 図 |
 |---|---|
@@ -129,12 +130,12 @@
 | 6 | subnet-calc / segment-map / record-table（VLSM・架空例 192.168.50.0/24） |
 | 7 | graph stack 2段＋sideTable（経路表連動） / record-table ×4 / graph triangle（OSPF切替） |
 | 8 | graph stack 4段（全体図） / address-table（私設/グローバル） / chain＋sideTable（NAPT往復・吹き出し） / graph triangle＋leafIds（BGP迂回） / record-table（行き/戻り） |
+| 9 | graph tiers（三方向FWの三層構成図＝1枚を4図で再利用） / record-table ×2（FWルール・通信可否） / packet-flow＋verdict（通過/遮断・ステートフル・DMZ隔離。DMZ→内部は `blockedLink`） |
 
-### 計画（第9章以降の主要図。§2 の使い分けに従い設計時に確定）
+### 計画（第10章以降の主要図。§2 の使い分けに従い設計時に確定）
 
 | 章 | 概念 → 図 |
 |---|---|
-| 9 | FWルール→record-table／許可・遮断→packet-flow＋`verdict`拡張／DMZ三層→graph stack（上=外部の向き規約） |
 | 10 | LB振り分け→packet-flow／L4/L7→address-table／リバース・フォワード／CDN→graph |
 | 11 | VRRP切替→packet-flow＋ノード`down`拡張／LAG→graph／無停止更改→timeline |
 | 12 | IPsec→encap（元IP＋新IP）／拠点間→graph／SD-WAN→graph |
@@ -155,5 +156,6 @@
 
 ## 7. 変更履歴
 
+- **v2.1（2026-07-05）**: 第9章の実装を反映。graph に **tiers**（三方向FW＝内部/DMZ/外部の三層境界。上=外部・下=内部）を追加して5モード化、`verdict`（通過/遮断チップ）を予約→実装済みに更新、章×図の実績に第9章を追加。
 - **v2（2026-07-05）**: 実装済みの全仕様に更新。graph 4モード（tree/loop/triangle/stack N段）・`leafIds`・chain のマーク＋吹き出し・ゾーン伸長規則・segment-map・確認問題を収載。領域フォーカス（旧§3.9）は不使用として §4 に凍結記録。「追加」チップ不採用を原則6に反映。章×図を実績と計画に分離。
 - v1（2026-06-23）: 初版（新図4種と領域フォーカスの計画仕様）。

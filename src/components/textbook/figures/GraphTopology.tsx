@@ -36,6 +36,7 @@ interface Props {
   stepKey: number
   blockedLink?: { a: string; b: string }
   verdict?: 'pass' | 'block'
+  bubbles?: string[]
 }
 
 // FWの通過/遮断チップ（第9章）。ノードを覆わず、右脇（幅が足りなければ左脇）に置く。
@@ -79,7 +80,7 @@ function ArrowOnSeg({ x1, y1, x2, y2, color }: { x1: number; y1: number; x2: num
   return <polygon points={`${tip} ${b1} ${b2}`} fill={color} />
 }
 
-export default function GraphTopology({ topology, focus, blockedLink, verdict }: Props) {
+export default function GraphTopology({ topology, focus, blockedLink, verdict, bubbles }: Props) {
   const layout = useMemo(() => buildLayout(topology), [topology])
   const { nodes, pos, trunk, leafSegs, loop, spineEdges, zoneLabels, toneOf, height, trunkLabel } = layout
 
@@ -281,6 +282,63 @@ export default function GraphTopology({ topology, focus, blockedLink, verdict }:
               </text>
             </g>
           )
+        })()}
+
+      {/* パケットの宛先/送信元の吹き出し（graph図・中央縦spine向け）。アクティブ対象の左脇に固定し、
+          ノード列（左端）に食い込ませない＝ノード非被覆。右脇は verdict チップ専用。 */}
+      {bubbles &&
+        bubbles.length > 0 &&
+        (() => {
+          let anchorY: number
+          let rightEdge: number
+          if (focus.type === 'node') {
+            const p = pos.get(focus.id)
+            if (!p) return null
+            anchorY = p.y
+            rightEdge = p.x - p.w / 2 - 6
+          } else {
+            const pa = pos.get(focus.a)
+            const pb = pos.get(focus.b)
+            if (!pa || !pb) return null
+            anchorY = (pa.y + pb.y) / 2
+            rightEdge = (pa.x + pb.x) / 2 - 8
+          }
+          rightEdge = Math.min(rightEdge, W / 2 - SW_W / 2 - 6)
+          anchorY = Math.max(44, Math.min(172, anchorY))
+          const BH = 28
+          const GAP = 4
+          const n = bubbles.length
+          const totalH = n * BH + (n - 1) * GAP
+          const top = Math.max(14, Math.min(height - 14 - totalH, anchorY - totalH / 2))
+          return bubbles.map((label, i) => {
+            const m = label.match(/^(送信元|宛先) (.+)$/)
+            const value = m ? m[2] : label
+            const bw = Math.min(120, Math.max(70, Math.round(value.length * 5.8) + 16))
+            const x = Math.max(4, rightEdge - bw)
+            const by = top + i * (BH + GAP)
+            const cy = by + BH / 2
+            const midX = (x + rightEdge) / 2
+            return (
+              <g key={`bub${i}`}>
+                <polygon points={`${rightEdge},${cy - 6} ${rightEdge},${cy + 6} ${rightEdge + 6},${cy}`} fill="#60a5fa" />
+                <rect x={x} y={by} width={rightEdge - x} height={BH} rx={6} fill="#ffffff" stroke="#60a5fa" strokeWidth={1.4} />
+                {m ? (
+                  <>
+                    <text x={midX} y={by + 11} textAnchor="middle" fontSize="9" fontWeight="800" fill="#3b82f6">
+                      {m[1]}
+                    </text>
+                    <text x={midX} y={by + 23} textAnchor="middle" fontSize="10" fontWeight="800" fill="#1d4ed8">
+                      {m[2]}
+                    </text>
+                  </>
+                ) : (
+                  <text x={midX} y={by + 18} textAnchor="middle" fontSize="10" fontWeight="800" fill="#1d4ed8">
+                    {label}
+                  </text>
+                )}
+              </g>
+            )
+          })
         })()}
     </svg>
   )

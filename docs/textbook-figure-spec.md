@@ -61,7 +61,7 @@
 - `steps[]` の `focus`（link/node）で現在区間・処理を指す。`explanation` は固定高（約2行・全角換算50字目安）。
 - **ヘッダ表**（L2/L3/L4 の現在値＋「変わる/そのまま/外す」チップ）は付け替え・書き換えが主題の図で使う。不要なら `hideHeaders`。
 - **sideTable**（ステップ連動で埋まる表）: 経路表・MAC表・NAPT変換表に。**行数は全ステップで固定**（未記録は「—」）にしてボタン不動を保つ。`tableHighlightRow` で現在行を強調。ヘッダ表と sideTable の併用はしない（縦に重すぎる）。
-- 拡張: `verdict?: 'pass'|'block'`（第9章FW・実装済み。ノードフォーカス時に、そのノード脇へ通過/遮断チップ＝ノードは覆わない）。予約: ノード `down`（第11章フェイルオーバー）。
+- 拡張（すべて実装済み）: `verdict?: 'pass'|'block'`（第9章FW・ノード脇へ通過/遮断チップ＝ノードは覆わない）／`bubbles`（宛先・送信元の吹き出し。graph=左脇固定／chain=回線中央）／`downNodes`（第10章LBヘルスチェック・第11章フェイルオーバー。停止ノードを灰色表示。枝の`blockedLink`✕と併用可）。
 
 ### 3.5 chain レイアウト（`TopologyView`・既定）
 - 座標レスの一直線。ノードは zone ごとに破線ボックスで囲む（zone ラベルに CIDR を含めてよい: 「内部LAN 192.168.10.0/24」）。
@@ -119,7 +119,7 @@
 
 ## 5. 章 × 図 割り当て
 
-### 実績（第1〜9章・公開済み）
+### 実績（第1〜10章・公開済み）
 
 | 章 | 図 |
 |---|---|
@@ -132,13 +132,13 @@
 | 7 | graph stack 2段＋sideTable（経路表連動） / record-table ×4 / graph triangle（OSPF切替） |
 | 8 | graph stack 4段（全体図） / address-table（私設/グローバル） / chain＋sideTable（NAPT往復・吹き出し） / graph triangle＋leafIds（BGP迂回） / record-table（行き/戻り） |
 | 9 | graph tiers（三方向FWの三層構成図＝1枚を4図で再利用） / record-table ×2（FWルール・通信可否） / packet-flow＋verdict（通過/遮断・ステートフル・DMZ隔離。DMZ→内部は `blockedLink`） |
+| 10 | graph stack（LB＝VIPで受けWebプールへ振り分け・停止台は`downNodes`灰色＋枝✕） / record-table ×2（L4/L7・リバース/フォワード） / chain＋`bubbles`（プロキシ配置＝外部中心・CDN往復のヒット/ミス） |
 
-### 計画（第10章以降の主要図。§2 の使い分けに従い設計時に確定）
+### 計画（第11章以降の主要図。§2 の使い分けに従い設計時に確定）
 
 | 章 | 概念 → 図 |
 |---|---|
-| 10 | LB振り分け→packet-flow／L4/L7→address-table／リバース・フォワード／CDN→graph |
-| 11 | VRRP切替→packet-flow＋ノード`down`拡張／LAG→graph／無停止更改→timeline |
+| 11 | VRRP切替→packet-flow＋ノード`down`（第10章で実装済み）／LAG→graph／無停止更改→timeline |
 | 12 | IPsec→encap（元IP＋新IP）／拠点間→graph／SD-WAN→graph |
 | 13 | 認証/認可→address-table／RADIUS→sequence 3者／証明書チェーン→timeline |
 | 14〜20 | chapter-designs の各章設計に従う（第20章の総合図は stack N段の全体図を基本に、必要なら区間ごとの複数図に分割） |
@@ -157,6 +157,7 @@
 
 ## 7. 変更履歴
 
+- **v2.2（2026-07-05）**: 第10章の実装を反映。role `lb`/`proxy` を追加（graphの幹・chainのアイコン）、`downNodes`（停止ノードの灰色表示＝LBヘルスチェック/フェイルオーバー）を実装、stack で同一ゾーンの複数末端をゾーンラベル1つに集約（LBのWebサーバプール）。章×図の実績に第10章を追加。
 - **v2.1（2026-07-05）**: 第9章の実装を反映。graph に **tiers**（三方向FW＝内部/DMZ/外部の三層境界。上=外部・下=内部）を追加して5モード化、`verdict`（通過/遮断チップ）を予約→実装済みに更新、graph図でも `bubbles`（宛先/送信元の吹き出し・左脇固定）でパケットの行き先を図中に表示（chain踏襲・ノード非被覆）、章×図の実績に第9章を追加。
 - **v2（2026-07-05）**: 実装済みの全仕様に更新。graph 4モード（tree/loop/triangle/stack N段）・`leafIds`・chain のマーク＋吹き出し・ゾーン伸長規則・segment-map・確認問題を収載。領域フォーカス（旧§3.9）は不使用として §4 に凍結記録。「追加」チップ不採用を原則6に反映。章×図を実績と計画に分離。
 - v1（2026-06-23）: 初版（新図4種と領域フォーカスの計画仕様）。

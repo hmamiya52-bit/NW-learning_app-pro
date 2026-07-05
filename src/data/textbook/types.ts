@@ -95,6 +95,9 @@ export interface Topology {
   stack?: boolean
   // graph で、ロールに関わらず葉（枝側）として扱うノードid（例: 第8章BGP図で境界ルータをISPの雲にぶら下げる）。
   leafIds?: string[]
+  // graph で三方向FWレイアウト（spine を縦一列に並べ、最下段のノードから zone ごとに左右の列へ枝分かれ）。
+  // 第9章 内部/DMZ/外部の三層境界。上=外部・下=内部の向き規約に従う。
+  tiers?: boolean
   // chain で領域フォーカス表示にする（俯瞰＝ゾーン地図＋詳細＝現在ゾーンのノード）。スマホ幅で有効。
   zoneFocus?: boolean
 }
@@ -128,8 +131,10 @@ export interface PacketStep {
   headers: { l2: string; l3: string; l4?: string }
   // 各層がこのステップで「変わる／そのまま／外す」のどれか（カードで色分け表示）
   status?: { l2?: LayerStatus; l3?: LayerStatus; l4?: LayerStatus }
-  // graph レイアウトで、このステップにおいてブロック中のリンク（STP の片ポート停止・経路の切断）
+  // graph レイアウトで、このステップにおいてブロック中のリンク（STP の片ポート停止・経路の切断・FWの遮断）
   blockedLink?: { a: string; b: string }
+  // FWなどノード処理ステップの判定。ノードフォーカス時、そのノード脇に通過/遮断チップを表示（第9章FW）。
+  verdict?: 'pass' | 'block'
   // 領域フォーカス（zoneFocus）で、このステップの「現在ゾーン」。詳細側に表示するゾーンを明示する。
   zoneId?: string
   // sideTable をこのステップ時点までに埋まった状態にする（学習が進む表現）

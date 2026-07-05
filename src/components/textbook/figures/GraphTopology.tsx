@@ -35,6 +35,13 @@ interface Props {
   packetLabel: string
   stepKey: number
   blockedLink?: { a: string; b: string }
+  verdict?: 'pass' | 'block'
+}
+
+// FWの通過/遮断チップ（第9章）。ノードを覆わず、右脇（幅が足りなければ左脇）に置く。
+const VERDICT_STYLE = {
+  pass: { fill: '#ecfdf5', stroke: '#34d399', text: '#065f46', label: '通過 ✓' },
+  block: { fill: '#fff1f2', stroke: '#fb7185', text: '#9f1239', label: '遮断 ✕' },
 }
 
 const W = 320
@@ -72,7 +79,7 @@ function ArrowOnSeg({ x1, y1, x2, y2, color }: { x1: number; y1: number; x2: num
   return <polygon points={`${tip} ${b1} ${b2}`} fill={color} />
 }
 
-export default function GraphTopology({ topology, focus, blockedLink }: Props) {
+export default function GraphTopology({ topology, focus, blockedLink, verdict }: Props) {
   const layout = useMemo(() => buildLayout(topology), [topology])
   const { nodes, pos, trunk, leafSegs, loop, spineEdges, zoneLabels, toneOf, height, trunkLabel } = layout
 
@@ -102,14 +109,15 @@ export default function GraphTopology({ topology, focus, blockedLink }: Props) {
         </>
       )}
 
-      {/* 枝（スイッチ／ルータ→端末の線）＋進行方向の矢印 */}
+      {/* 枝（スイッチ／ルータ／FW→端末の線）＋進行方向の矢印・遮断✕ */}
       {leafSegs.map((seg, i) => {
         const focused = isLinkFocused(seg.from, seg.to)
+        const isBlocked = !!blockedLink && samePair(blockedLink.a, blockedLink.b, seg.from, seg.to)
         const vertical = Math.abs(seg.x1 - seg.x2) < 6
         const down = seg.y2 >= seg.y1
         const mx = (seg.x1 + seg.x2) / 2
         const my = (seg.y1 + seg.y2) / 2
-        // 斜めの枝（縦積みレイアウトでR1の上に並ぶ端末）は、進行方向に沿った角度付き矢印。
+        // 斜めの枝（三方向FWでFW→端末など）は、進行方向に沿った角度付き矢印。
         const fa = focus.type === 'link' ? pos.get(focus.a) : undefined
         const fb = focus.type === 'link' ? pos.get(focus.b) : undefined
         return (
@@ -119,10 +127,17 @@ export default function GraphTopology({ topology, focus, blockedLink }: Props) {
               y1={seg.y1}
               x2={seg.x2}
               y2={seg.y2}
-              stroke={focused ? LINE_ACTIVE : LINE_IDLE}
-              strokeWidth={focused ? 3 : 2}
+              stroke={isBlocked ? LINE_BLOCK : focused ? LINE_ACTIVE : LINE_IDLE}
+              strokeWidth={isBlocked ? 3.4 : focused ? 3 : 2}
+              strokeDasharray={isBlocked ? '7 5' : undefined}
             />
+            {isBlocked && (
+              <text x={mx} y={my + 6} textAnchor="middle" fontSize="18" fontWeight="700" fill={LINE_BLOCK}>
+                ✕
+              </text>
+            )}
             {focused &&
+              !isBlocked &&
               (vertical ? (
                 down ? <ArrowDown x={mx} y={my} color={LINE_ACTIVE} /> : <ArrowUp x={mx} y={my} color={LINE_ACTIVE} />
               ) : fa && fb ? (
@@ -245,6 +260,28 @@ export default function GraphTopology({ topology, focus, blockedLink }: Props) {
           </g>
         )
       })}
+
+      {/* FWの判定チップ（通過/遮断）。フォーカス中のノード脇に置く（ノードは覆わない）。 */}
+      {verdict &&
+        focusedNodeId &&
+        (() => {
+          const p = pos.get(focusedNodeId)
+          if (!p) return null
+          const v = VERDICT_STYLE[verdict]
+          const cw = 54
+          const ch = 20
+          let chipX = p.x + p.w / 2 + 8
+          if (chipX + cw > W) chipX = p.x - p.w / 2 - 8 - cw
+          const chipY = p.y - ch / 2
+          return (
+            <g>
+              <rect x={chipX} y={chipY} width={cw} height={ch} rx={10} fill={v.fill} stroke={v.stroke} strokeWidth={1.4} />
+              <text x={chipX + cw / 2} y={chipY + 14} textAnchor="middle" fontSize="11" fontWeight="700" fill={v.text}>
+                {v.label}
+              </text>
+            </g>
+          )
+        })()}
     </svg>
   )
 }
@@ -307,6 +344,11 @@ function buildLayout(topology: Topology): Layout {
   // 縦積み（spine を縦一列・上下＋左右に枝）: 経路表連動（第7章 §2）・境界の全体図（第8章 §1）。明示フラグ。
   if (topology.stack && spine.length >= 2 && !loopPair) {
     return buildStack({ spine, leavesOf, toneOf, links, edgeLabels: topology.edgeLabels ?? [], zones, allNodes: nodes })
+  }
+
+  // 三方向FW（spine 縦一列＋最下段から zone ごとに左右の列へ枝分かれ）: 第9章 内部/DMZ/外部の三層境界。
+  if (topology.tiers && spine.length >= 2 && !loopPair) {
+    return buildTiers({ spine, leavesOf, toneOf, links, edgeLabels: topology.edgeLabels ?? [], zones, allNodes: nodes })
   }
 
   // 三角形（ルータ3台が相互リンク）: OSPF の冗長2経路・コスト最短を描く。
@@ -570,6 +612,112 @@ function buildStack({
   })
 
   // 隣接する spine 間のリンク（縦・単一）。ラベルは右側に1行で。
+  const spineEdges: SpineEdge[] = []
+  spine.slice(0, -1).forEach((a, i) => {
+    const b = spine[i + 1]
+    if (!links.some((l) => samePair(l.a, l.b, a.id, b.id))) return
+    const label = edgeLabels.find((e) => samePair(e.a, e.b, a.id, b.id))?.label
+    const y1 = spineY(i)
+    const y2 = spineY(i + 1)
+    spineEdges.push({
+      a: a.id,
+      b: b.id,
+      x1: cx,
+      y1,
+      x2: cx,
+      y2,
+      label,
+      lines: label ? [label] : [],
+      lx: cx + 10,
+      ly: (y1 + y2) / 2 + 4,
+      lanchor: 'start',
+    })
+  })
+
+  const maxBot = Math.max(...[...pos.values()].map((p) => p.y + p.h / 2))
+  return { nodes: allNodes, pos, trunk: null, trunkLabel: null, leafSegs, loop: null, spineEdges, zoneLabels, toneOf, height: maxBot + 14 }
+}
+
+// 三方向FWレイアウト: spine（インターネット→境界ルータ→FW）を縦一列に並べ、最下段のノード（FW）から
+// zone ごとに左右の列へ枝分かれ（列は zone の初出順に左→右。左＝DMZ列・右＝内部列）。列内は縦に積む。
+// 上=外部・下=内部の向き規約。第9章 内部/DMZ/外部の三層境界。
+function buildTiers({
+  spine,
+  leavesOf,
+  toneOf,
+  links,
+  edgeLabels,
+  zones,
+  allNodes,
+}: {
+  spine: TopoNode[]
+  leavesOf: (sid: string) => TopoNode[]
+  toneOf: (n: TopoNode) => string
+  links: Topology['links']
+  edgeLabels: NonNullable<Topology['edgeLabels']>
+  zones: Topology['zones']
+  allNodes: TopoNode[]
+}): Layout {
+  const cx = W / 2
+  const zoneById = new Map(zones.map((z) => [z.id, z]))
+  const pos = new Map<string, Pos>()
+  const leafSegs: Layout['leafSegs'] = []
+  const zoneLabels: Layout['zoneLabels'] = []
+
+  // spine を縦一列（第9章は インターネット→境界ルータ→FW の3段）。
+  const firstY = 26
+  const spineGap = SW_H + 30
+  const spineY = (i: number) => firstY + i * spineGap
+  spine.forEach((s, i) => pos.set(s.id, { x: cx, y: spineY(i), w: SW_W, h: SW_H }))
+
+  const bot = spine[spine.length - 1]
+  const botY = spineY(spine.length - 1)
+
+  // 最下段（FW）の直下の端末を zone ごとに列にまとめる。
+  const directLeaves = leavesOf(bot.id)
+  const groups = new Map<string, TopoNode[]>()
+  const zoneOrder: string[] = []
+  directLeaves.forEach((lf) => {
+    const z = lf.zoneId ?? '_'
+    if (!groups.has(z)) {
+      groups.set(z, [])
+      zoneOrder.push(z)
+    }
+    groups.get(z)!.push(lf)
+  })
+  const nCol = zoneOrder.length
+  const colXs =
+    nCol <= 1 ? [cx] : nCol === 2 ? [66, 254] : Array.from({ length: nCol }, (_, i) => ((i + 0.5) / nCol) * W)
+
+  const colTopY = botY + SW_H / 2 + 57 + LEAF_H / 2 // FW下端から列の先頭までの枝の長さ＝57
+  zoneOrder.forEach((zid, ci) => {
+    const x = colXs[ci]
+    const arr = groups.get(zid)!
+    let y = colTopY
+    arr.forEach((node, ni) => {
+      pos.set(node.id, { x, y, w: LEAF_W, h: LEAF_H })
+      if (ni === 0) {
+        // FW から列の先頭へ斜めの枝
+        leafSegs.push({ from: bot.id, to: node.id, x1: cx, y1: botY + SW_H / 2, x2: x, y2: y - LEAF_H / 2 })
+        const z = zoneById.get(zid)
+        if (z)
+          zoneLabels.push({ x, y: y - LEAF_H / 2 - 6, text: z.label, color: (TONE_COLOR[z.tone] ?? TONE_COLOR.slate).text })
+      } else {
+        // 同じ列の1つ上の端末から縦の枝
+        leafSegs.push({
+          from: arr[ni - 1].id,
+          to: node.id,
+          x1: x,
+          y1: y - (LEAF_H + 16) + LEAF_H / 2,
+          x2: x,
+          y2: y - LEAF_H / 2,
+        })
+      }
+      y += LEAF_H + 16
+    })
+  })
+
+  // spine 間リンク（インターネット–境界ルータ, 境界ルータ–FW）縦・単一。ラベルは右側に。
   const spineEdges: SpineEdge[] = []
   spine.slice(0, -1).forEach((a, i) => {
     const b = spine[i + 1]

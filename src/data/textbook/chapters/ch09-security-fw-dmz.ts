@@ -29,6 +29,12 @@ const boundaryTopology: Topology = {
   ],
 }
 
+// ステートフル図は宛先の実体（社外サイト）を図中に示すため、インターネットに社外サイトのIPを添える。
+const statefulTopology: Topology = {
+  ...boundaryTopology,
+  nodes: boundaryTopology.nodes.map((n) => (n.id === 'inet' ? { ...n, sub: '社外サイト' } : n)),
+}
+
 // §1 全体図: 境界にFWが加わり、サーバLANがDMZに。三層の位置関係を orient（verdictなし）。
 const overviewFigure: PacketFlowFigure = {
   kind: 'packet-flow',
@@ -149,7 +155,7 @@ const statefulFigure: PacketFlowFigure = {
   title: '行きを許せば、戻りは状態で自動通過',
   caption: '行きを許可した通信の[[blue:戻り]]は、FWが[[blue:状態（コネクション）]]で覚えて自動で通します。',
   takeaway: '[[green:戻り用のルールは不要]]。第3章のコネクションの状態を、FWがここで活用します。',
-  topology: boundaryTopology,
+  topology: statefulTopology,
   hideHeaders: true,
   steps: [
     {
@@ -325,7 +331,7 @@ export const ch09SecurityFwDmz: TextbookChapter = {
       blocks: [
         {
           kind: 'text',
-          text: 'FWは[[blue:ルール]]の一覧を上から順に見て、通信が最初に一致した行の「許可／拒否」に従います。ルールの条件に使うのが、第3章で学んだ[[blue:通信を見分ける5つの情報]]（送信元IP・宛先IP・プロトコル・送信元ポート・宛先ポート）です。',
+          text: 'FWは[[blue:ルール]]の一覧を上から順に見て、通信が最初に一致した行の「許可／拒否」に従います。ルールの条件に使うのが、第3章で学んだ[[blue:通信を見分ける5つの情報]]（送信元IP・宛先IP・プロトコル・送信元ポート・宛先ポート）です。実際のルールは主に[[blue:宛先ポート]]（サービスの種類）で許可し、[[blue:送信元ポート]]は通常anyとします。',
         },
         { kind: 'figure', figure: fwRuleFigure },
         {
@@ -373,6 +379,12 @@ export const ch09SecurityFwDmz: TextbookChapter = {
           text: 'そこで公開サーバは、内部とは別の区画＝[[amber:DMZ]]に置きます。FWは「外→[[amber:DMZ]]は可、外→[[blue:内部]]は不可」に加えて「[[amber:DMZ]]→[[blue:内部]]も不可」に設定。DMZが破られても、内部への侵入をFWで止めます。',
         },
         { kind: 'figure', figure: dmzFigure },
+        {
+          kind: 'callout',
+          tone: 'info',
+          title: '外からDMZへ届く宛先は、実はグローバルIP',
+          body: '外から見た公開サーバの宛先は、境界の[[blue:グローバルIP]]。境界の[[blue:静的NAT]]（第8章で予告した、外から受けるための固定の変換）で、DMZの172.16.0.20へ変換されて届きます。図では、FWの許可判断に集中するため、変換後の[[amber:DMZ内部IP]]で宛先を表記しています。',
+        },
         {
           kind: 'callout',
           tone: 'tip',

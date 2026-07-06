@@ -8,6 +8,7 @@ import { ch07Routing } from './chapters/ch07-routing'
 import { ch08InternetNatBgp } from './chapters/ch08-internet-nat-bgp'
 import { ch09SecurityFwDmz } from './chapters/ch09-security-fw-dmz'
 import { ch10LbProxyCdn } from './chapters/ch10-lb-proxy-cdn'
+import { ch11Availability } from './chapters/ch11-availability'
 import type { TextbookChapter } from './types'
 
 export type { TextbookChapter, Block, Section, Figure } from './types'
@@ -16,7 +17,6 @@ export type { TextbookChapter, Block, Section, Figure } from './types'
 // 構成図の段階的成長）に沿って順に作る。順序＝学習の積み上げ＋構成図が育つ順。
 const DRAFTS: [number, string, string, string][] = [
   // 第3部 現実の構成へ（境界・拡張・冗長：午後スケール）
-  [11, 'availability', '冗長化・可用性・更改作業', '機器・経路・リンクの冗長、VRRP、フェイルオーバーと無停止更改を扱います。'],
   [12, 'vpn-wan-sdwan', '拠点間接続・VPN・WAN・SD-WAN', 'IPsec拠点間VPN、WAN、SD-WANのオーバーレイで複数拠点をつなぎます。'],
   [13, 'auth-sso-pki', '認証・認可・SSO・PKI', '認証と認可の違い、RADIUS、SSO、証明書チェーンとPKIを扱います。'],
   [14, 'wireless-lan', '無線LAN', 'AP・WLC・SSID・IEEE802.1X認証・ローミングを扱います。'],
@@ -41,7 +41,7 @@ const drafts: TextbookChapter[] = DRAFTS.map(([order, id, title, summary]) => ({
   takeaways: [],
 }))
 
-export const textbookChapters: TextbookChapter[] = [ch01Osi, ch02DnsDhcp, ch03TcpUdpPort, ch04WebTlsHttp, ch05L2VlanStp, ch06IpSubnet, ch07Routing, ch08InternetNatBgp, ch09SecurityFwDmz, ch10LbProxyCdn, ...drafts].sort((a, b) => a.order - b.order)
+export const textbookChapters: TextbookChapter[] = [ch01Osi, ch02DnsDhcp, ch03TcpUdpPort, ch04WebTlsHttp, ch05L2VlanStp, ch06IpSubnet, ch07Routing, ch08InternetNatBgp, ch09SecurityFwDmz, ch10LbProxyCdn, ch11Availability, ...drafts].sort((a, b) => a.order - b.order)
 
 export function getTextbookChapter(chapterId: string | undefined): TextbookChapter | undefined {
   if (!chapterId) return undefined

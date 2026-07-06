@@ -1,6 +1,6 @@
 # 教科書モード 図解仕様書 v2
 
-最終更新: 2026-07-05（第1〜8章の実装・レビューで確定した仕様に全面改訂）
+最終更新: 2026-07-06（第11章で graph に pair/bundle を追加し7モード化）
 
 「どの概念を、どの図で、どう見せれば一番わかりやすいか」を確定する。図解は本モードの最重要・差別化要素であり、**図の選択と画面仕様は本書を正とする**（章別設計 `textbook-chapter-designs.md` の図は本書に従う）。§3 のカタログはすべて実装済み。
 
@@ -61,7 +61,7 @@
 - `steps[]` の `focus`（link/node）で現在区間・処理を指す。`explanation` は固定高（約2行・全角換算50字目安）。
 - **ヘッダ表**（L2/L3/L4 の現在値＋「変わる/そのまま/外す」チップ）は付け替え・書き換えが主題の図で使う。不要なら `hideHeaders`。
 - **sideTable**（ステップ連動で埋まる表）: 経路表・MAC表・NAPT変換表に。**行数は全ステップで固定**（未記録は「—」）にしてボタン不動を保つ。`tableHighlightRow` で現在行を強調。ヘッダ表と sideTable の併用はしない（縦に重すぎる）。
-- 拡張（すべて実装済み）: `verdict?: 'pass'|'block'`（第9章FW・ノード脇へ通過/遮断チップ＝ノードは覆わない）／`bubbles`（宛先・送信元の吹き出し。graph=左脇固定／chain=回線中央）／`downNodes`（第10章LBヘルスチェック・第11章フェイルオーバー。停止ノードを灰色表示。枝の`blockedLink`✕と併用可）。
+- 拡張（すべて実装済み）: `verdict?: 'pass'|'block'`（第9章FW・ノード脇へ通過/遮断チップ＝ノードは覆わない）／`bubbles`（宛先・送信元の吹き出し。graph=左脇固定／chain=回線中央）／`downNodes`（第10章LBヘルスチェック・第11章フェイルオーバー。停止ノードを灰色表示。枝の`blockedLink`✕と併用可）／`pairActive`（第11章VRRP・pairモードで稼働中のノード。他方は待機中、`downNodes`は故障として状態チップに反映）。
 
 ### 3.5 chain レイアウト（`TopologyView`・既定）
 - 座標レスの一直線。ノードは zone ごとに破線ボックスで囲む（zone ラベルに CIDR を含めてよい: 「内部LAN 192.168.10.0/24」）。
@@ -70,7 +70,7 @@
 - Don't: ノードを覆う長いチップ（差し戻し実績）。吹き出しとノードアイコンの重なりは検証で0を確認する。
 
 ### 3.6 graph レイアウト（`GraphTopology`・SVG 320幅）
-`Topology.layout:'graph'`。スイッチ/ルータ/FW/雲=幹（spine）、PC・サーバ等=枝（leaf）。動きは**アクティブな線＋進行方向の矢印**（チップは出さない。ただしFWの判定は `verdict` チップを脇に）。`Topology.leafIds` でロールに関わらず葉に格下げできる（例: BGP図で境界ルータを雲の枝に）。5モード:
+`Topology.layout:'graph'`。スイッチ/ルータ/FW/雲=幹（spine）、PC・サーバ等=枝（leaf）。動きは**アクティブな線＋進行方向の矢印**（チップは出さない。ただしFWの判定は `verdict` チップを脇に）。`Topology.leafIds` でロールに関わらず葉に格下げできる（例: BGP図で境界ルータを雲の枝に）。7モード（pair/bundle は spine もロール色で塗る＝既存5モードの spine=slate と異なる）:
 
 | モード | 判定 | 用途・要点 |
 |---|---|---|
@@ -79,6 +79,8 @@
 | **triangle** | spine 3台が相互リンク | ルータ/AS 3つの三角形（第7章OSPF、第8章BGP）。`edgeLabels[{a,b,label}]` でコスト/帯域/BGPラベル、`blockedLink` で切断→迂回 |
 | **stack N段** | `stack:true`・spine 2台以上 | spine（nodes配列順=上→下）を縦一列。最上段の葉=上の横並び・最下段=下・**中間段=左右の短い水平枝（最大2）**。最上段に葉が無ければ余白を詰める。全ノード1枚の全体図・経路表連動に（第7章§2=2段、第8章§1=4段） |
 | **tiers（三方向FW）** | `tiers:true`・spine 2台以上 | spine を縦一列（上=外部・下=内部）＋**最下段のノード（FW）から zone ごとに左右の列へ枝分かれ**（列は zone 初出順に左→右。列内は縦積み）。第9章 内部/DMZ/外部の三層境界。枝は `blockedLink` で赤破線＋✕、`PacketStep.verdict` でFW脇に通過/遮断チップ |
+| **pair（冗長ペア）** | `pair:true`・spine 3台以上 | 上=共有先（インターネット等）を中央、中段に**2台の冗長ペアを左右**、下=端末（PC）を中央の3段。仮想IP `vip` を**ペアと端末の間に固定表示**（PCのGW＝この仮想IP）。稼働=`pairActive`／待機=他方／故障=`downNodes` を、各ペア下の**状態チップ**（稼働中/待機中/故障）で表示。故障ノードの枝は自動で赤破線＋✕。第11章VRRP |
+| **bundle（LAG）** | `bundle:true`・spine 2台に links 2本以上 | 2台を左右に置き、間の複数リンクを**近接した平行線＋点線ブラケット**で1本の論理リンクに（`bundleNote` をブラケット上に）。`blockedLink` がそのペアに一致で**上側リンクに✕**（1本故障＝残りで継続）。第11章LAG |
 
 - ゾーンは葉の色分け＋白チップのセグメント名ラベル（短く。CIDRは入れない）。
 - **パケットの宛先/送信元**は `PacketStep.bubbles`（「宛先 X」「送信元 Y」形式・最大2）で、アクティブ対象の**左脇に固定**表示（chain の吹き出しと同形＝白地＋青枠・2行組・三角で対象を指す）。中央縦spineのノード列に食い込ませない＝ノード非被覆。**右脇は verdict チップ専用**で左右に棲み分け（tiers 等の中央縦spine向け。第9章）。
@@ -133,12 +135,12 @@
 | 8 | graph stack 4段（全体図） / address-table（私設/グローバル） / chain＋sideTable（NAPT往復・吹き出し） / graph triangle＋leafIds（BGP迂回） / record-table（行き/戻り） |
 | 9 | graph tiers（三方向FWの三層構成図＝1枚を4図で再利用） / record-table ×2（FWルール・通信可否） / packet-flow＋verdict（通過/遮断・ステートフル・DMZ隔離。DMZ→内部は `blockedLink`） |
 | 10 | graph stack（LB＝VIPで受けWebプールへ振り分け・停止台は`downNodes`灰色＋枝✕） / record-table ×2（L4/L7・リバース/フォワード） / chain＋`bubbles`（プロキシ配置＝外部中心・CDN往復のヒット/ミス） |
+| 11 | graph stack（SPOF＝単一機器を`downNodes`灰色＋`blockedLink`✕で全停止） / graph pair（VRRP＝冗長ペア・仮想IP中央固定・稼働/待機/故障チップ・フェイルオーバー） / graph bundle（LAG＝2リンク束ね・1本故障で継続） / timeline（無停止更改） / record-table（冗長化のまとめ） |
 
-### 計画（第11章以降の主要図。§2 の使い分けに従い設計時に確定）
+### 計画（第12章以降の主要図。§2 の使い分けに従い設計時に確定）
 
 | 章 | 概念 → 図 |
 |---|---|
-| 11 | VRRP切替→packet-flow＋ノード`down`（第10章で実装済み）／LAG→graph／無停止更改→timeline |
 | 12 | IPsec→encap（元IP＋新IP）／拠点間→graph／SD-WAN→graph |
 | 13 | 認証/認可→address-table／RADIUS→sequence 3者／証明書チェーン→timeline |
 | 14〜20 | chapter-designs の各章設計に従う（第20章の総合図は stack N段の全体図を基本に、必要なら区間ごとの複数図に分割） |
@@ -157,6 +159,7 @@
 
 ## 7. 変更履歴
 
+- **v2.3（2026-07-06）**: 第11章の実装を反映。graph に **pair**（冗長ペア＝VRRP。上=共有先/中=2台ペア/下=端末、仮想IP `vip` を中央固定、稼働/待機/故障を `pairActive`＋`downNodes` の状態チップで）と **bundle**（LAG＝2台間の複数リンクを近接平行線＋点線ブラケットで1本の論理リンクに、`blockedLink` で1本故障の✕）を追加して7モード化。`PacketStep.pairActive`・`Topology.pair/vip/bundle/bundleNote` を追加。章×図の実績に第11章を追加。
 - **v2.2（2026-07-05）**: 第10章の実装を反映。role `lb`/`proxy` を追加（graphの幹・chainのアイコン）、`downNodes`（停止ノードの灰色表示＝LBヘルスチェック/フェイルオーバー）を実装、stack で同一ゾーンの複数末端をゾーンラベル1つに集約（LBのWebサーバプール）。章×図の実績に第10章を追加。
 - **v2.1（2026-07-05）**: 第9章の実装を反映。graph に **tiers**（三方向FW＝内部/DMZ/外部の三層境界。上=外部・下=内部）を追加して5モード化、`verdict`（通過/遮断チップ）を予約→実装済みに更新、graph図でも `bubbles`（宛先/送信元の吹き出し・左脇固定）でパケットの行き先を図中に表示（chain踏襲・ノード非被覆）、章×図の実績に第9章を追加。
 - **v2（2026-07-05）**: 実装済みの全仕様に更新。graph 4モード（tree/loop/triangle/stack N段）・`leafIds`・chain のマーク＋吹き出し・ゾーン伸長規則・segment-map・確認問題を収載。領域フォーカス（旧§3.9）は不使用として §4 に凍結記録。「追加」チップ不採用を原則6に反映。章×図を実績と計画に分離。

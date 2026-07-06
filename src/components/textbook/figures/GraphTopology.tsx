@@ -16,6 +16,20 @@ const TONE_COLOR: Record<string, { fill: string; stroke: string; text: string }>
   rose: { fill: '#fff1f2', stroke: '#fb7185', text: '#9f1239' },
   slate: { fill: '#f1f5f9', stroke: '#94a3b8', text: '#334155' },
 }
+// pair/bundle（第11章）は spine もロール色で塗る（既存モードは spine=slate のまま）。
+const ROLE_TONE_LOCAL: Record<string, string> = {
+  pc: 'sky',
+  switch: 'emerald',
+  router: 'blue',
+  server: 'amber',
+  dns: 'violet',
+  firewall: 'rose',
+  internet: 'slate',
+  cloud: 'slate',
+  lb: 'blue',
+  proxy: 'violet',
+}
+
 const FOCUS = { fill: '#2563eb', stroke: '#1d4ed8', text: '#ffffff' }
 const LINE_IDLE = '#cbd5e1'
 const LINE_ACTIVE = '#2563eb'
@@ -38,6 +52,7 @@ interface Props {
   verdict?: 'pass' | 'block'
   bubbles?: string[]
   downNodes?: string[]
+  pairActive?: string
 }
 
 // 停止中ノードの灰色トーン（第10章LBヘルスチェック・第11章フェイルオーバー）。
@@ -84,9 +99,9 @@ function ArrowOnSeg({ x1, y1, x2, y2, color }: { x1: number; y1: number; x2: num
   return <polygon points={`${tip} ${b1} ${b2}`} fill={color} />
 }
 
-export default function GraphTopology({ topology, focus, blockedLink, verdict, bubbles, downNodes }: Props) {
+export default function GraphTopology({ topology, focus, blockedLink, verdict, bubbles, downNodes, pairActive }: Props) {
   const layout = useMemo(() => buildLayout(topology), [topology])
-  const { nodes, pos, trunk, leafSegs, loop, spineEdges, zoneLabels, toneOf, height, trunkLabel } = layout
+  const { nodes, pos, trunk, leafSegs, loop, spineEdges, zoneLabels, toneOf, height, trunkLabel, pairIds, vipPill, bundle } = layout
 
   const focusedNodeId = focus.type === 'node' ? focus.id : null
   const isLinkFocused = (a: string, b: string) =>
@@ -117,7 +132,13 @@ export default function GraphTopology({ topology, focus, blockedLink, verdict, b
       {/* 枝（スイッチ／ルータ／FW→端末の線）＋進行方向の矢印・遮断✕ */}
       {leafSegs.map((seg, i) => {
         const focused = isLinkFocused(seg.from, seg.to)
-        const isBlocked = !!blockedLink && samePair(blockedLink.a, blockedLink.b, seg.from, seg.to)
+        // 停止したペアノード（VRRPの故障ルータ）につながる枝は、両方まとめて遮断表示にする。
+        const touchesDownPair =
+          !!pairIds &&
+          ((downNodes?.includes(seg.from) && pairIds.includes(seg.from)) ||
+            (downNodes?.includes(seg.to) && pairIds.includes(seg.to)))
+        const isBlocked =
+          (!!blockedLink && samePair(blockedLink.a, blockedLink.b, seg.from, seg.to)) || touchesDownPair
         const vertical = Math.abs(seg.x1 - seg.x2) < 6
         const down = seg.y2 >= seg.y1
         const mx = (seg.x1 + seg.x2) / 2
@@ -220,6 +241,60 @@ export default function GraphTopology({ topology, focus, blockedLink, verdict, b
         </>
       )}
 
+      {/* リンク束ね（LAG）: 近接した平行リンク＋点線ブラケット。片方停止は上側リンクに ✕。 */}
+      {bundle &&
+        (() => {
+          const focused = isLinkFocused(bundle.a, bundle.b)
+          const blockedBundle = !!blockedLink && samePair(blockedLink.a, blockedLink.b, bundle.a, bundle.b)
+          return (
+            <g>
+              <rect
+                x={bundle.bracket.x}
+                y={bundle.bracket.y}
+                width={bundle.bracket.w}
+                height={bundle.bracket.h}
+                rx={8}
+                fill="none"
+                stroke="#94a3b8"
+                strokeWidth={1.4}
+                strokeDasharray="5 4"
+              />
+              {bundle.note && (
+                <text x={bundle.bracket.x + bundle.bracket.w / 2} y={bundle.bracket.y - 6} textAnchor="middle" fontSize="10" fontWeight="700" fill="#475569">
+                  {bundle.note}
+                </text>
+              )}
+              {bundle.links.map((ln, i) => {
+                const isBlocked = blockedBundle && i === 0
+                const color = isBlocked ? LINE_BLOCK : focused ? LINE_ACTIVE : LINE_TRUNK
+                return (
+                  <g key={`bl${i}`}>
+                    <line
+                      x1={ln.x1}
+                      y1={ln.y1}
+                      x2={ln.x2}
+                      y2={ln.y2}
+                      stroke={color}
+                      strokeWidth={isBlocked ? 3.4 : 3}
+                      strokeDasharray={isBlocked ? '7 5' : undefined}
+                    />
+                    {isBlocked && (
+                      <text x={(ln.x1 + ln.x2) / 2} y={ln.y1 + 6} textAnchor="middle" fontSize="18" fontWeight="700" fill={LINE_BLOCK}>
+                        ✕
+                      </text>
+                    )}
+                  </g>
+                )
+              })}
+              {bundle.ground.map((g, i) => (
+                <text key={`bg${i}`} x={g.x} y={g.y} textAnchor="middle" fontSize="9" fill="#94a3b8">
+                  {g.text}
+                </text>
+              ))}
+            </g>
+          )
+        })()}
+
       {/* セグメント名ラベル（縦積みレイアウトで端末の上に表示・白チップで線と重ねない） */}
       {zoneLabels.map((z, i) => {
         const w = z.text.length * 9 + 6
@@ -263,6 +338,39 @@ export default function GraphTopology({ topology, focus, blockedLink, verdict, b
                 {n.sub}
               </text>
             )}
+          </g>
+        )
+      })}
+
+      {/* 仮想IP（VRRPのVIP）ピル。ペアと端末の間に固定表示（PCのGW＝この仮想IP）。 */}
+      {vipPill && (
+        <g>
+          <rect x={vipPill.x - 40} y={vipPill.y - 15} width={80} height={30} rx={6} fill="#ffffff" stroke="#60a5fa" strokeWidth={1.4} />
+          <text x={vipPill.x} y={vipPill.y - 3} textAnchor="middle" fontSize="9" fontWeight="800" fill="#3b82f6">
+            仮想IP
+          </text>
+          <text x={vipPill.x} y={vipPill.y + 9} textAnchor="middle" fontSize="11" fontWeight="800" fill="#1d4ed8">
+            {vipPill.text}
+          </text>
+        </g>
+      )}
+
+      {/* ペアの状態チップ（稼働中／待機中／故障）。downNodes＝故障、pairActive＝稼働中、他＝待機中。 */}
+      {pairIds?.map((id) => {
+        const p = pos.get(id)
+        if (!p) return null
+        const st = downNodes?.includes(id)
+          ? { t: '故障', fill: '#fff1f2', stroke: '#fecdd3', text: '#9f1239' }
+          : id === pairActive
+            ? { t: '稼働中', fill: '#dbeafe', stroke: '#93c5fd', text: '#1d4ed8' }
+            : { t: '待機中', fill: '#f1f5f9', stroke: '#cbd5e1', text: '#475569' }
+        const cyp = p.y + p.h / 2 + 12
+        return (
+          <g key={`st${id}`}>
+            <rect x={p.x - 22} y={cyp - 8} width={44} height={16} rx={8} fill={st.fill} stroke={st.stroke} strokeWidth={1} />
+            <text x={p.x} y={cyp + 4} textAnchor="middle" fontSize="10" fontWeight="800" fill={st.text}>
+              {st.t}
+            </text>
           </g>
         )
       })}
@@ -374,6 +482,18 @@ interface Layout {
   zoneLabels: { x: number; y: number; text: string; color: string }[]
   toneOf: (n: TopoNode) => string
   height: number
+  // pair（VRRP）: 冗長ペアのノードid・中央の仮想IPピル。
+  pairIds?: string[]
+  vipPill?: { x: number; y: number; text: string } | null
+  // bundle（LAG）: 束ねた平行リンク・点線ブラケット・接地ラベル。
+  bundle?: {
+    a: string
+    b: string
+    links: { x1: number; y1: number; x2: number; y2: number }[]
+    bracket: { x: number; y: number; w: number; h: number }
+    note?: string
+    ground: { x: number; y: number; text: string }[]
+  } | null
 }
 
 function buildLayout(topology: Topology): Layout {
@@ -393,6 +513,14 @@ function buildLayout(topology: Topology): Layout {
     if (link) parentOf.set(leaf.id, link.a === leaf.id ? link.b : link.a)
   })
   const leavesOf = (sid: string) => leaves.filter((lf) => parentOf.get(lf.id) === sid)
+
+  // 冗長ペア（VRRP）／リンク束ね（LAG）は専用レイアウト。loopPair 判定より前に返す（bundle の2リンクを loop 扱いにしない）。
+  if (topology.pair && spine.length >= 3) {
+    return buildPair({ spine, leaves, links, allNodes: nodes, vip: topology.vip })
+  }
+  if (topology.bundle && spine.length >= 2) {
+    return buildBundle({ spine, links, allNodes: nodes, note: topology.bundleNote })
+  }
 
   let loopPair: { a: string; b: string } | null = null
   if (spine.length === 2) {
@@ -812,6 +940,125 @@ function buildTiers({
 
   const maxBot = Math.max(...[...pos.values()].map((p) => p.y + p.h / 2))
   return { nodes: allNodes, pos, trunk: null, trunkLabel: null, leafSegs, loop: null, spineEdges, zoneLabels, toneOf, height: maxBot + 14 }
+}
+
+// 冗長ペア（VRRP）レイアウト: 上=共有先（インターネット等）を中央、中段に2台の冗長ペアを左右、下=端末（PC）を中央。
+// 仮想IP（VIP）はペアと端末の間に固定表示。稼働/待機/故障は本体の render 側で色＋状態チップにする。
+// 第11章 機器の冗長。上=外部・下=内部の向き規約に従う。
+function buildPair({
+  spine,
+  leaves,
+  links,
+  allNodes,
+  vip,
+}: {
+  spine: TopoNode[]
+  leaves: TopoNode[]
+  links: Topology['links']
+  allNodes: TopoNode[]
+  vip?: string
+}): Layout {
+  const cx = W / 2
+  const pos = new Map<string, Pos>()
+  const leafSegs: Layout['leafSegs'] = []
+
+  // 下段の端末（PC）＝ペア2台の両方につながる葉。ペア＝その端末につながる spine、上段＝残りの spine。
+  const bottom = leaves[0]
+  const pairNodes = spine.filter((s) => bottom && links.some((l) => samePair(l.a, l.b, s.id, bottom.id)))
+  const topNode = spine.find((s) => !pairNodes.some((p) => p.id === s.id)) ?? spine[0]
+  const [r1, r2] = pairNodes
+
+  const topY = 34
+  const pairY = 142
+  const botY = 250
+  pos.set(topNode.id, { x: cx, y: topY, w: SW_W, h: SW_H })
+  if (r1) pos.set(r1.id, { x: 66, y: pairY, w: SW_W, h: SW_H })
+  if (r2) pos.set(r2.id, { x: 254, y: pairY, w: SW_W, h: SW_H })
+  if (bottom) pos.set(bottom.id, { x: cx, y: botY, w: LEAF_W, h: LEAF_H })
+
+  const pushSeg = (from: string, to: string) => {
+    const pf = pos.get(from)
+    const pt = pos.get(to)
+    if (!pf || !pt) return
+    leafSegs.push({ from, to, x1: pf.x, y1: pf.y + pf.h / 2, x2: pt.x, y2: pt.y - pt.h / 2 })
+  }
+  if (r1) pushSeg(topNode.id, r1.id)
+  if (r2) pushSeg(topNode.id, r2.id)
+  if (r1 && bottom) pushSeg(r1.id, bottom.id)
+  if (r2 && bottom) pushSeg(r2.id, bottom.id)
+
+  const toneOf = (n: TopoNode) => ROLE_TONE_LOCAL[n.role] ?? 'slate'
+  const maxBot = botY + LEAF_H / 2
+  return {
+    nodes: allNodes,
+    pos,
+    trunk: null,
+    trunkLabel: null,
+    leafSegs,
+    loop: null,
+    spineEdges: [],
+    zoneLabels: [],
+    toneOf,
+    height: maxBot + 16,
+    pairIds: pairNodes.map((p) => p.id),
+    vipPill: vip ? { x: cx, y: 198, text: vip } : null,
+  }
+}
+
+// リンク束ね（LAG）レイアウト: 2台の機器を左右に置き、その間の複数リンクを近接した平行線で描く。
+// 点線ブラケットで「1本の論理リンク」を示し、片方の停止は blockedLink で上側リンクに ✕。
+function buildBundle({
+  spine,
+  links,
+  allNodes,
+  note,
+}: {
+  spine: TopoNode[]
+  links: Topology['links']
+  allNodes: TopoNode[]
+  note?: string
+}): Layout {
+  const [a, b] = spine
+  const ay = 100
+  const ax = 70
+  const bx = 250
+  const pos = new Map<string, Pos>()
+  pos.set(a.id, { x: ax, y: ay, w: SW_W, h: SW_H })
+  pos.set(b.id, { x: bx, y: ay, w: SW_W, h: SW_H })
+
+  const n = links.filter((l) => samePair(l.a, l.b, a.id, b.id)).length || 2
+  const x1 = ax + SW_W / 2
+  const x2 = bx - SW_W / 2
+  const ys = n >= 3 ? [82, 100, 118] : [88, 112]
+  const blinks = ys.map((y) => ({ x1, y1: y, x2, y2: y }))
+  const top = Math.min(...ys)
+  const bottomY = Math.max(...ys)
+  const bracket = { x: x1 - 4, y: top - 8, w: x2 - x1 + 8, h: bottomY - top + 16 }
+
+  const toneOf = (nd: TopoNode) => ROLE_TONE_LOCAL[nd.role] ?? 'slate'
+  return {
+    nodes: allNodes,
+    pos,
+    trunk: null,
+    trunkLabel: null,
+    leafSegs: [],
+    loop: null,
+    spineEdges: [],
+    zoneLabels: [],
+    toneOf,
+    height: 150,
+    bundle: {
+      a: a.id,
+      b: b.id,
+      links: blinks,
+      bracket,
+      note,
+      ground: [
+        { x: ax, y: ay + SW_H / 2 + 17, text: '（端末側）' },
+        { x: bx, y: ay + SW_H / 2 + 17, text: '（上位側）' },
+      ],
+    },
+  }
 }
 
 function shiftPathY(d: string, dy: number) {

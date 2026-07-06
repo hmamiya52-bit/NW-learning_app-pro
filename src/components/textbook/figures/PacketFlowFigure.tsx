@@ -57,6 +57,7 @@ export default function PacketFlowFigure({ figure }: { figure: PacketFlowFigureD
             verdict={step.verdict}
             bubbles={step.bubbles}
             downNodes={step.downNodes}
+            pairActive={step.pairActive}
           />
         ) : (
           <TopologyView topology={figure.topology} focus={step.focus} packetLabel={step.packetLabel} stepKey={index} zoneId={step.zoneId} />

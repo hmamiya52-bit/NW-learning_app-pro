@@ -102,6 +102,14 @@ export interface Topology {
   tiers?: boolean
   // chain で領域フォーカス表示にする（俯瞰＝ゾーン地図＋詳細＝現在ゾーンのノード）。スマホ幅で有効。
   zoneFocus?: boolean
+  // graph で冗長ペア（VRRP）。上=共有先・中=2台の冗長ペア（左右）・下=端末の3段で描き、仮想IPを中央に固定表示する。
+  pair?: boolean
+  // pair のとき中央に固定表示する仮想IP（VRRPのVIP）。例: '192.168.10.1'
+  vip?: string
+  // graph でリンクアグリゲーション（LAG）。2台の機器間の複数リンクを近接した平行線＋点線ブラケットで1本の論理リンクとして描く。
+  bundle?: boolean
+  // bundle のブラケットに添える短い説明。例: '束ねて1本の論理リンク'
+  bundleNote?: string
 }
 
 export interface TopoNode {
@@ -141,6 +149,8 @@ export interface PacketStep {
   downNodes?: string[]
   // graph図（中央縦spine）で、パケットの宛先/送信元を図中に出す吹き出し。「宛先 X」「送信元 Y」形式・最大2。第9章。
   bubbles?: string[]
+  // pair（VRRP）で、このステップに稼働中（アクティブ）のノードid。他方は待機中、downNodes にあれば故障として表示する。
+  pairActive?: string
   // 領域フォーカス（zoneFocus）で、このステップの「現在ゾーン」。詳細側に表示するゾーンを明示する。
   zoneId?: string
   // sideTable をこのステップ時点までに埋まった状態にする（学習が進む表現）

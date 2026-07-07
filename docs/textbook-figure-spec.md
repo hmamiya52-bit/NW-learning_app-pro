@@ -136,12 +136,12 @@
 | 9 | graph tiers（三方向FWの三層構成図＝1枚を4図で再利用） / record-table ×2（FWルール・通信可否） / packet-flow＋verdict（通過/遮断・ステートフル・DMZ隔離。DMZ→内部は `blockedLink`） |
 | 10 | graph stack（LB＝VIPで受けWebプールへ振り分け・停止台は`downNodes`灰色＋枝✕） / record-table ×2（L4/L7・リバース/フォワード） / chain＋`bubbles`（プロキシ配置＝外部中心・CDN往復のヒット/ミス） |
 | 11 | graph stack（SPOF＝単一機器を`downNodes`灰色＋`blockedLink`✕で全停止） / graph pair（VRRP＝冗長ペア・仮想IP中央固定・稼働/待機/故障チップ・フェイルオーバー） / graph bundle（LAG＝2リンク束ね・1本故障で継続） / timeline（無停止更改） / record-table（冗長化のまとめ） |
+| 12 | chain＋`packetLabel`（拠点間VPNの往路＝本社ルータで包む→暗号トンネル通過→支社ルータで開く・二重IPを吹き出しで） / encap（IPsec二重IP＝新IP→IPsec→元IP、任意段を再利用） / record-table ×2（WAN回線の種類・トンネルの外側/内側） |
 
-### 計画（第12章以降の主要図。§2 の使い分けに従い設計時に確定）
+### 計画（第13章以降の主要図。§2 の使い分けに従い設計時に確定）
 
 | 章 | 概念 → 図 |
 |---|---|
-| 12 | IPsec→encap（元IP＋新IP）／拠点間→graph／SD-WAN→graph |
 | 13 | 認証/認可→address-table／RADIUS→sequence 3者／証明書チェーン→timeline |
 | 14〜20 | chapter-designs の各章設計に従う（第20章の総合図は stack N段の全体図を基本に、必要なら区間ごとの複数図に分割） |
 

@@ -291,6 +291,11 @@ export default function GraphTopology({ topology, focus, blockedLink, verdict, b
                   {g.text}
                 </text>
               ))}
+              {(bundle.bwFull || bundle.bwReduced) && (
+                <text x={W / 2} y={bundle.bwY} textAnchor="middle" fontSize="10" fontWeight="700" fill="#475569">
+                  {blockedBundle ? bundle.bwReduced : bundle.bwFull}
+                </text>
+              )}
             </g>
           )
         })()}
@@ -493,6 +498,9 @@ interface Layout {
     bracket: { x: number; y: number; w: number; h: number }
     note?: string
     ground: { x: number; y: number; text: string }[]
+    bwFull?: string
+    bwReduced?: string
+    bwY: number
   } | null
 }
 
@@ -519,7 +527,7 @@ function buildLayout(topology: Topology): Layout {
     return buildPair({ spine, leaves, links, allNodes: nodes, vip: topology.vip })
   }
   if (topology.bundle && spine.length >= 2) {
-    return buildBundle({ spine, links, allNodes: nodes, note: topology.bundleNote })
+    return buildBundle({ spine, links, allNodes: nodes, note: topology.bundleNote, bandwidth: topology.bundleBandwidth })
   }
 
   let loopPair: { a: string; b: string } | null = null
@@ -1012,11 +1020,13 @@ function buildBundle({
   links,
   allNodes,
   note,
+  bandwidth,
 }: {
   spine: TopoNode[]
   links: Topology['links']
   allNodes: TopoNode[]
   note?: string
+  bandwidth?: { full: string; reduced: string }
 }): Layout {
   const [a, b] = spine
   const ay = 100
@@ -1034,6 +1044,7 @@ function buildBundle({
   const top = Math.min(...ys)
   const bottomY = Math.max(...ys)
   const bracket = { x: x1 - 4, y: top - 8, w: x2 - x1 + 8, h: bottomY - top + 16 }
+  const bwY = ay + SW_H / 2 + 33 // 端末側/上位側ラベルの下に帯域を1行
 
   const toneOf = (nd: TopoNode) => ROLE_TONE_LOCAL[nd.role] ?? 'slate'
   return {
@@ -1046,7 +1057,7 @@ function buildBundle({
     spineEdges: [],
     zoneLabels: [],
     toneOf,
-    height: 150,
+    height: bwY + 14,
     bundle: {
       a: a.id,
       b: b.id,
@@ -1057,6 +1068,9 @@ function buildBundle({
         { x: ax, y: ay + SW_H / 2 + 17, text: '（端末側）' },
         { x: bx, y: ay + SW_H / 2 + 17, text: '（上位側）' },
       ],
+      bwFull: bandwidth?.full,
+      bwReduced: bandwidth?.reduced,
+      bwY,
     },
   }
 }

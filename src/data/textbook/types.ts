@@ -110,6 +110,8 @@ export interface Topology {
   bundle?: boolean
   // bundle のブラケットに添える短い説明。例: '束ねて1本の論理リンク'
   bundleNote?: string
+  // bundle の帯域表示（図の下段）。full＝全リンク時、reduced＝1本故障時。blockedLink が一致で自動的に切替わる。
+  bundleBandwidth?: { full: string; reduced: string }
 }
 
 export interface TopoNode {

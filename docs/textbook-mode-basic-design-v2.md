@@ -59,7 +59,7 @@ type Figure = PacketFlowFigure | OsiStackFigure | EncapFigure | AddressTableFigu
 ```
 
 - 図の詳細スキーマ（`Topology` の `layout`/`stack`/`leafIds`/`edgeLabels`、`PacketStep` の `focus`/`headers`/`status`/`blockedLink`/`tableRows` 等）は `textbook-figure-spec.md` §3 を正とする。
-- **リッチテキスト装飾 `[[blue/green/amber/red/slate:語]]`** が有効な場所: 本文 text・callout body・図の caption / takeaway・章 takeaways・check の question / answer / note。**無効な場所**（素のテキスト）: 図 title・ステップ explanation / note・record-table セル・timeline ラベル・topology のノード / ゾーンラベル。
+- **リッチテキスト装飾 `[[blue/green/amber/red/slate/violet/rose/emerald:語]]`** が有効な場所: 本文 text・callout body・図の caption / takeaway・章 takeaways・check の question / answer / note。**無効な場所**（素のテキスト）: 図 title・ステップ explanation / note・record-table セル・timeline ラベル・topology のノード / ゾーンラベル。
 - 新しい図種が要るとき: `types.ts` の `Figure` union に kind 追加 → `FigureRenderer.tsx` に分岐 → `figures/` にコンポーネント。新ロールは `NodeRole` ＋ `figureTokens.ts`（ROLE_ICON / ROLE_TONE）。**2章以上で使う見込みのものだけ共通 kind 化**する。
 
 ---

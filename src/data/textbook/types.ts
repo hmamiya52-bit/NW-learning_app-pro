@@ -192,9 +192,11 @@ export interface EncapFigure extends FigureBase {
   }[]
 }
 
-// MAC/IP/ポート対応（スマホでは縦リフロー）
+// 対比カード（MAC/IP/ポート、認証/認可 等。スマホでは縦リフロー）
 export interface AddressTableFigure extends FigureBase {
   kind: 'address-table'
+  // 定義リスト3項目の見出し。省略時は「何を示すか／届く範囲／例」（アドレス対比の既定軸）。
+  fieldLabels?: { carries: string; scope: string; example: string }
   rows: {
     name: string
     layer: string

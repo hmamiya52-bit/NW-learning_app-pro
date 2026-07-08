@@ -4,6 +4,7 @@ import { TONE } from './figureTokens'
 
 // スマホでも横スクロールしないよう、表ではなくカードの縦/グリッド配置にする。
 export default function AddressTableFigure({ figure }: { figure: AddressTableFigureData }) {
+  const labels = figure.fieldLabels ?? { carries: '何を示すか', scope: '届く範囲', example: '例' }
   return (
     <FigureFrame title={figure.title} caption={figure.caption} takeaway={figure.takeaway}>
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
@@ -17,15 +18,15 @@ export default function AddressTableFigure({ figure }: { figure: AddressTableFig
               </div>
               <dl className="space-y-1.5 px-3 py-2.5">
                 <div>
-                  <dt className="text-[10px] font-bold text-slate-400">何を示すか</dt>
+                  <dt className="text-[10px] font-bold text-slate-400">{labels.carries}</dt>
                   <dd className="text-xs font-bold text-slate-700">{row.carries}</dd>
                 </div>
                 <div>
-                  <dt className="text-[10px] font-bold text-slate-400">届く範囲</dt>
+                  <dt className="text-[10px] font-bold text-slate-400">{labels.scope}</dt>
                   <dd className="text-xs leading-relaxed text-slate-600">{row.scope}</dd>
                 </div>
                 <div>
-                  <dt className="text-[10px] font-bold text-slate-400">例</dt>
+                  <dt className="text-[10px] font-bold text-slate-400">{labels.example}</dt>
                   <dd className="font-mono text-[11px] text-slate-600">{row.example}</dd>
                 </div>
               </dl>

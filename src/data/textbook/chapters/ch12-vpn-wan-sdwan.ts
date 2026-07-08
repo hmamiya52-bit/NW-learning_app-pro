@@ -4,25 +4,22 @@ import type { EncapFigure, PacketFlowFigure, RecordTableFigure, TextbookChapter,
 // IPsec VPN（元のIPパケットを暗号化して新しいIPで包む＝第1章カプセル化の応用・二重IP）→ WANの種類 → SD-WAN。
 // 台帳の第2拠点 192.168.20.0/24 を追加。支社ルータのグローバルは 203.0.113.5（本社境界 203.0.113.1 と別の点）。
 
-// §1/§2 拠点間の旅（chain）。本社PC→本社ルータ→インターネット→支社ルータ→支社PC。
-// 本社ルータで包み、暗号トンネルを渡り、支社ルータで開く。吹き出しで外側/元の宛先を見せる。
+// §1/§2 拠点間の旅（tunnel）。本社ルータ—[暗号トンネルの帯]—支社ルータを横に、端末は各ルータの下。
+// 折り返さないSVGグラフで常に1つながり。二重IP（外側/中身）は bubbles で段階表示。
 const tunnelTopology: Topology = {
-  zones: [
-    { id: 'hq', label: '本社', tone: 'sky' },
-    { id: 'net', label: 'インターネット', tone: 'slate' },
-    { id: 'br', label: '支社', tone: 'emerald' },
-  ],
+  layout: 'graph',
+  tunnel: true,
+  tunnelNote: 'IPsec暗号トンネル（インターネット経由）',
+  zones: [],
   nodes: [
-    { id: 'hqpc', label: '本社PC', role: 'pc', zoneId: 'hq', sub: '192.168.10.10' },
-    { id: 'hqrt', label: '本社ルータ', role: 'router', zoneId: 'hq', sub: '外側 203.0.113.1' },
-    { id: 'inet', label: 'インターネット', role: 'internet', zoneId: 'net' },
-    { id: 'brrt', label: '支社ルータ', role: 'router', zoneId: 'br', sub: '外側 203.0.113.5' },
-    { id: 'brpc', label: '支社PC', role: 'pc', zoneId: 'br', sub: '192.168.20.10' },
+    { id: 'hqrt', label: '本社ルータ', role: 'router', sub: '外側 203.0.113.1' },
+    { id: 'brrt', label: '支社ルータ', role: 'router', sub: '外側 203.0.113.5' },
+    { id: 'hqpc', label: '本社PC', role: 'pc', sub: '192.168.10.10' },
+    { id: 'brpc', label: '支社PC', role: 'pc', sub: '192.168.20.10' },
   ],
   links: [
     { a: 'hqpc', b: 'hqrt' },
-    { a: 'hqrt', b: 'inet' },
-    { a: 'inet', b: 'brrt' },
+    { a: 'hqrt', b: 'brrt' },
     { a: 'brrt', b: 'brpc' },
   ],
 }
@@ -31,44 +28,43 @@ const tunnelFigure: PacketFlowFigure = {
   kind: 'packet-flow',
   id: 'ch12-tunnel',
   title: '本社から支社へ——暗号トンネルの往路',
-  caption: '本社ルータで[[violet:包み]]、インターネットを暗号のまま渡り、支社ルータで[[emerald:開き]]ます。',
+  caption: '本社ルータで[[violet:包み]]、暗号トンネルを渡り、支社ルータで[[blue:開き]]ます。',
   takeaway: 'トンネルの中は[[violet:外側IP]]で運ばれ、[[blue:元の宛先]]は暗号化。第1章の「包む／外す」が拠点間で効きます。',
   topology: tunnelTopology,
   hideHeaders: true,
   steps: [
     {
       focus: { type: 'link', a: 'hqpc', b: 'hqrt' },
-      packetLabel: '宛先 192.168.20.10',
+      bubbles: ['宛先 192.168.20.10'],
+      packetLabel: '',
       headers: { l2: '', l3: '' },
       explanation: '本社PCから支社PC（192.168.20.10）あての通信。宛先は支社のネットワークなので、まず本社ルータへ。',
     },
     {
       focus: { type: 'node', id: 'hqrt' },
+      bubbles: ['外側 203.0.113.5（新IP）', '中身 192.168.20.10（暗号）'],
       packetLabel: '',
       headers: { l2: '', l3: '' },
       explanation: '本社ルータが元のパケットを丸ごと暗号化し、支社ルータあて（203.0.113.5）の新しいIPで包みます。',
     },
     {
-      focus: { type: 'link', a: 'hqrt', b: 'inet' },
-      packetLabel: '宛先 203.0.113.5（外側）',
+      focus: { type: 'link', a: 'hqrt', b: 'brrt' },
+      bubbles: ['外側 203.0.113.5（新IP）', '中身 192.168.20.10（暗号）'],
+      packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: 'インターネットへ。外から見える宛先は支社ルータのグローバルIPだけ。中身の元パケットは暗号化されています。',
-    },
-    {
-      focus: { type: 'link', a: 'inet', b: 'brrt' },
-      packetLabel: '宛先 203.0.113.5（外側）',
-      headers: { l2: '', l3: '' },
-      explanation: 'このインターネット越しの暗号区間が、拠点間の暗号トンネルです。中身は誰にものぞかれません。',
+      explanation: '暗号トンネルを渡ります。外から見える宛先は外側のIPだけ。中身の元パケットは、誰にものぞかれません。',
     },
     {
       focus: { type: 'node', id: 'brrt' },
+      bubbles: ['中身 192.168.20.10（取り出し）'],
       packetLabel: '',
       headers: { l2: '', l3: '' },
       explanation: '支社ルータが外側の包みを外し、暗号を解いて元のパケットを取り出します。ここがトンネルの出口です。',
     },
     {
       focus: { type: 'link', a: 'brrt', b: 'brpc' },
-      packetLabel: '宛先 192.168.20.10',
+      bubbles: ['宛先 192.168.20.10'],
+      packetLabel: '',
       headers: { l2: '', l3: '' },
       explanation: '元の宛先 192.168.20.10 に戻り、支社PCへ到達。戻りの通信も、同じトンネルを逆向きに通ります。',
     },

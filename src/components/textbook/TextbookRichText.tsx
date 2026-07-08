@@ -5,7 +5,7 @@ interface TextbookRichTextProps {
   className?: string
 }
 
-const EMPHASIS_PATTERN = /(\*\*[^*]+\*\*|\[\[(blue|green|amber|red|slate):[^\]]+\]\])/g
+const EMPHASIS_PATTERN = /(\*\*[^*]+\*\*|\[\[(blue|green|amber|red|slate|violet|rose|emerald):[^\]]+\]\])/g
 
 const COLOR_STYLES = {
   blue: 'font-black text-blue-700',
@@ -13,6 +13,9 @@ const COLOR_STYLES = {
   amber: 'font-black text-amber-700',
   red: 'font-black text-rose-700',
   slate: 'font-black text-slate-900',
+  violet: 'font-black text-violet-700',
+  rose: 'font-black text-rose-700',
+  emerald: 'font-black text-emerald-700',
 } as const
 
 function renderToken(raw: string, key: string): ReactNode {

@@ -101,7 +101,7 @@ function ArrowOnSeg({ x1, y1, x2, y2, color }: { x1: number; y1: number; x2: num
 
 export default function GraphTopology({ topology, focus, blockedLink, verdict, bubbles, downNodes, pairActive }: Props) {
   const layout = useMemo(() => buildLayout(topology), [topology])
-  const { nodes, pos, trunk, leafSegs, loop, spineEdges, zoneLabels, toneOf, height, trunkLabel, pairIds, vipPill, bundle } = layout
+  const { nodes, pos, trunk, leafSegs, loop, spineEdges, zoneLabels, toneOf, height, trunkLabel, pairIds, vipPill, bundle, tunnel } = layout
 
   const focusedNodeId = focus.type === 'node' ? focus.id : null
   const isLinkFocused = (a: string, b: string) =>
@@ -300,6 +300,68 @@ export default function GraphTopology({ topology, focus, blockedLink, verdict, b
           )
         })()}
 
+      {/* 拠点間トンネル（VPN）: 2ルータ間の暗号トンネルの帯＋二重IPの箱。focus が {a,b} のとき帯を強調。 */}
+      {tunnel &&
+        (() => {
+          const focused = isLinkFocused(tunnel.a, tunnel.b)
+          const { x, y, w, h } = tunnel.band
+          return (
+            <g>
+              {tunnel.note && (
+                <text x={x + w / 2} y={y - 6} textAnchor="middle" fontSize="10" fontWeight="700" fill="#5b21b6">
+                  {tunnel.note}
+                </text>
+              )}
+              <rect
+                x={x}
+                y={y}
+                width={w}
+                height={h}
+                rx={16}
+                fill="#f5f3ff"
+                stroke="#a78bfa"
+                strokeWidth={focused ? 2.8 : 2}
+                strokeDasharray={focused ? undefined : '6 4'}
+              />
+              <text x={x + w / 2} y={y + h / 2 - 1} textAnchor="middle" fontSize="11" fontWeight="800" fill="#5b21b6">
+                暗号化
+              </text>
+              <text x={x + w / 2} y={y + h / 2 + 11} textAnchor="middle" fontSize="8" fill="#a78bfa">
+                元パケットを丸ごと
+              </text>
+              {bubbles && bubbles.length > 0 && (
+                <g>
+                  {(() => {
+                    const nb = Math.min(2, bubbles.length)
+                    const bh = nb === 1 ? 24 : 40
+                    const bw = 202
+                    const bx2 = W / 2 - bw / 2
+                    const by = tunnel.bubbleY - bh / 2
+                    return (
+                      <>
+                        <rect x={bx2} y={by} width={bw} height={bh} rx={8} fill="#ffffff" stroke="#e2e8f0" strokeWidth={1} />
+                        {bubbles.slice(0, 2).map((b, i) => (
+                          <text
+                            key={i}
+                            x={W / 2}
+                            y={nb === 1 ? tunnel.bubbleY + 3 : by + 15 + i * 15}
+                            textAnchor="middle"
+                            fontSize="9"
+                            fontWeight="700"
+                            fill={i === 0 ? '#5b21b6' : '#1d4ed8'}
+                          >
+                            {b}
+                          </text>
+                        ))}
+                      </>
+                    )
+                  })()}
+                </g>
+              )}
+            </g>
+          )
+        })()}
+
       {/* セグメント名ラベル（縦積みレイアウトで端末の上に表示・白チップで線と重ねない） */}
       {zoneLabels.map((z, i) => {
         const w = z.text.length * 9 + 6
@@ -404,7 +466,8 @@ export default function GraphTopology({ topology, focus, blockedLink, verdict, b
 
       {/* パケットの宛先/送信元の吹き出し（graph図・中央縦spine向け）。アクティブ対象の左脇に固定し、
           ノード列（左端）に食い込ませない＝ノード非被覆。右脇は verdict チップ専用。 */}
-      {bubbles &&
+      {!tunnel &&
+        bubbles &&
         bubbles.length > 0 &&
         (() => {
           let anchorY: number
@@ -502,6 +565,14 @@ interface Layout {
     bwReduced?: string
     bwY: number
   } | null
+  // tunnel（拠点間VPN）: 2ルータ間の暗号トンネルの帯・見出し・二重IPの箱位置。
+  tunnel?: {
+    a: string
+    b: string
+    band: { x: number; y: number; w: number; h: number }
+    note?: string
+    bubbleY: number
+  } | null
 }
 
 function buildLayout(topology: Topology): Layout {
@@ -528,6 +599,9 @@ function buildLayout(topology: Topology): Layout {
   }
   if (topology.bundle && spine.length >= 2) {
     return buildBundle({ spine, links, allNodes: nodes, note: topology.bundleNote, bandwidth: topology.bundleBandwidth })
+  }
+  if (topology.tunnel && spine.length >= 2) {
+    return buildTunnel({ spine, leaves, links, allNodes: nodes, note: topology.tunnelNote })
   }
 
   let loopPair: { a: string; b: string } | null = null
@@ -1072,6 +1146,63 @@ function buildBundle({
       bwReduced: bandwidth?.reduced,
       bwY,
     },
+  }
+}
+
+// 拠点間トンネル（VPN）レイアウト: 2台の拠点ルータを横に置き、間を暗号トンネルの帯で結ぶ。端末は各ルータの真下。
+// 帯（a—b リンク）はステップの focus が {a,b} のとき強調。二重IPは bubbles を帯の下の箱に出す。
+function buildTunnel({
+  spine,
+  leaves,
+  links,
+  allNodes,
+  note,
+}: {
+  spine: TopoNode[]
+  leaves: TopoNode[]
+  links: Topology['links']
+  allNodes: TopoNode[]
+  note?: string
+}): Layout {
+  const [a, b] = spine
+  const ay = 71
+  const rh = 38
+  const ax = 57
+  const bx = 263
+  const rw = 94
+  const pos = new Map<string, Pos>()
+  const leafSegs: Layout['leafSegs'] = []
+  pos.set(a.id, { x: ax, y: ay, w: rw, h: rh })
+  pos.set(b.id, { x: bx, y: ay, w: rw, h: rh })
+
+  const pcY = 169
+  const pw = 94
+  const ph = 34
+  const leafOf = (sid: string) => leaves.find((lf) => links.some((l) => samePair(l.a, l.b, lf.id, sid)))
+  const la = leafOf(a.id)
+  const lb = leafOf(b.id)
+  if (la) {
+    pos.set(la.id, { x: ax, y: pcY, w: pw, h: ph })
+    leafSegs.push({ from: a.id, to: la.id, x1: ax, y1: ay + rh / 2, x2: ax, y2: pcY - ph / 2 })
+  }
+  if (lb) {
+    pos.set(lb.id, { x: bx, y: pcY, w: pw, h: ph })
+    leafSegs.push({ from: b.id, to: lb.id, x1: bx, y1: ay + rh / 2, x2: bx, y2: pcY - ph / 2 })
+  }
+
+  const toneOf = (n: TopoNode) => ROLE_TONE_LOCAL[n.role] ?? 'slate'
+  return {
+    nodes: allNodes,
+    pos,
+    trunk: null,
+    trunkLabel: null,
+    leafSegs,
+    loop: null,
+    spineEdges: [],
+    zoneLabels: [],
+    toneOf,
+    height: pcY + ph / 2 + 14,
+    tunnel: { a: a.id, b: b.id, band: { x: 104, y: 52, w: 112, h: 38 }, note, bubbleY: 116 },
   }
 }
 

@@ -112,6 +112,10 @@ export interface Topology {
   bundleNote?: string
   // bundle の帯域表示（図の下段）。full＝全リンク時、reduced＝1本故障時。blockedLink が一致で自動的に切替わる。
   bundleBandwidth?: { full: string; reduced: string }
+  // graph で拠点間トンネル（VPN）。2台の拠点ルータを横に置き、間を「暗号トンネルの帯」で結ぶ。端末は各ルータの下。
+  tunnel?: boolean
+  // tunnel の帯の上に出す見出し（例: 'IPsec暗号トンネル'）。
+  tunnelNote?: string
 }
 
 export interface TopoNode {

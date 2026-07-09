@@ -11,6 +11,7 @@ import { ch10LbProxyCdn } from './chapters/ch10-lb-proxy-cdn'
 import { ch11Availability } from './chapters/ch11-availability'
 import { ch12VpnWanSdwan } from './chapters/ch12-vpn-wan-sdwan'
 import { ch13AuthSsoPki } from './chapters/ch13-auth-sso-pki'
+import { ch14WirelessLan } from './chapters/ch14-wireless-lan'
 import type { TextbookChapter } from './types'
 
 export type { TextbookChapter, Block, Section, Figure } from './types'
@@ -19,7 +20,6 @@ export type { TextbookChapter, Block, Section, Figure } from './types'
 // 構成図の段階的成長）に沿って順に作る。順序＝学習の積み上げ＋構成図が育つ順。
 const DRAFTS: [number, string, string, string][] = [
   // 第3部 現実の構成へ（境界・拡張・冗長：午後スケール）
-  [14, 'wireless-lan', '無線LAN', 'AP・WLC・SSID・IEEE802.1X認証・ローミングを扱います。'],
   [15, 'ipv6', 'IPv6', 'IPv6アドレス、NDP、SLAAC、デュアルスタックでの移行を扱います。'],
   [16, 'mail', 'メール', 'SMTPの配送経路と、SPF・DKIM・DMARCの送信ドメイン認証を扱います。'],
   [17, 'virtualization-cloud', '仮想化・クラウド（SDN・VXLAN・EVPN）', 'サーバ仮想化、VPC、SDN、VXLAN/EVPNのオーバーレイを扱います。'],
@@ -41,7 +41,7 @@ const drafts: TextbookChapter[] = DRAFTS.map(([order, id, title, summary]) => ({
   takeaways: [],
 }))
 
-export const textbookChapters: TextbookChapter[] = [ch01Osi, ch02DnsDhcp, ch03TcpUdpPort, ch04WebTlsHttp, ch05L2VlanStp, ch06IpSubnet, ch07Routing, ch08InternetNatBgp, ch09SecurityFwDmz, ch10LbProxyCdn, ch11Availability, ch12VpnWanSdwan, ch13AuthSsoPki, ...drafts].sort((a, b) => a.order - b.order)
+export const textbookChapters: TextbookChapter[] = [ch01Osi, ch02DnsDhcp, ch03TcpUdpPort, ch04WebTlsHttp, ch05L2VlanStp, ch06IpSubnet, ch07Routing, ch08InternetNatBgp, ch09SecurityFwDmz, ch10LbProxyCdn, ch11Availability, ch12VpnWanSdwan, ch13AuthSsoPki, ch14WirelessLan, ...drafts].sort((a, b) => a.order - b.order)
 
 export function getTextbookChapter(chapterId: string | undefined): TextbookChapter | undefined {
   if (!chapterId) return undefined

@@ -1,6 +1,6 @@
 # 教科書モード 図解仕様書 v2
 
-最終更新: 2026-07-09（第13章で address-table に fieldLabels を追加・リッチテキスト対応色を拡充）
+最終更新: 2026-07-10（第14章で role ap・pair チップ文言・無線リンクの破線を追加）
 
 「どの概念を、どの図で、どう見せれば一番わかりやすいか」を確定する。図解は本モードの最重要・差別化要素であり、**図の選択と画面仕様は本書を正とする**（章別設計 `textbook-chapter-designs.md` の図は本書に従う）。§3 のカタログはすべて実装済み。
 
@@ -79,11 +79,12 @@
 | **triangle** | spine 3台が相互リンク | ルータ/AS 3つの三角形（第7章OSPF、第8章BGP）。`edgeLabels[{a,b,label}]` でコスト/帯域/BGPラベル、`blockedLink` で切断→迂回 |
 | **stack N段** | `stack:true`・spine 2台以上 | spine（nodes配列順=上→下）を縦一列。最上段の葉=上の横並び・最下段=下・**中間段=左右の短い水平枝（最大2）**。最上段に葉が無ければ余白を詰める。全ノード1枚の全体図・経路表連動に（第7章§2=2段、第8章§1=4段） |
 | **tiers（三方向FW）** | `tiers:true`・spine 2台以上 | spine を縦一列（上=外部・下=内部）＋**最下段のノード（FW）から zone ごとに左右の列へ枝分かれ**（列は zone 初出順に左→右。列内は縦積み）。第9章 内部/DMZ/外部の三層境界。枝は `blockedLink` で赤破線＋✕、`PacketStep.verdict` でFW脇に通過/遮断チップ |
-| **pair（冗長ペア）** | `pair:true`・spine 3台以上 | 上=共有先（インターネット等）を中央、中段に**2台の冗長ペアを左右**、下=端末（PC）を中央の3段。仮想IP `vip` を**ペアと端末の間に固定表示**（PCのGW＝この仮想IP）。稼働=`pairActive`／待機=他方／故障=`downNodes` を、各ペア下の**状態チップ**（稼働中/待機中/故障）で表示。故障ノードの枝は自動で赤破線＋✕。第11章VRRP |
+| **pair（冗長ペア）** | `pair:true`・spine 3台以上 | 上=共有先（インターネット等）を中央、中段に**2台の冗長ペアを左右**、下=端末（PC）を中央の3段。仮想IP `vip` を**ペアと端末の間に固定表示**（PCのGW＝この仮想IP）。稼働=`pairActive`／待機=他方／故障=`downNodes` を、各ペア下の**状態チップ**（稼働中/待機中/故障）で表示。チップ文言は `pairChipLabels` で差し替え可・standby `''` で非稼働側を非表示（第14章ローミング=「接続中」だけがAP1→AP2へ移る。両APとも稼働しているため「待機中」は誤り）。故障ノードの枝は自動で赤破線＋✕。第11章VRRP・第14章ローミング |
 | **bundle（LAG）** | `bundle:true`・spine 2台に links 2本以上 | 2台を左右に置き、間の複数リンクを**近接した平行線＋点線ブラケット**で1本の論理リンクに（`bundleNote` をブラケット上に）。`blockedLink` がそのペアに一致で**上側リンクに✕**（1本故障＝残りで継続）。帯域は `bundleBandwidth{full,reduced}` を下段に表示し blocked で自動的に reduced へ。第11章LAG |
 | **tunnel（拠点間VPN）** | `tunnel:true`・spine 2台 | 2台の拠点ルータを横に、間を**暗号トンネルの帯**（`tunnelNote` を帯上に）で結ぶ。端末は各ルータの真下（leaf）。focus が 2ルータ間リンクのとき帯を強調。二重IPは `PacketStep.bubbles` を帯の下の箱に1〜2行で出す（段階的に外側/中身が増減＝折り返さないSVGで常に1つながり）。第12章IPsec VPN |
 
 - ゾーンは葉の色分け＋白チップのセグメント名ラベル（短く。CIDRは入れない）。
+- **無線リンクは破線**: `Topology.wirelessLeafIds`（無線接続の葉id）で、その葉へ入る枝を細い破線にして有線と区別（第14章 端末—AP間。遮断の太い赤破線とは別物）。role `ap` は spine 扱い（端末がぶら下がる幹）。WLC も role=ap だが `leafIds` で葉に落とす。
 - **パケットの宛先/送信元**は `PacketStep.bubbles`（「宛先 X」「送信元 Y」形式・最大2）で、アクティブ対象の**左脇に固定**表示（chain の吹き出しと同形＝白地＋青枠・2行組・三角で対象を指す）。中央縦spineのノード列に食い込ませない＝ノード非被覆。**右脇は verdict チップ専用**で左右に棲み分け（tiers 等の中央縦spine向け。第9章）。
 - Do: 検証で全 `<text>` が viewBox 内にあること。 Don't: 実トポロジを chain の一直線に潰す。
 
@@ -139,12 +140,13 @@
 | 11 | graph stack（SPOF＝単一機器を`downNodes`灰色＋`blockedLink`✕で全停止） / graph pair（VRRP＝冗長ペア・仮想IP中央固定・稼働/待機/故障チップ・フェイルオーバー） / graph bundle（LAG＝2リンク束ね・1本故障で継続） / timeline（無停止更改） / record-table（冗長化のまとめ） |
 | 12 | graph tunnel（拠点間VPNの往路＝本社ルータで包む→暗号トンネルの帯→支社ルータで開く・二重IPを段階bubblesで・折り返さないSVG） / encap（前→後比較でIPsec二重IP＝新IP→IPsec→元IP） / record-table ×2（WAN回線の種類・トンネルの外側/内側） |
 | 13 | address-table＋fieldLabels（認証vs認可＝答える問い/よりどころ/例・2枚2カラム） / graph tree＋verdict（構成図: RADIUS 192.168.10.40 追加＋「認証で入口が開くまで」＝認証前はPCに遮断チップ→L2SW—認証サーバの問い合わせ線を focus link→認証後に通過チップ。場所紹介だけのツアーは動きが無く差し戻し） / sequence 3者（利用者PC｜L2SW取り次ぎ｜RADIUS・4メッセージ＝第14章802.1Xの素地） / timeline（証明書チェーン: ルートCA→中間CA→サーバ、上が下を署名） |
+| 14 | graph tree＋wirelessLeafIds（AP=spine・WLCはleafIdsで葉・端末—AP間は破線＝電波。電波が有線に変わる4ステップ） / timeline（CSMA/CA=聞く→ずらす→送る→ACK。**キャリアセンス＝自分が聞く動作は矢印にならないため sequence でなく手順俯瞰**） / sequence 3者（802.1X=第13章の3者の再演＋サプリカント/オーセンティケータの役割名） / graph pair＋pairChipLabels（ローミング=上L2SW・中AP1/AP2・下端末。「接続中」チップがAP1→AP2へ移動） |
 
-### 計画（第14章以降の主要図。§2 の使い分けに従い設計時に確定）
+### 計画（第15章以降の主要図。§2 の使い分けに従い設計時に確定）
 
 | 章 | 概念 → 図 |
 |---|---|
-| 14〜20 | chapter-designs の各章設計に従う（第20章の総合図は stack N段の全体図を基本に、必要なら区間ごとの複数図に分割） |
+| 15〜20 | chapter-designs の各章設計に従う（第20章の総合図は stack N段の全体図を基本に、必要なら区間ごとの複数図に分割） |
 
 ---
 
@@ -160,6 +162,7 @@
 
 ## 7. 変更履歴
 
+- **v2.6（2026-07-10）**: 第14章の実装を反映。role **`ap`**（Wifi・sky・spine扱い）を追加。pair に **`pairChipLabels`**（チップ文言の差し替え・standby `''` で非表示＝ローミングの「接続中」）、graph 共通に **`wirelessLeafIds`**（無線接続の葉へ入る枝を破線＝電波と有線の区別）を追加。CSMA/CA は「自分が聞く動作は矢印にならない」ため sequence でなく timeline と判断（§2 使い分けの適用例）。章×図の実績に第14章を追加。
 - **v2.5（2026-07-09）**: 第13章の実装を反映。`address-table` に **fieldLabels**（定義リスト3見出しの差し替え。既定=何を示すか/届く範囲/例）を追加、**PC列数を枚数適応**（2枚=2カラム）に変更、fieldLabels 時の「例」を通常フォントに。リッチテキスト装飾の対応色を blue/green/amber/red/slate/**violet/rose/emerald** の8色に拡充（第12章で violet/rose/emerald が生表示になっていたバグの修正を兼ねる）。章×図の実績に第13章を追加。**差し戻し2件を規範化**: ①2枚対比を3カラムに置く右1/3の空白 ②「場所紹介だけの構成図ツアー」（ハイライト移動のみで動く図の意味が無い。状態変化＝verdict/blockedLink 等を伴わせるか、差分は callout で済ませる）。
 - **v2.4（2026-07-09）**: 第12章レビュー反映。graph に **tunnel**（拠点間VPN＝2ルータ＋暗号トンネルの帯・折り返さないSVGで常に1つながり。`Topology.tunnel/tunnelNote`）を追加し8モード化。`encap` を**「前→後」比較**（各ステップで前後を並べ増減層を強調）へ全面作り直し（第1章にも反映）。chain の折り返し分断は tunnel/graph で回避する方針を明記。
 - **v2.3（2026-07-06）**: 第11章の実装を反映。graph に **pair**（冗長ペア＝VRRP。上=共有先/中=2台ペア/下=端末、仮想IP `vip` を中央固定、稼働/待機/故障を `pairActive`＋`downNodes` の状態チップで）と **bundle**（LAG＝2台間の複数リンクを近接平行線＋点線ブラケットで1本の論理リンクに、`blockedLink` で1本故障の✕）を追加して7モード化。`PacketStep.pairActive`・`Topology.pair/vip/bundle/bundleNote/bundleBandwidth` を追加。章×図の実績に第11章を追加。

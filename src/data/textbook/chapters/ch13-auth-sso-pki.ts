@@ -111,7 +111,7 @@ const radiusFigure: SequenceFigure = {
       from: 'pc',
       to: 'sw',
       label: '① 接続とID提示',
-      note: '利用者がLANにつなぎ、IDとパスワードを示します。L2SWはまだ通しません。',
+      note: '利用者がLANにつなぎ、IDとパスワードを示します。この時点ではまだLANへ出られません。',
     },
     {
       from: 'sw',

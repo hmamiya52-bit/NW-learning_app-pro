@@ -5,9 +5,12 @@ import { TONE } from './figureTokens'
 // スマホでも横スクロールしないよう、表ではなくカードの縦/グリッド配置にする。
 export default function AddressTableFigure({ figure }: { figure: AddressTableFigureData }) {
   const labels = figure.fieldLabels ?? { carries: '何を示すか', scope: '届く範囲', example: '例' }
+  // 2枚の対比は2カラムで幅いっぱいに（3カラムだと右1/3が空く）。「例」の等幅は既定軸（アドレス例示）のみ。
+  const gridCols = figure.rows.length === 2 ? 'sm:grid-cols-2' : 'sm:grid-cols-3'
+  const exampleClass = figure.fieldLabels ? 'text-xs leading-relaxed text-slate-600' : 'font-mono text-[11px] text-slate-600'
   return (
     <FigureFrame title={figure.title} caption={figure.caption} takeaway={figure.takeaway}>
-      <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+      <div className={`grid grid-cols-1 gap-2 ${gridCols}`}>
         {figure.rows.map((row) => {
           const tone = TONE[row.tone]
           return (
@@ -27,7 +30,7 @@ export default function AddressTableFigure({ figure }: { figure: AddressTableFig
                 </div>
                 <div>
                   <dt className="text-[10px] font-bold text-slate-400">{labels.example}</dt>
-                  <dd className="font-mono text-[11px] text-slate-600">{row.example}</dd>
+                  <dd className={exampleClass}>{row.example}</dd>
                 </div>
               </dl>
             </div>

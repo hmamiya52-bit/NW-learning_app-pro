@@ -25,14 +25,15 @@ const authAuthzTable: AddressTableFigure = {
       name: '認可',
       layer: '権限',
       carries: '「何をしてよいか」',
-      scope: '利用者ごとにあらかじめ決めた権限——役割や所属',
+      scope: '役割や所属ごとに、あらかじめ決めたアクセス権の設定',
       example: '一般社員は閲覧のみ・管理者は変更も可',
       tone: 'violet',
     },
   ],
 }
 
-// §2 構成図の差分: 内部LANに認証サーバが加わる（第2章と同じ tree のズームイン）。
+// §2 構成図の差分: 内部LANに認証サーバが加わる（第2章と同じ tree のズームイン）＋
+// 認証の前後でPCの扱いが遮断→通過と切り替わる動き（verdict チップ。第9章FWの再利用）。
 // 葉の先頭を認証サーバにして、L2SW—認証サーバの枝を focus link で光らせる（leafSegs は数珠つなぎのため）。
 const mapTopology: Topology = {
   layout: 'graph',
@@ -58,29 +59,37 @@ const mapTopology: Topology = {
 const mapFigure: PacketFlowFigure = {
   kind: 'packet-flow',
   id: 'ch13-map',
-  title: '内部LANに加わる認証サーバ',
-  caption: 'ステップを送ると、加わった1台の場所と、頼る側の機器との関係をたどれます。',
-  takeaway: 'DNS・DHCPに続く[[blue:係のサーバ]]がもう1台。利用者の確認は、すべてここへ集まります。',
+  title: '認証サーバが加わり、LANの入口が開くまで',
+  caption: 'ステップを送ると、PCの扱いが[[red:遮断]]から[[green:通過]]へ切り替わる瞬間までをたどれます。',
+  takeaway: 'つないだだけでは、まだLANを使えません。入口を開ける条件が[[blue:認証の合格]]です。',
   topology: mapTopology,
   hideHeaders: true,
   steps: [
     {
-      focus: { type: 'node', id: 'l2sw' },
-      packetLabel: '',
-      headers: { l2: '', l3: '' },
-      explanation: 'これまでの内部LAN。PCのほか、DNS・DHCPといった係のサーバが並んでいます。',
-    },
-    {
       focus: { type: 'node', id: 'auth' },
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: '加わったのが認証サーバ（RADIUS）。利用者の確認を一手に引き受けます。',
+      explanation: '内部LANの新顔が認証サーバ（RADIUS）。DNS・DHCPと並ぶ、係のサーバの1台です。',
+    },
+    {
+      focus: { type: 'node', id: 'pc' },
+      verdict: 'block',
+      packetLabel: '',
+      headers: { l2: '', l3: '' },
+      explanation: 'つないだ直後のPC。認証が済むまで、L2SWは通信をLANへ通しません。',
     },
     {
       focus: { type: 'link', a: 'l2sw', b: 'auth' },
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: 'L2SWなどの機器は利用者を自分で確かめず、この線の先へ問い合わせます。',
+      explanation: 'L2SWが利用者の情報をこの線の先へ問い合わせ、可否の応答を待ちます。',
+    },
+    {
+      focus: { type: 'node', id: 'pc' },
+      verdict: 'pass',
+      packetLabel: '',
+      headers: { l2: '', l3: '' },
+      explanation: '認証OK。L2SWが通信を通し、PCは内部LANを使えるようになります。',
     },
   ],
 }
@@ -159,7 +168,7 @@ export const ch13AuthSsoPki: TextbookChapter = {
   order: 13,
   title: '認証・認可・SSO・PKI',
   summary:
-    '「あなたは誰か」を確かめる認証と、「何をしてよいか」を決める認可の区別を出発点に、認証を一元管理するRADIUS、一度の認証で複数サービスへ入るSSO、署名の連鎖で証明書の本物を保証するPKIを理解します。第4章のサーバ証明書の「なぜ信じられるか」に、ここで答えます。',
+    '「あなたは誰か」を確かめる認証と、「何をしてよいか」を決める認可の区別を出発点に、認証を一元管理するRADIUS、一度の認証で複数のサービスを使うSSO、署名の連鎖で証明書の本物を保証するPKIを理解します。第4章のサーバ証明書の「なぜ信じられるか」に、ここで答えます。',
   status: 'published',
   estimatedMinutes: 15,
   intro: [
@@ -207,7 +216,7 @@ export const ch13AuthSsoPki: TextbookChapter = {
         { kind: 'figure', figure: mapFigure },
         {
           kind: 'text',
-          text: '機器の仕事は[[green:取り次ぎ]]だけ。利用者から預かったIDを認証サーバへ送り、返ってきた可否の応答に従います。LANへつなぐ場面で、流れを追ってみましょう。',
+          text: '機器の仕事は[[green:取り次ぎ]]だけ。利用者から預かったIDを認証サーバへ送り、返ってきた可否の応答に従います。3者が何をやり取りしているのか、会話の中身を見てみましょう。',
         },
         { kind: 'figure', figure: radiusFigure },
         {
@@ -246,7 +255,7 @@ export const ch13AuthSsoPki: TextbookChapter = {
         },
         {
           kind: 'text',
-          text: 'サーバ証明書には、発行元の[[blue:認証局]]（CA）による署名が入っています。その認証局が本物かは、さらに上位の認証局の署名が保証。この連鎖をさかのぼった頂点が[[rose:ルートCA]]です。',
+          text: 'サーバ証明書には、発行元の[[blue:認証局]]（CA）による署名（発行元が確かに認めた印）が入っています。その認証局が本物かは、さらに上位の認証局の署名が保証。この連鎖をさかのぼった頂点が[[rose:ルートCA]]です。',
         },
         { kind: 'figure', figure: certChainFigure },
         {

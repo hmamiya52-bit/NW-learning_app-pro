@@ -54,8 +54,8 @@
 - `levels` は**任意段数**（外側→内側。ラベル・トレーラ・色を外から渡す）。IPsec（第12章: 新IP→IPsec→元IP）・VXLAN（第17章）もこの形。入れ子は常に横方向で背を低く保ち、ステージ高さは幅で切替（narrow=高め・wide=低め）＝各幅でボタン不動。3段以上で使う（2層は余白過多、第4章で削除実績）。
 
 ### 3.3 `address-table`
-- 対比カード（モバイル=1カラム縦積み、PC=横並び）。カード=見出し＋layerチップ＋定義リスト。
-- 定義リストの項目ラベルは既定「何を示すか／届く範囲／例」。**軸が合わない対比は `fieldLabels` で3見出しを差し替える**（第13章 認証vs認可=「答える問い／判断のよりどころ／例」。第15章 IPv4vs6 でも利用想定）。カードの型（見た目）は変えない。表形式が合うものは `record-table`（rowHeader）。
+- 対比カード（モバイル=1カラム縦積み、PC=横並び）。カード=見出し＋layerチップ＋定義リスト。**PCの列数は枚数に応じて切替**（2枚=2カラム・3枚以上=3カラム。2枚を3カラムに置くと右1/3が空く＝第13章で差し戻し）。
+- 定義リストの項目ラベルは既定「何を示すか／届く範囲／例」。**軸が合わない対比は `fieldLabels` で3見出しを差し替える**（第13章 認証vs認可=「答える問い／判断のよりどころ／例」。第15章 IPv4vs6 でも利用想定）。カードの型（見た目）は変えない。「例」の等幅フォントは既定軸（アドレス例示）のみで、fieldLabels 指定時は通常フォント（日本語の例文）。表形式が合うものは `record-table`（rowHeader）。
 
 ### 3.4 `packet-flow` 共通仕様
 - `steps[]` の `focus`（link/node）で現在区間・処理を指す。`explanation` は固定高（約2行・全角換算50字目安）。
@@ -138,7 +138,7 @@
 | 10 | graph stack（LB＝VIPで受けWebプールへ振り分け・停止台は`downNodes`灰色＋枝✕） / record-table ×2（L4/L7・リバース/フォワード） / chain＋`bubbles`（プロキシ配置＝外部中心・CDN往復のヒット/ミス） |
 | 11 | graph stack（SPOF＝単一機器を`downNodes`灰色＋`blockedLink`✕で全停止） / graph pair（VRRP＝冗長ペア・仮想IP中央固定・稼働/待機/故障チップ・フェイルオーバー） / graph bundle（LAG＝2リンク束ね・1本故障で継続） / timeline（無停止更改） / record-table（冗長化のまとめ） |
 | 12 | graph tunnel（拠点間VPNの往路＝本社ルータで包む→暗号トンネルの帯→支社ルータで開く・二重IPを段階bubblesで・折り返さないSVG） / encap（前→後比較でIPsec二重IP＝新IP→IPsec→元IP） / record-table ×2（WAN回線の種類・トンネルの外側/内側） |
-| 13 | address-table＋fieldLabels（認証vs認可＝答える問い/よりどころ/例） / graph tree（構成図: RADIUS 192.168.10.40 追加。葉の先頭を認証サーバにして L2SW—認証サーバの枝を focus link で強調） / sequence 3者（利用者PC｜L2SW取り次ぎ｜RADIUS・4メッセージ＝第14章802.1Xの素地） / timeline（証明書チェーン: ルートCA→中間CA→サーバ、上が下を署名） |
+| 13 | address-table＋fieldLabels（認証vs認可＝答える問い/よりどころ/例・2枚2カラム） / graph tree＋verdict（構成図: RADIUS 192.168.10.40 追加＋「認証で入口が開くまで」＝認証前はPCに遮断チップ→L2SW—認証サーバの問い合わせ線を focus link→認証後に通過チップ。場所紹介だけのツアーは動きが無く差し戻し） / sequence 3者（利用者PC｜L2SW取り次ぎ｜RADIUS・4メッセージ＝第14章802.1Xの素地） / timeline（証明書チェーン: ルートCA→中間CA→サーバ、上が下を署名） |
 
 ### 計画（第14章以降の主要図。§2 の使い分けに従い設計時に確定）
 
@@ -160,7 +160,7 @@
 
 ## 7. 変更履歴
 
-- **v2.5（2026-07-09）**: 第13章の実装を反映。`address-table` に **fieldLabels**（定義リスト3見出しの差し替え。既定=何を示すか/届く範囲/例）を追加。リッチテキスト装飾の対応色を blue/green/amber/red/slate/**violet/rose/emerald** の8色に拡充（第12章で violet/rose/emerald が生表示になっていたバグの修正を兼ねる）。章×図の実績に第13章を追加。
+- **v2.5（2026-07-09）**: 第13章の実装を反映。`address-table` に **fieldLabels**（定義リスト3見出しの差し替え。既定=何を示すか/届く範囲/例）を追加、**PC列数を枚数適応**（2枚=2カラム）に変更、fieldLabels 時の「例」を通常フォントに。リッチテキスト装飾の対応色を blue/green/amber/red/slate/**violet/rose/emerald** の8色に拡充（第12章で violet/rose/emerald が生表示になっていたバグの修正を兼ねる）。章×図の実績に第13章を追加。**差し戻し2件を規範化**: ①2枚対比を3カラムに置く右1/3の空白 ②「場所紹介だけの構成図ツアー」（ハイライト移動のみで動く図の意味が無い。状態変化＝verdict/blockedLink 等を伴わせるか、差分は callout で済ませる）。
 - **v2.4（2026-07-09）**: 第12章レビュー反映。graph に **tunnel**（拠点間VPN＝2ルータ＋暗号トンネルの帯・折り返さないSVGで常に1つながり。`Topology.tunnel/tunnelNote`）を追加し8モード化。`encap` を**「前→後」比較**（各ステップで前後を並べ増減層を強調）へ全面作り直し（第1章にも反映）。chain の折り返し分断は tunnel/graph で回避する方針を明記。
 - **v2.3（2026-07-06）**: 第11章の実装を反映。graph に **pair**（冗長ペア＝VRRP。上=共有先/中=2台ペア/下=端末、仮想IP `vip` を中央固定、稼働/待機/故障を `pairActive`＋`downNodes` の状態チップで）と **bundle**（LAG＝2台間の複数リンクを近接平行線＋点線ブラケットで1本の論理リンクに、`blockedLink` で1本故障の✕）を追加して7モード化。`PacketStep.pairActive`・`Topology.pair/vip/bundle/bundleNote/bundleBandwidth` を追加。章×図の実績に第11章を追加。
 - **v2.2（2026-07-05）**: 第10章の実装を反映。role `lb`/`proxy` を追加（graphの幹・chainのアイコン）、`downNodes`（停止ノードの灰色表示＝LBヘルスチェック/フェイルオーバー）を実装、stack で同一ゾーンの複数末端をゾーンラベル1つに集約（LBのWebサーバプール）。章×図の実績に第10章を追加。

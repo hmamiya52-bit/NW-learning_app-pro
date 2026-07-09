@@ -5,7 +5,7 @@ import type { PacketStep, Topology, TopoNode } from '../../../data/textbook/type
 // 冗長リンク（同じ2ノード間の2本）は縦並びスイッチ＋曲線2本のループで描く。
 // 動きは「アクティブな線・アークの強調＋進行方向の矢印」で表す（ノードを覆う吹き出しは使わない）。
 
-const SPINE_ROLES = new Set(['switch', 'router', 'firewall', 'internet', 'cloud', 'lb', 'proxy'])
+const SPINE_ROLES = new Set(['switch', 'router', 'firewall', 'internet', 'cloud', 'lb', 'proxy', 'ap'])
 
 const TONE_COLOR: Record<string, { fill: string; stroke: string; text: string }> = {
   emerald: { fill: '#ecfdf5', stroke: '#34d399', text: '#065f46' },
@@ -28,6 +28,7 @@ const ROLE_TONE_LOCAL: Record<string, string> = {
   cloud: 'slate',
   lb: 'blue',
   proxy: 'violet',
+  ap: 'sky',
 }
 
 const FOCUS = { fill: '#2563eb', stroke: '#1d4ed8', text: '#ffffff' }
@@ -139,6 +140,8 @@ export default function GraphTopology({ topology, focus, blockedLink, verdict, b
             (downNodes?.includes(seg.to) && pairIds.includes(seg.to)))
         const isBlocked =
           (!!blockedLink && samePair(blockedLink.a, blockedLink.b, seg.from, seg.to)) || touchesDownPair
+        // 無線で接続する葉へ入る枝は破線（有線との区別。第14章 端末—AP間）。遮断の破線（太・赤）とは別物。
+        const isWireless = !!topology.wirelessLeafIds?.includes(seg.to)
         const vertical = Math.abs(seg.x1 - seg.x2) < 6
         const down = seg.y2 >= seg.y1
         const mx = (seg.x1 + seg.x2) / 2
@@ -155,7 +158,7 @@ export default function GraphTopology({ topology, focus, blockedLink, verdict, b
               y2={seg.y2}
               stroke={isBlocked ? LINE_BLOCK : focused ? LINE_ACTIVE : LINE_IDLE}
               strokeWidth={isBlocked ? 3.4 : focused ? 3 : 2}
-              strokeDasharray={isBlocked ? '7 5' : undefined}
+              strokeDasharray={isBlocked ? '7 5' : isWireless ? '4 4' : undefined}
             />
             {isBlocked && (
               <text x={mx} y={my + 6} textAnchor="middle" fontSize="18" fontWeight="700" fill={LINE_BLOCK}>
@@ -422,15 +425,18 @@ export default function GraphTopology({ topology, focus, blockedLink, verdict, b
         </g>
       )}
 
-      {/* ペアの状態チップ（稼働中／待機中／故障）。downNodes＝故障、pairActive＝稼働中、他＝待機中。 */}
+      {/* ペアの状態チップ（稼働中／待機中／故障）。downNodes＝故障、pairActive＝稼働中、他＝待機中。
+          文言は pairChipLabels で差し替え可（第14章ローミング: 接続中／standby '' で非表示）。 */}
       {pairIds?.map((id) => {
         const p = pos.get(id)
         if (!p) return null
+        const labels = topology.pairChipLabels ?? { active: '稼働中', standby: '待機中' }
+        if (!downNodes?.includes(id) && id !== pairActive && labels.standby === '') return null
         const st = downNodes?.includes(id)
           ? { t: '故障', fill: '#fff1f2', stroke: '#fecdd3', text: '#9f1239' }
           : id === pairActive
-            ? { t: '稼働中', fill: '#dbeafe', stroke: '#93c5fd', text: '#1d4ed8' }
-            : { t: '待機中', fill: '#f1f5f9', stroke: '#cbd5e1', text: '#475569' }
+            ? { t: labels.active, fill: '#dbeafe', stroke: '#93c5fd', text: '#1d4ed8' }
+            : { t: labels.standby, fill: '#f1f5f9', stroke: '#cbd5e1', text: '#475569' }
         const cyp = p.y + p.h / 2 + 12
         return (
           <g key={`st${id}`}>

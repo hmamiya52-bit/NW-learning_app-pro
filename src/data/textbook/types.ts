@@ -14,6 +14,7 @@ export type NodeRole =
   | 'cloud'
   | 'lb'
   | 'proxy'
+  | 'ap'
 
 export type ChapterStatus = 'published' | 'draft'
 
@@ -116,6 +117,11 @@ export interface Topology {
   tunnel?: boolean
   // tunnel の帯の上に出す見出し（例: 'IPsec暗号トンネル'）。
   tunnelNote?: string
+  // pair の状態チップの文言。既定は稼働中/待機中（VRRP）。standby を '' にすると非稼働側のチップを出さない
+  // （第14章ローミング: active='接続中'・standby=''＝もう片方のAPは待機ではないため）。
+  pairChipLabels?: { active: string; standby: string }
+  // 無線で接続する葉ノードid。この葉へ入る枝を破線で描き、有線と区別する（第14章 端末—AP間）。
+  wirelessLeafIds?: string[]
 }
 
 export interface TopoNode {

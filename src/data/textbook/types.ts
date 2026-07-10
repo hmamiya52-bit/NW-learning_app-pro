@@ -72,6 +72,7 @@ export type Figure =
   | SubnetCalcFigure
   | SegmentMapFigure
   | RadioRangeFigure
+  | Ipv6AddressFigure
 
 // 動くパケット図（中核）。トポロジ＋ステップ。ARP もこの型で表現する。
 export interface PacketFlowFigure extends FigureBase {
@@ -260,6 +261,17 @@ export interface RadioRangeFigure extends FigureBase {
   rightLabel: string // 右の端末
   apLabel: string // 上中央のAP
   steps: { show: 'left' | 'both'; collide?: boolean; explanation: string }[]
+}
+
+// IPv6アドレスの構造（第15章）。16進8グループを4×2段で並べ、
+// フル表記 → 省略（先頭0を薄く・全0グループを強調して::へ） → 前半/後半の色分け、を段階で見せる。
+// 配色は subnet-calc と同じ（ネットワーク=緑/ホスト=グレー）＝「第6章と同じ発想」を視覚でも引き継ぐ。
+export interface Ipv6AddressFigure extends FigureBase {
+  kind: 'ipv6-address'
+  groups: string[] // フル表記の8グループ（4桁×8）
+  compressed: string // 省略表記（例: '2001:db8:10:1::10'）
+  prefixGroups?: number // ネットワーク側のグループ数（既定4＝/64）
+  steps: { mode: 'full' | 'compressed' | 'structure'; explanation: string }[]
 }
 
 // セグメント構成図（ルータが2つのネットワークをつなぐ）。各セグメントのホストIPから

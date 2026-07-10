@@ -1,6 +1,7 @@
 import type { Figure } from '../../../data/textbook/types'
 import AddressTableFigure from './AddressTableFigure'
 import EncapFigure from './EncapFigure'
+import Ipv6AddressFigure from './Ipv6AddressFigure'
 import OsiStackFigure from './OsiStackFigure'
 import PacketFlowFigure from './PacketFlowFigure'
 import RadioRangeFigure from './RadioRangeFigure'
@@ -32,6 +33,8 @@ export default function FigureRenderer({ figure }: { figure: Figure }) {
       return <SegmentMapFigure figure={figure} />
     case 'radio-range':
       return <RadioRangeFigure figure={figure} />
+    case 'ipv6-address':
+      return <Ipv6AddressFigure figure={figure} />
     default:
       return null
   }

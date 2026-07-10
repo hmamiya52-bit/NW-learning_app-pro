@@ -1,38 +1,43 @@
-import type { PacketFlowFigure, SequenceFigure, TextbookChapter, TimelineFigure, Topology } from '../types'
+import type { PacketFlowFigure, RadioRangeFigure, RecordTableFigure, SequenceFigure, TextbookChapter, TimelineFigure, Topology } from '../types'
 
 // 第14章 無線LAN。第5章VLAN・第13章認証(RADIUS)の上に「電波という共有媒体」を載せる。
-// AP/WLC → CSMA/CA（衝突回避） → IEEE802.1X（第13章の3者が本格稼働） → ローミング。
+// AP/WLC → SSID×VLAN → CSMA/CA（衝突回避・隠れ端末） → IEEE802.1X（第13章の3者が本格稼働） → ローミング。
 // 構成図の差分: AP（.51/.52）・WLC 192.168.10.41 を内部LANに追加（台帳どおり）。新role 'ap'。
 
-// §1 APとWLC（tree）。AP=spine・WLC=leafIds で葉。端末—AP間は wirelessLeafIds で破線＝電波。
+// §1 APとWLC（stack 3段）。上=ルータ・中=L2SW（左右にWLCと有線PC）・下=AP＋無線端末。
+// 「無線はLANの末端に加わる新しい層」が上下の階層で見える。端末—AP間は wirelessLeafIds で破線＝電波。
 const apTopology: Topology = {
   layout: 'graph',
+  stack: true,
   leafIds: ['wlc'],
   wirelessLeafIds: ['nb', 'sp'],
-  zones: [{ id: 'lan', label: '内部LAN', tone: 'sky' }],
+  edgeLabels: [{ a: 'l2sw', b: 'ap', label: 'トランク' }],
+  zones: [],
   nodes: [
-    { id: 'ap', label: 'AP', role: 'ap', sub: '192.168.10.51' },
+    { id: 'r', label: 'ルータ', role: 'router', sub: 'デフォルトGW' },
     { id: 'l2sw', label: 'L2SW', role: 'switch', sub: '内部LAN' },
-    { id: 'nb', label: 'ノートPC', role: 'pc', zoneId: 'lan' },
-    { id: 'sp', label: 'スマホ', role: 'pc', zoneId: 'lan' },
-    { id: 'wlc', label: 'WLC', role: 'ap', zoneId: 'lan', sub: '192.168.10.41' },
-    { id: 'pc', label: 'PC', role: 'pc', zoneId: 'lan', sub: '192.168.10.10' },
+    { id: 'ap', label: 'AP', role: 'ap', sub: '192.168.10.51' },
+    { id: 'wlc', label: 'WLC', role: 'ap', sub: '192.168.10.41' },
+    { id: 'pc', label: 'PC', role: 'pc', sub: '192.168.10.10' },
+    { id: 'nb', label: 'ノートPC', role: 'pc' },
+    { id: 'sp', label: 'スマホ', role: 'pc' },
   ],
   links: [
-    { a: 'nb', b: 'ap' },
-    { a: 'sp', b: 'ap' },
-    { a: 'ap', b: 'l2sw' },
-    { a: 'wlc', b: 'l2sw' },
-    { a: 'pc', b: 'l2sw' },
+    { a: 'r', b: 'l2sw' },
+    { a: 'l2sw', b: 'wlc' },
+    { a: 'l2sw', b: 'pc' },
+    { a: 'l2sw', b: 'ap' },
+    { a: 'ap', b: 'nb' },
+    { a: 'ap', b: 'sp' },
   ],
 }
 
 const apFigure: PacketFlowFigure = {
   kind: 'packet-flow',
   id: 'ch14-ap-wlc',
-  title: 'APとWLC——電波が有線に変わる場所',
-  caption: '[[green:破線]]が電波の区間。ステップを送ると、無線が有線LANへ合流するまでをたどれます。',
-  takeaway: '電波なのは端末とAPの間だけ。APから先は、これまでの有線LANがそのまま働きます。',
+  title: 'APとWLC——LANの末端に加わる無線の層',
+  caption: '上ほど[[blue:これまでの有線LAN]]、いちばん下が新しい無線の層。[[green:破線]]＝電波です。',
+  takeaway: '電波なのは端末とAPの間だけ。APから上は、これまでの有線LANがそのまま働きます。',
   topology: apTopology,
   hideHeaders: true,
   steps: [
@@ -40,13 +45,13 @@ const apFigure: PacketFlowFigure = {
       focus: { type: 'node', id: 'ap' },
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: '新顔のAP。電波と有線を相互に変換する、無線LANの出入口です。',
+      explanation: '新顔のAP。電波と有線を変換する、無線LANの出入口です。',
     },
     {
       focus: { type: 'node', id: 'wlc' },
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: 'もう1台の新顔WLC。たくさんのAPの設定や電波を、まとめて管理する役です。',
+      explanation: 'もう1つの新顔WLC。多数のAPの設定や電波を、まとめて管理する役です。',
     },
     {
       focus: { type: 'link', a: 'ap', b: 'nb' },
@@ -55,11 +60,48 @@ const apFigure: PacketFlowFigure = {
       explanation: 'ノートPCの通信は、電波でAPへ。破線の区間だけが無線です。',
     },
     {
-      focus: { type: 'link', a: 'ap', b: 'l2sw' },
+      focus: { type: 'link', a: 'l2sw', b: 'ap' },
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: 'APが有線に載せ替え、トランクでL2SWへ。この先はこれまでのLANと同じです。',
+      explanation: 'APで有線に乗り、トランクでL2SWへ。上の有線LANは、今までと同じ世界です。',
     },
+  ],
+}
+
+// §1 SSID×VLAN の対応表。第5章の VLAN10（業務）を再利用し、来客用に VLAN30 を新設。
+const ssidVlanTable: RecordTableFigure = {
+  kind: 'record-table',
+  id: 'ch14-ssid-vlan',
+  title: 'SSIDとVLANの対応',
+  caption: '1台のAPが[[blue:複数のSSID]]の電波を同時に出し、それぞれ別の[[blue:VLAN]]へつなぎます。',
+  takeaway: 'SSIDを選んだ時点で、入る区画が決まります。複数のVLANを1本で運ぶため、APとL2SWの間は[[green:トランク]]です。',
+  rowHeader: true,
+  emphasizeKey: 'vlan',
+  columns: [
+    { key: 'ssid', label: 'SSID（電波の名前）' },
+    { key: 'vlan', label: 'つながるVLAN' },
+    { key: 'who', label: '使う人' },
+  ],
+  rows: [
+    { ssid: 'office', vlan: 'VLAN10（業務）', who: '社員の業務端末' },
+    { ssid: 'guest', vlan: 'VLAN30（来客用）', who: '来客の持ち込み端末。社内には通さず、インターネットだけ' },
+  ],
+}
+
+// §2 隠れ端末（radio-range・新設）。円＝電波の届く範囲。空間の問題なので文章でなく図で見せる。
+const hiddenNodeFigure: RadioRangeFigure = {
+  kind: 'radio-range',
+  id: 'ch14-hidden-node',
+  title: '隠れ端末——APには届くのに、互いには届かない',
+  caption: '[[blue:円]]＝その端末の電波が届く範囲。2つの円の重なりに、APだけがいます。',
+  takeaway: '譲り合い（CSMA/CA）は「相手の電波が聞こえる」ことが前提。聞こえない相手とは衝突が起きます。',
+  leftLabel: '端末A',
+  rightLabel: '端末B',
+  apLabel: 'AP',
+  steps: [
+    { show: 'left', explanation: '端末Aの電波はAPに届きます。しかし、離れた端末Bまでは届きません。' },
+    { show: 'both', explanation: '端末Bも同じ。APとは話せるのに、お互いの電波は聞こえません。' },
+    { show: 'both', collide: true, explanation: '互いに「空いている」と誤解して同時に送信——APのところで衝突します。' },
   ],
 }
 
@@ -207,7 +249,7 @@ export const ch14WirelessLan: TextbookChapter = {
   summary:
     '電波と有線を橋渡しするAPとWLC、SSIDとVLANの対応づけ、衝突を検出できないからこそ送る前に避けるCSMA/CA、第13章のRADIUSが本格稼働するIEEE802.1X認証、そして移動しても切れないローミング——ケーブルのないLANを支える仕組みを一望します。',
   status: 'published',
-  estimatedMinutes: 15,
+  estimatedMinutes: 18,
   intro: [
     {
       kind: 'text',
@@ -233,14 +275,9 @@ export const ch14WirelessLan: TextbookChapter = {
         { kind: 'figure', figure: apFigure },
         {
           kind: 'text',
-          text: '無線のネットワークには[[blue:SSID]]という名前を付けます。端末が接続先として選ぶのは、この名前。そしてAPの中でSSIDは[[blue:VLAN]]（第5章）に対応づけられます。APとL2SWの間が[[green:トランク]]接続なのは、複数のSSID＝複数のVLANを1本で運ぶためです。',
+          text: '無線のネットワークには[[blue:SSID]]という名前を付けます。端末が接続先として選ぶのは、この名前。そしてAPの中で、SSIDは[[blue:VLAN]]（第5章）に対応づけられます。無線を有線側の設計に載せる、いちばんの要です。',
         },
-        {
-          kind: 'callout',
-          tone: 'info',
-          title: 'SSIDとVLANは「入口の名前」と「中の区画」',
-          body: '来客用SSIDは来客用VLANへ、業務用SSIDは業務用VLANへ——[[blue:SSIDを選んだ時点で、つながる先の区画が決まる]]仕組みです。無線を有線側のVLAN設計に載せる要になります。',
-        },
+        { kind: 'figure', figure: ssidVlanTable },
       ],
     },
     {
@@ -256,10 +293,15 @@ export const ch14WirelessLan: TextbookChapter = {
         },
         { kind: 'figure', figure: csmaFigure },
         {
+          kind: 'text',
+          text: 'ただし、この譲り合いには弱点があります。譲るには相手の電波が聞こえることが前提——では、[[red:聞こえない位置]]に相手がいたら？',
+        },
+        { kind: 'figure', figure: hiddenNodeFigure },
+        {
           kind: 'callout',
-          tone: 'warn',
-          title: '隠れ端末——お互いが見えないと譲り合えない',
-          body: '端末Aと端末Bが、APには届くのに[[red:互いの電波は届かない]]位置にいると、譲り合いが働かず衝突が増えます。これが隠れ端末問題。対策として、送る前に「送ってよいか」をAPと確認する[[blue:RTS/CTS]]という手順の名前が挙がります。',
+          tone: 'info',
+          title: '対策の名前——RTS/CTS',
+          body: '隠れ端末どうしの衝突を減らすには、送る前にAPへ「送ってよいか」と確認し、APが「どうぞ」と全員に応える[[blue:RTS/CTS]]という手順を使います。互いに聞こえない端末どうしでも、[[blue:APの声はどちらにも届く]]ことを利用した工夫です。',
         },
       ],
     },
@@ -298,7 +340,13 @@ export const ch14WirelessLan: TextbookChapter = {
       blocks: [
         {
           kind: 'text',
-          text: '無線の午後は、[[blue:設計の妥当性]]を問うのが定番です。SSIDとVLANの対応、認証方式の選択（802.1XかPSKか）、そして[[blue:チャネル]]——電波の通り道の番号のことで、隣り合うAPは互いに違うチャネルにして[[red:電波干渉]]を避けます。',
+          text: '無線の午後は、[[blue:設計の妥当性]]を問うのが定番です。SSIDとVLANの対応、認証方式の選択（802.1XかPSKか）、そしてAPの配置と電波の設計が題材になります。',
+        },
+        {
+          kind: 'callout',
+          tone: 'info',
+          title: 'チャネル——電波の通り道を分ける',
+          body: '電波にはいくつかの通り道（[[blue:チャネル]]）があります。隣り合うAPが同じチャネルだと[[red:干渉]]して速度が落ちるため、隣どうしには違うチャネルを割り当てるのが設計の定石です。',
         },
         {
           kind: 'check',

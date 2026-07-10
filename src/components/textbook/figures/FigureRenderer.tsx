@@ -3,6 +3,7 @@ import AddressTableFigure from './AddressTableFigure'
 import EncapFigure from './EncapFigure'
 import OsiStackFigure from './OsiStackFigure'
 import PacketFlowFigure from './PacketFlowFigure'
+import RadioRangeFigure from './RadioRangeFigure'
 import RecordTableFigure from './RecordTableFigure'
 import SegmentMapFigure from './SegmentMapFigure'
 import SequenceFigure from './SequenceFigure'
@@ -29,6 +30,8 @@ export default function FigureRenderer({ figure }: { figure: Figure }) {
       return <SubnetCalcFigure figure={figure} />
     case 'segment-map':
       return <SegmentMapFigure figure={figure} />
+    case 'radio-range':
+      return <RadioRangeFigure figure={figure} />
     default:
       return null
   }

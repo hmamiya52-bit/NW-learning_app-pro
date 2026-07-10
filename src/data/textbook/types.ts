@@ -71,6 +71,7 @@ export type Figure =
   | RecordTableFigure
   | SubnetCalcFigure
   | SegmentMapFigure
+  | RadioRangeFigure
 
 // 動くパケット図（中核）。トポロジ＋ステップ。ARP もこの型で表現する。
 export interface PacketFlowFigure extends FigureBase {
@@ -249,6 +250,16 @@ export interface SubnetCalcFigure extends FigureBase {
   kind: 'subnet-calc'
   ip: string // 例: '192.168.10.10'
   steps: { prefix: number; note: string }[]
+}
+
+// 電波の届く範囲（第14章 隠れ端末）。左右の端末の「電波の円」を段階表示し、
+// どちらもAPには届くのに互いには届かない、という位置関係を見せる。構図は固定（左端末・上中央AP・右端末）。
+export interface RadioRangeFigure extends FigureBase {
+  kind: 'radio-range'
+  leftLabel: string // 左の端末（例: '端末A'）
+  rightLabel: string // 右の端末
+  apLabel: string // 上中央のAP
+  steps: { show: 'left' | 'both'; collide?: boolean; explanation: string }[]
 }
 
 // セグメント構成図（ルータが2つのネットワークをつなぐ）。各セグメントのホストIPから

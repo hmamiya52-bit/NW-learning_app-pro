@@ -158,7 +158,7 @@ const dot1xFigure: SequenceFigure = {
       from: 'nb',
       to: 'ap',
       label: '① 接続と認証情報',
-      note: '端末が利用者の証明（IDや電子証明書）を差し出します。この枠組みがEAPです。',
+      note: '端末が利用者の証明（IDや電子証明書）を差し出します。このやり取りの決まりがEAPです。',
     },
     {
       from: 'ap',
@@ -275,7 +275,7 @@ export const ch14WirelessLan: TextbookChapter = {
         { kind: 'figure', figure: apFigure },
         {
           kind: 'text',
-          text: '無線のネットワークには[[blue:SSID]]という名前を付けます。端末が接続先として選ぶのは、この名前。そしてAPの中で、SSIDは[[blue:VLAN]]（第5章）に対応づけられます。無線を有線側の設計に載せる、いちばんの要です。',
+          text: '無線のネットワークには[[blue:SSID]]という名前を付けます。スマホのWi-Fi設定で並ぶ、あの一覧の名前です。そしてAPの中で、SSIDは[[blue:VLAN]]（第5章）に対応づけられます。無線を有線側の設計に載せる、いちばんの要です。',
         },
         { kind: 'figure', figure: ssidVlanTable },
       ],
@@ -285,7 +285,7 @@ export const ch14WirelessLan: TextbookChapter = {
       blocks: [
         {
           kind: 'text',
-          text: '電波は1つの通り道を全員で共有し、同時に話せるのは1人だけ（[[blue:半二重]]）。しかも送信中は他人の電波を聞けないため、[[red:衝突が起きても検出できません]]。昔の有線LANの「衝突を検出してやり直す[[blue:CSMA/CD]]」は、無線では成り立たないのです。',
+          text: '電波は1つの通り道を全員で共有し、同時に話せるのは1人だけ（[[blue:半二重]]）。しかも送信中は、自分の電波が大声すぎて他人の電波を聞き取れず、[[red:衝突が起きても検出できません]]。昔の有線LANの「衝突を検出してやり直す[[blue:CSMA/CD]]」は、無線では成り立たないのです。',
         },
         {
           kind: 'text',

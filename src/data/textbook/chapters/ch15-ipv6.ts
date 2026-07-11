@@ -52,7 +52,7 @@ const addrFigure: Ipv6AddressFigure = {
     },
     {
       mode: 'structure',
-      explanation: '前半64ビットがネットワーク、後半がホスト。第6章の「前半・後半」の発想のままです。',
+      explanation: '前半64ビットがネットワーク、後半がホスト。この区切りが、後の自動設定でも効いてきます。',
     },
   ],
 }
@@ -144,7 +144,7 @@ export const ch15Ipv6: TextbookChapter = {
       blocks: [
         {
           kind: 'text',
-          text: 'まず、IPv4との違いを一望します。ポイントは、枯渇という同じ問題への[[blue:答え方の違い]]です。',
+          text: 'まず、IPv4との違いを一望します。ポイントは、枯渇という同じ問題への[[blue:答え方の違い]]。表に出てくる見慣れない「::」の読み方は、すぐ次の図で解決します。',
         },
         { kind: 'figure', figure: v4v6Table },
         {
@@ -152,6 +152,10 @@ export const ch15Ipv6: TextbookChapter = {
           text: '次に、あの長いアドレスの読み方です。内部LANのPCに [[green:2001:db8:10:1::10]] というIPv6アドレスが付いたとして、フル表記から順に見ていきます。',
         },
         { kind: 'figure', figure: addrFigure },
+        {
+          kind: 'text',
+          text: 'IPv6では、前半を[[green:プレフィックス]]（/64 のように書きます）、後半を[[green:インターフェースID]]と呼びます。名前は新しくても、第6章のネットワーク部・ホスト部と同じ役割です。',
+        },
         {
           kind: 'callout',
           tone: 'tip',

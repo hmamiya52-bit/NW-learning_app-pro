@@ -134,6 +134,47 @@ const radiusFigure: SequenceFigure = {
   ],
 }
 
+// §3 SSO（sequence）。認証済みの「通行証」を使い回す流れ。サービスA/Bは1アクターに集約し
+// 段階ラベル（③A→④B）で反復を見せる（第2章DNSの方式）。
+const ssoFigure: SequenceFigure = {
+  kind: 'sequence',
+  id: 'ch13-sso',
+  title: '認証済みの通行証を使い回すSSO',
+  caption: '鍵は②で受け取る[[blue:通行証]]。ログインは最初の一度だけです。',
+  takeaway: '各サービスは自分で確かめず、[[blue:窓口の通行証]]を信頼します。RADIUSと同じ「認証の一元化」です。',
+  actors: [
+    { id: 'user', label: '利用者', role: 'pc' },
+    { id: 'idp', label: '認証の窓口', sub: 'IDを一元管理', role: 'server' },
+    { id: 'svc', label: '各サービス', sub: 'メール・会議など', role: 'cloud' },
+  ],
+  messages: [
+    {
+      from: 'user',
+      to: 'idp',
+      label: '① 一度だけログイン',
+      note: '最初に一度、認証の窓口にIDとパスワードでログインします。',
+    },
+    {
+      from: 'idp',
+      to: 'user',
+      label: '② 通行証を発行',
+      note: '窓口が「認証済み」を示す通行証を発行します。これがSSOの鍵です。',
+    },
+    {
+      from: 'user',
+      to: 'svc',
+      label: '③ 通行証でサービスAへ',
+      note: 'サービスAは通行証を確認して受け入れます。ログイン画面は出ません。',
+    },
+    {
+      from: 'user',
+      to: 'svc',
+      label: '④ 同じ通行証でBへ',
+      note: '別のサービスにも同じ通行証で入れます。認証は最初の一度だけでした。',
+    },
+  ],
+}
+
 // §4 証明書チェーン（timeline 再利用）。上が下を署名する連鎖＝第4章サーバ証明書の伏線回収。
 const certChainFigure: TimelineFigure = {
   kind: 'timeline',
@@ -170,7 +211,7 @@ export const ch13AuthSsoPki: TextbookChapter = {
   summary:
     '「あなたは誰か」を確かめる認証と、「何をしてよいか」を決める認可の区別を出発点に、認証を一元管理するRADIUS、一度の認証で複数のサービスを使うSSO、署名の連鎖で証明書の本物を保証するPKIを理解します。第4章のサーバ証明書の「なぜ信じられるか」に、ここで答えます。',
   status: 'published',
-  estimatedMinutes: 15,
+  estimatedMinutes: 18,
   intro: [
     {
       kind: 'text',
@@ -211,7 +252,7 @@ export const ch13AuthSsoPki: TextbookChapter = {
         },
         {
           kind: 'text',
-          text: 'そこで、確かめる仕事を1台の[[blue:認証サーバ]]へ集めます。機器と認証サーバの間で使う標準の仕組みが[[blue:RADIUS]]。構成図の内部LANに、この認証サーバが加わります。',
+          text: 'そこで、確かめる仕事を1台の[[blue:認証サーバ]]へ集めます。機器と認証サーバの間のやり取りの標準が[[blue:RADIUS]]——仕組みの名前で、応対するサーバ自体も[[blue:RADIUSサーバ]]と呼びます。構成図の内部LANに、この認証サーバが加わります。',
         },
         { kind: 'figure', figure: mapFigure },
         {
@@ -236,8 +277,9 @@ export const ch13AuthSsoPki: TextbookChapter = {
         },
         {
           kind: 'text',
-          text: 'SSOでは、最初に一度だけ認証の窓口でログインし、各サービスはその結果を信頼して利用者を受け入れます。[[blue:一度の認証で、複数のサービスへ]]——RADIUSが社内機器の認証をまとめたように、SSOはサービス側の認証をまとめます。',
+          text: 'SSOでは、最初に一度だけ認証の窓口でログインします。窓口は「認証済み」を示す情報——いわば[[blue:通行証]]——を発行し、各サービスはそれを信頼して利用者を受け入れます。2回目のログインが要らなくなる流れを、順に追ってみましょう。',
         },
+        { kind: 'figure', figure: ssoFigure },
         {
           kind: 'callout',
           tone: 'info',
@@ -258,6 +300,10 @@ export const ch13AuthSsoPki: TextbookChapter = {
           text: 'サーバ証明書には、発行元の[[blue:認証局]]（CA）による署名（発行元が確かに認めた印）が入っています。その認証局が本物かは、さらに上位の認証局の署名が保証。この連鎖をさかのぼった頂点が[[rose:ルートCA]]です。',
         },
         { kind: 'figure', figure: certChainFigure },
+        {
+          kind: 'text',
+          text: 'では、なぜ偽物は連鎖に入り込めないのか。署名を作れるのは[[blue:認証局だけ]]で、偽物のサーバには本物の署名が用意できないからです。連鎖をたどれない証明書は、その時点で偽物と見抜けます。',
+        },
         {
           kind: 'text',
           text: '証明書と認証局で信頼を支えるこの仕組み全体が[[blue:PKI]]（公開鍵基盤）。第4章の「証明書で本物を確かめる」は、この土台の上に成り立っていました。',

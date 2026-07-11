@@ -17,7 +17,7 @@ const v4v6Table: AddressTableFigure = {
       name: 'IPv4',
       layer: '32ビット',
       carries: '約43億個——世界の機器には足りません',
-      scope: 'プライベートIPとNATで共有し、延命（第8章)',
+      scope: 'プライベートIPとNATで共有し、延命（第8章）',
       example: '192.168.10.10',
       tone: 'blue',
     },
@@ -125,7 +125,7 @@ export const ch15Ipv6: TextbookChapter = {
   order: 15,
   title: 'IPv6',
   summary:
-    'IPv4の枯渇をNATで延命してきた世界に対する根本解決——それがアドレスを128ビットに増やしたIPv6です。16進8グループの表記と::の省略ルール、前半・後半の構造、ARPの仕事を引き継ぐNDP、DHCPなしの自動設定SLAAC、そして現実的な移行方法のデュアルスタックまでを読み解きます。',
+    'IPv4の枯渇をNATで持ちこたえてきた世界への根本解決——それがアドレスを128ビットに増やしたIPv6です。16進8グループの表記と::の省略ルール、前半・後半の構造、ARPの仕事を引き継ぐNDP、DHCPなしの自動設定SLAAC、そして現実的な移行方法のデュアルスタックまでを読み解きます。',
   status: 'published',
   estimatedMinutes: 12,
   intro: [

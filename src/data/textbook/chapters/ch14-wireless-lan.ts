@@ -112,7 +112,7 @@ const csmaFigure: TimelineFigure = {
   id: 'ch14-csma-ca',
   title: '送る前に避ける——CSMA/CAの手順',
   caption: '無線は[[red:衝突を検出できない]]ため、送る前に避け、最後にACKで確かめます。',
-  takeaway: '有線の古い規格は衝突を[[blue:検出]]（CSMA/CD)、無線は[[green:回避]]（CSMA/CA）。半二重ゆえの違いです。',
+  takeaway: '有線の古い規格は衝突を[[blue:検出]]（CSMA/CD）、無線は[[green:回避]]（CSMA/CA）。半二重ゆえの違いです。',
   items: [
     {
       badge: '①',
@@ -146,8 +146,8 @@ const dot1xFigure: SequenceFigure = {
   kind: 'sequence',
   id: 'ch14-dot1x',
   title: '無線LANの認証——IEEE802.1X',
-  caption: '第13章の3者がそのまま登場。それぞれに[[blue:役割の名前]]が付きます。',
-  takeaway: 'サプリカント＝端末、オーセンティケータ＝取り次ぐAP。名前が付いても、中身は[[blue:第13章と同じ3者]]です。',
+  caption: '端末・取り次ぎ・認証サーバの3者に、それぞれ[[blue:役割の名前]]が付きます。',
+  takeaway: 'サプリカント＝端末、オーセンティケータ＝取り次ぐAP。この[[blue:名前と機器の対応]]が午後の得点源です。',
   actors: [
     { id: 'nb', label: 'ノートPC', sub: 'サプリカント', role: 'pc' },
     { id: 'ap', label: 'AP', sub: 'オーセンティケータ', role: 'ap' },
@@ -207,7 +207,7 @@ const roamFigure: PacketFlowFigure = {
   id: 'ch14-roaming',
   title: 'APからAPへ——ローミング',
   caption: '[[blue:接続中]]チップの移り先に注目。端末が動いても通信が続く仕組みです。',
-  takeaway: '接続するAPが替わっても、[[blue:SSIDは同じまま]]。切り替えはWLCが引き継ぎます。',
+  takeaway: '接続するAPが替わっても[[blue:SSIDは同じまま]]。だから利用者は、切り替えに気づきません。',
   topology: roamTopology,
   hideHeaders: true,
   steps: [
@@ -257,7 +257,7 @@ export const ch14WirelessLan: TextbookChapter = {
     },
     {
       kind: 'text',
-      text: 'その違いを支えるのが、電波と有線を橋渡しする[[blue:AP]]、多数のAPを束ねる[[blue:WLC]]、譲り合いの[[blue:CSMA/CA]]、そして入口で本人を確かめる[[blue:IEEE802.1X]]。第13章の認証サーバが、ここでいよいよ本格稼働します。',
+      text: 'その違いを支えるのが、電波と有線を橋渡しする[[blue:AP]]、多数のAPを束ねる[[blue:WLC]]、譲り合いの[[blue:CSMA/CA]]、そして入口で本人を確かめる[[blue:IEEE802.1X]]。第13章の認証サーバは、ここからが出番です。',
     },
   ],
   sections: [
@@ -321,7 +321,7 @@ export const ch14WirelessLan: TextbookChapter = {
           kind: 'callout',
           tone: 'tip',
           title: 'PSKと802.1Xの分かれ目',
-          body: 'PSKは手軽ですが、合言葉が1つなので[[red:漏れたら全員分を変更]]、誰がつないだかも分かりません。802.1Xなら退職者のIDだけを無効化でき、記録も残ります。なお通信の暗号化は[[blue:WPA2/WPA3]]という規格の仕事——こちらは名前だけで十分です。',
+          body: 'PSKは手軽ですが、合言葉が1つなので[[red:漏れたら全員分を変更]]、誰がつないだかも分かりません。802.1Xなら退職者のIDだけを無効化でき、記録も残ります。なお通信の暗号化は[[blue:WPA2/WPA3]]という規格の仕事——こちらは規格名を知っていれば足ります。',
         },
       ],
     },

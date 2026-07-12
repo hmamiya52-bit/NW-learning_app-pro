@@ -34,35 +34,43 @@ const mapTopology: Topology = {
 const mapFigure: PacketFlowFigure = {
   kind: 'packet-flow',
   id: 'ch16-map',
-  title: 'メールサーバはDMZ、相手はインターネットの先',
-  caption: '自社の[[amber:メールサーバ]]がいったん預かり、[[slate:相手のメールサーバ]]へ配ります。',
-  takeaway: '自社と相手の[[amber:2つのメールサーバ]]が仲立ちします。PCは送るだけ・受け取るだけで、直接は通信しません。',
+  title: 'メールはどこを通って相手へ届くか',
+  caption: 'PCから自社サーバ、インターネットを越えて相手サーバへ。ステップで[[blue:通り道]]が光ります。',
+  takeaway: '自社と相手の[[amber:2つのメールサーバ]]が仲立ちします。PCは送るだけで、相手のPCと直接はつながりません。',
   topology: mapTopology,
   hideHeaders: true,
   steps: [
     {
+      focus: { type: 'node', id: 'pc' },
+      packetLabel: '',
+      headers: { l2: '', l3: '' },
+      explanation: '送信PCが、自社メールサーバへメールを渡します。ここまでは社内です。',
+    },
+    {
       focus: { type: 'node', id: 'mail' },
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: '公開サーバの区画DMZに、自社メールサーバ（172.16.0.25）が加わります。第9章のDMZの一員です。',
+      explanation: '自社メールサーバが受け取り、相手を探して配送を始めます。',
+    },
+    {
+      focus: { type: 'link', a: 'br', b: 'inet' },
+      bubbles: ['宛先 相手メールサーバ'],
+      packetLabel: '',
+      headers: { l2: '', l3: '' },
+      explanation: 'FW・境界ルータを通り、インターネットへ出ます。宛先は相手サーバ。',
+    },
+    {
+      focus: { type: 'link', a: 'inet', b: 'peer' },
+      bubbles: ['宛先 相手メールサーバ'],
+      packetLabel: '',
+      headers: { l2: '', l3: '' },
+      explanation: 'インターネットを越え、相手メールサーバへ届きます。',
     },
     {
       focus: { type: 'node', id: 'peer' },
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: '相手のメールサーバは、インターネットの先。相手ドメインの受け取り窓口（MX）です。',
-    },
-    {
-      focus: { type: 'link', a: 'fw', b: 'pc' },
-      packetLabel: '',
-      headers: { l2: '', l3: '' },
-      explanation: 'まず送信PCが、自社メールサーバへメールを預けます。ここまでは社内です。',
-    },
-    {
-      focus: { type: 'link', a: 'inet', b: 'peer' },
-      packetLabel: '',
-      headers: { l2: '', l3: '' },
-      explanation: '自社サーバが、インターネット越しに相手サーバへ配送。サーバどうしの受け渡しです。',
+      explanation: '相手メールサーバが受信箱に保存。取り出す仕組みは次の節で。',
     },
   ],
 }
@@ -101,7 +109,7 @@ const sendFigure: SequenceFigure = {
   ],
 }
 
-// §3 受信(IMAP/POP)。2者: 利用者PC｜メールサーバ。送信とは別の経路。
+// §3 受信(IMAP/POP)。2者: 自社の利用者｜自社メールサーバ。送信とは別の経路。同じ自社サーバが送受信を担う。
 const recvFigure: SequenceFigure = {
   kind: 'sequence',
   id: 'ch16-recv',
@@ -109,21 +117,21 @@ const recvFigure: SequenceFigure = {
   caption: '受信は、利用者が自分のメールサーバへ[[blue:取りに行く]]別の仕組みです。',
   takeaway: '送信（SMTP）が「押し込む」なら、受信（IMAP／POP）は「取りに行く」。行きと帰りで仕組みが違います。',
   actors: [
-    { id: 'user', label: '利用者PC', role: 'pc' },
-    { id: 'srv', label: 'メールサーバ', sub: '受信箱', role: 'mail' },
+    { id: 'user', label: '自社の利用者', role: 'pc' },
+    { id: 'srv', label: '自社メールサーバ', sub: '受信箱', role: 'mail' },
   ],
   messages: [
     {
       from: 'user',
       to: 'srv',
       label: '① 新着を確認',
-      note: '利用者が自分のメールサーバへ「新しいメールはありますか」と問い合わせます（IMAPやPOP）。',
+      note: '自社の利用者が、自社メールサーバへ新着を問い合わせます（IMAPやPOP）。',
     },
     {
       from: 'srv',
       to: 'user',
       label: '② メールを渡す',
-      note: '受信箱にたまっていたメールを渡します。SMTPが運び込んだメールを、ここで受け取ります。',
+      note: '受信箱のメールを渡します。SMTPが運び込んだ分を、ここで受け取ります。',
     },
   ],
 }
@@ -159,7 +167,7 @@ export const ch16Mail: TextbookChapter = {
   intro: [
     {
       kind: 'text',
-      text: 'Webは、相手のサーバへ[[blue:その場でつなぎ]]、ページを受け取る通信でした。メールは違います。相手が今いなくても届けたいので、[[blue:いったんサーバに預けて、あとから転送]]する仕組みになっています。',
+      text: 'Webは、相手のサーバへ[[blue:その場でつなぎ]]、ページを受け取る通信でした。メールは違います。相手が今いなくても届けたいので、[[blue:いったんサーバに預けて、あとから転送]]する仕組みになっています。イメージは[[blue:郵便]]に近く、ポスト役のメールサーバに預ければ、相手が不在でも運ばれ、相手はあとから自分の私書箱を見に行きます。',
     },
     {
       kind: 'text',
@@ -208,7 +216,7 @@ export const ch16Mail: TextbookChapter = {
       blocks: [
         {
           kind: 'text',
-          text: '相手サーバに届いたメールは、受信箱にたまります。利用者は、それを自分のメールサーバへ[[blue:取りに行き]]ます。この受信のプロトコルが[[blue:IMAP]]や[[blue:POP]]。送信のSMTPとは、まったく別の仕組みです。',
+          text: 'ここまでは自社が送る側でした。今度は[[blue:受け取る側]]で考えます。同じ自社メールサーバは、外から届いたメールを受信箱にためる役目もします。自社の利用者は、それを自分のメールサーバへ[[blue:取りに行き]]ます。この受信のプロトコルが[[blue:IMAP]]や[[blue:POP]]。送信のSMTPとは、まったく別の仕組みです。',
         },
         { kind: 'figure', figure: recvFigure },
         {

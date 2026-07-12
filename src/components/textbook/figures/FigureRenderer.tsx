@@ -10,6 +10,7 @@ import SegmentMapFigure from './SegmentMapFigure'
 import SequenceFigure from './SequenceFigure'
 import SubnetCalcFigure from './SubnetCalcFigure'
 import TimelineFigure from './TimelineFigure'
+import VmHostFigure from './VmHostFigure'
 
 export default function FigureRenderer({ figure }: { figure: Figure }) {
   switch (figure.kind) {
@@ -35,6 +36,8 @@ export default function FigureRenderer({ figure }: { figure: Figure }) {
       return <RadioRangeFigure figure={figure} />
     case 'ipv6-address':
       return <Ipv6AddressFigure figure={figure} />
+    case 'vm-host':
+      return <VmHostFigure figure={figure} />
     default:
       return null
   }

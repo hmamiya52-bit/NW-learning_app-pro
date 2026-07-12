@@ -74,6 +74,7 @@ export type Figure =
   | SegmentMapFigure
   | RadioRangeFigure
   | Ipv6AddressFigure
+  | VmHostFigure
 
 // 動くパケット図（中核）。トポロジ＋ステップ。ARP もこの型で表現する。
 export interface PacketFlowFigure extends FigureBase {
@@ -120,6 +121,8 @@ export interface Topology {
   tunnel?: boolean
   // tunnel の帯の上に出す見出し（例: 'IPsec暗号トンネル'）。
   tunnelNote?: string
+  // tunnel の帯の中に出す文言（既定は 暗号化／元パケットを丸ごと）。VXLANは暗号化しないため差し替える。
+  tunnelBandLabel?: { main: string; sub: string }
   // pair の状態チップの文言。既定は稼働中/待機中（VRRP）。standby を '' にすると非稼働側のチップを出さない
   // （第14章ローミング: active='接続中'・standby=''＝もう片方のAPは待機ではないため）。
   pairChipLabels?: { active: string; standby: string }
@@ -284,4 +287,20 @@ export interface SegmentMapFigure extends FigureBase {
   // networks: ネットワークアドレスを表示するセグメント数。gateways: ルータ両端IPを表示。
   // highlight: 強調（0..segments-1=セグメント、segments.length=ルータ）。
   steps: { note: string; networks: number; gateways: boolean; highlight: number }[]
+}
+
+// サーバ仮想化の入れ子（第17章）。1台の物理サーバの中に複数のVM＋仮想スイッチ＋ハイパーバイザを描き、
+// 「VMも物理PCと同じくIP/MACを持つ端末」を見せる。steps で通信の経路（VM→仮想スイッチ→VM／外）を光らせる。
+// レイアウトは全ステップ不変（色だけ変わる）＝操作ボタン不動。
+export interface VmHostFigure extends FigureBase {
+  kind: 'vm-host'
+  hostLabel: string // 例: '物理サーバ 1台'
+  switchLabel: string // 例: '仮想スイッチ'
+  switchSub: string // 例: 'VMどうしをつなぐ'
+  hypervisorLabel: string // 例: 'ハイパーバイザ'
+  hypervisorSub: string // 例: '1台の物理を複数のVMに分ける土台'
+  uplinkLabel: string // 例: '物理ネットワークへ'
+  vms: { id: string; label: string; sub: string }[]
+  // active: 青くハイライトする要素id（vm id / 'switch' / 'hv' / 'uplink'）＝通信の経路を光らせる。
+  steps: { active: string[]; explanation: string }[]
 }

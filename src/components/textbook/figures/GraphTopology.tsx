@@ -328,10 +328,10 @@ export default function GraphTopology({ topology, focus, blockedLink, verdict, b
                 strokeDasharray={focused ? undefined : '6 4'}
               />
               <text x={x + w / 2} y={y + h / 2 - 1} textAnchor="middle" fontSize="11" fontWeight="800" fill="#5b21b6">
-                暗号化
+                {topology.tunnelBandLabel?.main ?? '暗号化'}
               </text>
               <text x={x + w / 2} y={y + h / 2 + 11} textAnchor="middle" fontSize="8" fill="#a78bfa">
-                元パケットを丸ごと
+                {topology.tunnelBandLabel?.sub ?? '元パケットを丸ごと'}
               </text>
               {bubbles && bubbles.length > 0 && (
                 <g>

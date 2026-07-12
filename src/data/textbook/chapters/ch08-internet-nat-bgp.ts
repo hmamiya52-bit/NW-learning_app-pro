@@ -319,13 +319,13 @@ export const ch08InternetNatBgp: TextbookChapter = {
   id: 'internet-nat-bgp',
   order: 8,
   title: 'インターネット接続・NAT・BGP',
-  summary: '社内のプライベートIPと世界のグローバルIP、境界ルータでのNAPT変換、AS・BGPによる世界規模の経路交換——構成図をインターネットまで広げて理解します。',
+  summary: '社内のプライベートIPと世界のグローバルIP、境界ルータでのNAPT変換、AS・BGPによる世界規模の経路交換まで、構成図をインターネットまで広げて理解します。',
   status: 'published',
   estimatedMinutes: 20,
   intro: [
     {
       kind: 'text',
-      text: '第7章まで、パケットの旅はすべて社内で完結していました。この章ではいよいよ社外——インターネット——へ出ます。',
+      text: '第7章まで、パケットの旅はすべて社内で完結していました。この章ではいよいよ社外のインターネットへ出ます。',
     },
     {
       kind: 'text',
@@ -338,7 +338,7 @@ export const ch08InternetNatBgp: TextbookChapter = {
       blocks: [
         {
           kind: 'text',
-          text: '第7章のR1の経路表に、どの行にも一致しないときの最後の砦——[[blue:0.0.0.0/0（デフォルトルート）]]がありました。その行き先の正体が、今回構成図に加わる[[blue:境界ルータ]]。社内とインターネットの境目に立つルータです。',
+          text: '第7章のR1の経路表に、どの行にも一致しないときの最後の砦、[[blue:0.0.0.0/0（デフォルトルート）]]がありました。その行き先の正体が、今回構成図に加わる[[blue:境界ルータ]]。社内とインターネットの境目に立つルータです。',
         },
         {
           kind: 'text',
@@ -374,7 +374,7 @@ export const ch08InternetNatBgp: TextbookChapter = {
       ],
     },
     {
-      heading: 'NAT・NAPT——境界で送信元を書き換える',
+      heading: '境界で送信元を書き換えるNAT・NAPT',
       blocks: [
         {
           kind: 'text',
@@ -398,7 +398,7 @@ export const ch08InternetNatBgp: TextbookChapter = {
       ],
     },
     {
-      heading: 'インターネットはASの集まり——経路交換はBGP',
+      heading: 'ASどうしをBGPでつなぐインターネット',
       blocks: [
         {
           kind: 'text',
@@ -413,7 +413,7 @@ export const ch08InternetNatBgp: TextbookChapter = {
           kind: 'callout',
           tone: 'tip',
           title: 'AS番号・BGPは「名前だけ」',
-          body: '図のAS 64500などの番号は例示で、暗記は不要。「インターネットはASの集まり」「AS間の経路交換がBGP」「自社は契約ISPのASにつなぐ」——午後の読解にはこの3点で十分です。',
+          body: '図のAS 64500などの番号は例示で、暗記は不要。「インターネットはASの集まり」「AS間の経路交換がBGP」「自社は契約ISPのASにつなぐ」。午後の読解には、この3点で十分です。',
         },
       ],
     },
@@ -427,7 +427,7 @@ export const ch08InternetNatBgp: TextbookChapter = {
         { kind: 'figure', figure: natDirectionFigure },
         {
           kind: 'text',
-          text: '外から公開サーバあての通信（静的NATの出番）では、[[blue:戻り経路]]——応答がどの経路で・どの住所で帰るか——も問われます。公開サーバの置き場所（DMZ）とあわせて、第9章で完成させます。',
+          text: '外から公開サーバあての通信（静的NATの出番）では、[[blue:戻り経路]]、つまり応答がどの経路で・どの住所で帰るかも問われます。公開サーバの置き場所（DMZ）とあわせて、第9章で完成させます。',
         },
         {
           kind: 'check',

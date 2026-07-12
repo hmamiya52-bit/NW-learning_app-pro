@@ -156,7 +156,7 @@ const vlanFlowFigure: PacketFlowFigure = {
 const stormFigure: PacketFlowFigure = {
   kind: 'packet-flow',
   id: 'ch5-storm',
-  title: 'STPがないと——ループでストーム',
+  title: 'STPがないとループでストームが起きる',
   caption: 'SW1とSW2は2本のケーブルでつないでいます（冗長）。1回のブロードキャストが回り続けます。',
   takeaway: 'ループがあると、1回のブロードキャストが[[red:増え続けて]]ネットワークを埋め尽くします（ブロードキャストストーム）。',
   topology: stpTopology,
@@ -191,7 +191,7 @@ const stormFigure: PacketFlowFigure = {
 const stpFigure: PacketFlowFigure = {
   kind: 'packet-flow',
   id: 'ch5-stp',
-  title: 'STPあり——片方を止めて1本道に',
+  title: 'STPが片方を止めて1本道にする',
   caption: 'STPが片方のポートをブロックし、ループのない1本道に整えます。',
   takeaway: '物理的に2本でも、STPが片方を止めて[[blue:論理的に1本]]に。だからループが起きません。',
   topology: stpTopology,
@@ -328,7 +328,7 @@ export const ch05L2VlanStp: TextbookChapter = {
           kind: 'callout',
           tone: 'info',
           title: '第7章への橋渡し',
-          body: '別のVLANどうしの通信は、L3（IPでのルーティング）を通る必要があります。「VLANで分けた先を、どうつなぎ直すか」は、次の第6章（アドレス設計）と第7章（ルーティング）で扱います。L2で分け、L3でつなぐ——この役割分担が、午後の構成図を読む土台になります。',
+          body: '別のVLANどうしの通信は、L3（IPでのルーティング）を通る必要があります。「VLANで分けた先を、どうつなぎ直すか」は、次の第6章（アドレス設計）と第7章（ルーティング）で扱います。L2で分け、L3でつなぐという役割分担が、午後の構成図を読む土台になります。',
         },
         {
           kind: 'check',
@@ -336,7 +336,7 @@ export const ch05L2VlanStp: TextbookChapter = {
           items: [
             {
               question: 'L2スイッチが、宛先MACアドレスをまだ学習していないフレームを受け取ったときの動作は何か。',
-              answer: 'フラッディング——届いたポート以外の全ポートへ配ります。相手が応答すれば学習し、次からはユニキャストです。',
+              answer: 'フラッディングします。届いたポート以外の全ポートへ配り、相手が応答すれば学習して、次からはユニキャストです。',
             },
           ],
         },

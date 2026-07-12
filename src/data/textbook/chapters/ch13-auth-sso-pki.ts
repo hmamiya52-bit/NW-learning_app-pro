@@ -8,7 +8,7 @@ import type { AddressTableFigure, PacketFlowFigure, SequenceFigure, TextbookChap
 const authAuthzTable: AddressTableFigure = {
   kind: 'address-table',
   id: 'ch13-auth-authz',
-  title: '認証と認可——2つの問い',
+  title: '認証と認可を分ける2つの問い',
   caption: '[[blue:認証]]と[[violet:認可]]、それぞれが答える問いを見比べます。',
   takeaway: 'ログインの成功（認証）と、操作できる範囲（認可）は別もの。両方そろって初めて使えます。',
   fieldLabels: { carries: '答える問い', scope: '判断のよりどころ', example: '例' },
@@ -17,7 +17,7 @@ const authAuthzTable: AddressTableFigure = {
       name: '認証',
       layer: '本人確認',
       carries: '「あなたは誰か」',
-      scope: '本人だけが示せるもの——パスワード・ICカード・生体・証明書',
+      scope: '本人だけが示せるもの（パスワード・ICカード・生体・証明書）',
       example: 'IDとパスワードでログイン',
       tone: 'blue',
     },
@@ -219,16 +219,16 @@ export const ch13AuthSsoPki: TextbookChapter = {
     },
     {
       kind: 'text',
-      text: 'この章では、「誰か」を確かめる[[blue:認証]]と「何をしてよいか」を決める[[violet:認可]]の区別から始め、認証を一元化する[[blue:RADIUS]]、一度の認証で複数サービスを使う[[blue:SSO]]、証明書の信頼を支える[[blue:PKI]]まで——ネットワークの「確かめる仕組み」をまとめて整理します。',
+      text: 'この章では、「誰か」を確かめる[[blue:認証]]と「何をしてよいか」を決める[[violet:認可]]の区別から始め、認証を一元化する[[blue:RADIUS]]、一度の認証で複数サービスを使う[[blue:SSO]]、証明書の信頼を支える[[blue:PKI]]まで、ネットワークの「確かめる仕組み」をまとめて整理します。',
     },
   ],
   sections: [
     {
-      heading: '認証と認可——「誰か」と「何をしてよいか」',
+      heading: '認証は「誰か」、認可は「何をしてよいか」',
       blocks: [
         {
           kind: 'text',
-          text: 'ログイン画面でIDとパスワードを入れる——これは「[[blue:あなたは誰か]]」を確かめる[[blue:認証]]です。一方、ログインした人がどのフォルダを開けるか、設定を変えられるかを決めるのが[[violet:認可]]。答える問いが違う、別の仕組みです。',
+          text: 'ログイン画面でIDとパスワードを入れます。これは「[[blue:あなたは誰か]]」を確かめる[[blue:認証]]です。一方、ログインした人がどのフォルダを開けるか、設定を変えられるかを決めるのが[[violet:認可]]。答える問いが違う、別の仕組みです。',
         },
         { kind: 'figure', figure: authAuthzTable },
         {
@@ -244,7 +244,7 @@ export const ch13AuthSsoPki: TextbookChapter = {
       ],
     },
     {
-      heading: 'RADIUS——認証の一元化',
+      heading: 'RADIUSで認証を1か所にまとめる',
       blocks: [
         {
           kind: 'text',
@@ -252,7 +252,7 @@ export const ch13AuthSsoPki: TextbookChapter = {
         },
         {
           kind: 'text',
-          text: 'そこで、確かめる仕事を1台の[[blue:認証サーバ]]へ集めます。機器と認証サーバの間のやり取りの標準が[[blue:RADIUS]]——仕組みの名前で、応対するサーバ自体も[[blue:RADIUSサーバ]]と呼びます。構成図の内部LANに、この認証サーバが加わります。',
+          text: 'そこで、確かめる仕事を1台の[[blue:認証サーバ]]へ集めます。機器と認証サーバの間のやり取りの標準が[[blue:RADIUS]]です。仕組みの名前で、応対するサーバ自体も[[blue:RADIUSサーバ]]と呼びます。構成図の内部LANに、この認証サーバが加わります。',
         },
         { kind: 'figure', figure: mapFigure },
         {
@@ -269,7 +269,7 @@ export const ch13AuthSsoPki: TextbookChapter = {
       ],
     },
     {
-      heading: 'SSO——一度の認証で、複数のサービスへ',
+      heading: '一度の認証で複数のサービスを使うSSO',
       blocks: [
         {
           kind: 'text',
@@ -277,7 +277,7 @@ export const ch13AuthSsoPki: TextbookChapter = {
         },
         {
           kind: 'text',
-          text: 'SSOでは、最初に一度だけ認証の窓口でログインします。窓口は「認証済み」を示す情報——いわば[[blue:通行証]]——を発行し、各サービスはそれを信頼して利用者を受け入れます。2回目のログインが要らなくなる流れを、順に追ってみましょう。',
+          text: 'SSOでは、最初に一度だけ認証の窓口でログインします。窓口は「認証済み」を示す情報、いわば[[blue:通行証]]を発行し、各サービスはそれを信頼して利用者を受け入れます。2回目のログインが要らなくなる流れを、順に追ってみましょう。',
         },
         { kind: 'figure', figure: ssoFigure },
         {
@@ -289,7 +289,7 @@ export const ch13AuthSsoPki: TextbookChapter = {
       ],
     },
     {
-      heading: '証明書チェーンとPKI——「本物」を保証する連鎖',
+      heading: '証明書チェーンとPKIで「本物」を保証する',
       blocks: [
         {
           kind: 'text',
@@ -312,12 +312,12 @@ export const ch13AuthSsoPki: TextbookChapter = {
           kind: 'callout',
           tone: 'tip',
           title: '信頼の起点はルートCA',
-          body: '「なぜルートCAは信じられるのか」——答えは、[[rose:端末にあらかじめ入っている]]からです。逆に、連鎖のどこか1つでも署名を確認できなければ、ブラウザは警告を出します。',
+          body: '「なぜルートCAは信じられるのか」。答えは、[[rose:端末にあらかじめ入っている]]からです。逆に、連鎖のどこか1つでも署名を確認できなければ、ブラウザは警告を出します。',
         },
       ],
     },
     {
-      heading: '午後の着眼点——認証の流れと証明書の管理',
+      heading: '午後は認証の流れと証明書の管理を問う',
       blocks: [
         {
           kind: 'text',

@@ -146,7 +146,7 @@ const proxyPlacementTopology: Topology = {
 const proxyPlacementFigure: PacketFlowFigure = {
   kind: 'packet-flow',
   id: 'ch10-proxy-placement',
-  title: '代理はどちら側に立つか——配置と向き',
+  title: '代理はどちら側に立つか',
   caption: '[[slate:外部]]を中心に、[[blue:クライアント側]]のフォワードと[[blue:サーバ側]]のリバースが、逆向きに立ちます。',
   takeaway: '[[blue:フォワード]]は社員を代理して外へ、[[blue:リバース]]は外からの通信を受けてサーバへ。立ち位置が逆です。',
   topology: proxyPlacementTopology,
@@ -244,7 +244,7 @@ export const ch10LbProxyCdn: TextbookChapter = {
   order: 10,
   title: 'ロードバランサ・プロキシ・CDN',
   summary:
-    '代表IP（VIP）で受けて複数サーバへ分散するロードバランサ、通信を代理するリバース／フォワードプロキシ、利用者の近くから配信するCDN——公開サーバへのアクセス集中を捌く仕組みを、第9章の境界の上に重ねて理解します。',
+    '代表IP（VIP）で受けて複数サーバへ分散するロードバランサ、通信を代理するリバース／フォワードプロキシ、利用者の近くから配信するCDNまで、公開サーバへのアクセス集中を捌く仕組みを、第9章の境界の上に重ねて理解します。',
   status: 'published',
   estimatedMinutes: 16,
   intro: [
@@ -272,7 +272,7 @@ export const ch10LbProxyCdn: TextbookChapter = {
       ],
     },
     {
-      heading: 'ロードバランサ——1つの入口で受けて分散する',
+      heading: '1つの入口で受けて分散するロードバランサ',
       blocks: [
         {
           kind: 'text',
@@ -297,7 +297,7 @@ export const ch10LbProxyCdn: TextbookChapter = {
       ],
     },
     {
-      heading: 'プロキシ——通信を代理する',
+      heading: '通信を代理するプロキシ',
       blocks: [
         {
           kind: 'text',
@@ -318,7 +318,7 @@ export const ch10LbProxyCdn: TextbookChapter = {
       ],
     },
     {
-      heading: 'CDN——近くから配信する',
+      heading: '近くから配信するCDN',
       blocks: [
         {
           kind: 'text',

@@ -30,7 +30,7 @@ const spofTopology: Topology = {
 const spofFigure: PacketFlowFigure = {
   kind: 'packet-flow',
   id: 'ch11-spof',
-  title: '単一障害点——1台の故障で全体が停止',
+  title: '1台の故障で全体が止まる単一障害点',
   caption: '機器を1台[[red:止める]]と、その先がまとめて届かなくなる様子です。',
   takeaway: 'そこが1個だと全体が止まる箇所が[[red:単一障害点（SPOF）]]。これを1つずつ無くすのがこの章です。',
   topology: spofTopology,
@@ -302,7 +302,7 @@ export const ch11Availability: TextbookChapter = {
       ],
     },
     {
-      heading: '午後の着眼点——SPOFと切替',
+      heading: '午後はSPOFと切替を見る',
       blocks: [
         {
           kind: 'text',
@@ -329,7 +329,7 @@ export const ch11Availability: TextbookChapter = {
     },
   ],
   takeaways: [
-    '冗長化は[[red:単一障害点（SPOF）]]——そこが1個だと全体が止まる箇所——を無くすことです。',
+    '冗長化とは、[[red:単一障害点（SPOF）]]、つまりそこが1個だと全体が止まる箇所を無くすことです。',
     '[[blue:VRRP]]は仮想IPをアクティブ／スタンバイの2台で引き継ぐ仕組み。端末のGWは[[blue:仮想IP]]のままで、中身のルータが切替わります（第1章のデフォルトGW）。',
     '[[blue:LAG]]は複数の物理リンクを束ねて1本の論理リンクに。帯域を増やしつつ、冗長も確保します。',
     '冗長があれば、片系ずつ[[blue:無停止で更改]]（機器の交換・更新）ができます。',

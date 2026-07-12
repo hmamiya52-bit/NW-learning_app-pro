@@ -27,7 +27,7 @@ const tunnelTopology: Topology = {
 const tunnelFigure: PacketFlowFigure = {
   kind: 'packet-flow',
   id: 'ch12-tunnel',
-  title: '本社から支社へ——暗号トンネルの往路',
+  title: '本社から支社へ渡る暗号トンネル',
   caption: '本社ルータで[[violet:包み]]、暗号トンネルを渡り、支社ルータで[[blue:開き]]ます。',
   takeaway: 'トンネルの中は[[violet:外側IP]]で運ばれ、[[blue:元の宛先]]は暗号化。第1章の「包む／外す」が拠点間で効きます。',
   topology: tunnelTopology,
@@ -133,7 +133,7 @@ export const ch12VpnWanSdwan: TextbookChapter = {
   order: 12,
   title: '拠点間接続・VPN・WAN・SD-WAN',
   summary:
-    '離れた本社と支社を安全につなぐIPsec VPN——元のパケットを暗号化して新しいIPで包む二重のトンネル——を軸に、拠点間をつなぐWAN回線の種類と、複数回線を束ねて使い分けるSD-WANを理解します。第1章のカプセル化が「パケットをパケットで包む」として効きます。',
+    '離れた本社と支社を安全につなぐIPsec VPN、つまり元のパケットを暗号化して新しいIPで包む二重のトンネルを軸に、拠点間をつなぐWAN回線の種類と、複数回線を束ねて使い分けるSD-WANを理解します。第1章のカプセル化が「パケットをパケットで包む」として効きます。',
   status: 'published',
   estimatedMinutes: 16,
   intro: [
@@ -162,12 +162,12 @@ export const ch12VpnWanSdwan: TextbookChapter = {
           kind: 'callout',
           tone: 'info',
           title: '構成図に、2つ目の拠点が加わります',
-          body: 'これまで本社だけだった構成図に、[[emerald:支社（192.168.20.0/24）]]が加わります。本社ルータと支社ルータを、インターネット越しの[[blue:暗号トンネル]]で結ぶ——これが拠点間接続の基本形です。',
+          body: 'これまで本社だけだった構成図に、[[emerald:支社（192.168.20.0/24）]]が加わります。本社ルータと支社ルータを、インターネット越しの[[blue:暗号トンネル]]で結ぶこと。これが拠点間接続の基本形です。',
         },
       ],
     },
     {
-      heading: 'IPsec VPN——パケットを包む暗号トンネル',
+      heading: 'IPsec VPNはパケットを包む暗号トンネル',
       blocks: [
         {
           kind: 'text',
@@ -208,7 +208,7 @@ export const ch12VpnWanSdwan: TextbookChapter = {
       ],
     },
     {
-      heading: '午後の着眼点——暗号区間と両端',
+      heading: '午後は暗号区間と両端を問う',
       blocks: [
         {
           kind: 'text',

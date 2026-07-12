@@ -136,7 +136,7 @@ export const ch01Osi: TextbookChapter = {
   ],
   sections: [
     {
-      heading: 'まず全体の地図をつくる——OSI参照モデル',
+      heading: 'OSI参照モデルで全体の地図をつくる',
       blocks: [
         {
           kind: 'text',
@@ -144,7 +144,7 @@ export const ch01Osi: TextbookChapter = {
         },
         {
           kind: 'text',
-          text: '層は全部で7つ。ただし、今すぐ全部を覚える必要はありません。この章の主役は、下の4つ——L1・[[green:L2]]・[[blue:L3]]・[[amber:L4]]です。上の3つ（L5〜L7）は、名前と位置だけ確認して先へ進みます。',
+          text: '層は全部で7つ。ただし、今すぐ全部を覚える必要はありません。この章の主役は、下の4つ、L1・[[green:L2]]・[[blue:L3]]・[[amber:L4]]です。上の3つ（L5〜L7）は、名前と位置だけ確認して先へ進みます。',
         },
         {
           kind: 'figure',
@@ -209,7 +209,7 @@ export const ch01Osi: TextbookChapter = {
         },
         {
           kind: 'text',
-          text: '結論から言えば——[[green:MACアドレスは「すぐ隣の相手」]]、[[blue:IPアドレスは「最終的な相手」]]、[[amber:ポート番号は「相手の中のどのアプリか」]]。',
+          text: '結論から言えば、[[green:MACアドレスは「すぐ隣の相手」]]、[[blue:IPアドレスは「最終的な相手」]]、[[amber:ポート番号は「相手の中のどのアプリか」]]。',
         },
         {
           kind: 'figure',
@@ -229,7 +229,7 @@ export const ch01Osi: TextbookChapter = {
       ],
     },
     {
-      heading: 'LANの外へ出る前に——デフォルトゲートウェイとARP',
+      heading: 'デフォルトゲートウェイとARPで、LANの外へ',
       blocks: [
         {
           kind: 'text',

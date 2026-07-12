@@ -8,7 +8,7 @@ import type { AddressTableFigure, Ipv6AddressFigure, SequenceFigure, TextbookCha
 const v4v6Table: AddressTableFigure = {
   kind: 'address-table',
   id: 'ch15-v4-v6',
-  title: 'IPv4とIPv6——延命策と根本解決',
+  title: '延命のIPv4、根本解決のIPv6',
   caption: 'アドレスの[[blue:数]]への答え方が、2つの世界の分かれ目です。',
   takeaway: 'IPv4は「共有してしのぐ」（NAT・第8章）、IPv6は「数そのものを増やす」。似た顔でも思想が違います。',
   fieldLabels: { carries: 'アドレスの長さ', scope: '枯渇への答え', example: '表記の例' },
@@ -16,7 +16,7 @@ const v4v6Table: AddressTableFigure = {
     {
       name: 'IPv4',
       layer: '32ビット',
-      carries: '約43億個——世界の機器には足りません',
+      carries: '約43億個で、世界の機器には足りません',
       scope: 'プライベートIPとNATで共有し、延命（第8章）',
       example: '192.168.10.10',
       tone: 'blue',
@@ -24,7 +24,7 @@ const v4v6Table: AddressTableFigure = {
     {
       name: 'IPv6',
       layer: '128ビット',
-      carries: 'ほぼ無限——全機器に固有の住所を配れます',
+      carries: 'ほぼ無限で、全機器に固有の住所を配れます',
       scope: 'アドレスの総数そのものを増やす根本解決',
       example: '2001:db8:10:1::10',
       tone: 'emerald',
@@ -36,7 +36,7 @@ const v4v6Table: AddressTableFigure = {
 const addrFigure: Ipv6AddressFigure = {
   kind: 'ipv6-address',
   id: 'ch15-addr',
-  title: 'IPv6アドレスの読み方——省略と構造',
+  title: 'IPv6アドレスの読み方',
   caption: '16進数4桁×8グループ。ステップを送ると、[[blue:省略のルール]]と[[green:前半・後半の意味]]が分かります。',
   takeaway: '表記がどれだけ縮んでも、[[green:128ビット]]という長さ自体は変わりません。省略は見た目だけの話です。',
   groups: ['2001', '0db8', '0010', '0001', '0000', '0000', '0000', '0010'],
@@ -61,7 +61,7 @@ const addrFigure: Ipv6AddressFigure = {
 const ndpFigure: SequenceFigure = {
   kind: 'sequence',
   id: 'ch15-ndp',
-  title: '相手のMACを知る——NDPの近隣要請と近隣告知',
+  title: 'NDPで相手のMACを知る',
   caption: 'IPv6でのMACアドレス解決。[[blue:第1章のARP]]と同じ仕事を、[[green:NDP]]が引き受けます。',
   takeaway: 'ARP＝IPv4／NDP＝IPv6。道具は変わっても「次に渡す相手のMACを知る」仕事は同じです。',
   actors: [
@@ -89,7 +89,7 @@ const ndpFigure: SequenceFigure = {
 const slaacFigure: TimelineFigure = {
   kind: 'timeline',
   id: 'ch15-slaac',
-  title: 'DHCPなしで住所が決まる——SLAAC',
+  title: 'SLAACで住所が自分で決まる',
   caption: 'PCは[[blue:ルータ広告（RA）]]を聞き、自分でアドレスを組み立てます。',
   takeaway: 'ネットワーク部はルータから、ホスト部は自分で。だから配布サーバがなくても住所が決まります。',
   items: [
@@ -125,7 +125,7 @@ export const ch15Ipv6: TextbookChapter = {
   order: 15,
   title: 'IPv6',
   summary:
-    'IPv4の枯渇をNATで持ちこたえてきた世界への根本解決——それがアドレスを128ビットに増やしたIPv6です。16進8グループの表記と::の省略ルール、前半・後半の構造、ARPの仕事を引き継ぐNDP、DHCPなしの自動設定SLAAC、そして現実的な移行方法のデュアルスタックまでを読み解きます。',
+    'IPv4の枯渇をNATで持ちこたえてきた世界への根本解決が、アドレスを128ビットに増やしたIPv6です。16進8グループの表記と::の省略ルール、前半・後半の構造、ARPの仕事を引き継ぐNDP、DHCPなしの自動設定SLAAC、そして現実的な移行方法のデュアルスタックまでを読み解きます。',
   status: 'published',
   estimatedMinutes: 12,
   intro: [
@@ -135,12 +135,12 @@ export const ch15Ipv6: TextbookChapter = {
     },
     {
       kind: 'text',
-      text: 'この章はその先——アドレスそのものを増やした[[green:IPv6]]です。長いアドレスの読み方、ARPに代わる[[green:NDP]]、DHCPなしの自動設定[[green:SLAAC]]、そして現実的な移行のかたち（[[blue:デュアルスタック]]）まで。見た目は大きく変わりますが、発想の芯は今までと同じです。',
+      text: 'この章で扱うのはその先、アドレスそのものを増やした[[green:IPv6]]です。長いアドレスの読み方、ARPに代わる[[green:NDP]]、DHCPなしの自動設定[[green:SLAAC]]、そして現実的な移行のかたち（[[blue:デュアルスタック]]）まで。見た目は大きく変わりますが、発想の芯は今までと同じです。',
     },
   ],
   sections: [
     {
-      heading: 'IPv6アドレスの形——長いが、発想は同じ',
+      heading: 'IPv6アドレスは長いが、発想は同じ',
       blocks: [
         {
           kind: 'text',
@@ -181,16 +181,16 @@ export const ch15Ipv6: TextbookChapter = {
       ],
     },
     {
-      heading: 'SLAACとデュアルスタック——自動設定と移行',
+      heading: '自動設定のSLAACと、移行のデュアルスタック',
       blocks: [
         {
           kind: 'text',
-          text: 'IPv6にはもう1つ特技があります。[[green:SLAAC]]——DHCPサーバがいなくても、PCが自分で住所を組み立てられる自動設定です。',
+          text: 'IPv6にはもう1つ特技があります。[[green:SLAAC]]は、DHCPサーバがいなくても、PCが自分で住所を組み立てられる自動設定です。',
         },
         { kind: 'figure', figure: slaacFigure },
         {
           kind: 'text',
-          text: 'では、世界は明日からIPv6に切り替わるのか——実際は長い併存期間が続きます。その現実解が[[blue:デュアルスタック]]。1台の機器にIPv4とIPv6の[[blue:両方の住所]]を持たせ、相手に合わせて使い分けます。',
+          text: 'では、世界は明日からIPv6に切り替わるのでしょうか。実際は長い併存期間が続きます。その現実解が[[blue:デュアルスタック]]。1台の機器にIPv4とIPv6の[[blue:両方の住所]]を持たせ、相手に合わせて使い分けます。',
         },
         {
           kind: 'callout',
@@ -201,7 +201,7 @@ export const ch15Ipv6: TextbookChapter = {
       ],
     },
     {
-      heading: '午後の着眼点——表記と移行',
+      heading: '午後は表記と移行がねらわれる',
       blocks: [
         {
           kind: 'text',

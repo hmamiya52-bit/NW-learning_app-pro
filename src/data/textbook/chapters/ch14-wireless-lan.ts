@@ -35,7 +35,7 @@ const apTopology: Topology = {
 const apFigure: PacketFlowFigure = {
   kind: 'packet-flow',
   id: 'ch14-ap-wlc',
-  title: 'APとWLC——LANの末端に加わる無線の層',
+  title: 'LANの末端に加わる無線の層',
   caption: '上ほど[[blue:これまでの有線LAN]]、いちばん下が新しい無線の層。[[green:破線]]＝電波です。',
   takeaway: '電波なのは端末とAPの間だけ。APから上は、これまでの有線LANがそのまま働きます。',
   topology: apTopology,
@@ -92,7 +92,7 @@ const ssidVlanTable: RecordTableFigure = {
 const hiddenNodeFigure: RadioRangeFigure = {
   kind: 'radio-range',
   id: 'ch14-hidden-node',
-  title: '隠れ端末——APには届くのに、互いには届かない',
+  title: 'APには届くのに、互いには届かない隠れ端末',
   caption: '[[blue:円]]＝その端末の電波が届く範囲。2つの円の重なりに、APだけがいます。',
   takeaway: '譲り合い（CSMA/CA）は「相手の電波が聞こえる」ことが前提。聞こえない相手とは衝突が起きます。',
   leftLabel: '端末A',
@@ -101,7 +101,7 @@ const hiddenNodeFigure: RadioRangeFigure = {
   steps: [
     { show: 'left', explanation: '端末Aの電波はAPに届きます。しかし、離れた端末Bまでは届きません。' },
     { show: 'both', explanation: '端末Bも同じ。APとは話せるのに、お互いの電波は聞こえません。' },
-    { show: 'both', collide: true, explanation: '互いに「空いている」と誤解して同時に送信——APのところで衝突します。' },
+    { show: 'both', collide: true, explanation: '互いに「空いている」と誤解して同時に送信し、APのところで衝突します。' },
   ],
 }
 
@@ -110,7 +110,7 @@ const hiddenNodeFigure: RadioRangeFigure = {
 const csmaFigure: TimelineFigure = {
   kind: 'timeline',
   id: 'ch14-csma-ca',
-  title: '送る前に避ける——CSMA/CAの手順',
+  title: 'CSMA/CAは送る前に避ける',
   caption: '無線は[[red:衝突を検出できない]]ため、送る前に避け、最後にACKで確かめます。',
   takeaway: '有線の古い規格は衝突を[[blue:検出]]（CSMA/CD）、無線は[[green:回避]]（CSMA/CA）。半二重ゆえの違いです。',
   items: [
@@ -145,7 +145,7 @@ const csmaFigure: TimelineFigure = {
 const dot1xFigure: SequenceFigure = {
   kind: 'sequence',
   id: 'ch14-dot1x',
-  title: '無線LANの認証——IEEE802.1X',
+  title: 'IEEE802.1Xによる無線LANの認証',
   caption: '端末・取り次ぎ・認証サーバの3者に、それぞれ[[blue:役割の名前]]が付きます。',
   takeaway: 'サプリカント＝端末、オーセンティケータ＝取り次ぐAP。この[[blue:名前と機器の対応]]が午後の得点源です。',
   actors: [
@@ -205,7 +205,7 @@ const roamTopology: Topology = {
 const roamFigure: PacketFlowFigure = {
   kind: 'packet-flow',
   id: 'ch14-roaming',
-  title: 'APからAPへ——ローミング',
+  title: 'APからAPへ移るローミング',
   caption: '[[blue:接続中]]チップの移り先に注目。端末が動いても通信が続く仕組みです。',
   takeaway: '接続するAPが替わっても[[blue:SSIDは同じまま]]。だから利用者は、切り替えに気づきません。',
   topology: roamTopology,
@@ -247,13 +247,13 @@ export const ch14WirelessLan: TextbookChapter = {
   order: 14,
   title: '無線LAN',
   summary:
-    '電波と有線を橋渡しするAPとWLC、SSIDとVLANの対応づけ、衝突を検出できないからこそ送る前に避けるCSMA/CA、第13章のRADIUSが本格稼働するIEEE802.1X認証、そして移動しても切れないローミング——ケーブルのないLANを支える仕組みを一望します。',
+    '電波と有線を橋渡しするAPとWLC、SSIDとVLANの対応づけ、衝突を検出できないからこそ送る前に避けるCSMA/CA、第13章のRADIUSが本格稼働するIEEE802.1X認証、そして移動しても切れないローミングまで、ケーブルのないLANを支える仕組みを一望します。',
   status: 'published',
   estimatedMinutes: 18,
   intro: [
     {
       kind: 'text',
-      text: 'ここまでの構成図は、すべて[[blue:ケーブル]]の世界でした。この章で登場するのは[[blue:電波]]。配線がないだけ、と思いきや——電波は壁を越えて誰にでも届き、同時に話せるのは1人だけ。前提がまるで違います。',
+      text: 'ここまでの構成図は、すべて[[blue:ケーブル]]の世界でした。この章で登場するのは[[blue:電波]]。配線がないだけ、と思いきや、電波は壁を越えて誰にでも届き、同時に話せるのは1人だけ。前提がまるで違います。',
     },
     {
       kind: 'text',
@@ -262,7 +262,7 @@ export const ch14WirelessLan: TextbookChapter = {
   ],
   sections: [
     {
-      heading: 'APとWLC——電波の入口を束ねる2台',
+      heading: '電波の入口を束ねるAPとWLC',
       blocks: [
         {
           kind: 'text',
@@ -281,7 +281,7 @@ export const ch14WirelessLan: TextbookChapter = {
       ],
     },
     {
-      heading: '電波は譲り合い——CSMA/CA',
+      heading: 'CSMA/CAで電波を譲り合う',
       blocks: [
         {
           kind: 'text',
@@ -289,24 +289,24 @@ export const ch14WirelessLan: TextbookChapter = {
         },
         {
           kind: 'text',
-          text: 'そこで無線は発想を変えます。検出できないなら、[[green:送る前に避ける]]——これが[[blue:CSMA/CA]]（衝突回避）です。',
+          text: 'そこで無線は発想を変えます。検出できないなら、[[green:送る前に避ける]]。この考え方が[[blue:CSMA/CA]]（衝突回避）です。',
         },
         { kind: 'figure', figure: csmaFigure },
         {
           kind: 'text',
-          text: 'ただし、この譲り合いには弱点があります。譲るには相手の電波が聞こえることが前提——では、[[red:聞こえない位置]]に相手がいたら？',
+          text: 'ただし、この譲り合いには弱点があります。譲るには相手の電波が聞こえることが前提です。では、[[red:聞こえない位置]]に相手がいたら？',
         },
         { kind: 'figure', figure: hiddenNodeFigure },
         {
           kind: 'callout',
           tone: 'info',
-          title: '対策の名前——RTS/CTS',
+          title: 'RTS/CTSで隠れ端末に備える',
           body: '隠れ端末どうしの衝突を減らすには、送る前にAPへ「送ってよいか」と確認し、APが「どうぞ」と全員に応える[[blue:RTS/CTS]]という手順を使います。互いに聞こえない端末どうしでも、[[blue:APの声はどちらにも届く]]ことを利用した工夫です。',
         },
       ],
     },
     {
-      heading: 'つなぐ前に確かめる——IEEE802.1X',
+      heading: 'IEEE802.1Xでつなぐ前に確かめる',
       blocks: [
         {
           kind: 'text',
@@ -321,22 +321,22 @@ export const ch14WirelessLan: TextbookChapter = {
           kind: 'callout',
           tone: 'tip',
           title: 'PSKと802.1Xの分かれ目',
-          body: 'PSKは手軽ですが、合言葉が1つなので[[red:漏れたら全員分を変更]]、誰がつないだかも分かりません。802.1Xなら退職者のIDだけを無効化でき、記録も残ります。なお通信の暗号化は[[blue:WPA2/WPA3]]という規格の仕事——こちらは規格名を知っていれば足ります。',
+          body: 'PSKは手軽ですが、合言葉が1つなので[[red:漏れたら全員分を変更]]、誰がつないだかも分かりません。802.1Xなら退職者のIDだけを無効化でき、記録も残ります。なお通信の暗号化は[[blue:WPA2/WPA3]]という規格の仕事です。こちらは規格名を知っていれば足ります。',
         },
       ],
     },
     {
-      heading: '移動しても切れない——ローミング',
+      heading: '移動しても切れないローミング',
       blocks: [
         {
           kind: 'text',
-          text: 'ノートPCを持って会議室へ移動すると、途中でAP1の電波が弱まり、AP2の圏内に入ります。接続先のAPが自動で切り替わり、通信はそのまま続く——これが[[blue:ローミング]]です。',
+          text: 'ノートPCを持って会議室へ移動すると、途中でAP1の電波が弱まり、AP2の圏内に入ります。接続先のAPが自動で切り替わり、通信はそのまま続きます。これが[[blue:ローミング]]です。',
         },
         { kind: 'figure', figure: roamFigure },
       ],
     },
     {
-      heading: '午後の着眼点——無線設計の読みどころ',
+      heading: '午後は無線設計の妥当性を読む',
       blocks: [
         {
           kind: 'text',
@@ -345,7 +345,7 @@ export const ch14WirelessLan: TextbookChapter = {
         {
           kind: 'callout',
           tone: 'info',
-          title: 'チャネル——電波の通り道を分ける',
+          title: 'チャネルで電波の通り道を分ける',
           body: '電波にはいくつかの通り道（[[blue:チャネル]]）があります。隣り合うAPが同じチャネルだと[[red:干渉]]して速度が落ちるため、隣どうしには違うチャネルを割り当てるのが設計の定石です。',
         },
         {
@@ -362,7 +362,7 @@ export const ch14WirelessLan: TextbookChapter = {
         },
         {
           kind: 'text',
-          text: 'トラブル系では「つながらない」の切り分けが頻出。電波の問題（圏外・干渉）か、[[blue:認証]]の問題（RADIUSに届かない・証明書切れ＝第13章）か、その先のLAN（VLAN・DHCP）か——層で順に絞る型は、第19章の障害切り分けでも活躍します。',
+          text: 'トラブル系では「つながらない」の切り分けが頻出。電波の問題（圏外・干渉）か、[[blue:認証]]の問題（RADIUSに届かない・証明書切れ＝第13章）か、その先のLAN（VLAN・DHCP）か。層で順に絞る型は、第19章の障害切り分けでも活躍します。',
         },
       ],
     },

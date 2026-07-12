@@ -271,7 +271,7 @@ const reachabilityFigure: RecordTableFigure = {
   id: 'ch9-reachability',
   title: '通信可否の読み方（午後の道具）',
   caption: '午後の[[blue:通信可否]]は、まず[[blue:向き]]を見て、根拠のルールを探します。',
-  takeaway: '[[green:可]]は根拠ルール、[[red:不可]]は既定の拒否——[[blue:理由]]まで言えると得点になります。',
+  takeaway: '[[green:可]]は根拠ルール、[[red:不可]]は既定の拒否。[[blue:理由]]まで言えると得点になります。',
   rowHeader: true,
   emphasizeKey: 'ok',
   columns: [
@@ -292,7 +292,7 @@ export const ch09SecurityFwDmz: TextbookChapter = {
   order: 9,
   title: 'セキュリティ境界・ファイアウォール・DMZ',
   summary:
-    'ファイアウォールの許可ルールとデフォルトdeny、行きを覚えて戻りを通すステートフル、公開サーバを隔離するDMZ——ネスペ午後で最も問われる「境界」を、三層の構成図で読み解きます。',
+    'ファイアウォールの許可ルールとデフォルトdeny、行きを覚えて戻りを通すステートフル、公開サーバを隔離するDMZまで、ネスペ午後で最も問われる「境界」を、三層の構成図で読み解きます。',
   status: 'published',
   estimatedMinutes: 18,
   intro: [
@@ -302,7 +302,7 @@ export const ch09SecurityFwDmz: TextbookChapter = {
     },
     {
       kind: 'text',
-      text: 'そこで境界に置くのが[[blue:ファイアウォール（FW）]]。「[[blue:誰を通し、誰を止めるか]]」を見張る関所です。この章では、FWが許可を決める[[blue:ルール]]（第3章の[[blue:通信を見分ける情報]]が効きます）、行きを覚えて戻りを通す[[blue:ステートフル]]、公開サーバを隔離する[[blue:DMZ]]——ネスペ午後で最も問われる[[blue:境界]]を読み解きます。',
+      text: 'そこで境界に置くのが[[blue:ファイアウォール（FW）]]。「[[blue:誰を通し、誰を止めるか]]」を見張る関所です。この章では、FWが許可を決める[[blue:ルール]]（第3章の[[blue:通信を見分ける情報]]が効きます）、行きを覚えて戻りを通す[[blue:ステートフル]]、公開サーバを隔離する[[blue:DMZ]]と、ネスペ午後で最も問われる[[blue:境界]]を読み解きます。',
     },
   ],
   sections: [
@@ -348,7 +348,7 @@ export const ch09SecurityFwDmz: TextbookChapter = {
       ],
     },
     {
-      heading: 'ステートフル——行きを許せば戻りは自動',
+      heading: 'ステートフルなら戻りの許可はいらない',
       blocks: [
         {
           kind: 'text',
@@ -368,7 +368,7 @@ export const ch09SecurityFwDmz: TextbookChapter = {
       ],
     },
     {
-      heading: 'DMZ——公開サーバを内部から隔離する',
+      heading: 'DMZで公開サーバを内部から隔離する',
       blocks: [
         {
           kind: 'text',

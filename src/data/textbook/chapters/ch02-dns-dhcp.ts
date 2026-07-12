@@ -177,7 +177,7 @@ export const ch02DnsDhcp: TextbookChapter = {
     },
     {
       kind: 'text',
-      text: 'ひとつは[[blue:自分の住所]]——PCが自分のIPアドレスをどうやって持つのか。もうひとつは[[blue:相手の住所]]——「www.example.com」のような名前から、相手のIPアドレスをどう調べるのか。この章で、その出発前を埋めます。',
+      text: 'ひとつは[[blue:自分の住所]]。PCが自分のIPアドレスをどうやって持つのか。もうひとつは[[blue:相手の住所]]で、「www.example.com」のような名前から、相手のIPアドレスをどう調べるのか。この章で、その出発前を埋めます。',
     },
   ],
   sections: [
@@ -186,13 +186,13 @@ export const ch02DnsDhcp: TextbookChapter = {
       blocks: [
         {
           kind: 'text',
-          text: 'まず構成図から。第1章の最小構成に、この章の主役——[[blue:名前を調べるDNSサーバ]]と[[blue:住所を配るDHCPサーバ]]——が内部LANに加わります。',
+          text: 'まず構成図から。第1章の最小構成に、この章の主役である[[blue:名前を調べるDNSサーバ]]と[[blue:住所を配るDHCPサーバ]]が内部LANに加わります。',
         },
         { kind: 'figure', figure: mapFigure },
       ],
     },
     {
-      heading: 'まず自分の住所をもらう——DHCP',
+      heading: 'DHCPで自分の住所をもらう',
       blocks: [
         {
           kind: 'text',
@@ -216,7 +216,7 @@ export const ch02DnsDhcp: TextbookChapter = {
       ],
     },
     {
-      heading: '相手の名前をIPに変える——DNS',
+      heading: 'DNSで相手の名前をIPに変える',
       blocks: [
         {
           kind: 'text',
@@ -244,7 +244,7 @@ export const ch02DnsDhcp: TextbookChapter = {
         },
         {
           kind: 'text',
-          text: '[[green:DHCP]]で自分の住所をもらい、[[green:DNS]]で相手のIPを調べ、第1章の[[green:ARP]]で出口（デフォルトゲートウェイ）のMACを調べ、[[green:TCP]]でつなぐ。ブラウザでURLを開いた裏側では、この順で準備が進んでいます。',
+          text: '[[green:DHCP]]で自分の住所をもらい、[[green:DNS]]で相手のIPを調べ、第1章の[[green:ARP]]で出口（デフォルトゲートウェイ）のMACを調べ、[[green:TCP]]でつなぎます。ブラウザでURLを開いた裏側では、この順で準備が進んでいます。',
         },
         { kind: 'figure', figure: panoramaFigure },
       ],
@@ -260,7 +260,7 @@ export const ch02DnsDhcp: TextbookChapter = {
           kind: 'callout',
           tone: 'info',
           title: '切り分けの入口',
-          body: '名前では開けないのに、IPアドレス直打ちなら開ける——そんなときは名前解決（DNS）を疑います。そもそもIPアドレスが取れていないなら、DHCPの不調（配布できるアドレスが尽きた等）を疑います。症状から、つまずいた準備を絞り込みます。',
+          body: '名前では開けないのに、IPアドレス直打ちなら開けます。そんなときは名前解決（DNS）を疑います。そもそもIPアドレスが取れていないなら、DHCPの不調（配布できるアドレスが尽きた等）を疑います。症状から、つまずいた準備を絞り込みます。',
         },
         {
           kind: 'check',
@@ -277,7 +277,7 @@ export const ch02DnsDhcp: TextbookChapter = {
   ],
   takeaways: [
     '通信の前に「自分の住所（DHCP）」と「相手の住所（DNS）」を用意します。',
-    'DHCPでもらうのは4点セット——[[blue:IP・サブネットマスク・デフォルトゲートウェイ・DNSサーバ]]。',
+    'DHCPでもらうのは4点セット。[[blue:IP・サブネットマスク・デフォルトゲートウェイ・DNSサーバ]]をまとめて受け取ります。',
     'DNSは名前→IPの変換。PCはキャッシュDNSに頼み（再帰）、上位DNSをたどって（反復）答えを得ます。',
     '一度引いた名前はしばらく覚えます（キャッシュ／TTL）。だから二度目は速くなります。',
     '第1章の通信は、[[green:DHCP→DNS→ARP→TCP]]という準備の上に成り立っていました。',

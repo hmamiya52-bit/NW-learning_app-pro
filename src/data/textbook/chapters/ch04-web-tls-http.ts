@@ -122,7 +122,7 @@ export const ch04WebTlsHttp: TextbookChapter = {
   ],
   sections: [
     {
-      heading: '本物だと確かめ、盗み見を防ぐ——TLS',
+      heading: 'TLSで本物を確かめ、盗み見を防ぐ',
       blocks: [
         {
           kind: 'text',
@@ -146,7 +146,7 @@ export const ch04WebTlsHttp: TextbookChapter = {
       ],
     },
     {
-      heading: 'ページを要求して受け取る——HTTP',
+      heading: 'HTTPでページを要求して受け取る',
       blocks: [
         {
           kind: 'text',
@@ -200,7 +200,7 @@ export const ch04WebTlsHttp: TextbookChapter = {
       blocks: [
         {
           kind: 'text',
-          text: 'ネスペ午後では、HTTPSの構成図がよく登場します。どの区間が暗号化されているか、証明書をどの機器に置くか——そこが読みどころです。',
+          text: 'ネスペ午後では、HTTPSの構成図がよく登場します。どの区間が暗号化されているか、証明書をどの機器に置くか。そこが読みどころです。',
         },
         {
           kind: 'callout',
@@ -223,10 +223,10 @@ export const ch04WebTlsHttp: TextbookChapter = {
   ],
   takeaways: [
     'HTTPSは、TCPの上にTLS、その中にHTTP。',
-    'TLSの役割は2つ——[[blue:暗号化]]（盗み見を防ぐ）と、[[blue:証明書]]による本人確認（なりすましを防ぐ）。',
+    'TLSの役割は2つ。[[blue:暗号化]]で盗み見を防ぎ、[[blue:証明書]]による本人確認でなりすましを防ぎます。',
     'HTTPは要求（GET）と応答（200）の1往復が基本。HTTPSでも中身は同じHTTP。',
     '要求の種類は[[amber:メソッド]]（GET・POST）、応答の結果は[[blue:ステータスコード]]（200・404・500）。HTTPは1回ごとに完結（ステートレス）。',
-    '第1部で、URLを開いてページが返るまでの全段がひとつに——[[green:DHCP→DNS→ARP→TCP→TLS→HTTP]]。',
+    '第1部で、URLを開いてページが返るまでの全段がひとつにつながりました。[[green:DHCP→DNS→ARP→TCP→TLS→HTTP]]。',
   ],
   checks: [
     {

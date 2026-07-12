@@ -15,6 +15,7 @@ export type NodeRole =
   | 'lb'
   | 'proxy'
   | 'ap'
+  | 'mail'
 
 export type ChapterStatus = 'published' | 'draft'
 

@@ -11,7 +11,7 @@ const vmHostFigure: VmHostFigure = {
   id: 'ch17-vm-host',
   title: '1台の物理サーバの上で動く複数のVM',
   caption: '1台の物理サーバの中で、3つのVMが[[emerald:仮想スイッチ]]でつながる様子です。',
-  takeaway: 'VMは物理PCと同じくIP・MACを持つ端末です。物理PCがL2スイッチにつながるのと、同じ形になっています。',
+  takeaway: '仮想スイッチは、物理のL2スイッチと同じ役割です。VMも特別ではなく、ふつうの端末として通信します。',
   hostLabel: '物理サーバ 1台',
   switchLabel: '仮想スイッチ',
   switchSub: 'VMどうしをつなぐ',
@@ -142,7 +142,7 @@ export const ch17VirtualizationCloud: TextbookChapter = {
     },
     {
       kind: 'text',
-      text: '扱うのは、サーバ仮想化とクラウド（[[emerald:VPC]]）、物理を意識しない論理ネットワークを作る[[blue:VXLAN]]、そしてまとめて制御する[[blue:SDN]]です。第1章の[[blue:カプセル化]]、第5章の[[blue:VLAN]]、第12章の[[blue:トンネル]]が、ここで一気に効いてきます。',
+      text: '登場するのは、サーバ仮想化とクラウド（[[emerald:VPC]]）、物理を意識しない論理ネットワークを作る[[blue:VXLAN]]、そしてまとめて制御する[[blue:SDN]]です。第1章の[[blue:カプセル化]]、第5章の[[blue:VLAN]]、第12章の[[blue:トンネル]]が、ここで一気に効いてきます。',
     },
   ],
   sections: [

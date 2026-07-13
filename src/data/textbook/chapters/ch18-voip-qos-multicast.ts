@@ -187,7 +187,7 @@ export const ch18VoipQosMulticast: TextbookChapter = {
         {
           kind: 'callout',
           tone: 'tip',
-          title: '優先度はDSCPという印で付ける',
+          title: '優先度を表す印がDSCP',
           body: 'パケットに優先度の印（[[blue:DSCP]]）を付けると、混雑した機器はそれを見て[[blue:優先キュー]]から先に送り出します。どの通信を優先するかは、設計で決めます。',
         },
       ],

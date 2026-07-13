@@ -4,6 +4,7 @@ import EncapFigure from './EncapFigure'
 import Ipv6AddressFigure from './Ipv6AddressFigure'
 import OsiStackFigure from './OsiStackFigure'
 import PacketFlowFigure from './PacketFlowFigure'
+import PriorityQueueFigure from './PriorityQueueFigure'
 import RadioRangeFigure from './RadioRangeFigure'
 import RecordTableFigure from './RecordTableFigure'
 import SegmentMapFigure from './SegmentMapFigure'
@@ -38,6 +39,8 @@ export default function FigureRenderer({ figure }: { figure: Figure }) {
       return <Ipv6AddressFigure figure={figure} />
     case 'vm-host':
       return <VmHostFigure figure={figure} />
+    case 'priority-queue':
+      return <PriorityQueueFigure figure={figure} />
     default:
       return null
   }

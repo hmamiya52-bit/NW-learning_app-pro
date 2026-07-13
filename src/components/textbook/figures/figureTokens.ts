@@ -1,4 +1,4 @@
-import { ArrowLeftRight, Cloud, Database, Globe, Laptop, Mail, Network, Router, Server, Shield, Split, Wifi } from 'lucide-react'
+import { ArrowLeftRight, Cloud, Database, Globe, Laptop, Mail, Network, Phone, Router, Server, Shield, Split, Wifi } from 'lucide-react'
 import type { ComponentType } from 'react'
 import type { NodeRole, Tone } from '../../../data/textbook/types'
 
@@ -29,6 +29,7 @@ export const ROLE_ICON: Record<NodeRole, ComponentType<{ className?: string }>> 
   proxy: ArrowLeftRight,
   ap: Wifi,
   mail: Mail,
+  phone: Phone,
 }
 
 export const ROLE_TONE: Record<NodeRole, Tone> = {
@@ -44,6 +45,7 @@ export const ROLE_TONE: Record<NodeRole, Tone> = {
   proxy: 'violet',
   ap: 'sky',
   mail: 'amber',
+  phone: 'emerald',
 }
 
 // レイヤ色（本文の [[color]] と統一）: L2=緑, L3=青, L4=アンバー

@@ -16,6 +16,7 @@ export type NodeRole =
   | 'proxy'
   | 'ap'
   | 'mail'
+  | 'phone'
 
 export type ChapterStatus = 'published' | 'draft'
 
@@ -75,6 +76,7 @@ export type Figure =
   | RadioRangeFigure
   | Ipv6AddressFigure
   | VmHostFigure
+  | PriorityQueueFigure
 
 // 動くパケット図（中核）。トポロジ＋ステップ。ARP もこの型で表現する。
 export interface PacketFlowFigure extends FigureBase {
@@ -303,4 +305,15 @@ export interface VmHostFigure extends FigureBase {
   vms: { id: string; label: string; sub: string }[]
   // active: 青くハイライトする要素id（vm id / 'switch' / 'hv' / 'uplink'）＝通信の経路を光らせる。
   steps: { active: string[]; explanation: string }[]
+}
+
+// QoS 優先制御（第18章）。混雑した回線で、届いた順→優先キューで仕分け→音声から送出、の3段を見せる。
+// 3ゾーン（到着／優先キュー2レーン／送出順）を常に描画し、現在の段だけ強調＝レイアウト不変・ボタン不動。
+export interface PriorityQueueFigure extends FigureBase {
+  kind: 'priority-queue'
+  // 到着したパケット（届いた順）。kind: 'voice'＝優先レーン／'data'＝通常レーン。
+  arrivals: { id: string; label: string; kind: 'voice' | 'data' }[]
+  laneLabels: { priority: string; normal: string } // 例: '優先（音声）' / '通常（データ）'
+  // stage: 'arrive'（届いた順を強調）→'sort'（仕分けを強調）→'send'（送出順を強調・音声が先）。
+  steps: { stage: 'arrive' | 'sort' | 'send'; explanation: string }[]
 }

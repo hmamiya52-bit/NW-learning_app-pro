@@ -30,6 +30,7 @@ const ROLE_TONE_LOCAL: Record<string, string> = {
   proxy: 'violet',
   ap: 'sky',
   mail: 'amber',
+  phone: 'emerald',
 }
 
 const FOCUS = { fill: '#2563eb', stroke: '#1d4ed8', text: '#ffffff' }

@@ -1,6 +1,6 @@
 # 教科書モード 図解仕様書 v2
 
-最終更新: 2026-07-13（第17章 仮想化・クラウドを追加・新図 `vm-host`・`tunnelBandLabel`）
+最終更新: 2026-07-14（第18章 VoIP・QoS・マルチキャストを追加・新role `phone`・新図 `priority-queue`）
 
 「どの概念を、どの図で、どう見せれば一番わかりやすいか」を確定する。図解は本モードの最重要・差別化要素であり、**図の選択と画面仕様は本書を正とする**（章別設計 `textbook-chapter-designs.md` の図は本書に従う）。§3 のカタログはすべて実装済み。
 
@@ -38,6 +38,7 @@
 | **電波の届く範囲**（空間の位置関係） | `radio-range` | 隠れ端末（第14章） |
 | **IPv6アドレスの表記と構造** | `ipv6-address` | フル→::省略→前半/後半（第15章） |
 | **サーバ仮想化の入れ子**（物理1台に複数VM） | `vm-host` | 物理サーバ⊃VM＋仮想スイッチ（第17章） |
+| **優先度による並べ替え**（QoSの優先制御） | `priority-queue` | 届いた順→優先キューで仕分け→音声から送出（第18章） |
 
 > **packet-flow か sequence か**: 主役が経路・機器処理・ヘッダ変化なら packet-flow、2〜3者の会話の往復なら sequence（1本の線上で往復させない）。
 > **chain か graph か**: 通信が一直線に流れる（第1〜4章型・NAT越え）なら chain。スイッチに端末がぶら下がる／冗長ループ／3ルータ相互接続／ルータ多段の全体図なら graph。
@@ -126,6 +127,12 @@
 - 単一用途（radio-range/ipv6-address と同じ）だが、containment（物理1台に複数VM）が本質で既存図では代替できないため新設。role は既存流用（VM＝概念上の端末、box アイコン）。
 - Do: 「VMも物理PCと同じ端末」を IP 表示＋経路の動きで示す。 Don't: caption・本文・takeaway で IP/MAC を三重に書く（循環＝差し戻し対象）。
 
+### 3.15 `priority-queue`（第18章で新設）
+- **QoSの優先制御を3ゾーンで見せる固定構図**: ①到着（届いた順・混雑）→②優先キュー（優先レーン=音声／通常レーン=データの2レーンに仕分け）→③回線へ送る順（音声が先）。HTML/Tailwind（vm-host と同じHTML方式）。
+- **動き**: `steps[].stage`（`'arrive'`→`'sort'`→`'send'`）で現在の段だけ青リング＋青ラベルで強調（強調が上から下へ流れる＝パイプライン）。`send` 段では送出ゾーンの音声チップを青（先に出る）・データチップを淡色（待ち）に。**3ゾーンを常に描画し色だけ変える＝レイアウト不変・ボタン不動**。説明文は h-12。
+- data: `arrivals{id,label,kind:'voice'|'data'}[]`（届いた順）・`laneLabels{priority,normal}`・`steps{stage,explanation}[]`。優先/通常レーンと送出順は arrivals から算出（voice→先）。
+- Do: 「帯域でなく順番を変える」を並べ替えの動きで見せる。 Don't: 音声/データの色分けを崩す（音声=emerald・データ=slate・送出の音声=blue）。
+
 ### 確認問題（`check` ブロック・章末 `checks`）
 図ではないが視覚ユニット。質問カード＋「答えを見る」開閉。本文中は label（'設問例'）、章末は Q1〜Q3。リッチテキスト装飾可。仕様は基本設計 §5。
 
@@ -166,12 +173,13 @@
 | 15 | address-table＋fieldLabels（IPv4vs6＝長さ/枯渇への答え/表記の例） / **ipv6-address**（表記と構造＝フル→::省略→前半/後半） / sequence（NDP NS/NA＝第1章ARPの対応・2メッセージ） / timeline（SLAAC＝RS→RA→自作→重複確認）。デュアルスタックは構成図不変のため図にせずcallout。IPv6台帳: 内部LAN=2001:db8:10:1::/64・PC=2001:db8:10:1::10（文書用2001:db8::/32系） |
 | 16 | graph stack（メールの旅を縦に=上から相手メール(leaf)/インターネット/境界ルータ/FW/下にDMZ自社メール・内部PC。role **mail**＝amber・Mailアイコン・leaf扱い） / sequence 3者（送信SMTP=PC｜自社MTA｜相手MTA・MX解決はnote） / sequence 2者（受信IMAP/POP=利用者が取りに行く） / record-table（SPF/DKIM/DMARC＝IP/署名/方針・土台はDNS）。第2章DNS(MX)・第9章DMZ・第4章TLSの合流。自社メール 172.16.0.25 |
 | 17 | **vm-host**（サーバ仮想化＝物理サーバ1台⊃VM×3＋仮想スイッチ＋ハイパーバイザ。VM↔VM／VM→外を青リングで動かす・新図） / **encap 前→後**（VXLAN二重＝元フレーム→UDP＋VXLAN→新IP。IPsecと同じ levels 形） / graph **tunnel**＋`tunnelBandLabel`（拠点→クラウドの旅＝拠点ルータ(VTEP)—[VXLANで包む帯]—クラウド・外側/中身を bubbles で。ch12帯の「暗号化」を差し替え） / address-table＋fieldLabels（従来 vs SDN＝制御/転送/設定変更で「制御と転送の分離」を対比）。クラウドVPC 10.0.0.0/16 追加。第1章encap・第5章VLAN・第12章トンネルの集大成。EVPNは名前のみ |
+| 18 | sequence 3者（VoIP＝IP電話A｜呼制御サーバ(SIP)｜IP電話B。SIPはサーバ経由、RTPの音声は④のA→B矢印がサーバ生命線をまたいで直接） / **priority-queue**（QoS＝届いた順→優先キューで仕分け→音声から送出の3段・新図） / **packet-flow** graph stack 流用（マルチキャスト＝配信サーバ→ルータ→L2SW→PC。送信1本(src→rt)→分岐(sw)で複製→参加者PC1/PC2、未参加PC3は`downNodes`で灰色） / address-table 3枚（ユニ/ブロード/マルチの対比）。role **phone**＝emerald・Phoneアイコン・leaf。IP電話 192.168.10.5x 追加。第3章UDPが土台。IGMP/DSCPは要点のみ |
 
-### 計画（第18章以降の主要図。§2 の使い分けに従い設計時に確定）
+### 計画（第19章以降の主要図。§2 の使い分けに従い設計時に確定）
 
 | 章 | 概念 → 図 |
 |---|---|
-| 18〜20 | chapter-designs の各章設計に従う（第18章 VoIP/QoS で role `phone`・第19章 運用監視 で role `monitor` を追加見込み。第20章の総合図は stack N段の全体図を基本に、必要なら区間ごとの複数図に分割） |
+| 19〜20 | chapter-designs の各章設計に従う（第19章 運用監視 で role `monitor` を追加見込み。第20章の総合図は stack N段の全体図を基本に、必要なら区間ごとの複数図に分割） |
 
 ---
 
@@ -187,6 +195,7 @@
 
 ## 7. 変更履歴
 
+- **v2.11（2026-07-14）**: 第18章 VoIP・QoS・マルチキャストを追加。新role **`phone`**（Phoneアイコン・emerald・leaf）。新図 **`priority-queue`**（QoSの優先制御＝届いた順→優先キュー→送出の3段。§3.15）を新設。VoIPは `sequence` 3者（SIPはサーバ経由・RTPはA→B直接でサーバ生命線をまたぐ）、マルチキャストは既存 `packet-flow`（graph stack）流用＝送信1本→分岐で複製→参加者、未参加は`downNodes`で灰色（engine変更なし）。address-table でユニ/ブロード/マルチを対比。残り role は monitor のみ（第19章）。
 - **v2.10（2026-07-13）**: 第17章 仮想化・クラウドを追加。新図 **`vm-host`**（サーバ仮想化の入れ子＝物理サーバ1台に複数VM＋仮想スイッチ＋ハイパーバイザ。`steps.active` で経路を青リング表示＝VM↔VM／VM→外の動き。§3.14）を新設。既存 graph **tunnel** に `Topology.tunnelBandLabel{main,sub}`（帯の中の文言の差し替え。既定=暗号化／元パケットを丸ごと）を追加し、**VXLANの拠点→クラウドの旅**を tunnel で再利用（暗号化しないVXLAN向けに帯を「VXLANで包む」へ）。**encap 前→後**（元フレーム→UDP＋VXLAN→新IP）でVXLANの二重カプセル化、**address-table＋fieldLabels**（従来 vs SDN）で「制御と転送の分離」を表現＝いずれも既存流用。台帳に クラウドVPC 10.0.0.0/16 を追加。残り role は phone/monitor のみ（第18/19章）。
 - **v2.9（2026-07-13）**: 第16章メールを追加。role **`mail`**（Mailアイコン・amber・leaf扱い）を追加。図は既存流用（graph stack でメールの縦の旅・sequence 送信/受信・record-table で送信ドメイン認証）＝新kind不要。あわせて**全15章のダーシ「——」を撤去**（見出し・図タイトルの「主題——副題」型テンプレがAI臭とユーザー指摘。基本設計 §6.3 でダーシ原則禁止を明文化。——を句点に変えると直前が常体化しやすい点も点検項目に追加）。残り role は phone/monitor のみ（第18/19章）。
 - **v2.8（2026-07-11）**: 第15章の実装を反映。**`ipv6-address`**（IPv6の表記と構造＝フル→::省略→前半/後半の色分け。subnet-calc と同配色）を新設（§3.13）。IPv6 の一貫アドレスとして 2001:db8:10:1::/64（内部LAN）を台帳に追加。教訓: 表示テキストの長さがステップで変わる行は固定高にする（フル→省略でボタンが動いた実測例）。

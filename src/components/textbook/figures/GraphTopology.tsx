@@ -838,11 +838,14 @@ function buildStack({
   const topLeaves = leavesOf(top.id)
   const botLeaves = leavesOf(bot.id)
 
-  const rowWidth = (n: number) => n * LEAF_W + (n - 1) * 12
+  // 行内の端末数が多いと既定幅(104)では320をはみ出すため、収まる幅へ縮める（3台以上で有効）。
+  const rowLeafW = (n: number) => Math.min(LEAF_W, Math.floor((W - 16 - (n - 1) * 12) / n))
+  const rowWidth = (n: number) => n * rowLeafW(n) + (n - 1) * 12
   // 端末を横一列に並べる中心X
   const rowXs = (n: number) => {
-    const start = cx - rowWidth(n) / 2 + LEAF_W / 2
-    return Array.from({ length: n }, (_, i) => start + i * (LEAF_W + 12))
+    const lw = rowLeafW(n)
+    const start = cx - rowWidth(n) / 2 + lw / 2
+    return Array.from({ length: n }, (_, i) => start + i * (lw + 12))
   }
   const pushZoneChip = (lf: TopoNode, x: number, leafY: number) => {
     const z = lf.zoneId ? zoneById.get(lf.zoneId) : undefined
@@ -859,7 +862,7 @@ function buildStack({
   const txs = rowXs(topLeaves.length)
   topLeaves.forEach((lf, i) => {
     const x = txs[i]
-    pos.set(lf.id, { x, y: topLeafY, w: LEAF_W, h: LEAF_H })
+    pos.set(lf.id, { x, y: topLeafY, w: rowLeafW(topLeaves.length), h: LEAF_H })
     leafSegs.push({ from: top.id, to: lf.id, x1: x, y1: topLeafY + LEAF_H / 2, x2: cx, y2: firstY - SW_H / 2 })
     pushZoneChip(lf, x, topLeafY)
   })
@@ -887,7 +890,7 @@ function buildStack({
   const bxs = rowXs(botLeaves.length)
   botLeaves.forEach((lf, i) => {
     const x = bxs[i]
-    pos.set(lf.id, { x, y: botLeafY, w: LEAF_W, h: LEAF_H })
+    pos.set(lf.id, { x, y: botLeafY, w: rowLeafW(botLeaves.length), h: LEAF_H })
     leafSegs.push({ from: bot.id, to: lf.id, x1: cx, y1: botY + SW_H / 2, x2: x, y2: botLeafY - LEAF_H / 2 })
   })
   // 同一ゾーンの複数末端（LBのWebサーバプール等）は、ゾーンラベルを1つに集約して中央に置く。

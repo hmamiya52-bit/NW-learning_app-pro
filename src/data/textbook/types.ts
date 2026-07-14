@@ -307,13 +307,16 @@ export interface VmHostFigure extends FigureBase {
   steps: { active: string[]; explanation: string }[]
 }
 
-// QoS 優先制御（第18章）。混雑した回線で、届いた順→優先キューで仕分け→音声から送出、の3段を見せる。
-// 3ゾーン（到着／優先キュー2レーン／送出順）を常に描画し、現在の段だけ強調＝レイアウト不変・ボタン不動。
+// QoS 優先制御（第18章）。混雑した回線で、待ち行列から音声を先に送り出す様子を「動き」で見せる。
+// 上=待ち行列（届いた順）／下=送出済み（送った順）を N スロットで固定表示し、ステップごとに
+// パケットが行列から抜けて送出側へ移る（音声＝優先が先に出る）。スロット数固定＝レイアウト不変・ボタン不動。
 export interface PriorityQueueFigure extends FigureBase {
   kind: 'priority-queue'
-  // 到着したパケット（届いた順）。kind: 'voice'＝優先レーン／'data'＝通常レーン。
+  // 到着したパケット（届いた順）。kind: 'voice'＝優先／'data'＝通常。
   arrivals: { id: string; label: string; kind: 'voice' | 'data' }[]
-  laneLabels: { priority: string; normal: string } // 例: '優先（音声）' / '通常（データ）'
-  // stage: 'arrive'（届いた順を強調）→'sort'（仕分けを強調）→'send'（送出順を強調・音声が先）。
-  steps: { stage: 'arrive' | 'sort' | 'send'; explanation: string }[]
+  queueLabel: string // 例: '待ち行列（届いた順）'
+  sentLabel: string // 例: '回線へ送出（送った順）'
+  gateLabel: string // 例: '優先度で選ぶ（音声が先）'
+  // sent: そのステップまでに送出済みの本数（優先順＝音声が先、同一優先内は到着順）。
+  steps: { sent: number; explanation: string }[]
 }

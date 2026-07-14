@@ -151,7 +151,7 @@ export const ch17VirtualizationCloud: TextbookChapter = {
       blocks: [
         {
           kind: 'text',
-          text: 'サーバの仮想化とは、1台の物理サーバの上で複数の[[blue:仮想マシン（VM）]]を同時に動かす技術です。土台となる[[blue:ハイパーバイザ]]が物理サーバのCPUやメモリを分け合い、それぞれのVMが独立した1台のサーバのようにふるまいます。',
+          text: 'サーバの仮想化とは、1台の物理サーバの上で複数の[[blue:仮想マシン（VM）]]を同時に動かす技術です。1棟の建物をいくつもの部屋に区切って別々の世帯が暮らすように、土台の[[blue:ハイパーバイザ]]が物理サーバのCPUやメモリを分け合い、それぞれのVMが独立した1台のサーバのようにふるまいます。',
         },
         {
           kind: 'text',
@@ -188,6 +188,10 @@ export const ch17VirtualizationCloud: TextbookChapter = {
         },
         { kind: 'figure', figure: vxlanTunnelFigure },
         {
+          kind: 'text',
+          text: 'このしくみの利点は、離れた拠点とクラウドを、1つのネットワークのように扱えることです。[[emerald:拠点のサーバ]]（10.0.0.20）と[[emerald:クラウドのVM]]（10.0.0.11）は、物理的に離れていても、同じアドレス帯（10.0.0.0/16）の仲間として直接やり取りできます。物理の配線を引き直さずに、ネットワークをソフトウェアで広げられます。',
+        },
+        {
           kind: 'callout',
           tone: 'tip',
           title: 'VXLANはVLANの大きな拡張版',
@@ -204,7 +208,7 @@ export const ch17VirtualizationCloud: TextbookChapter = {
         },
         {
           kind: 'text',
-          text: '[[blue:コントローラ]]と呼ばれる中心が経路の方針をまとめて決め、各機器へ配ります。機器は、受け取った指示どおりに転送するだけです。設定の変更を、まとめて素早く行えます。',
+          text: '[[blue:コントローラ]]と呼ばれる中心が、オーケストラの指揮者のように経路の方針をまとめて決め、各機器へ配ります。機器は、受け取った指示どおりに転送するだけです。設定の変更を、まとめて素早く行えます。',
         },
         { kind: 'figure', figure: sdnTable },
         {

@@ -1,6 +1,6 @@
 # 教科書モード 図解仕様書 v2
 
-最終更新: 2026-07-14（第18章 VoIP・QoS・マルチキャストを追加・新role `phone`・新図 `priority-queue`）
+最終更新: 2026-07-16（第19章 運用監視・障害切り分けを追加・新role `monitor`）
 
 「どの概念を、どの図で、どう見せれば一番わかりやすいか」を確定する。図解は本モードの最重要・差別化要素であり、**図の選択と画面仕様は本書を正とする**（章別設計 `textbook-chapter-designs.md` の図は本書に従う）。§3 のカタログはすべて実装済み。
 
@@ -174,12 +174,13 @@
 | 16 | graph stack（メールの旅を縦に=上から相手メール(leaf)/インターネット/境界ルータ/FW/下にDMZ自社メール・内部PC。role **mail**＝amber・Mailアイコン・leaf扱い） / sequence 3者（送信SMTP=PC｜自社MTA｜相手MTA・MX解決はnote） / sequence 2者（受信IMAP/POP=利用者が取りに行く） / record-table（SPF/DKIM/DMARC＝IP/署名/方針・土台はDNS）。第2章DNS(MX)・第9章DMZ・第4章TLSの合流。自社メール 172.16.0.25 |
 | 17 | **vm-host**（サーバ仮想化＝物理サーバ1台⊃VM×3＋仮想スイッチ＋ハイパーバイザ。VM↔VM／VM→外を青リングで動かす・新図） / **encap 前→後**（VXLAN二重＝元フレーム→UDP＋VXLAN→新IP。IPsecと同じ levels 形） / graph **tunnel**＋`tunnelBandLabel`（拠点→クラウドの旅＝拠点ルータ(VTEP)—[VXLANで包む帯]—クラウド・外側/中身を bubbles で。ch12帯の「暗号化」を差し替え） / address-table＋fieldLabels（従来 vs SDN＝制御/転送/設定変更で「制御と転送の分離」を対比）。クラウドVPC 10.0.0.0/16 追加。第1章encap・第5章VLAN・第12章トンネルの集大成。EVPNは名前のみ |
 | 18 | sequence 3者（VoIP＝IP電話A｜呼制御サーバ(SIP)｜IP電話B。SIPはサーバ経由、RTPの音声は④のA→B矢印がサーバ生命線をまたいで直接） / **priority-queue**（QoS＝届いた順→優先キューで仕分け→音声から送出の3段・新図） / **packet-flow** graph stack 流用（マルチキャスト＝配信サーバ→ルータ→L2SW→PC。送信1本(src→rt)→分岐(sw)で複製→参加者PC1/PC2、未参加PC3は`downNodes`で灰色） / address-table 3枚（ユニ/ブロード/マルチの対比）。role **phone**＝emerald・Phoneアイコン・leaf。IP電話 192.168.10.5x 追加。第3章UDPが土台。IGMP/DSCPは要点のみ |
+| 19 | packet-flow graph stack 流用（監視＝インターネット/境界ルータ/FW/L2SWの4段spine＋Web(DMZ)・監視サーバ・PC。ポーリング＝監視サーバから上り矢印→外側回線の障害＝spine辺の`blockedLink`✕→トラップ＝機器から下り矢印、と**向きの対比**で監視の2方向を動きに。role **monitor**＝rose・Activityアイコン・leaf） / record-table（SNMP・syslog・フローの三本柱＝集めるもの/集め方の対比。収集先は監視サーバに一本化） / timeline（切り分けの段取り＝ランプ→GWへping→宛先へping→DNS→ポートの5段階。toneを層の色＝L2 emerald/L3 blue/上位 amber に対応）。監視サーバ 192.168.10.200 追加。第1章の層分け・第7章ICMP/TTLの伏線回収 |
 
-### 計画（第19章以降の主要図。§2 の使い分けに従い設計時に確定）
+### 計画（第20章。§2 の使い分けに従い設計時に確定）
 
 | 章 | 概念 → 図 |
 |---|---|
-| 19〜20 | chapter-designs の各章設計に従う（第19章 運用監視 で role `monitor` を追加見込み。第20章の総合図は stack N段の全体図を基本に、必要なら区間ごとの複数図に分割） |
+| 20 | chapter-designs の第20章設計に従う（新概念なし・role追加なし。総合図は stack N段の全体図を基本に、1枚に収まらなければ区間ごとの複数図に分割してモック合意） |
 
 ---
 
@@ -195,6 +196,7 @@
 
 ## 7. 変更履歴
 
+- **v2.13（2026-07-16）**: 第19章 運用監視・障害切り分けを追加。新role **`monitor`**（Activityアイコン・rose・leaf）を追加し、計画していた新role 6種（lb/proxy/ap/phone/monitor/mail）が全て実装済みに。図は全て既存流用（engine変更はrole追加のみ）: **packet-flow（graph stack）**で「ポーリング＝監視サーバから上り矢印→外側回線の障害＝spine辺の`blockedLink`✕→トラップ＝機器から下り矢印」と向きの対比で監視を動きにし、**record-table**でSNMP/syslog/フローの三本柱を対比、**timeline**で切り分けの段取り（5段階・toneを層の色に対応）。一貫アドレス台帳に監視サーバ 192.168.10.200（内部LAN）を追加。
 - **v2.12（2026-07-15）**: 第18章レビュー反映。**`priority-queue` を「待ち行列→送出」の動きのある設計に作り直し**（当初の3ゾーン静的表示は「動きが乏しい」と差し戻し。§3.15）。あわせて **graph `stack` の端末行が3台以上で viewBox(320)からはみ出して見切れる問題を修正**（`buildStack` の行幅を端末数に応じて縮め、320内に収める。マルチキャストの下段3台=PC1/PC2/PC3で発覚。2台以下は既定104pxのまま＝既存章に回帰なし）。
 - **v2.11（2026-07-14）**: 第18章 VoIP・QoS・マルチキャストを追加。新role **`phone`**（Phoneアイコン・emerald・leaf）。新図 **`priority-queue`**（QoSの優先制御＝届いた順→優先キュー→送出の3段。§3.15）を新設。VoIPは `sequence` 3者（SIPはサーバ経由・RTPはA→B直接でサーバ生命線をまたぐ）、マルチキャストは既存 `packet-flow`（graph stack）流用＝送信1本→分岐で複製→参加者、未参加は`downNodes`で灰色（engine変更なし）。address-table でユニ/ブロード/マルチを対比。残り role は monitor のみ（第19章）。
 - **v2.10（2026-07-13）**: 第17章 仮想化・クラウドを追加。新図 **`vm-host`**（サーバ仮想化の入れ子＝物理サーバ1台に複数VM＋仮想スイッチ＋ハイパーバイザ。`steps.active` で経路を青リング表示＝VM↔VM／VM→外の動き。§3.14）を新設。既存 graph **tunnel** に `Topology.tunnelBandLabel{main,sub}`（帯の中の文言の差し替え。既定=暗号化／元パケットを丸ごと）を追加し、**VXLANの拠点→クラウドの旅**を tunnel で再利用（暗号化しないVXLAN向けに帯を「VXLANで包む」へ）。**encap 前→後**（元フレーム→UDP＋VXLAN→新IP）でVXLANの二重カプセル化、**address-table＋fieldLabels**（従来 vs SDN）で「制御と転送の分離」を表現＝いずれも既存流用。台帳に クラウドVPC 10.0.0.0/16 を追加。残り role は phone/monitor のみ（第18/19章）。

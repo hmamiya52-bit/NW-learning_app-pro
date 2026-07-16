@@ -17,6 +17,7 @@ export type NodeRole =
   | 'ap'
   | 'mail'
   | 'phone'
+  | 'monitor'
 
 export type ChapterStatus = 'published' | 'draft'
 

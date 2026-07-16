@@ -31,6 +31,7 @@ const ROLE_TONE_LOCAL: Record<string, string> = {
   ap: 'sky',
   mail: 'amber',
   phone: 'emerald',
+  monitor: 'rose',
 }
 
 const FOCUS = { fill: '#2563eb', stroke: '#1d4ed8', text: '#ffffff' }

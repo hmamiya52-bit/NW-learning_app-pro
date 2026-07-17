@@ -94,15 +94,17 @@ export default function Textbook() {
                 ネスペ学習の入口です。小さな構成図の上でパケットを動かしながら、MAC/IP、L2/L3、ARP、VLANがどうつながるかを、図を中心につかんでいきます。
               </p>
             </div>
-            <div className="grid grid-cols-3 gap-2 text-center md:w-72">
+            <div className={`grid ${draftCount > 0 ? 'grid-cols-3' : 'grid-cols-2'} gap-2 text-center md:w-72`}>
               <div className="rounded-lg border border-emerald-100 bg-emerald-50 px-3 py-2">
                 <p className="text-lg font-black text-emerald-700">{publishedCount}</p>
                 <p className="text-[11px] font-bold text-emerald-800">公開中</p>
               </div>
-              <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
-                <p className="text-lg font-black text-slate-600">{draftCount}</p>
-                <p className="text-[11px] font-bold text-slate-500">準備中</p>
-              </div>
+              {draftCount > 0 && (
+                <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
+                  <p className="text-lg font-black text-slate-600">{draftCount}</p>
+                  <p className="text-[11px] font-bold text-slate-500">準備中</p>
+                </div>
+              )}
               <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
                 <p className="text-lg font-black text-slate-700">{textbookChapters.length}</p>
                 <p className="text-[11px] font-bold text-slate-500">全章</p>
@@ -115,7 +117,7 @@ export default function Textbook() {
           <div className="flex gap-3">
             <Sparkles className="mt-0.5 h-5 w-5 flex-shrink-0 text-blue-600" aria-hidden="true" />
             <div className="min-w-0">
-              <h2 className="text-sm font-black text-blue-900">教科書は現在作成中です。第1章から順番に公開していきます。</h2>
+              <h2 className="text-sm font-black text-blue-900">全20章が公開済みです。第1章から順に読むと、構成図が少しずつ育っていきます。</h2>
             </div>
           </div>
         </section>
@@ -126,7 +128,7 @@ export default function Textbook() {
               <h2 id="chapter-list-heading" className="text-xs font-bold uppercase tracking-wider text-slate-500">
                 章一覧
               </h2>
-              <p className="mt-1 text-xs text-slate-400">初学者向けの読み物として、章を順番に追加していきます。</p>
+              <p className="mt-1 text-xs text-slate-400">初学者向けの読み物です。第1章から順に読む前提で作られています。</p>
             </div>
           </div>
 

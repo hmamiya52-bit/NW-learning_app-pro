@@ -37,7 +37,7 @@ const watchFigure: PacketFlowFigure = {
   id: 'ch19-watch',
   title: '監視サーバが全機器を見張る仕組み',
   caption: 'ポーリングとトラップで[[blue:矢印の向き]]が逆になる様子を、障害の発生まで通して追います。',
-  takeaway: 'トラップがあるおかげで、次のポーリングを待たずに異常へ気づけます。2つは補い合う関係です。',
+  takeaway: 'トラップがあるおかげで、次のポーリングを待たずに異常に気づけます。2つは補い合う関係です。',
   topology: watchTopology,
   hideHeaders: true,
   steps: [
@@ -161,7 +161,7 @@ export const ch19Operations: TextbookChapter = {
   order: 19,
   title: '運用監視・障害切り分け',
   summary:
-    'できあがったネットワークを、止めずに動かし続けるのが運用です。この章では、機器の状態・ログ・通信量を集めて異常にいち早く気づく監視と、障害の原因を順序立てて絞り込む切り分けの段取りを扱います。第1章の層分けと第7章のICMP・TTLが、ここで現場の道具になります。',
+    'できあがったネットワークを、止めずに動かし続けるのが運用です。この章では、機器の状態・ログ・通信量を集めて異常に気づく監視と、障害の原因を順序立てて絞り込む切り分けの段取りを扱います。第1章の層分けと第7章のICMP・TTLが、ここで現場の道具になります。',
   status: 'published',
   estimatedMinutes: 15,
   intro: [
@@ -171,7 +171,7 @@ export const ch19Operations: TextbookChapter = {
     },
     {
       kind: 'text',
-      text: '構成図の差分は、内部LANに加わる[[rose:監視サーバ]]の1台だけ。新しい機器より、第1章から積み上げてきた[[blue:層の見方]]を現場で使える手順に変えることが、この章の主題です。',
+      text: '構成図の差分は、内部LANに加わる[[rose:監視サーバ]]の1台だけ。代わりにこの章では、これまで登場した全機器が「監視される側」としてそろって顔を出します。',
     },
   ],
   sections: [
@@ -195,7 +195,7 @@ export const ch19Operations: TextbookChapter = {
         },
         {
           kind: 'text',
-          text: 'ただし、SNMPで分かるのは主に「いまの数値」です。そこを[[violet:syslog]]と[[emerald:NetFlow／sFlow]]が別の角度から補います。3つの違いを表で整理します。',
+          text: 'ただし、SNMPで分かるのは主に「いまの数値」です。そこを、ログを集める[[violet:syslog]]と、通信量を集める[[emerald:フロー]]（NetFlow／sFlow）が補います。3つの違いを表で整理します。',
         },
         { kind: 'figure', figure: pillarsTable },
       ],
@@ -205,7 +205,7 @@ export const ch19Operations: TextbookChapter = {
       blocks: [
         {
           kind: 'text',
-          text: '監視で異常に気づいたら、次は原因探しです。闇雲に機器を再起動するのではなく、[[blue:物理→L2→L3→上位]]と層の順、そして自分に[[blue:近い順]]に確かめます。家電が動かないとき、コンセント→ブレーカー→本体の順に見るのと同じ発想です。',
+          text: '監視で異常に気づいたら、次は原因探しです。闇雲に機器を再起動するのではなく、第1章の[[blue:層の見方]]を段取りに使い、[[blue:物理→L2→L3→上位]]の順、そして自分に[[blue:近い順]]に確かめます。家電が動かないとき、コンセント→ブレーカー→本体の順に見るのと同じ発想です。',
         },
         { kind: 'figure', figure: isolateTimeline },
         {

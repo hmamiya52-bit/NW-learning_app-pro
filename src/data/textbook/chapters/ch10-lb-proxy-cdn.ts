@@ -10,13 +10,15 @@ const lbTopology: Topology = {
   zones: [{ id: 'dmz', label: 'DMZ', tone: 'amber' }],
   nodes: [
     { id: 'inet', label: 'インターネット', role: 'internet' },
+    { id: 'br', label: '境界ルータ', role: 'router', sub: '外側 203.0.113.1' },
     { id: 'fw', label: 'FW', role: 'firewall', sub: 'ファイアウォール' },
     { id: 'lb', label: 'LB', role: 'lb', sub: 'VIP 172.16.0.10' },
     { id: 'web1', label: 'Webサーバ1', role: 'server', zoneId: 'dmz', sub: '172.16.0.20' },
     { id: 'web2', label: 'Webサーバ2', role: 'server', zoneId: 'dmz', sub: '172.16.0.21' },
   ],
   links: [
-    { a: 'inet', b: 'fw' },
+    { a: 'inet', b: 'br' },
+    { a: 'br', b: 'fw' },
     { a: 'fw', b: 'lb' },
     { a: 'lb', b: 'web1' },
     { a: 'lb', b: 'web2' },
@@ -27,38 +29,42 @@ const lbFigure: PacketFlowFigure = {
   kind: 'packet-flow',
   id: 'ch10-lb',
   title: '代表IP（VIP）で受けて、裏の複数サーバへ振り分け',
-  caption: '利用者に見えるのは[[blue:VIP]]だけ。LBが裏の[[amber:Webサーバ]]へ[[blue:振り分け]]ます。',
-  takeaway: 'ヘルスチェックで[[red:停止台]]を外し、生きた台だけへ。利用者は切り替わりに気づきません。',
+  caption: '公開IPで受けた通信が[[blue:VIP]]に変わり、LBが裏の[[amber:Webサーバ]]へ[[blue:振り分け]]ます。',
+  takeaway: 'ヘルスチェックが[[red:停止台]]を自動で外すので、1台壊れてもサービスは続きます。',
   topology: lbTopology,
   hideHeaders: true,
   steps: [
     {
-      focus: { type: 'link', a: 'inet', b: 'fw' },
+      focus: { type: 'link', a: 'inet', b: 'br' },
+      bubbles: ['宛先 203.0.113.2'],
+      packetLabel: '',
+      headers: { l2: '', l3: '' },
+      explanation: '利用者からのリクエスト。宛先は自社の公開用グローバルIPです。',
+    },
+    {
+      focus: { type: 'node', id: 'br' },
       bubbles: ['宛先 172.16.0.10'],
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: '利用者からのリクエスト。宛先はLBの代表IP（VIP 172.16.0.10）。FWを通ってLBへ届きます。',
+      explanation: '境界の静的NATが、宛先をLBの代表IP（VIP）へ変換します（第9章）。',
     },
     {
       focus: { type: 'node', id: 'lb' },
-      bubbles: ['宛先 172.16.0.10'],
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: 'LBがVIPで受け、裏のWebサーバへ振り分け。利用者に見えるのはVIPだけです。',
+      explanation: 'FWを抜けた通信を、LBがVIP 172.16.0.10で受け止めます。',
     },
     {
       focus: { type: 'link', a: 'lb', b: 'web1' },
-      bubbles: ['宛先 172.16.0.20'],
       packetLabel: '',
       headers: { l2: '', l3: '' },
       explanation: '1つ目のリクエストはWebサーバ1（172.16.0.20）へ取り次ぎます。',
     },
     {
       focus: { type: 'link', a: 'lb', b: 'web2' },
-      bubbles: ['宛先 172.16.0.21'],
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: '次のリクエストはWebサーバ2（172.16.0.21）へ。こうして負荷を複数台へ分散します。',
+      explanation: '次はWebサーバ2（172.16.0.21）へ。こうして負荷を複数台に分散します。',
     },
     {
       focus: { type: 'node', id: 'lb' },
@@ -72,7 +78,6 @@ const lbFigure: PacketFlowFigure = {
       focus: { type: 'link', a: 'lb', b: 'web1' },
       downNodes: ['web2'],
       blockedLink: { a: 'lb', b: 'web2' },
-      bubbles: ['宛先 172.16.0.20'],
       packetLabel: '',
       headers: { l2: '', l3: '' },
       explanation: '以降のリクエストは生きているWebサーバ1へ。利用者は切り替わりに気づきません。',
@@ -160,13 +165,13 @@ const proxyPlacementFigure: PacketFlowFigure = {
     },
     {
       focus: { type: 'link', a: 'fwd', b: 'inet' },
-      packetLabel: '送信元 192.168.10.10',
+      packetLabel: '送信元 フォワードプロキシ',
       headers: { l2: '', l3: '' },
       explanation: 'フォワードプロキシが代わりに外へ接続。社員側の通信を、ここで検査・制御できます。',
     },
     {
       focus: { type: 'link', a: 'inet', b: 'rev' },
-      packetLabel: '宛先 172.16.0.20',
+      packetLabel: '宛先 リバースプロキシ',
       headers: { l2: '', l3: '' },
       explanation: '今度は外の利用者からWebへ。DMZのリバースプロキシが、サーバの代理として受けます。',
     },
@@ -276,7 +281,7 @@ export const ch10LbProxyCdn: TextbookChapter = {
       blocks: [
         {
           kind: 'text',
-          text: '[[blue:ロードバランサ（LB）]]は、[[blue:代表IP（VIP）]]という1つの住所で利用者を受けます。VIP＝Virtual IP、代表の住所という意味です。裏には同じ役割のWebサーバを複数台そろえ、リクエストを1台ずつに[[blue:振り分け]]ます。',
+          text: '[[blue:ロードバランサ（LB）]]は、[[blue:代表IP（VIP）]]という1つの住所で通信を受けます。VIP＝Virtual IP、代表の住所という意味です。LBを入れたら、境界の[[blue:静的NAT]]（第9章）の変換先も、Webサーバ単体からこのVIPへ切り替えます。裏には同じ役割のWebサーバを複数台そろえ、リクエストを1台ずつに[[blue:振り分け]]ます。',
         },
         {
           kind: 'text',
@@ -292,7 +297,7 @@ export const ch10LbProxyCdn: TextbookChapter = {
           kind: 'callout',
           tone: 'tip',
           title: 'VIPは「代表の住所」',
-          body: '利用者がアクセスするのは[[blue:VIP]]という代表の住所だけ。裏のサーバが何台でも、増減しても、利用者からは1台に見えます。行きも戻りもLBを通るので、午後では「戻りの経路」もあわせて問われます。買い物カゴのように途中経過を持つ通信では、同じ利用者を同じ台へ固定する[[blue:セッション維持]]が要ることもあります（名前だけ押さえれば十分です）。',
+          body: '社外の利用者が知るのは[[blue:公開用グローバルIP]]だけ、境界の内側では[[blue:VIP]]が代表の住所です。裏のサーバが何台でも、増減しても、外からは1台に見えます。行きも戻りもLBを通るので、午後では「戻りの経路」もあわせて問われます。買い物カゴのように途中経過を持つ通信では、同じ利用者を同じ台へ固定する[[blue:セッション維持]]が要ることもあります（名前だけ押さえれば十分です）。',
         },
       ],
     },
@@ -346,9 +351,9 @@ export const ch10LbProxyCdn: TextbookChapter = {
           items: [
             {
               question:
-                '利用者がVIP（172.16.0.10）のWebサイトへアクセスしたとき、処理するWebサーバが複数あるのに、利用者からは1台に見えるのはなぜか。',
+                '公開Webサイトを処理するWebサーバは2台あるのに、社外の利用者からは1台に見えるのはなぜか。',
               answer:
-                'LBが代表IP（VIP）で受け、裏の複数サーバへ振り分けているためです。利用者に見えるのはVIPだけで、戻りの通信もLBを経由します。',
+                '境界で宛先が公開用グローバルIPからVIP（172.16.0.10）へ変換され、LBがそのVIPで受けて複数サーバへ振り分けているためです。外に見せる住所は入口の1つだけで、戻りの通信もLBを経由します。',
             },
           ],
         },
@@ -360,7 +365,7 @@ export const ch10LbProxyCdn: TextbookChapter = {
     },
   ],
   takeaways: [
-    '[[blue:ロードバランサ]]は代表IP（[[blue:VIP]]）で受け、裏の複数サーバへ振り分け。[[red:ヘルスチェック]]で停止台を外し、利用者に見えるのはVIPだけです。',
+    '[[blue:ロードバランサ]]は代表IP（[[blue:VIP]]）で受け、裏の複数サーバへ振り分け。[[red:ヘルスチェック]]で停止台を自動で外します。',
     '[[blue:L4]]はアドレスとポートで単純・高速、[[blue:L7]]はURLなど中身まで見て賢く振り分け。[[blue:TLS終端]]はL7の役目です。',
     '[[blue:リバースプロキシ]]はサーバ側の代理（外から受ける）、[[blue:フォワードプロキシ]]はクライアント側の代理（外へ出る）。立ち位置が逆です。',
     '[[blue:CDN]]は利用者の近くのエッジにキャッシュし、近くから配信。距離とオリジンの負荷を減らします。',

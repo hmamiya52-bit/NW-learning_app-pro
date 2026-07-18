@@ -24,8 +24,8 @@ const wholeTopology: Topology = {
     { id: 'fw', label: 'FW', role: 'firewall', sub: 'ファイアウォール' },
     { id: 'sw', label: 'L2SW', role: 'switch' },
     { id: 'extpc', label: '社外PC', role: 'pc', zoneId: 'ext', sub: '利用者' },
-    { id: 'site2', label: '第2拠点', role: 'router', zoneId: 'st2', sub: '192.168.20.0/24' },
-    { id: 'cloud', label: 'クラウド', role: 'cloud', zoneId: 'cld', sub: 'VPC 10.0.0.0/16' },
+    { id: 'site2', label: '支社ルータ', role: 'router', zoneId: 'st2', sub: '192.168.20.0/24' },
+    { id: 'cloud', label: 'VPC', role: 'cloud', zoneId: 'cld', sub: '10.0.0.0/16' },
     { id: 'webz', label: 'Web公開', role: 'server', zoneId: 'dmz', sub: 'LB配下・2台' },
     { id: 'mail', label: 'メール', role: 'mail', zoneId: 'dmz', sub: '172.16.0.25' },
     { id: 'pc', label: 'PC', role: 'pc', zoneId: 'lan', sub: '192.168.10.10' },
@@ -52,7 +52,7 @@ const readingFigure: PacketFlowFigure = {
   id: 'ch20-reading',
   title: '午後の構成図を読む4つの順番',
   caption: '①から④へ、図の上で[[blue:読む順]]を実際になぞっていきます。',
-  takeaway: '最後の④は、止まると困る場所探し。予備が無ければ、そこがこの構成の弱点です。',
+  takeaway: '④は「止まると全体に響く場所」探し。1本しかない線・1台しかない機器に目を留めます。',
   topology: wholeTopology,
   hideHeaders: true,
   steps: [
@@ -117,7 +117,7 @@ const journeyFigure: PacketFlowFigure = {
   id: 'ch20-journey',
   title: '社外から自社Webへ、1本の通信を追う',
   caption: '全体図から[[blue:境界の区間]]だけを抜き出した拡大図で、通信を1歩ずつ進めます。',
-  takeaway: '設問も結局はこの1本のどこか。どの区間の話かが決まれば、使う知識も決まります。',
+  takeaway: '通信は途中を飛ばして届きません。設問で迷ったら、この図のように端から順にたどり直します。',
   topology: journeyTopology,
   hideHeaders: true,
   steps: [
@@ -250,7 +250,7 @@ export const ch20AfternoonReading: TextbookChapter = {
         { kind: 'figure', figure: journeyFigure },
         {
           kind: 'text',
-          text: '午後の問題も、実はこの「抜き出し」をやっています。大きな図から設問に関係する区間だけを頭の中で切り出し、そこで何が起きるかを考えます。図2は、その切り出しの練習そのものです。',
+          text: '午後の問題も、実はこの「抜き出し」をやっています。大きな図から設問に関係する区間だけを頭の中で抜き出し、そこで何が起きるかを考えます。図2は、その抜き出しの練習そのものです。',
         },
       ],
     },
@@ -281,11 +281,11 @@ export const ch20AfternoonReading: TextbookChapter = {
       blocks: [
         {
           kind: 'text',
-          text: '第1章で、PC・ルータ・サーバだけの図から始めました。DNSとDHCPが加わり、VLANで分かれ、境界ができ、冗長になり、無線と電話とクラウドが乗り、最後に監視が付きました。午後の構成図は、この20章分の積み重ねと同じ順序でできています。',
+          text: '第1章で、PC・ルータ・サーバだけの図から始めました。DNSとDHCPが加わり、VLANで分かれ、境界ができ、冗長になり、無線と電話とクラウドが乗り、最後に監視が付きました。午後の構成図は、この20章分の部品でできています。',
         },
         {
           kind: 'text',
-          text: 'ここから先は、過去問そのものが教材です。初見の図でも読む順は変わりません。設問が来たら、どの区間の話かを見極めて、層と境界で根拠を組み立てます。この教科書で育てた読み方が、そのまま午後の得点力です。',
+          text: 'ここから先は、過去問そのものが教材です。初見の図でも読む順は変わりません。設問が来たら、どの区間の話かを見極めて、層と境界で根拠を組み立てます。この教科書で身につけた読み方が、そのまま午後の得点力です。',
         },
       ],
     },

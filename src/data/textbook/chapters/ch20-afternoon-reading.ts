@@ -86,6 +86,7 @@ const readingFigure: PacketFlowFigure = {
 
 // §2 境界クローズアップ。spine=インターネット/境界ルータ/FW/LB、上=社外PC、下=Webプール。
 // 第10章LB図の骨格に境界ルータと社外PCを足した再演。吹き出しは上半分のステップのみ（下半分は説明文で）。
+// 社外からの宛先は公開用グローバルIP 203.0.113.2（台帳追加済み）→境界ルータでVIPへ変換（2026-07-18レビューで合意）。
 const journeyTopology: Topology = {
   layout: 'graph',
   stack: true,
@@ -129,17 +130,23 @@ const journeyFigure: PacketFlowFigure = {
     },
     {
       focus: { type: 'link', a: 'extpc', b: 'inet' },
-      bubbles: ['宛先 172.16.0.10:443'],
+      bubbles: ['宛先 203.0.113.2:443'],
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: 'HTTPSなので宛先はVIPの443番。TCPの接続から始まります（第3章）。',
+      explanation: 'HTTPSの443番へ、まずTCPで接続。宛先は公開グローバルIP（第3章）。',
     },
     {
       focus: { type: 'link', a: 'inet', b: 'br' },
-      bubbles: ['宛先 172.16.0.10:443'],
+      bubbles: ['宛先 203.0.113.2:443'],
       packetLabel: '',
       headers: { l2: '', l3: '' },
       explanation: 'インターネットを越えて自社の境界へ。ISP間の経路はBGPの世界（第8章）。',
+    },
+    {
+      focus: { type: 'node', id: 'br' },
+      packetLabel: '',
+      headers: { l2: '', l3: '' },
+      explanation: '境界ルータが宛先をグローバルIPからVIPへ変換。行きと逆向きのNATです。',
     },
     {
       focus: { type: 'node', id: 'fw' },
@@ -152,7 +159,7 @@ const journeyFigure: PacketFlowFigure = {
       focus: { type: 'link', a: 'fw', b: 'lb' },
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: '境界を抜けてLBへ。利用者が知るのは代表IP（VIP）だけです（第10章）。',
+      explanation: '境界を抜けてLBへ。VIPは外から見えない内側の代表IPです（第10章）。',
     },
     {
       focus: { type: 'node', id: 'lb' },
@@ -249,6 +256,12 @@ export const ch20AfternoonReading: TextbookChapter = {
         },
         { kind: 'figure', figure: journeyFigure },
         {
+          kind: 'callout',
+          tone: 'tip',
+          title: '公開用の住所は境界で変換する',
+          body: 'プライベートIPのままではインターネットを通れないので（第8章）、公開サーバには外向けの[[blue:グローバルIP]]（203.0.113.2）を用意し、境界で内側のVIPへ変換します。この宛先側の変換は、[[blue:静的NAT]]という名前だけ押さえれば十分です。',
+        },
+        {
           kind: 'text',
           text: '午後の問題も、実はこの「抜き出し」をやっています。大きな図から設問に関係する区間だけを頭の中で抜き出し、そこで何が起きるかを考えます。図2は、その抜き出しの練習そのものです。',
         },
@@ -305,7 +318,7 @@ export const ch20AfternoonReading: TextbookChapter = {
     {
       question: '社外の利用者が公開Webサイトへアクセスするとき、宛先にするIPアドレスはWebサーバ本体のものか。',
       answer:
-        '違います。LBの代表IP（VIP 172.16.0.10）です。LBがVIPで受けて、裏のWebサーバ1・2（172.16.0.20・21）へ振り分けます。利用者からサーバ本体のIPは見えません。',
+        '違います。利用者が宛先にするのは、公開用のグローバルIP（203.0.113.2）です。境界でLBの代表IP（VIP 172.16.0.10）へ変換され、LBが裏のWebサーバ1・2（172.16.0.20・21）へ振り分けます。Webサーバ本体のIPは、外からは見えません。',
     },
     {
       question: '「内部のPCから社外サイトにつながらない」という設問で、答案の根拠はどう組み立てるか。',

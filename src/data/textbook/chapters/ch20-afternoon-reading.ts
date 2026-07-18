@@ -146,7 +146,7 @@ const journeyFigure: PacketFlowFigure = {
       focus: { type: 'node', id: 'br' },
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: '境界ルータが宛先をグローバルIPからVIPへ変換。行きと逆向きのNATです。',
+      explanation: '境界ルータが宛先をグローバルIPからVIPへ変換します（第9章の静的NAT）。',
     },
     {
       focus: { type: 'node', id: 'fw' },
@@ -259,7 +259,7 @@ export const ch20AfternoonReading: TextbookChapter = {
           kind: 'callout',
           tone: 'tip',
           title: '公開用の住所は境界で変換する',
-          body: 'プライベートIPのままではインターネットを通れないので（第8章）、公開サーバには外向けの[[blue:グローバルIP]]（203.0.113.2）を用意し、境界で内側のVIPへ変換します。この宛先側の変換は、[[blue:静的NAT]]という名前だけ押さえれば十分です。',
+          body: 'プライベートIPのままではインターネットを通れないので（第8章）、公開サーバには外向けの[[blue:グローバルIP]]（203.0.113.2）を用意し、境界で内側のVIPへ変換します。第9章で学んだ[[blue:静的NAT]]の、総仕上げでの再演です。',
         },
         {
           kind: 'text',

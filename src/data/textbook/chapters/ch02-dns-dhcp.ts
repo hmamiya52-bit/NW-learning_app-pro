@@ -4,6 +4,7 @@ import type { PacketFlowFigure, SequenceFigure, TextbookChapter, TimelineFigure,
 
 // 構成図の差分: 内部LANに DNSサーバ・DHCPサーバを追加（topology ramp）。
 // tree レイアウト（L2SW・ルータ=幹、端末・サーバ=枝）。幹どうしの線のラベルは無し（edgeLabels ''）。
+// DNSを葉の先頭に置き、L2SW—DNSの枝を focus link で光らせる（第13章で確立した方式）。
 const mapTopology: Topology = {
   layout: 'graph',
   edgeLabels: [{ a: 'l2sw', b: 'r', label: '' }],
@@ -14,8 +15,8 @@ const mapTopology: Topology = {
   nodes: [
     { id: 'l2sw', label: 'L2SW', role: 'switch', zoneId: 'lan', sub: '内部LAN' },
     { id: 'r', label: 'ルータ', role: 'router', sub: 'デフォルトGW' },
-    { id: 'pc', label: 'PC', role: 'pc', zoneId: 'lan', sub: '192.168.10.10' },
     { id: 'dns', label: 'DNSサーバ', role: 'dns', zoneId: 'lan', sub: '192.168.10.53' },
+    { id: 'pc', label: 'PC', role: 'pc', zoneId: 'lan', sub: '192.168.10.10' },
     { id: 'dhcp', label: 'DHCPサーバ', role: 'server', zoneId: 'lan', sub: '192.168.10.67' },
     { id: 'web', label: 'Webサーバ', role: 'server', zoneId: 'srv', sub: '172.16.0.20' },
   ],
@@ -32,7 +33,7 @@ const mapFigure: PacketFlowFigure = {
   kind: 'packet-flow',
   id: 'ch2-map',
   title: '構成図に、DNSサーバとDHCPサーバが加わる',
-  caption: 'ステップを送ると、加わった2台の場所と役割を順に確かめられます。',
+  caption: '加わった2台の場所と役割、そして問い合わせの通り道までを順に確かめます。',
   takeaway: 'DNSもDHCPも[[blue:内部LANの一員]]。PCと同じセグメントから、通信の準備を支えます。',
   topology: mapTopology,
   hideHeaders: true,
@@ -54,6 +55,12 @@ const mapFigure: PacketFlowFigure = {
       packetLabel: '',
       headers: { l2: '', l3: '' },
       explanation: '2台目がDHCPサーバ。住所ひとそろいを配る係。2台の働きを、この章で順に見ていきます。',
+    },
+    {
+      focus: { type: 'link', a: 'l2sw', b: 'dns' },
+      packetLabel: '',
+      headers: { l2: '', l3: '' },
+      explanation: '相手のIPを調べる問い合わせは、この線を通ってDNSサーバへ届きます。',
     },
   ],
 }

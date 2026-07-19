@@ -81,7 +81,7 @@ const portsFigure: RecordTableFigure = {
   kind: 'record-table',
   id: 'ch3-ports',
   title: 'まず覚える代表的なポート',
-  caption: 'FWの許可ルールで頻出。応用情報レベルの必須だけに絞りました。',
+  caption: 'FWの許可ルールで頻出の、応用情報レベルで必須の顔ぶれです。',
   takeaway: '公開サーバ（Web・メール・DNS）はDMZ。これがFW問題を読む鍵。',
   rowHeader: true,
   columns: [

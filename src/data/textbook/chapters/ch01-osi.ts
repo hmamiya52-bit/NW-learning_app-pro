@@ -217,7 +217,7 @@ export const ch01Osi: TextbookChapter = {
             kind: 'address-table',
             id: 'ch1-address',
             title: 'MAC・IPアドレス・ポート番号の早見表',
-            caption: '3つのあて名を、同じ目線で並べました。',
+            caption: '3つのあて名が、同じ目線で並びます。',
             takeaway: '[[green:MACは区間ごとに変わり]]、[[blue:IPは基本そのまま]]。この違いが次の節で効いてきます。',
             rows: [
               { name: 'MACアドレス', layer: 'L2', carries: 'すぐ隣の相手', scope: '同じリンクの中だけ。ルータを越えるたびに次の区間用へ付け替え', example: '00-11-22-33-44-55', tone: 'emerald' },

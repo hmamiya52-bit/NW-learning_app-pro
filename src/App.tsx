@@ -16,6 +16,7 @@ import AfternoonMyAnswer from './pages/AfternoonMyAnswer'
 import Column from './pages/Column'
 import HowToUse from './pages/HowToUse'
 import ActivityHistory from './pages/ActivityHistory'
+import Analysis from './pages/Analysis'
 import Login from './pages/Login'
 import AuthGuard from './auth/AuthGuard'
 import DeviceSync from './pages/DeviceSync'
@@ -63,6 +64,7 @@ export default function App() {
           <Route path="/column" element={<Column />} />
           <Route path="/how-to-use" element={<HowToUse />} />
           <Route path="/history" element={<ActivityHistory />} />
+          <Route path="/analysis" element={<Analysis />} />
           <Route path="/sync" element={<DeviceSync />} />
         </Route>
       </Routes>

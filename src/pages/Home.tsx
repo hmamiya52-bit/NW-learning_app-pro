@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { BookOpenText } from 'lucide-react'
+import { BookOpenText, Target } from 'lucide-react'
 import { categories } from '../data/categories'
 import { questions } from '../data/questions'
 import { getAllProgress, getAnswerRecords, getQuestionMastery } from '../lib/storage'
@@ -133,6 +133,13 @@ const OTHER_CARDS: MenuCard[] = [
     description: '正答率の低い問題',
     iconBg: 'bg-red-50',
     icon: <IconChart className="w-6 h-6 text-red-500" />,
+  },
+  {
+    to: '/analysis',
+    title: '分野別 弱点分析',
+    description: '午後Ⅰ頻出×正答率で優先度',
+    iconBg: 'bg-orange-50',
+    icon: <Target className="w-6 h-6 text-orange-600" />,
   },
   {
     to: '/protocols',

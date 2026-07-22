@@ -44,6 +44,16 @@ window.addEventListener('unhandledrejection', (e) => {
   tryRecover(typeof reason === 'string' ? reason : reason?.message)
 })
 
+// ─────────────────────────────────────────────
+// 開発時のみ: 午後問題の配点と公式解答の整合性を検証
+// （解答行の追加・並べ替えで配点がずれたまま気づかないのを防ぐ）
+// ─────────────────────────────────────────────
+if (import.meta.env.DEV) {
+  import('./lib/scoring').then(({ validateScoringMap, reportScoringIssues }) => {
+    reportScoringIssues(validateScoringMap())
+  })
+}
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <App />

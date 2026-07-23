@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { categories } from '../data/categories'
-import { NOTE_CATEGORY_IDS, NOTE_SECTION_INDEX } from './NoteDetail'
+import { NOTE_CATEGORY_IDS, NOTE_SECTION_INDEX } from '../data/notes'
 import { getNoteUnderstanding } from '../lib/storage'
 
 const NOTE_AVAILABLE = new Set(NOTE_CATEGORY_IDS)

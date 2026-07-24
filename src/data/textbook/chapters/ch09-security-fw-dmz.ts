@@ -250,8 +250,7 @@ const dmzFigure: PacketFlowFigure = {
       blockedLink: { a: 'fw', b: 'pc' },
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      bubbles: ['宛先 192.168.10.10'],
-      explanation: 'たとえ内部あての通信が来ても、許可が無く既定の拒否で遮断（外→内部＝不可）。',
+      explanation: '外から内部PCへは、公開IPが無く名指しできません。FWも遮断します。',
     },
     {
       focus: { type: 'link', a: 'web', b: 'fw' },
@@ -418,7 +417,7 @@ export const ch09SecurityFwDmz: TextbookChapter = {
               question:
                 '社外から内部の業務PC（192.168.10.10）へTCP445の通信を試みたとき、FWのルール（本文の表）ではどうなるか。',
               answer:
-                '遮断されます。ルール1〜3のどれにも一致せず、最後の既定（拒否）に該当するためです。内部へ直接入る通信は、原則として許可しません。',
+                '遮断されます。ルール1〜3のどれにも一致せず、最後の既定（拒否）に該当するためです。そもそも内部PCには外向けの公開IPが無く、外から直接は宛先にできない点も、あわせて押さえておきます。',
             },
           ],
         },

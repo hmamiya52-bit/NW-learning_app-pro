@@ -39,14 +39,14 @@ const lbFigure: PacketFlowFigure = {
       bubbles: ['宛先 203.0.113.2'],
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: '利用者からのリクエスト。宛先は自社の公開用グローバルIPです。',
+      explanation: '利用者からのリクエスト。あて先は自社の公開用グローバルIPです。',
     },
     {
       focus: { type: 'node', id: 'br' },
       bubbles: ['宛先 172.16.0.10'],
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: '境界の静的NATが、宛先をLBの代表IP（VIP）へ変換します（第9章）。',
+      explanation: '境界の静的NATが、あて先をLBの代表IP（VIP）へ変換します（第9章）。',
     },
     {
       focus: { type: 'node', id: 'lb' },
@@ -365,7 +365,7 @@ export const ch10LbProxyCdn: TextbookChapter = {
               question:
                 '公開Webサイトを処理するWebサーバは2台あるのに、社外の利用者からは1台に見えるのはなぜか。',
               answer:
-                '境界で宛先が公開用グローバルIPからVIP（172.16.0.10）へ変換され、LBがそのVIPで受けて複数サーバへ振り分けているためです。外に公開する住所は入口の1つだけで、戻りの通信もLBを経由します。',
+                '境界であて先が公開用グローバルIPからVIP（172.16.0.10）へ変換され、LBがそのVIPで受けて複数サーバへ振り分けているためです。外に公開する住所は入口の1つだけで、戻りの通信もLBを経由します。',
             },
           ],
         },

@@ -128,14 +128,14 @@ const journeyFigure: PacketFlowFigure = {
       focus: { type: 'node', id: 'extpc' },
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: '社外の利用者がサイト名でアクセス。まずDNSで宛先IPを解決します（第2章）。',
+      explanation: '社外の利用者がサイト名でアクセス。まずDNSであて先IPを解決します（第2章）。',
     },
     {
       focus: { type: 'link', a: 'extpc', b: 'inet' },
       bubbles: ['宛先 203.0.113.2:443'],
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: 'HTTPSの443番へ、まずTCPで接続。宛先は公開グローバルIP（第3章）。',
+      explanation: 'HTTPSの443番へ、まずTCPで接続。あて先は公開グローバルIP（第3章）。',
     },
     {
       focus: { type: 'link', a: 'inet', b: 'br' },
@@ -148,7 +148,7 @@ const journeyFigure: PacketFlowFigure = {
       focus: { type: 'node', id: 'br' },
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: '境界ルータが宛先をグローバルIPからVIPへ変換します（第9章の静的NAT）。',
+      explanation: '境界ルータがあて先をグローバルIPからVIPへ変換します（第9章の静的NAT）。',
     },
     {
       focus: { type: 'node', id: 'fw' },
@@ -187,7 +187,7 @@ const siteJourneyFigure: PacketFlowFigure = {
   id: 'ch20-site-journey',
   title: '内部から第2拠点へ、もう1本追う',
   caption: '同じ全体図で今度は[[blue:内から外]]へ。境界の越え方が、さっきの旅と違います。',
-  takeaway: '拠点間の宛先は[[blue:プライベートのまま]]。トンネルが包んで運ぶ、この例外が設問の狙い目です。',
+  takeaway: '拠点間のあて先は[[blue:プライベートのまま]]。トンネルが包んで運ぶ、この例外が設問の狙い目です。',
   topology: wholeTopology,
   hideHeaders: true,
   steps: [
@@ -213,7 +213,7 @@ const siteJourneyFigure: PacketFlowFigure = {
       focus: { type: 'node', id: 'br' },
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: '境界ルータが丸ごとトンネルに。宛先はプライベートのまま（第12章）。',
+      explanation: '境界ルータが丸ごとトンネルに。あて先はプライベートのまま（第12章）。',
     },
     {
       focus: { type: 'link', a: 'br', b: 'inet' },
@@ -373,7 +373,7 @@ export const ch20AfternoonReading: TextbookChapter = {
           label: '設問例',
           items: [
             {
-              question: '図2で、社外の利用者が送ったパケットの宛先IPアドレスは、Webサーバ1に届くまでに何回書き換わるか。',
+              question: '図2で、社外の利用者が送ったパケットのあて先IPアドレスは、Webサーバ1に届くまでに何回書き換わるか。',
               answer:
                 '2回です。まず境界の静的NATが公開用グローバルIP（203.0.113.2）をVIP（172.16.0.10）へ、次にLBがVIPをWebサーバ1（172.16.0.20）へ書き換えます。どこで書き換わるかを、場所とセットで答えられることが大切です。',
             },
@@ -456,7 +456,7 @@ export const ch20AfternoonReading: TextbookChapter = {
     {
       question: '「外→公開Web」「内→社外サイト」「内→第2拠点」の3つの通信は、境界の越え方がどう違うか。',
       answer:
-        '外→公開Webは、静的NATで宛先が公開用グローバルIPからVIPへ変換されます。内→社外は、NAPTで送信元がグローバルIPに変換されます。拠点間は、どちらも変換せずトンネルで包んで運びます。境界で何が起きるかが、それぞれ違います。',
+        '外→公開Webは、静的NATであて先が公開用グローバルIPからVIPへ変換されます。内→社外は、NAPTで送信元がグローバルIPに変換されます。拠点間は、どちらも変換せずトンネルで包んで運びます。境界で何が起きるかが、それぞれ違います。',
     },
     {
       question: '「内部のPCから社外サイトにつながらない」という設問で、答案の根拠はどう組み立てるか。',

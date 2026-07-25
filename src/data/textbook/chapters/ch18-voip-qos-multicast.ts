@@ -98,7 +98,7 @@ const multicastFigure: PacketFlowFigure = {
       bubbles: ['宛先 グループ'],
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: '配信サーバは、宛先をグループにして1本だけ送り出します。',
+      explanation: '配信サーバは、あて先をグループにして1本だけ送り出します。',
     },
     {
       focus: { type: 'link', a: 'rt', b: 'sw' },

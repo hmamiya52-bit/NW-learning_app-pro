@@ -122,14 +122,14 @@ const verdictFigure: PacketFlowFigure = {
       packetLabel: '',
       headers: { l2: '', l3: '' },
       bubbles: ['宛先 203.0.113.2:443'],
-      explanation: '社外から公開Webあての通信。宛先は公開用のグローバルIPです。',
+      explanation: '社外から公開Webあての通信。あて先は公開用のグローバルIPです。',
     },
     {
       focus: { type: 'node', id: 'br' },
       packetLabel: '',
       headers: { l2: '', l3: '' },
       bubbles: ['宛先 172.16.0.20:443'],
-      explanation: '境界ルータが静的NATで、宛先をDMZの172.16.0.20へ変換します。',
+      explanation: '境界ルータが静的NATで、あて先をDMZの172.16.0.20へ変換します。',
     },
     {
       focus: { type: 'node', id: 'fw' },
@@ -202,7 +202,7 @@ const statefulFigure: PacketFlowFigure = {
       packetLabel: '',
       headers: { l2: '', l3: '' },
       bubbles: ['送信元 198.51.100.100', '宛先 203.0.113.1'],
-      explanation: '応答の宛先は境界の203.0.113.1。NAPTが業務PCあてへ書き戻します。',
+      explanation: '応答のあて先は境界の203.0.113.1。NAPTが業務PCあてへ書き戻します。',
     },
     {
       focus: { type: 'node', id: 'fw' },
@@ -237,7 +237,7 @@ const dmzFigure: PacketFlowFigure = {
       packetLabel: '',
       headers: { l2: '', l3: '' },
       bubbles: ['宛先 203.0.113.2:443'],
-      explanation: '社外からWebあての通信。宛先の変換を経て、FWへ向かいます。',
+      explanation: '社外からWebあての通信。あて先の変換を経て、FWへ向かいます。',
     },
     {
       focus: { type: 'node', id: 'fw' },
@@ -347,7 +347,7 @@ export const ch09SecurityFwDmz: TextbookChapter = {
       blocks: [
         {
           kind: 'text',
-          text: 'FWは[[blue:ルール]]の一覧を上から順に見て、通信が最初に一致した行の「許可／拒否」に従います。ルールの条件に使うのが、第3章で学んだ[[blue:通信を見分ける5つの情報]]（送信元IP・宛先IP・プロトコル・送信元ポート・宛先ポート）です。実際のルールは主に[[blue:宛先ポート]]（サービスの種類）で許可し、[[blue:送信元ポート]]は通常anyとします。',
+          text: 'FWは[[blue:ルール]]の一覧を上から順に見て、通信が最初に一致した行の「許可／拒否」に従います。ルールの条件に使うのが、第3章で学んだ[[blue:通信を見分ける5つの情報]]（送信元IP・あて先IP・プロトコル・送信元ポート・あて先ポート）です。実際のルールは主に[[blue:あて先ポート]]（サービスの種類）で許可し、[[blue:送信元ポート]]は通常anyとします。',
         },
         { kind: 'figure', figure: fwRuleFigure },
         {
@@ -357,7 +357,7 @@ export const ch09SecurityFwDmz: TextbookChapter = {
         { kind: 'figure', figure: verdictFigure },
         {
           kind: 'text',
-          text: '最初のステップの宛先[[blue:203.0.113.2]]は、境界の公開用[[blue:グローバルIP]]。プライベートIPは外から宛先にできないので、境界ルータの[[blue:静的NAT]]（第8章で名前だけ出た固定の変換）が、DMZの172.16.0.20へ届けます。',
+          text: '最初のステップのあて先[[blue:203.0.113.2]]は、境界の公開用[[blue:グローバルIP]]。プライベートIPは外からあて先にできないので、境界ルータの[[blue:静的NAT]]（第8章で名前だけ出た固定の変換）が、DMZの172.16.0.20へ届けます。',
         },
         {
           kind: 'callout',
@@ -427,7 +427,7 @@ export const ch09SecurityFwDmz: TextbookChapter = {
               question:
                 '社外から内部の業務PC（192.168.10.10）へTCP445の通信を試みたとき、FWのルール（本文の表）ではどうなるか。',
               answer:
-                '遮断されます。ルール1〜3のどれにも一致せず、最後の既定（拒否）に該当するためです。そもそも内部PCには外向けの公開IPが無く、外から直接は宛先にできない点も、あわせて押さえておきます。',
+                '遮断されます。ルール1〜3のどれにも一致せず、最後の既定（拒否）に該当するためです。そもそも内部PCには外向けの公開IPが無く、外から直接はあて先にできない点も、あわせて押さえておきます。',
             },
           ],
         },
@@ -439,7 +439,7 @@ export const ch09SecurityFwDmz: TextbookChapter = {
     },
   ],
   takeaways: [
-    'FWは[[blue:5つの情報]]（送信元/宛先IP・プロトコル・送信元/宛先ポート）のルールで判断。原則[[red:デフォルトdeny]]で、必要な通信だけを[[green:許可]]します。',
+    'FWは[[blue:5つの情報]]（送信元/あて先IP・プロトコル・送信元/あて先ポート）のルールで判断。原則[[red:デフォルトdeny]]で、必要な通信だけを[[green:許可]]します。',
     'ルールは[[blue:上から順]]に照合し、最初に一致した動作を採用。どれにも合わなければ、最後の拒否で[[red:遮断]]。',
     '[[blue:ステートフル]]なら、許可した行きの[[blue:戻り]]は状態で自動通過。[[green:戻り用のルールは不要]]（第3章のコネクション）。',
     '公開サーバを[[amber:DMZ]]に隔離し、外→DMZは可・外→内部は不可・[[amber:DMZ]]→[[blue:内部]]も不可。破られても内部を守る[[blue:三層境界]]です。',

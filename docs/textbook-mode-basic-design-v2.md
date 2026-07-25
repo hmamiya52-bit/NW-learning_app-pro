@@ -164,7 +164,7 @@ dev サーバ: `preview_start`（name "nwsp-dev", port 5173）。HMR の中間�
 3. graph SVG: 全 `<text>` の BBox が viewBox（0..320）内。
 4. chain のパケット吹き出し: ノードのアイコンとバウンディングボックスが交差しないこと（PC幅 740/760 と 375 で確認）。
 5. `preview_console_logs` で warn / error 0（サーバ再起動後に確認）。
-6. `tsc --noEmit` 0。
+6. **型検査は `npx tsc -b`（または `npm run build`）**。ルート tsconfig は `"files": []` ＋ project references のため、**`tsc --noEmit` は何も検査せず常に成功する**（未 import の型を使っても通ってしまう実例あり）。
 7. §6.4 の grep 点検。
 
 目視が必要な箇所は「`/textbook/<id>` で直接確認を」とユーザーに委ねる。

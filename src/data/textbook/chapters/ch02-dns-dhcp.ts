@@ -127,7 +127,7 @@ const dnsFigure: SequenceFigure = {
       from: 'cache',
       to: 'upper',
       label: '② まずルートDNSへ',
-      note: 'ルートDNSに「.com の担当は」と尋ね、TLDの場所を得ます。ここからが反復。',
+      note: 'ルートDNSに「.com の担当は」と尋ね、TLDの場所を教わります。',
     },
     {
       from: 'cache',

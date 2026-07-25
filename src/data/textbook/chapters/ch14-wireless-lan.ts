@@ -343,7 +343,7 @@ export const ch14WirelessLan: TextbookChapter = {
         },
         {
           kind: 'text',
-          text: 'そこで無線は発想を変えます。検出できないなら、[[green:送る前に避ける]]。この考え方が[[blue:CSMA/CA]]（衝突回避）です。',
+          text: 'そこで無線は発想を変えます。検出できないなら「[[green:送る前に避ける]]」。この考え方が[[blue:CSMA/CA]]（衝突回避）です。',
         },
         { kind: 'figure', figure: csmaFigure },
         {

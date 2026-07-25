@@ -82,7 +82,7 @@ const mapFigure: PacketFlowFigure = {
       focus: { type: 'node', id: 'peer' },
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: '相手メールサーバが受信箱に保存。取り出す仕組みは次の節で。',
+      explanation: '相手メールサーバが受信箱に保存します。取り出す仕組みは次の節で扱います。',
     },
   ],
 }

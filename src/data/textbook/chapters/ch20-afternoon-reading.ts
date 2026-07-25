@@ -226,7 +226,7 @@ const siteJourneyFigure: PacketFlowFigure = {
       focus: { type: 'link', a: 'inet', b: 'site2' },
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: '支社ルータがトンネルを開き、中身は支社のPCへ。2拠点が1つの社内に。',
+      explanation: '支社ルータがトンネルを開き、中身が支社のPCへ。2つの拠点がひとつながりです。',
     },
   ],
 }
@@ -460,7 +460,7 @@ export const ch20AfternoonReading: TextbookChapter = {
         { kind: 'figure', figure: siteJourneyFigure },
         {
           kind: 'text',
-          text: 'これで、境界の越え方が3通り出そろいました。外→内は[[blue:静的NATで変換]]、内→社外は[[blue:NAPT]]（第8章）、拠点間は変換せず[[blue:トンネルで包む]]。目の前の通信がどれに当たるかを見極められれば、境界読みは仕上がりです。',
+          text: 'これで、境界の越え方が3通り出そろいました。外→内は[[blue:静的NATで変換]]、内→社外は[[blue:NAPT]]（第8章）、拠点間は変換せず[[blue:トンネルで包む形]]。目の前の通信がどれに当たるかを見極められれば、境界読みは仕上がりです。',
         },
       ],
     },

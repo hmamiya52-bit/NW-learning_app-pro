@@ -62,7 +62,7 @@ const macFlowFigure: PacketFlowFigure = {
   kind: 'packet-flow',
   id: 'ch5-mac-learn',
   title: 'MAC学習とユニキャスト転送',
-  caption: '下の表が、ステップごとに1行ずつ埋まります。覚えたあて先には、必要なポートだけへ。',
+  caption: '下の表が、ステップごとに1行ずつ埋まります。覚えたあて先には必要なポートだけへ送ります。',
   takeaway: 'スイッチは[[green:送信元MAC]]とポートを学習し、覚えたあて先には必要なポートだけへ送ります。',
   topology: macTopology,
   sideTable: {
@@ -92,7 +92,7 @@ const macFlowFigure: PacketFlowFigure = {
         { port: 'ポート1', mac: `${MAC_A}（PC-A）` },
         { port: 'ポート2', mac: '（未学習）' },
       ],
-      explanation: 'あて先MACはまだ表にないため、他の全ポートへ配ります（フラッディング）。',
+      explanation: 'あて先MACがまだ表になく、どのポートの先か分かりません。全ポートへ配ります。',
     },
     {
       focus: { type: 'link', a: 'pcB', b: 'l2sw' },
@@ -103,7 +103,7 @@ const macFlowFigure: PacketFlowFigure = {
         { port: 'ポート2', mac: `${MAC_B}（PC-B）` },
       ],
       tableHighlightRow: 1,
-      explanation: 'PC-Bが返信。今度は送信元MACをポート2として記録。両方を覚えました。',
+      explanation: 'PC-Bが返信します。送信元MACをポート2として記録し、両方を覚えました。',
     },
     {
       focus: { type: 'link', a: 'l2sw', b: 'pcA' },
@@ -137,7 +137,7 @@ const vlanFlowFigure: PacketFlowFigure = {
       packetLabel: 'ブロードキャスト',
       headers: { l2: '宛先MAC = 全員あて ／ VLAN10のタグ付き', l3: 'IPは省略（VLANはL2の働き）' },
       status: { l2: 'change' },
-      explanation: 'SW1はVLAN10のポートへ配ります。トランクではタグが付いてSW2へ。',
+      explanation: 'SW1はVLAN10のポートへ配ります。トランクではタグが付いてSW2へ届きます。',
     },
     {
       focus: { type: 'link', a: 'sw2', b: 'pcB' },
@@ -169,7 +169,7 @@ const stormFigure: PacketFlowFigure = {
       focus: { type: 'link', a: 'pc', b: 'sw1' },
       packetLabel: 'ブロードキャスト',
       headers: { l2: '宛先MAC = 全員あて（ブロードキャスト）', l3: 'IPは省略（L2に注目）' },
-      explanation: 'PCが全員あて（ブロードキャスト）を1回だけ送出。まずSW1へ。',
+      explanation: 'PCが全員あて（ブロードキャスト）を1回だけ送出し、まずSW1へ届きます。',
     },
     {
       focus: { type: 'link', a: 'sw1', b: 'sw2' },
@@ -205,7 +205,7 @@ const stpFigure: PacketFlowFigure = {
       packetLabel: 'ブロードキャスト',
       headers: { l2: '宛先MAC = 全員あて（ブロードキャスト）', l3: 'IPは省略（L2に注目）' },
       blockedLink: { a: 'sw1', b: 'sw2' },
-      explanation: 'STPが片方のポートをブロック（通信を止めた状態）に。PCが全員あてを送出。',
+      explanation: 'STPが片方のポートをブロックします（通信を止めた状態）。PCが全員あてを送出。',
     },
     {
       focus: { type: 'link', a: 'sw1', b: 'sw2' },
@@ -219,7 +219,7 @@ const stpFigure: PacketFlowFigure = {
       packetLabel: 'ブロードキャスト',
       headers: { l2: '宛先MAC = 全員あて（ブロードキャスト）', l3: 'IPは省略（L2に注目）' },
       blockedLink: { a: 'sw1', b: 'sw2' },
-      explanation: 'もう片方は止まっているので、フレームは戻りません。全員に1回ずつで終わり。',
+      explanation: 'もう片方は止まっているので、フレームは戻りません。全員に1回ずつ届いて終わりです。',
     },
   ],
 }

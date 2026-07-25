@@ -164,7 +164,7 @@ const naptFigure: PacketFlowFigure = {
       packetLabel: '送信元 192.168.10.10:51000',
       headers: { l2: '', l3: '' },
       tableRows: NAT_EMPTY,
-      explanation: '社外のWebサイトあての通信。自分のネットワークの外なので、まずR1へ。',
+      explanation: '社外のWebサイトあての通信。自分のネットワークの外なので、まずR1へ渡します。',
     },
     {
       focus: { type: 'node', id: 'r1' },
@@ -223,7 +223,7 @@ const naptFigure: PacketFlowFigure = {
       packetLabel: '宛先 192.168.10.10:51000',
       headers: { l2: '', l3: '' },
       tableRows: NAT_TWO,
-      explanation: '社内の住所に戻った応答が、行きと逆の道で業務PCへ。往復が1本につながりました。',
+      explanation: '社内の住所に戻った応答が、行きと逆の道で業務PCへ。往復が1本につながります。',
     },
   ],
 }
@@ -296,7 +296,7 @@ const bgpFigure: PacketFlowFigure = {
       packetLabel: '',
       headers: { l2: '', l3: '' },
       blockedLink: { a: 'ispa', b: 'target' },
-      explanation: 'AS間の道が切れても、BGPが代わりの経路を広め直します。通信は別のISPのASへ。',
+      explanation: 'AS間の道が切れても、BGPが代わりの経路を広め直し、別のASを通って届きます。',
     },
     {
       focus: { type: 'link', a: 'ispb', b: 'target' },

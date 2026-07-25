@@ -109,7 +109,7 @@ const httpVersionFigure: RecordTableFigure = {
   id: 'ch4-http-version',
   title: 'HTTP/1.1とHTTP/2の違い',
   caption: '同じHTTPでも、[[blue:1本の接続の使い方]]が変わります。',
-  takeaway: 'HTTP/2は1本の接続に[[green:相乗り]]。順番待ちが消え、張る[[blue:接続の数]]も減ります。',
+  takeaway: 'HTTP/2は複数のやり取りを1本の接続に[[green:相乗り]]させます。順番待ちが消え、張る[[blue:接続の数]]も減ります。',
   rowHeader: true,
   emphasizeKey: 'conn',
   columns: [
@@ -150,19 +150,19 @@ const http2Figure: SequenceFigure = {
       from: 'cl',
       to: 'sv',
       label: '① 要求A（CSS）',
-      note: '同じページに要る2つのファイル。まずAを要求します。',
+      note: '同じページで使う2つのファイル。まずAを要求します。',
     },
     {
       from: 'cl',
       to: 'sv',
       label: '② 要求B（画像）',
-      note: 'Aの応答を待たずにBも要求。HTTP/1.1ではここで待たされました。',
+      note: 'Aの応答を待たずにBも要求します。HTTP/1.1ではここで待たされました。',
     },
     {
       from: 'sv',
       to: 'cl',
       label: '③ 応答B',
-      note: '先に用意できたBから返せます。順番は入れ替わってかまいません。',
+      note: '先に用意できたBから返します。順番は入れ替わってもかまいません。',
     },
     {
       from: 'sv',

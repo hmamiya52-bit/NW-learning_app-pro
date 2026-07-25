@@ -63,7 +63,7 @@ const routeTableFigure: PacketFlowFigure = {
       packetLabel: '宛先 172.16.0.20',
       headers: { l2: '', l3: '' },
       tableRows: R1_TABLE,
-      explanation: 'あて先 172.16.0.20 は自分のネットワークの外。デフォルトゲートウェイのR1へ。',
+      explanation: 'あて先は自分のネットワークの外なので、デフォルトゲートウェイのR1へ渡します。',
     },
     {
       focus: { type: 'node', id: 'r1' },
@@ -189,7 +189,7 @@ const ospfFigure: PacketFlowFigure = {
       focus: { type: 'link', a: 'r1', b: 'r3' },
       packetLabel: 'パケット',
       headers: { l2: '', l3: '' },
-      explanation: 'R1はコストを比べ、R3経由（10＋10＝20）を選択。直結の100より小さい値。',
+      explanation: 'R1はコストを比べ、R3経由（10＋10＝20）を選びます。直結の100より小さい値。',
     },
     {
       focus: { type: 'link', a: 'r3', b: 'r2' },
@@ -208,7 +208,7 @@ const ospfFigure: PacketFlowFigure = {
       packetLabel: 'パケット',
       headers: { l2: '', l3: '' },
       blockedLink: { a: 'r1', b: 'r3' },
-      explanation: '主経路が切れるとOSPFが地図を更新して再計算。直結が新しい最短に。',
+      explanation: '主経路が切れるとOSPFが地図を更新し、直結を新しい最短として選び直します。',
     },
     {
       focus: { type: 'link', a: 'r2', b: 'web' },
@@ -226,7 +226,7 @@ const summaryFigure: RecordTableFigure = {
   id: 'ch7-summary',
   title: '連続するネットワークを1行にまとめる',
   caption: '連続する複数のネットワークを1つのプレフィックスに[[blue:まとめ]]、経路表を小さく保ちます。',
-  takeaway: '経路集約で経路表を小さく。まとめすぎると細かい経路が1行に隠れる点に注意。',
+  takeaway: '経路集約は経路表を小さく保つ工夫。まとめすぎると細かい経路が1行に隠れる点に注意。',
   rowHeader: true,
   emphasizeKey: 'net',
   columns: [

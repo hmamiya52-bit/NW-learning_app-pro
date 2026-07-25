@@ -16,11 +16,11 @@ const subnetFigure: SubnetCalcFigure = {
     },
     {
       prefix: 26,
-      note: '26ビットに伸ばすとホスト部は6ビット。.64〜.127 の範囲で62台までに。',
+      note: '26ビットに伸ばすとホスト部は6ビット。範囲は .64〜.127 で62台までです。',
     },
     {
       prefix: 27,
-      note: '27ビットでは .96〜.127 の30台まで。伸ばすほど小さく、数は多くなります。',
+      note: '27ビットなら .96〜.127 の30台。伸ばすほどネットワークは小さくなります。',
     },
   ],
 }
@@ -43,7 +43,7 @@ const segmentMapFigure: SegmentMapFigure = {
       networks: 1,
       gateways: false,
       highlight: 0,
-      note: '業務PCは 192.168.10.10/24。先頭24ビットが同じ範囲が 192.168.10.0。',
+      note: '業務PCは 192.168.10.10/24。属するネットワークは 192.168.10.0 です。',
     },
     {
       networks: 2,
@@ -55,7 +55,7 @@ const segmentMapFigure: SegmentMapFigure = {
       networks: 2,
       gateways: true,
       highlight: 2,
-      note: 'ルータが両者を中継。両端のIPが、各セグメントのデフォルトゲートウェイ。',
+      note: 'ルータが2つを中継します。両端のIPが、各セグメントのデフォルトゲートウェイ。',
     },
   ],
 }
@@ -198,7 +198,7 @@ export const ch06IpSubnet: TextbookChapter = {
     },
     {
       question: 'マスクを /24 から /26 に伸ばすと、ネットワークの範囲と収容台数はどうなるか。',
-      answer: '範囲は小さく（4つに分割）、収容は62台に減ります。伸ばすほど小さく・細かく。',
+      answer: '範囲は小さく（4つに分割）、収容は62台に減ります。伸ばすほど小さく、細かくなります。',
     },
     {
       question: 'ルータ同士をつなぐ点対点リンクに使う、定石のプレフィックスは？',

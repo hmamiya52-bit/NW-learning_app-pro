@@ -412,7 +412,7 @@ export const ch10LbProxyCdn: TextbookChapter = {
         { kind: 'figure', figure: lbFigure },
         {
           kind: 'text',
-          text: 'LBには2つの深さがあります。アドレスとポートだけを見る[[blue:L4]]と、URLなど通信の中身まで見る[[blue:L7]]。L7は中身を読むために[[blue:TLS終端]]（暗号を解く。第4章）も担います。',
+          text: 'LBには2つの深さがあります。アドレスとポートだけを見る[[blue:L4]]と、URLなど通信の中身まで見る[[blue:L7]]。L7は中身を読むために[[blue:TLS終端]]（暗号を解く処理。第4章）も担います。',
         },
         { kind: 'figure', figure: l4l7Figure },
         {

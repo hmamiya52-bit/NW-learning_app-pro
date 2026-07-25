@@ -38,7 +38,7 @@ const tunnelFigure: PacketFlowFigure = {
       bubbles: ['宛先 192.168.20.10'],
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: '本社PCから支社PCあての通信。あて先は支社のネットワークなので本社ルータへ。',
+      explanation: '本社PCから支社PCあての通信。あて先は支社なので、まず本社ルータへ渡します。',
     },
     {
       focus: { type: 'node', id: 'hqrt' },
@@ -66,7 +66,7 @@ const tunnelFigure: PacketFlowFigure = {
       bubbles: ['宛先 192.168.20.10'],
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: '元のあて先 192.168.20.10 に戻り、支社PCへ到達。戻りも同じトンネルを逆に。',
+      explanation: '元のあて先に戻り、支社PCへ到達。戻りも同じトンネルを逆向きに通ります。',
     },
   ],
 }
@@ -276,7 +276,7 @@ export const ch12VpnWanSdwan: TextbookChapter = {
       blocks: [
         {
           kind: 'text',
-          text: 'ここまでは拠点と拠点を結ぶVPNでした。では、外出先の社員1人が社内へつなぐときは。IPsecは端末に専用のソフトと設定が要ります。そこで使われるのが、[[blue:SSL-VPN]]です。',
+          text: 'ここまでは拠点と拠点を結ぶVPNでした。では、外出先の社員が1人で社内へつなぐときは、どうするのでしょうか。IPsecは端末に専用のソフトと設定が要ります。そこで使われるのが、[[blue:SSL-VPN]]です。',
         },
         {
           kind: 'text',
@@ -287,7 +287,7 @@ export const ch12VpnWanSdwan: TextbookChapter = {
           kind: 'callout',
           tone: 'warn',
           title: '装置の置き場所と、つなぎ先の確かめ方',
-          body: '外から接続を受ける装置なので、置き場所は第9章の[[amber:DMZ]]です。内部LANへは、FWで必要な通信だけを許します。もう1つの勘どころが「[[red:本物のSSL-VPN装置につないでいるか]]」。利用者側は装置のサーバ証明書を確かめ、装置側は第13章の[[blue:クライアント証明書]]で利用者を確かめる、と互いに確かめ合う形がよく採られます。',
+          body: '外から接続を受ける装置なので、置き場所は第9章の[[amber:DMZ]]です。内部LANへは、FWで必要な通信だけを許します。もう1つの勘どころは「[[red:本物のSSL-VPN装置につないでいるか]]」です。利用者側は装置のサーバ証明書を確かめ、装置側は第13章の[[blue:クライアント証明書]]で利用者を確かめる、と互いに確かめ合う形がよく採られます。',
         },
       ],
     },

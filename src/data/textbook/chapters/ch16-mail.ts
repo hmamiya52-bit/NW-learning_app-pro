@@ -41,23 +41,35 @@ const mapFigure: PacketFlowFigure = {
   hideHeaders: true,
   steps: [
     {
-      focus: { type: 'node', id: 'pc' },
+      focus: { type: 'link', a: 'pc', b: 'fw' },
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: '送信PCが、自社メールサーバへメールを渡します。ここまでは社内です。',
+      explanation: '送信PCがメールを送出。内部LANからFWへ上がります。',
+    },
+    {
+      focus: { type: 'link', a: 'fw', b: 'mail' },
+      packetLabel: '',
+      headers: { l2: '', l3: '' },
+      explanation: 'FWを抜けて、DMZの自社メールサーバへ。ここまでは社内です。',
     },
     {
       focus: { type: 'node', id: 'mail' },
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: '自社メールサーバが受け取り、相手を探して配送を始めます。',
+      explanation: '自社メールサーバがいったん預かり、相手の居場所を調べます。',
+    },
+    {
+      focus: { type: 'link', a: 'mail', b: 'fw' },
+      packetLabel: '',
+      headers: { l2: '', l3: '' },
+      explanation: '相手あてに送り直し。DMZからFWを通って外へ向かいます。',
     },
     {
       focus: { type: 'link', a: 'br', b: 'inet' },
       bubbles: ['宛先 相手メールサーバ'],
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: 'FW・境界ルータを通り、インターネットへ出ます。宛先は相手サーバ。',
+      explanation: '境界ルータを抜けてインターネットへ。宛先は相手サーバ。',
     },
     {
       focus: { type: 'link', a: 'inet', b: 'peer' },

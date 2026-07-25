@@ -102,7 +102,8 @@ export const ch03TcpUdpPort: TextbookChapter = {
   id: 'tcp-udp-port',
   order: 3,
   title: 'TCP・UDPとポート番号',
-  summary: 'コネクションを張るTCPの3ウェイハンドシェイク、UDPとの違い、ポートでの通信の見分け方を読めるようにします。',
+  summary:
+    'TCPは、確実に届けるためにいくつもの手間をかけます。この章では、送る前に互いの準備を確かめ合う手順、その手間を省いて速さを取るUDP、そして1台の機器の中でどの通信あてかを見分けるポート番号を扱います。',
   status: 'published',
   estimatedMinutes: 15,
   intro: [

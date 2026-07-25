@@ -360,7 +360,8 @@ export const ch08InternetNatBgp: TextbookChapter = {
   id: 'internet-nat-bgp',
   order: 8,
   title: 'インターネット接続・NAT・BGP',
-  summary: '社内のプライベートIPと世界のグローバルIP、境界ルータでのNAPT変換、AS・BGPによる世界規模の経路交換まで、構成図をインターネットまで広げて理解します。',
+  summary:
+    '社内で使っている住所は、そのままでは世界に出られません。この章では、社内の住所を世界で通じる住所に付け替えるNAT、その付け替えが起きる境界ルータ、そして世界規模で道を教え合うBGPを扱います。',
   status: 'published',
   estimatedMinutes: 22,
   intro: [

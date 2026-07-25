@@ -177,7 +177,8 @@ export const ch04WebTlsHttp: TextbookChapter = {
   id: 'web-tls-http',
   order: 4,
   title: 'Web通信の中身（TLS・HTTP）',
-  summary: 'HTTPSの443の中で起きるTLSハンドシェイクと証明書、HTTPの要求応答とメソッド・ステータスを追います。',
+  summary:
+    'HTTPSの中身は、暗号のトンネルと、その中を流れるHTTPの2階建てです。この章では、盗み見となりすましを防ぐTLS、ページを要求して受け取るHTTP、そして1本の接続にやり取りを相乗りさせるHTTP/2までを扱います。',
   status: 'published',
   estimatedMinutes: 17,
   intro: [

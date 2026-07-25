@@ -174,7 +174,8 @@ export const ch02DnsDhcp: TextbookChapter = {
   id: 'dns-dhcp',
   order: 2,
   title: '名前解決とアドレス配布（DNS・DHCP）',
-  summary: '名前からIPを引くDNSと、IP・GW・DNSを配るDHCPで、通信を始める前の準備を理解します。',
+  summary:
+    '通信を始めるには、自分の住所と相手の住所の両方が分かっていなければなりません。この章では、住所ひとそろいを配ってもらうDHCPと、名前からあて先のIPを調べるDNSを扱います。',
   status: 'published',
   estimatedMinutes: 16,
   intro: [

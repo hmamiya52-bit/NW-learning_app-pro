@@ -268,7 +268,8 @@ export const ch07Routing: TextbookChapter = {
   id: 'routing',
   order: 7,
   title: 'ルーティング（経路制御）',
-  summary: '経路表とロンゲストマッチで次ホップを選ぶ仕組み、スタティック/ダイナミック(OSPF)、経路集約と経路選択を、構成図の上で動かしながら理解します。',
+  summary:
+    'ネットワークが増えると、どの道を通って届けるかを決める必要が出てきます。この章では、その判断のよりどころになる経路表の読み方と、経路を管理者が手で書く方法・ルータどうしで学び合う方法（OSPF）を扱います。',
   status: 'published',
   estimatedMinutes: 22,
   intro: [

@@ -117,7 +117,8 @@ export const ch01Osi: TextbookChapter = {
   id: 'osi-communication',
   order: 1,
   title: 'OSI参照モデルと通信の全体像',
-  summary: '小さな構成図の上でパケットを動かしながら、L2/L3/L4・カプセル化・ARPを最初からつなげて理解します。',
+  summary:
+    '通信は、1台の機器が全部を引き受けるのではなく、役割を分けあって相手まで運ばれます。この章では、その役割分担を表すOSI参照モデル、データを包んで送るカプセル化、あて名になるMAC・IP・ポート、そして相手のMACを調べるARPを扱います。',
   status: 'published',
   estimatedMinutes: 20,
   intro: [

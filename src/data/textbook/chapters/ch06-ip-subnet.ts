@@ -86,7 +86,8 @@ export const ch06IpSubnet: TextbookChapter = {
   id: 'ip-subnet',
   order: 6,
   title: 'IPアドレス設計とサブネット',
-  summary: 'IPの構造・サブネット計算・CIDR・VLSMで、アドレス設計を読めるようにします。',
+  summary:
+    'IPアドレスは、どこまでがネットワークを表し、どこからが機器を表すのか。この章では、その境目を決めるサブネットマスクの読み方と、必要な台数に合わせてネットワークを分ける設計の考え方を扱います。計算そのものより「読めること」を目標にします。',
   status: 'published',
   estimatedMinutes: 15,
   intro: [

@@ -331,7 +331,7 @@ export const ch09SecurityFwDmz: TextbookChapter = {
   order: 9,
   title: 'セキュリティ境界・ファイアウォール・DMZ',
   summary:
-    'ファイアウォールの許可ルールとデフォルトdeny、行きを覚えて戻りを通すステートフル、公開サーバを隔離するDMZまで、ネスペ科目Bで最も問われる「境界」を、三層の構成図で読み解きます。',
+    '外とつながると、望まない通信も入ってこようとします。この章では、通す通信と止める通信を仕分けるファイアウォールと、公開サーバを内部から切り離して置くDMZを扱います。科目Bで最も問われる「境界」の章です。',
   status: 'published',
   estimatedMinutes: 20,
   intro: [

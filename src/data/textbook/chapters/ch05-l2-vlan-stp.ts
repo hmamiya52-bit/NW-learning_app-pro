@@ -228,7 +228,8 @@ export const ch05L2VlanStp: TextbookChapter = {
   id: 'l2-vlan-stp',
   order: 5,
   title: 'L2スイッチング・VLAN・STP',
-  summary: 'L2スイッチのMAC学習、VLANによる分割、STPによるループ防止を、構成図の上で動かしながら理解します。',
+  summary:
+    'スイッチは、どのポートの先に誰がいるかを、通信を見ながら自分で覚えていきます。この章では、その学習の仕組みと、1台のスイッチを複数のネットワークに分けるVLAN、ケーブルの二重化が生むループを止めるSTPを扱います。',
   status: 'published',
   estimatedMinutes: 15,
   intro: [

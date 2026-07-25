@@ -95,7 +95,7 @@ const vrrpFigure: PacketFlowFigure = {
       pairActive: 'r1',
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: '出口のルータを2台に。ふだんは稼働側のルータ1が、仮想IP 192.168.10.1 を受け持ちます。',
+      explanation: '出口のルータを2台に増やします。ふだんは稼働側のルータ1が、仮想IP 192.168.10.1 を受け持ちます。',
     },
     {
       focus: { type: 'link', a: 'pc', b: 'r1' },
@@ -171,7 +171,7 @@ const updateFigure: TimelineFigure = {
   id: 'ch11-update',
   title: '片系ずつ入れ替える無停止更改',
   caption: '冗長ペアなら、[[blue:片系ずつ]]切り離して交換し、[[blue:止めずに]]機器を入れ替えられます。',
-  takeaway: '手順は[[blue:切り離し→更改→戻す]]を、2台に順番に。サービスは動いたままです。',
+  takeaway: '手順は[[blue:切り離し→更改→戻す]]を、2台に順番に行います。サービスは動いたままです。',
   items: [
     { badge: '①', label: '待機側の切り離し', detail: '冗長ペアの待機側（スタンバイ）を通信から外します。稼働側だけで運用を続けます。' },
     { badge: '②', label: '機器の更改', detail: '外した機器を交換・設定更新します。この間も、もう片方が通信を継続。' },

@@ -213,7 +213,7 @@ const siteJourneyFigure: PacketFlowFigure = {
       focus: { type: 'node', id: 'br' },
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: '境界ルータが丸ごとトンネルに。あて先はプライベートのまま（第12章）。',
+      explanation: '境界ルータが丸ごとトンネルに包みます。あて先はプライベートのまま（第12章）。',
     },
     {
       focus: { type: 'link', a: 'br', b: 'inet' },

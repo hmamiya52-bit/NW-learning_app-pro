@@ -108,7 +108,7 @@ const webFlowFigure: PacketFlowFigure = {
       packetLabel: '受信して開封',
       headers: { l2: 'L2ヘッダを外す', l3: 'L3ヘッダを外す', l4: 'ポート443 → HTTPSへ渡す' },
       status: { l2: 'strip', l3: 'strip' },
-      explanation: 'L2・L3を外し、ポート443を見てHTTPSのアプリへ。これがデカプセル化です。',
+      explanation: 'L2・L3を外し、ポート443を見てHTTPSのアプリへ渡します。これがデカプセル化。',
     },
   ],
 }

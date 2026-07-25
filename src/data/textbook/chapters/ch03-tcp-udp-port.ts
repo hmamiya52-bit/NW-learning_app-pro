@@ -6,8 +6,8 @@ const handshakeFigure: SequenceFigure = {
   kind: 'sequence',
   id: 'ch3-3way',
   title: 'つなぐ（3ウェイハンドシェイク）',
-  caption: 'データを送る前の、つなぐための3往復（SYN→SYN/ACK→ACK）。',
-  takeaway: '送る前にまず「つなぐ」。3往復で互いの準備を確かめます。',
+  caption: 'データを送る前の、つなぐための3回のやり取り（SYN→SYN/ACK→ACK）。',
+  takeaway: '送る前にまず「つなぐ」。3回のやり取りで互いの準備を確かめます。',
   actors: [
     { id: 'pc', label: 'PC', role: 'pc' },
     { id: 'web', label: 'Webサーバ', role: 'server' },
@@ -125,7 +125,7 @@ export const ch03TcpUdpPort: TextbookChapter = {
         },
         {
           kind: 'text',
-          text: 'これが3ウェイハンドシェイク。SYN（つなぎたい）→ SYN/ACK（いいですよ、そちらは）→ ACK（こちらもOK）の3往復で接続が成立し、ここからデータを送れます。',
+          text: 'これが3ウェイハンドシェイク。SYN（つなぎたい）→ SYN/ACK（いいですよ、そちらは）→ ACK（こちらもOK）の3回のやり取りで接続が成立し、ここからデータを送れます。',
         },
         { kind: 'figure', figure: handshakeFigure },
         {

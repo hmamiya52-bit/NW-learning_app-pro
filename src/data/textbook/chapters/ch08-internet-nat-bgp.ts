@@ -327,13 +327,42 @@ const natDirectionFigure: RecordTableFigure = {
   ],
 }
 
+// §4 eBGP と iBGP の区別。過去問は eBGP 5件・iBGP 3件（R6-G1-2「eBGP」「ルーティングループ」、
+// R6-G2-1「iBGPピアの数を減らすことができる」）。「どこで使うか」と「何を運ぶか」の2点に絞る。
+const bgpKindTable: RecordTableFigure = {
+  kind: 'record-table',
+  id: 'ch8-bgp-kind',
+  title: 'eBGPとiBGP',
+  caption: '同じBGPでも、[[blue:ASをまたぐか]][[green:AS内か]]で呼び名が変わります。',
+  takeaway: '自社が契約ISPと結ぶのは[[blue:eBGP]]。[[green:iBGP]]は、外から学んだ経路を自分のAS内へ配るために使います。',
+  rowHeader: true,
+  emphasizeKey: 'where',
+  columns: [
+    { key: 'kind', label: '呼び名' },
+    { key: 'where', label: 'どこで使うか' },
+    { key: 'what', label: '何を運ぶか' },
+  ],
+  rows: [
+    {
+      kind: 'eBGP',
+      where: '別のASとの間（自社の境界ルータと契約ISP）',
+      what: '「このネットワークはうちを通れば届く」という申告',
+    },
+    {
+      kind: 'iBGP',
+      where: '同じASの中',
+      what: '外のASから学んだ経路を、AS内のルータどうしで配る',
+    },
+  ],
+}
+
 export const ch08InternetNatBgp: TextbookChapter = {
   id: 'internet-nat-bgp',
   order: 8,
   title: 'インターネット接続・NAT・BGP',
   summary: '社内のプライベートIPと世界のグローバルIP、境界ルータでのNAPT変換、AS・BGPによる世界規模の経路交換まで、構成図をインターネットまで広げて理解します。',
   status: 'published',
-  estimatedMinutes: 20,
+  estimatedMinutes: 22,
   intro: [
     {
       kind: 'text',
@@ -422,10 +451,19 @@ export const ch08InternetNatBgp: TextbookChapter = {
         },
         { kind: 'figure', figure: bgpFigure },
         {
+          kind: 'text',
+          text: 'BGPには、使う場所で2つの呼び名があります。[[blue:別のASとの間]]で経路を交換するのが[[blue:eBGP]]。自社が契約ISPとつなぐのは、こちらです。もう1つが[[green:同じASの中]]でBGPの経路を配る[[green:iBGP]]で、大きな組織が自分のAS内で使います。',
+        },
+        { kind: 'figure', figure: bgpKindTable },
+        {
+          kind: 'text',
+          text: '同じASの中で使うなら、第7章のOSPFでよいのでは、と思うかもしれません。ここが分かれ目です。OSPFが運ぶのは[[blue:自社内の経路]]、iBGPが運ぶのは[[blue:外から学んだ膨大な経路]]。役割が違うので、両方を同時に動かして使い分けます。',
+        },
+        {
           kind: 'callout',
-          tone: 'tip',
-          title: 'AS番号・BGPは「名前だけ」',
-          body: '図のAS 64500などの番号は例示で、暗記は不要。「インターネットはASの集まり」「AS間の経路交換がBGP」「自社は契約ISPのASにつなぐ」。科目Bの読解には、この3点で十分です。',
+          tone: 'warn',
+          title: '受け取る経路をうのみにしない',
+          body: 'BGPは「うちを通れば届く」という申告を信じ合う仕組みです。裏を返せば、[[red:誤った経路や不正な経路を教え込まれる]]と、通信がそちらへ吸い込まれてしまいます。だから実務では、つなぐ相手を限定し、受け取ってよい経路をあらかじめ絞ります。科目Bでは「この対策をしないと何が起きるか」の形で問われます。AS番号そのものは例示なので、暗記は不要です。',
         },
       ],
     },

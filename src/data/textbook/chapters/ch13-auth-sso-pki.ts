@@ -1,4 +1,4 @@
-import type { AddressTableFigure, PacketFlowFigure, SequenceFigure, TextbookChapter, TimelineFigure, Topology } from '../types'
+import type { AddressTableFigure, PacketFlowFigure, RecordTableFigure, SequenceFigure, TextbookChapter, TimelineFigure, Topology } from '../types'
 
 // 第13章 認証・認可・SSO・PKI。第4章「サーバ証明書で本物か確かめる」の発展＝今度は利用者側を確かめる。
 // 認証と認可の区別 → RADIUSで認証を一元化 → SSO → 証明書チェーン(PKI)。第14章 802.1X の土台。
@@ -204,6 +204,38 @@ const certChainFigure: TimelineFigure = {
   ],
 }
 
+// §5 サーバ証明書とクライアント証明書の対比。「どちらが誰を証明するか」と、秘密鍵の置き場所に絞る。
+// 過去問はクライアント証明書を9回問うており（R4-G2-1・H25・H27・H29・H30）、うち多くが無線LANのEAP-TLS。
+const clientCertTable: RecordTableFigure = {
+  kind: 'record-table',
+  id: 'ch13-client-cert',
+  title: 'サーバ証明書とクライアント証明書',
+  caption: '同じ証明書の仕組みを、[[blue:向きを変えて]]使います。',
+  takeaway: '確かめられるのは[[red:秘密鍵を持っている側]]。両方が見せ合えば[[green:相互認証]]になり、偽のサーバやAPを見抜けます。',
+  rowHeader: true,
+  emphasizeKey: 'key',
+  columns: [
+    { key: 'kind', label: '証明書' },
+    { key: 'who', label: '誰を証明するか' },
+    { key: 'key', label: '秘密鍵の置き場所' },
+    { key: 'use', label: '使いどころ' },
+  ],
+  rows: [
+    {
+      kind: 'サーバ証明書',
+      who: 'つなぎ先のサーバが本物であること',
+      key: 'サーバの中',
+      use: 'HTTPSのTLS（第4章）',
+    },
+    {
+      kind: 'クライアント証明書',
+      who: 'つないできた端末や利用者が本人であること',
+      key: '端末の中',
+      use: '無線LANの認証（第14章）・SSL-VPNの接続',
+    },
+  ],
+}
+
 export const ch13AuthSsoPki: TextbookChapter = {
   id: 'auth-sso-pki',
   order: 13,
@@ -211,7 +243,7 @@ export const ch13AuthSsoPki: TextbookChapter = {
   summary:
     '「あなたは誰か」を確かめる認証と、「何をしてよいか」を決める認可の区別を出発点に、認証を一元管理するRADIUS、一度の認証で複数のサービスを使うSSO、署名の連鎖で証明書の本物を保証するPKIを理解します。第4章のサーバ証明書の「なぜ信じられるか」に、ここで答えます。',
   status: 'published',
-  estimatedMinutes: 18,
+  estimatedMinutes: 20,
   intro: [
     {
       kind: 'text',
@@ -313,6 +345,30 @@ export const ch13AuthSsoPki: TextbookChapter = {
           tone: 'tip',
           title: '信頼の起点はルートCA',
           body: '「なぜルートCAは信じられるのか」。答えは、[[rose:端末にあらかじめ入っている]]からです。逆に、連鎖のどこか1つでも署名を確認できなければ、ブラウザは警告を出します。',
+        },
+      ],
+    },
+    {
+      heading: '証明書で「端末や利用者」を確かめる',
+      blocks: [
+        {
+          kind: 'text',
+          text: 'ここまでの証明書は、サーバが自分を名乗るための[[blue:サーバ証明書]]でした。同じ仕組みは、逆向きにも使えます。端末や利用者の側にも証明書を配っておき、それを見せてもらって本人だと確かめる。これが[[blue:クライアント証明書]]です。',
+        },
+        {
+          kind: 'text',
+          text: 'なぜこれで本人と言えるのか。証明書には[[blue:公開鍵]]が入っていますが、それと対になる[[red:秘密鍵]]は本人の端末にしかありません。秘密鍵を持っている人にしかできない計算をやってみせることで、証明書の持ち主本人だと示せます。IDとパスワードと違い、盗み見てまねることができません。',
+        },
+        { kind: 'figure', figure: clientCertTable },
+        {
+          kind: 'text',
+          text: 'サーバと端末が互いに証明書を見せ合えば、[[green:相互認証]]になります。端末はつなぎ先が本物かを確かめられるので、本物そっくりの偽サーバや偽アクセスポイントに、うっかりつないでしまう事故を防げます。',
+        },
+        {
+          kind: 'callout',
+          tone: 'warn',
+          title: '強い代わりに、配って回る手間がかかる',
+          body: 'クライアント証明書は強力ですが、[[amber:全端末に配り、期限が来たら配り直す]]手間がかかります。期限切れに気づかず、その端末だけつながらなくなる、という事故もよくあります。「安全性は上がるが運用の負担が増える」という裏表は、科目Bで理由を書かせる形でよく問われます。第14章では、これを無線LANの認証（EAP-TLS）で実際に使います。',
         },
       ],
     },

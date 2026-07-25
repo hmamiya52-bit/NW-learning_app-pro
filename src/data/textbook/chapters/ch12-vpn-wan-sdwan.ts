@@ -128,6 +128,66 @@ const insideOutsideTable: RecordTableFigure = {
   ],
 }
 
+// §3 IPsecの部品（ESP/IKE）。過去問はESP 3件・IKE 3件・SA 7件・トンネルモード 2件で、
+// R6-G1-3 は「IPヘッダー，元のIPパケット，ESPトレーラ」＝包んだあとの並びを答えさせている。
+const ipsecPartsTable: RecordTableFigure = {
+  kind: 'record-table',
+  id: 'ch12-ipsec-parts',
+  title: 'IPsecの2つの部品',
+  caption: '[[blue:包む係]]と[[amber:先に鍵を決める係]]で、役割が分かれます。',
+  takeaway: '本番のデータを運ぶのは[[blue:ESP]]。[[amber:IKE]]はその前準備で、決めた取り決めを[[blue:SA]]と呼びます。',
+  rowHeader: true,
+  emphasizeKey: 'job',
+  columns: [
+    { key: 'part', label: '部品' },
+    { key: 'job', label: '役割' },
+    { key: 'when', label: 'いつ働くか' },
+  ],
+  rows: [
+    {
+      part: 'IKE',
+      job: '暗号の方式と鍵を先に決める（決めた取り決めがSA）',
+      when: 'トンネルを作るとき、データを流す前',
+    },
+    {
+      part: 'ESP',
+      job: '元のパケットを暗号化して包む',
+      when: 'データを流している間ずっと',
+    },
+  ],
+}
+
+// §4 IPsec VPN と SSL-VPN の使い分け。過去問はSSL-VPN 5件（H29-G1-1が主題、R4-G2-1がなりすましリスク）。
+const vpnCompareTable: RecordTableFigure = {
+  kind: 'record-table',
+  id: 'ch12-vpn-compare',
+  title: 'IPsec VPNとSSL-VPNの使い分け',
+  caption: '結ぶ相手が[[blue:拠点どうし]]か[[green:1人の端末]]かで、選ぶものが変わります。',
+  takeaway: '拠点を常時結ぶなら[[blue:IPsec]]、外出先の端末から都度つなぐなら[[green:SSL-VPN]]。装置はDMZに置きます。',
+  rowHeader: true,
+  emphasizeKey: 'who',
+  columns: [
+    { key: 'kind', label: '方式' },
+    { key: 'who', label: '主に結ぶ相手' },
+    { key: 'need', label: '端末に要るもの' },
+    { key: 'base', label: '土台の技術' },
+  ],
+  rows: [
+    {
+      kind: 'IPsec VPN',
+      who: '拠点と拠点（常時つなぎっぱなし）',
+      need: '専用のソフトと設定',
+      base: 'ESPとIKE（この章）',
+    },
+    {
+      kind: 'SSL-VPN',
+      who: '外出先の端末から社内へ（つなぎたいときだけ）',
+      need: 'ブラウザだけでよい',
+      base: 'TLS（第4章）',
+    },
+  ],
+}
+
 export const ch12VpnWanSdwan: TextbookChapter = {
   id: 'vpn-wan-sdwan',
   order: 12,
@@ -135,7 +195,7 @@ export const ch12VpnWanSdwan: TextbookChapter = {
   summary:
     '離れた本社と支社を安全につなぐIPsec VPN、つまり元のパケットを暗号化して新しいIPで包む二重のトンネルを軸に、拠点間をつなぐWAN回線の種類と、複数回線を束ねて使い分けるSD-WANを理解します。第1章のカプセル化が「パケットをパケットで包む」として効きます。',
   status: 'published',
-  estimatedMinutes: 16,
+  estimatedMinutes: 20,
   intro: [
     {
       kind: 'text',
@@ -183,7 +243,51 @@ export const ch12VpnWanSdwan: TextbookChapter = {
           kind: 'callout',
           tone: 'tip',
           title: 'トンネルの中は、もう1枚IPがある',
-          body: '外から見えるのは[[violet:外側のIP]]（本社ルータ→支社ルータ）だけ。中身の[[blue:元のIP]]（本社PC→支社PC）は暗号化され、途中では読めません。暗号化のESPや、鍵を交換するIKEといった言葉もありますが、[[blue:名前だけ]]押さえれば十分です。',
+          body: '外から見えるのは[[violet:外側のIP]]（本社ルータ→支社ルータ）だけ。中身の[[blue:元のIP]]（本社PC→支社PC）は暗号化され、途中では読めません。この「外側と内側」の区別が、この章でいちばん問われるところです。',
+        },
+      ],
+    },
+    {
+      heading: 'トンネルを作る2つの部品、ESPとIKE',
+      blocks: [
+        {
+          kind: 'text',
+          text: 'IPsecは1つの仕組みではなく、役割の違う部品の組み合わせです。よく問われるのは2つ。実際に[[rose:包んで暗号化する]]のが[[blue:ESP]]、その前に[[amber:鍵を決めておく]]のが[[blue:IKE]]です。',
+        },
+        {
+          kind: 'text',
+          text: '[[blue:ESP]]で包んだあとの並びは、外側から[[violet:新しいIPヘッダ]]・ESPヘッダ・[[blue:元のIPパケット]]・ESPトレーラ。元のパケットを丸ごと中に入れてしまうこの包み方を[[blue:トンネルモード]]と呼び、拠点間VPNではこちらを使います。',
+        },
+        { kind: 'figure', figure: ipsecPartsTable },
+        {
+          kind: 'text',
+          text: '[[blue:IKE]]は、暗号化を始める前の打ち合わせ役です。「どの方式で暗号化するか」「鍵は何か」を先に決めます。第4章のTLSハンドシェイクが本文を送る前に方式と鍵をそろえたのと、同じ発想です。',
+        },
+        {
+          kind: 'callout',
+          tone: 'info',
+          title: '取り決めのことをSAと呼ぶ',
+          body: 'IKEが決めた取り決め（方式と鍵の組）を[[blue:SA]]（Security Association）と呼びます。順番は2段階で、まず打ち合わせ用の[[blue:IKE SA]]を作り、その安全な通路を使って、実際にデータを守る[[blue:Child SA]]を作ります。「打ち合わせ用の通路を先に作り、その中で本番の取り決めをする」と押さえておけば、科目Bで名前が出てきても迷いません。',
+        },
+      ],
+    },
+    {
+      heading: 'ブラウザだけでつなぐSSL-VPN',
+      blocks: [
+        {
+          kind: 'text',
+          text: 'ここまでは拠点と拠点を結ぶVPNでした。では、外出先の社員1人が社内へつなぐときは。IPsecは端末に専用のソフトと設定が要ります。そこで使われるのが、[[blue:SSL-VPN]]です。',
+        },
+        {
+          kind: 'text',
+          text: '名前のとおり、第4章の[[blue:TLS]]（かつてのSSL）をそのまま使います。ブラウザが標準で持っている仕組みなので、[[green:端末に専用ソフトを入れずに]]つなげるのが利点。社内には[[blue:SSL-VPN装置]]を置き、外からの接続をそこで受けます。',
+        },
+        { kind: 'figure', figure: vpnCompareTable },
+        {
+          kind: 'callout',
+          tone: 'warn',
+          title: '装置の置き場所と、つなぎ先の確かめ方',
+          body: '外から接続を受ける装置なので、置き場所は第9章の[[amber:DMZ]]です。内部LANへは、FWで必要な通信だけを許します。もう1つの勘どころが「[[red:本物のSSL-VPN装置につないでいるか]]」。利用者側は装置のサーバ証明書を確かめ、装置側は第13章の[[blue:クライアント証明書]]で利用者を確かめる、と互いに確かめ合う形がよく採られます。',
         },
       ],
     },

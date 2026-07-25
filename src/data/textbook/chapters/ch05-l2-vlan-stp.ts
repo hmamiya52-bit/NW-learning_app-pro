@@ -62,8 +62,8 @@ const macFlowFigure: PacketFlowFigure = {
   kind: 'packet-flow',
   id: 'ch5-mac-learn',
   title: 'MAC学習とユニキャスト転送',
-  caption: '下の表が、ステップごとに1行ずつ埋まります。覚えた宛先には、必要なポートだけへ。',
-  takeaway: 'スイッチは[[green:送信元MAC]]とポートを学習し、覚えた宛先には必要なポートだけへ送ります。',
+  caption: '下の表が、ステップごとに1行ずつ埋まります。覚えたあて先には、必要なポートだけへ。',
+  takeaway: 'スイッチは[[green:送信元MAC]]とポートを学習し、覚えたあて先には必要なポートだけへ送ります。',
   topology: macTopology,
   sideTable: {
     title: 'スイッチが覚えたMACアドレステーブル',
@@ -82,7 +82,7 @@ const macFlowFigure: PacketFlowFigure = {
         { port: 'ポート2', mac: '（未学習）' },
       ],
       tableHighlightRow: 0,
-      explanation: 'PC-Aがフレームを送出。スイッチは、入ってきたポート1と送信元MAC（PC-A）を対応づけて記録します。',
+      explanation: 'PC-Aがフレームを送出。スイッチは入ってきたポートと送信元MACを記録します。',
     },
     {
       focus: { type: 'link', a: 'l2sw', b: 'pcB' },
@@ -92,7 +92,7 @@ const macFlowFigure: PacketFlowFigure = {
         { port: 'ポート1', mac: `${MAC_A}（PC-A）` },
         { port: 'ポート2', mac: '（未学習）' },
       ],
-      explanation: '宛先MAC（PC-B）はまだ表にないため、届いたポート以外の全ポートへ配ります（フラッディング）。PC-Bに届きます。',
+      explanation: 'あて先MACはまだ表にないため、他の全ポートへ配ります（フラッディング）。',
     },
     {
       focus: { type: 'link', a: 'pcB', b: 'l2sw' },
@@ -103,7 +103,7 @@ const macFlowFigure: PacketFlowFigure = {
         { port: 'ポート2', mac: `${MAC_B}（PC-B）` },
       ],
       tableHighlightRow: 1,
-      explanation: 'PC-Bが返信。今度は送信元MAC（PC-B）をポート2として記録します。これで両方のMACを覚えました。',
+      explanation: 'PC-Bが返信。今度は送信元MACをポート2として記録。両方を覚えました。',
     },
     {
       focus: { type: 'link', a: 'l2sw', b: 'pcA' },
@@ -113,7 +113,7 @@ const macFlowFigure: PacketFlowFigure = {
         { port: 'ポート1', mac: `${MAC_A}（PC-A）` },
         { port: 'ポート2', mac: `${MAC_B}（PC-B）` },
       ],
-      explanation: '宛先MAC（PC-A）は学習済みなので、対応するポート1だけへ送ります（ユニキャスト）。',
+      explanation: 'あて先MACは学習済みなので、対応するポート1だけへ送ります（ユニキャスト）。',
     },
   ],
 }
@@ -187,7 +187,7 @@ const stormFigure: PacketFlowFigure = {
       focus: { type: 'link', a: 'sw1', b: 'sw2' },
       packetLabel: 'ブロードキャスト',
       headers: { l2: '宛先MAC = 全員あて（ブロードキャスト）', l3: 'IPは省略（L2に注目）' },
-      explanation: 'SW1はまたSW2へ転送……。同じフレームが回り続け、際限なく増えていきます（ブロードキャストストーム）。',
+      explanation: 'SW1はまたSW2へ転送……。同じフレームが回り続け、際限なく増えていきます。',
     },
   ],
 }
@@ -205,7 +205,7 @@ const stpFigure: PacketFlowFigure = {
       packetLabel: 'ブロードキャスト',
       headers: { l2: '宛先MAC = 全員あて（ブロードキャスト）', l3: 'IPは省略（L2に注目）' },
       blockedLink: { a: 'sw1', b: 'sw2' },
-      explanation: 'STPを有効にすると、SW1とSW2の間の片方のポートがブロック（通信を止めた状態）になります。PCがブロードキャストを送出。',
+      explanation: 'STPが片方のポートをブロック（通信を止めた状態）に。PCが全員あてを送出。',
     },
     {
       focus: { type: 'link', a: 'sw1', b: 'sw2' },
@@ -219,7 +219,7 @@ const stpFigure: PacketFlowFigure = {
       packetLabel: 'ブロードキャスト',
       headers: { l2: '宛先MAC = 全員あて（ブロードキャスト）', l3: 'IPは省略（L2に注目）' },
       blockedLink: { a: 'sw1', b: 'sw2' },
-      explanation: 'もう片方はブロックされているため、フレームは戻ってきません。全員に1回ずつ届いて終わり。物理的には2本でも、論理的には1本です。',
+      explanation: 'もう片方は止まっているので、フレームは戻りません。全員に1回ずつで終わり。',
     },
   ],
 }
@@ -247,7 +247,7 @@ export const ch05L2VlanStp: TextbookChapter = {
       blocks: [
         {
           kind: 'text',
-          text: 'L2スイッチの仕事は、宛先MACを見て正しいポートへ中継すること。では、どのポートへ送ればよいと、どうやって分かるのでしょうか。',
+          text: 'L2スイッチの仕事は、あて先MACを見て正しいポートへ中継すること。では、どのポートへ送ればよいと、どうやって分かるのでしょうか。',
         },
         {
           kind: 'text',
@@ -258,7 +258,7 @@ export const ch05L2VlanStp: TextbookChapter = {
           kind: 'callout',
           tone: 'warn',
           title: '最初はフラッディング、覚えたらユニキャスト',
-          body: '宛先MACをまだ学習していないうちは、どのポートの先にいるか分からないので、スイッチは届いたポート以外の全ポートへ配ります（フラッディング）。相手が一度でも応答すれば送信元MACを覚えるため、次からは該当ポートだけへ送る形（ユニキャスト）に変わります。',
+          body: 'あて先MACをまだ学習していないうちは、どのポートの先にいるか分からないので、スイッチは届いたポート以外の全ポートへ配ります（フラッディング）。相手が一度でも応答すれば送信元MACを覚えるため、次からは該当ポートだけへ送る形（ユニキャスト）に変わります。',
         },
       ],
     },
@@ -339,7 +339,7 @@ export const ch05L2VlanStp: TextbookChapter = {
           label: '設問例',
           items: [
             {
-              question: 'L2スイッチが、宛先MACアドレスをまだ学習していないフレームを受け取ったときの動作は何か。',
+              question: 'L2スイッチが、あて先MACアドレスをまだ学習していないフレームを受け取ったときの動作は何か。',
               answer: 'フラッディングします。届いたポート以外の全ポートへ配り、相手が応答すれば学習して、次からはユニキャストです。',
             },
           ],
@@ -348,8 +348,8 @@ export const ch05L2VlanStp: TextbookChapter = {
     },
   ],
   takeaways: [
-    'スイッチは[[green:送信元MAC]]とポートを学習し、覚えた宛先には必要なポートだけへ送ります。',
-    '宛先MACを覚える前は全ポートへ配り（フラッディング）、覚えたら該当ポートだけへ（ユニキャスト）。',
+    'スイッチは[[green:送信元MAC]]とポートを学習し、覚えたあて先には必要なポートだけへ送ります。',
+    'あて先MACを覚える前は全ポートへ配り（フラッディング）、覚えたら該当ポートだけへ（ユニキャスト）。',
     '[[blue:VLAN＝ブロードキャストドメインの論理分割]]。別のVLANへはブロードキャストもふつうの通信も届きません。',
     'スイッチをまたいでVLANを運ぶ線がトランク、どのVLANかを見分ける付箋がタグ（IEEE802.1Q）。',
     'STPは冗長リンクのループを[[blue:論理的に1本]]に整え、ブロードキャストストームを防ぎます。',

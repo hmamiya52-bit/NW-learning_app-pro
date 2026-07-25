@@ -63,7 +63,7 @@ const routeTableFigure: PacketFlowFigure = {
       packetLabel: '宛先 172.16.0.20',
       headers: { l2: '', l3: '' },
       tableRows: R1_TABLE,
-      explanation: '業務PCは、あて先 172.16.0.20 が自分のネットワーク（192.168.10.0/24）の外と判断し、デフォルトゲートウェイのR1へ送ります。',
+      explanation: 'あて先 172.16.0.20 は自分のネットワークの外。デフォルトゲートウェイのR1へ。',
     },
     {
       focus: { type: 'node', id: 'r1' },
@@ -71,7 +71,7 @@ const routeTableFigure: PacketFlowFigure = {
       headers: { l2: '', l3: '' },
       tableRows: R1_TABLE,
       tableHighlightRow: 2,
-      explanation: 'R1はあて先IPを経路表と照合。172.16.0.0/24 の行に一致し、次ホップは R2（192.168.99.2）と分かります。',
+      explanation: 'R1が経路表と照合。172.16.0.0/24 の行に一致し、次ホップはR2と分かります。',
     },
     {
       focus: { type: 'link', a: 'r1', b: 'r2' },
@@ -79,7 +79,7 @@ const routeTableFigure: PacketFlowFigure = {
       headers: { l2: '', l3: '' },
       tableRows: R1_TABLE,
       tableHighlightRow: 2,
-      explanation: 'あて先IP（172.16.0.20）はそのまま。区間ごとに付け替わるのはL2のあて名だけで、ルータ間リンク（/30）を通ってR2へ渡ります。',
+      explanation: 'あて先IPはそのまま。区間ごとに付け替わるのはL2のあて名だけ。R2へ渡ります。',
     },
     {
       focus: { type: 'node', id: 'r2' },
@@ -87,7 +87,7 @@ const routeTableFigure: PacketFlowFigure = {
       headers: { l2: '', l3: '' },
       tableRows: R2_TABLE,
       tableHighlightRow: 0,
-      explanation: 'R2の経路表では 172.16.0.0/24 は直結。同じサーバLANの中なので、次ホップを介さず直接Webサーバへ届けます。',
+      explanation: 'R2の経路表では 172.16.0.0/24 は直結。次ホップを介さず直接届けます。',
     },
     {
       focus: { type: 'link', a: 'r2', b: 'web' },
@@ -95,7 +95,7 @@ const routeTableFigure: PacketFlowFigure = {
       headers: { l2: '', l3: '' },
       tableRows: R2_TABLE,
       tableHighlightRow: 0,
-      explanation: 'サーバLANのWebサーバ（172.16.0.20）へ到達。次ホップを1台ずつたどり、端から端まで届きました。',
+      explanation: 'Webサーバへ到達。次ホップを1台ずつたどり、端から端まで届きました。',
     },
   ],
 }
@@ -127,7 +127,7 @@ const staticRouteFigure: RecordTableFigure = {
   kind: 'record-table',
   id: 'ch7-static',
   title: 'R1に手で書いたスタティック経路',
-  caption: '管理者が宛先ごとに次ホップを手で書きます。確実な反面、変化に弱い書き方です。',
+  caption: '管理者があて先ごとに次ホップを手で書きます。確実な反面、変化に弱い書き方です。',
   takeaway: 'スタティックは確実で読みやすい反面、構成が変わるたび[[blue:手直し]]が必要。',
   rowHeader: true,
   columns: [
@@ -183,19 +183,19 @@ const ospfFigure: PacketFlowFigure = {
       focus: { type: 'link', a: 'pc', b: 'r1' },
       packetLabel: 'パケット',
       headers: { l2: '', l3: '' },
-      explanation: '業務PCがサーバ（172.16.0.20）あてを送出。R1は、サーバ側のR2へ届く2つの経路を地図から知っています。',
+      explanation: '業務PCがサーバあてを送出。R1はR2へ届く2つの経路を地図から知っています。',
     },
     {
       focus: { type: 'link', a: 'r1', b: 'r3' },
       packetLabel: 'パケット',
       headers: { l2: '', l3: '' },
-      explanation: 'R1はコストを比べ、速いR3経由（コスト10＋10＝20）を選択。直結（コスト100）より小さいコストです。まず1ホップ目。',
+      explanation: 'R1はコストを比べ、R3経由（10＋10＝20）を選択。直結の100より小さい値。',
     },
     {
       focus: { type: 'link', a: 'r3', b: 'r2' },
       packetLabel: 'パケット',
       headers: { l2: '', l3: '' },
-      explanation: '2ホップ目。ホップ数は多くても、帯域が太い経路の方がコストは小さく、OSPFはこちらを「近い」と見ます。',
+      explanation: '2ホップ目。ホップ数が多くても、帯域が太いほうをOSPFは「近い」と見ます。',
     },
     {
       focus: { type: 'link', a: 'r2', b: 'web' },
@@ -208,14 +208,14 @@ const ospfFigure: PacketFlowFigure = {
       packetLabel: 'パケット',
       headers: { l2: '', l3: '' },
       blockedLink: { a: 'r1', b: 'r3' },
-      explanation: '速い主経路（R1–R3）が切れると、OSPFが地図を更新して再計算。直結（コスト100）が新しい最短として選ばれます。',
+      explanation: '主経路が切れるとOSPFが地図を更新して再計算。直結が新しい最短に。',
     },
     {
       focus: { type: 'link', a: 'r2', b: 'web' },
       packetLabel: 'パケット',
       headers: { l2: '', l3: '' },
       blockedLink: { a: 'r1', b: 'r3' },
-      explanation: '切り替わった直結経路でも、Webサーバへ到達。冗長な経路があるので、1本切れても通信は止まりません。',
+      explanation: '切り替わった直結経路でもWebサーバへ到達。1本切れても止まりません。',
     },
   ],
 }
@@ -287,7 +287,7 @@ export const ch07Routing: TextbookChapter = {
       blocks: [
         {
           kind: 'text',
-          text: 'ルータは、あて先のネットワークごとに「どこへ渡せばよいか」をまとめた表を持ちます。これが[[blue:経路表]]（ルーティングテーブル）。出口インタフェースや種別も並びますが、読み解きの中心は[[blue:宛先プレフィックス]]と[[blue:次ホップ]]です。',
+          text: 'ルータは、あて先のネットワークごとに「どこへ渡せばよいか」をまとめた表を持ちます。これが[[blue:経路表]]（ルーティングテーブル）。出口インタフェースや種別も並びますが、読み解きの中心は[[blue:あて先プレフィックス]]と[[blue:次ホップ]]です。',
         },
         {
           kind: 'text',
@@ -315,7 +315,7 @@ export const ch07Routing: TextbookChapter = {
         },
         {
           kind: 'text',
-          text: 'このときルータは、最も具体的な行、つまり[[blue:プレフィックスが長い]]行を選びます。これが[[blue:ロンゲストマッチ]]。プレフィックスが長いほど、宛先をピンポイントで指す経路です。',
+          text: 'このときルータは、最も具体的な行、つまり[[blue:プレフィックスが長い]]行を選びます。これが[[blue:ロンゲストマッチ]]。プレフィックスが長いほど、あて先をピンポイントで指す経路です。',
         },
         { kind: 'figure', figure: longestMatchFigure },
         {
@@ -416,7 +416,7 @@ export const ch07Routing: TextbookChapter = {
           label: '設問例',
           items: [
             {
-              question: 'R1の経路表に 0.0.0.0/0、192.168.0.0/16、192.168.30.0/24 の3行があります。宛先 192.168.30.10 のパケットは、どの行に従うか。',
+              question: 'R1の経路表に 0.0.0.0/0、192.168.0.0/16、192.168.30.0/24 の3行があります。あて先 192.168.30.10 のパケットは、どの行に従うか。',
               answer: '192.168.30.0/24 の行。複数が一致したら、最長プレフィックス（ロンゲストマッチ）で決まります。',
             },
           ],

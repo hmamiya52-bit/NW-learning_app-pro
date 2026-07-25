@@ -127,13 +127,13 @@ const dnsFigure: SequenceFigure = {
       from: 'cache',
       to: 'upper',
       label: '② まずルートDNSへ',
-      note: '頂点のルートDNSに「.com の担当を教えて」と聞き、TLDの場所を得ます。ここからが反復です。上位DNSへのつなぎ方は第8章。',
+      note: 'ルートDNSに「.com の担当は」と尋ね、TLDの場所を得ます。ここからが反復。',
     },
     {
       from: 'cache',
       to: 'upper',
       label: '③ 次にTLDへ',
-      note: '.com の担当（TLD）に「example.com の担当を教えて」と聞き、権威DNSの場所を得ます。',
+      note: 'TLDに「example.com の担当は」と尋ね、権威DNSの場所を得ます。',
     },
     {
       from: 'cache',
@@ -151,7 +151,7 @@ const dnsFigure: SequenceFigure = {
       from: 'cache',
       to: 'pc',
       label: '⑥ 回答',
-      note: 'キャッシュDNSがPCへ回答します。結果はしばらく覚えるので（キャッシュ）、次に同じ名前を引くときは速いです。',
+      note: 'キャッシュDNSがPCへ回答。結果はしばらく覚えるので、次は速く返せます。',
     },
   ],
 }

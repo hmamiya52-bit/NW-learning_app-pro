@@ -304,6 +304,45 @@ const answerTable: RecordTableFigure = {
   ],
 }
 
+// §2 問題文の型（record-table）。近年の科目B-1がすべて「更改・導入・改善」の筋書きであることを受け、
+// 段落の並びと、そこで読み手が何をするかを対応づける。図でなく文章の読み方なので表が適切。
+const scenarioTable: RecordTableFigure = {
+  kind: 'record-table',
+  id: 'ch20-scenario',
+  title: '問題文の並びと、読みながらすること',
+  caption: '科目B-1の問題文は、この4つが[[blue:ほぼこの順]]で並びます。',
+  takeaway: '設問の大半は[[green:変更案]]と[[violet:確かめたいこと]]から出ます。読みながら4つを分けておくと、設問で戻る場所が決まります。',
+  rowHeader: true,
+  emphasizeKey: 'todo',
+  columns: [
+    { key: 'part', label: '段落' },
+    { key: 'what', label: 'そこに書かれること' },
+    { key: 'todo', label: '読みながらすること' },
+  ],
+  rows: [
+    {
+      part: 'いまの構成',
+      what: '機器・アドレス・経路・許可の現状',
+      todo: '図と突き合わせ、境界→経路→許可→冗長で1周する',
+    },
+    {
+      part: '困っていること',
+      what: '遅い・混む・止まる・危ない',
+      todo: '「どこが」つらいのかを1か所に絞る',
+    },
+    {
+      part: '変更案',
+      what: '足す機器・変える経路・新しい設定',
+      todo: '現状のどこが置き換わるかを図に上書きする',
+    },
+    {
+      part: '確かめたいこと',
+      what: '変更後に成り立ってほしい条件',
+      todo: '設問はほぼここから出ると構えて読む',
+    },
+  ],
+}
+
 export const ch20AfternoonReading: TextbookChapter = {
   id: 'afternoon-reading',
   order: 20,
@@ -311,7 +350,7 @@ export const ch20AfternoonReading: TextbookChapter = {
   summary:
     '最終章は総合演習です。これまでの構成図を、科目B相当の1枚として読み切ります。読む順は境界→経路→許可→冗長。外→内と内→外の2本の通信を端から端まで追い、層と境界で根拠を書く答案の型まで仕上げます。新しい技術は登場しません。全19章が道具です。',
   status: 'published',
-  estimatedMinutes: 20,
+  estimatedMinutes: 22,
   intro: [
     {
       kind: 'text',
@@ -357,6 +396,26 @@ export const ch20AfternoonReading: TextbookChapter = {
           tone: 'info',
           title: '図に無い機器は問われない合図',
           body: '本物の科目Bの構成図も、その問題に関係する機器だけを描きます。この章の全体図に無線APや認証サーバが出てこないのも同じ理屈。図に無い機器を無理に心配する必要はありません。',
+        },
+      ],
+    },
+    {
+      heading: '問題文は「いまの姿」と「変えたい姿」で読む',
+      blocks: [
+        {
+          kind: 'text',
+          text: '図の読み方と同じくらい効くのが、問題文の読み方です。近年の科目B-1は、「ルータの更改」「セキュアWebゲートウェイの導入」「ローカルブレイクアウトによる負荷軽減」のように、[[blue:何かを変える話]]で統一されています。つまり問題文には、変える前と後の2つの姿が書かれています。',
+        },
+        {
+          kind: 'text',
+          text: '書かれる順番も、だいたい決まっています。[[blue:いまの構成]]→[[amber:困っていること]]→[[green:変更案]]→[[violet:確かめたいこと]]。設問のほとんどは、うしろの2つから出ます。読みながら、この4つを分けてメモするだけで、迷いがかなり減ります。',
+        },
+        { kind: 'figure', figure: scenarioTable },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '図が2枚あれば、たいてい変更前と変更後',
+          body: '構成図が2枚並んでいたら、まず[[blue:2枚の差分]]を探します。増えた機器・消えた線・変わったアドレス。その差分こそが変更案そのもので、設問はほぼそこを突いてきます。1枚しかないときは、変更案の段落を読みながら図に上書きするつもりで読みます。',
         },
       ],
     },
@@ -448,6 +507,7 @@ export const ch20AfternoonReading: TextbookChapter = {
   ],
   takeaways: [
     '科目Bの構成図は[[blue:境界→経路→許可→冗長]]の順で読みます。型があれば初見の図にも同じ手が使えます。',
+    '問題文は[[blue:いまの構成→困っていること→変更案→確かめたいこと]]の順。設問の大半はうしろの2つから出ます。',
     '[[blue:1本の通信]]に全章の知識が乗ります。どの区間の話かを見極めれば、使う道具が決まります。',
     '境界の越え方は[[blue:変換（静的NAT）]]・[[blue:NAPT]]・[[blue:トンネル]]の3通り。どれに当たるかで、設問の狙いが読めます。',
     '答案は[[blue:層と境界]]で根拠化。「この機器はこれを見る」「ここまでは正常」で組み立てます。',

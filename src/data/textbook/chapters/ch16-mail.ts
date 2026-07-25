@@ -69,7 +69,7 @@ const mapFigure: PacketFlowFigure = {
       bubbles: ['宛先 相手メールサーバ'],
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: '境界ルータを抜けてインターネットへ。宛先は相手サーバ。',
+      explanation: '境界ルータを抜けてインターネットへ。あて先は相手サーバ。',
     },
     {
       focus: { type: 'link', a: 'inet', b: 'peer' },
@@ -110,13 +110,13 @@ const sendFigure: SequenceFigure = {
       from: 'own',
       to: 'peer',
       label: '② 相手を調べて配送',
-      note: '自社サーバが相手ドメインの受け取り窓口（MX）をDNSで調べ、その相手サーバへSMTPで配送します。',
+      note: '自社サーバが相手ドメインの窓口（MX）をDNSで調べ、そこへ配送します。',
     },
     {
       from: 'peer',
       to: 'own',
       label: '③ 受領の応答',
-      note: '相手サーバが受け取り、応答を返します。メールは相手の受信箱（メールボックス）に保存されます。',
+      note: '相手サーバが受け取って応答。メールは相手の受信箱に保存されます。',
     },
   ],
 }

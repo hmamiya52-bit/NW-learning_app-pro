@@ -288,7 +288,7 @@ export const ch04WebTlsHttp: TextbookChapter = {
         { kind: 'figure', figure: panoramaFigure },
         {
           kind: 'text',
-          text: '第1〜4章でばらばらに見えた仕組みが、ぜんぶ「1本のWebアクセス」につながりました。ここから第2部では、この通信が走る[[blue:ネットワークそのものの作り]]に踏み込みます。',
+          text: 'ここまでは、1本のWebアクセスを成り立たせる仕組みだけを見てきました。ここから第2部では、その通信が走る[[blue:ネットワークそのものの作り]]へ踏み込みます。',
         },
       ],
     },

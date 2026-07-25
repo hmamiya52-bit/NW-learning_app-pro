@@ -35,39 +35,49 @@ const statefulTopology: Topology = {
   nodes: boundaryTopology.nodes.map((n) => (n.id === 'inet' ? { ...n, sub: '社外サイト' } : n)),
 }
 
-// §1 全体図: 境界にFWが加わり、サーバLANがDMZに。三層の位置関係を orient（verdictなし）。
+// §1 全体図: 三層の位置関係を「通信の向き」で見せる。内→外は通り、外→内は通らない。
+// その非対称があるからこそ、外に見せるものだけを置く中間の区画＝DMZが要る、という順で並べる。
+// §4のDMZ図（外→DMZ可／外→内部不可／DMZ→内部不可）とは切り口を分ける。
 const overviewFigure: PacketFlowFigure = {
   kind: 'packet-flow',
   id: 'ch9-overview',
   title: '境界にファイアウォールが加わった三層の全体図',
-  caption: '公開サーバの区画＝[[amber:DMZ]]を挟んだ、[[blue:内部]]・[[amber:DMZ]]・[[slate:外部]]の三層。上が外部・下が内部です。',
-  takeaway: '第8章の[[amber:サーバLAN]]が、FW配下の[[amber:DMZ]]に。境界の[[blue:FW]]が、通す通信と止める通信を仕分けます。',
+  caption: '上が外部・下が内部の三層。[[blue:3つの向き]]を1本ずつ通して、[[blue:FW]]の仕切りを確かめます。',
+  takeaway: '内から外へは通れても、外から内へは通れません。[[blue:向き]]で扱いが変わるのが境界の基本。外に見せるものだけ[[amber:DMZ]]へ置きます。',
   topology: boundaryTopology,
   hideHeaders: true,
   steps: [
     {
+      focus: { type: 'link', a: 'pc', b: 'fw' },
+      packetLabel: '',
+      headers: { l2: '', l3: '' },
+      explanation: '内部LANの業務PCから外へ。まず境界のFWを通ります。',
+    },
+    {
+      focus: { type: 'link', a: 'br', b: 'inet' },
+      packetLabel: '',
+      headers: { l2: '', l3: '' },
+      explanation: '境界ルータを抜けてインターネットへ。内から外へは通れます。',
+    },
+    {
+      focus: { type: 'link', a: 'inet', b: 'br' },
+      packetLabel: '',
+      headers: { l2: '', l3: '' },
+      explanation: '今度は外からの通信。境界ルータを通ってFWへ届きます。',
+    },
+    {
+      focus: { type: 'link', a: 'fw', b: 'web' },
+      packetLabel: '',
+      headers: { l2: '', l3: '' },
+      explanation: 'FWが通すのはDMZ行きだけ。外に見せるための区画がDMZ。',
+    },
+    {
       focus: { type: 'node', id: 'fw' },
+      verdict: 'block',
+      blockedLink: { a: 'fw', b: 'pc' },
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: '第8章までの構成の境目にファイアウォール（FW）が加わり、通信を選別します。',
-    },
-    {
-      focus: { type: 'node', id: 'web' },
-      packetLabel: '',
-      headers: { l2: '', l3: '' },
-      explanation: '第8章のサーバLANはDMZへ。Webとメールの2台がFWの配下に並びます。',
-    },
-    {
-      focus: { type: 'node', id: 'pc' },
-      packetLabel: '',
-      headers: { l2: '', l3: '' },
-      explanation: '内部LANは、社員の業務PCが並ぶ守るべき区画。外から直接は触れさせません。',
-    },
-    {
-      focus: { type: 'node', id: 'inet' },
-      packetLabel: '',
-      headers: { l2: '', l3: '' },
-      explanation: '向きは上が外部・下が内部。FWが内部・DMZ・外部の三層を仕切る関所です。',
+      explanation: '同じ外からでも内部LANへは通しません。向きで扱いが変わります。',
     },
   ],
 }
@@ -321,7 +331,7 @@ export const ch09SecurityFwDmz: TextbookChapter = {
         },
         {
           kind: 'text',
-          text: 'そこで社内と社外の境目に[[blue:FW]]を置き、あらかじめ決めた通信だけを通します。第8章の[[amber:サーバLAN]]も、この章からは公開用の区画＝[[amber:DMZ]]としてFWの配下に置かれます。まずは新しい全体図で、三層の位置関係を確かめましょう。',
+          text: 'そこで社内と社外の境目に[[blue:FW]]を置き、あらかじめ決めた通信だけを通します。第8章の[[amber:サーバLAN]]も、この章からは公開用の区画＝[[amber:DMZ]]としてFWの配下に置かれます。まずは新しい全体図で、どの向きなら通れるのかを確かめましょう。',
         },
         { kind: 'figure', figure: overviewFigure },
         {

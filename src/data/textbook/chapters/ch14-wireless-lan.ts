@@ -153,7 +153,7 @@ const dot1xFigure: SequenceFigure = {
   id: 'ch14-dot1x',
   title: 'IEEE802.1Xによる無線LANの認証',
   caption: '端末・取り次ぎ・認証サーバの3者に、それぞれ[[blue:役割の名前]]が付きます。',
-  takeaway: 'サプリカント＝端末、オーセンティケータ＝取り次ぐAP。この[[blue:名前と機器の対応]]が午後の得点源です。',
+  takeaway: 'サプリカント＝端末、オーセンティケータ＝取り次ぐAP。この[[blue:名前と機器の対応]]が科目Bの得点源です。',
   actors: [
     { id: 'nb', label: 'ノートPC', sub: 'サプリカント', role: 'pc' },
     { id: 'ap', label: 'AP', sub: 'オーセンティケータ', role: 'ap' },
@@ -342,11 +342,11 @@ export const ch14WirelessLan: TextbookChapter = {
       ],
     },
     {
-      heading: '午後は無線設計の妥当性を読む',
+      heading: '科目Bは無線設計の妥当性を読む',
       blocks: [
         {
           kind: 'text',
-          text: '無線の午後は、[[blue:設計の妥当性]]を問うのが定番です。SSIDとVLANの対応、認証方式の選択（802.1XかPSKか）、そしてAPの配置と電波の設計が題材になります。',
+          text: '無線の科目Bは、[[blue:設計の妥当性]]を問うのが定番です。SSIDとVLANの対応、認証方式の選択（802.1XかPSKか）、そしてAPの配置と電波の設計が題材になります。',
         },
         {
           kind: 'callout',

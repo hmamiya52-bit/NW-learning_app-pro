@@ -1,7 +1,7 @@
 import type { NoteData } from './types'
 
 export const protocol_review: NoteData = {
-  summary: '復習ノート準拠。ネスペ午後で問われる主要プロトコルを2表に整理。赤字＝最重要、ネイビー＝重要。',
+  summary: '復習ノート準拠。ネスペ科目Bで問われる主要プロトコルを2表に整理。赤字＝最重要、ネイビー＝重要。',
   sections: [
     {
       heading: '下位レイヤ(L4以下)のプロトコル',

@@ -1,4 +1,4 @@
-// 午後問題の配点アクセスと整合性検証
+// 科目Bの配点アクセスと整合性検証
 //
 // scoringMap[id] は officialAnswers の answers[] と「配列の並び順」で対応している
 // （AnswerInputTable の rowIndex がそのまま両者の添字になる）。
@@ -23,7 +23,7 @@ export function getRowScores(problemId: string): RowScore[] {
 /**
  * scoringMap と officialAnswers の整合性を検証する。
  * - 配点行数が解答行数と一致するか（並び順のズレ検知）
- * - 正解点の合計が満点（午後Ⅰ:50 / 午後Ⅱ:100）と一致するか
+ * - 正解点の合計が満点（科目B-1:50 / 科目B-2:100）と一致するか
  */
 export function validateScoringMap(): ScoringIssue[] {
   const issues: ScoringIssue[] = []

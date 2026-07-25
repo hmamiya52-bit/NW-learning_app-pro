@@ -254,11 +254,11 @@ export const ch16Mail: TextbookChapter = {
       ],
     },
     {
-      heading: '午後は経路と配置、そして認証を読む',
+      heading: '科目Bは経路と配置、そして認証を読む',
       blocks: [
         {
           kind: 'text',
-          text: '午後では、メールサーバの[[blue:DMZ配置]]、送信（SMTP）と受信（IMAP／POP）の[[blue:経路の違い]]、そして[[blue:送信ドメイン認証]]の役割分担がよく問われます。とくにSPF・DKIM・DMARCは、どれが何を確かめるかを取り違えないことが大切です。',
+          text: '科目Bでは、メールサーバの[[blue:DMZ配置]]、送信（SMTP）と受信（IMAP／POP）の[[blue:経路の違い]]、そして[[blue:送信ドメイン認証]]の役割分担がよく問われます。とくにSPF・DKIM・DMARCは、どれが何を確かめるかを取り違えないことが大切です。',
         },
         {
           kind: 'check',

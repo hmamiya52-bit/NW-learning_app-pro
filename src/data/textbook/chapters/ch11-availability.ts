@@ -180,13 +180,13 @@ const updateFigure: TimelineFigure = {
   ],
 }
 
-// §5 午後: どこを・どう冗長化するかの一覧。対策列を強調。
+// §5 科目B: どこを・どう冗長化するかの一覧。対策列を強調。
 const summaryTable: RecordTableFigure = {
   kind: 'record-table',
   id: 'ch11-summary',
   title: 'どこを・どう冗長化するか',
   caption: '主要な箇所ごとに、[[red:単一だと止まる]]理由と、[[blue:冗長化の方法]]を対応させます。',
-  takeaway: '午後では、まず[[red:SPOF]]を指摘し、[[blue:VRRP・LAG・複数経路・LB]]のどれで守るかを答えます。',
+  takeaway: '科目Bでは、まず[[red:SPOF]]を指摘し、[[blue:VRRP・LAG・複数経路・LB]]のどれで守るかを答えます。',
   rowHeader: true,
   emphasizeKey: 'how',
   columns: [
@@ -302,11 +302,11 @@ export const ch11Availability: TextbookChapter = {
       ],
     },
     {
-      heading: '午後はSPOFと切替を見る',
+      heading: '科目BはSPOFと切替を見る',
       blocks: [
         {
           kind: 'text',
-          text: '午後では、構成図を見て「どこが[[red:単一障害点]]か」を指摘させたり、「故障時にどう[[blue:切替わる]]か（VRRPの仕組み）」「切替にかかる[[blue:時間]]」を問うたりします。まずSPOFを探し、その対策を対応づけるのがコツです。',
+          text: '科目Bでは、構成図を見て「どこが[[red:単一障害点]]か」を指摘させたり、「故障時にどう[[blue:切替わる]]か（VRRPの仕組み）」「切替にかかる[[blue:時間]]」を問うたりします。まずSPOFを探し、その対策を対応づけるのがコツです。',
         },
         { kind: 'figure', figure: summaryTable },
         {

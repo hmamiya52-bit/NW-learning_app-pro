@@ -1,6 +1,6 @@
-// 分野（カテゴリ）と「午後問題キーワード」「教科書の章」の対応表
+// 分野（カテゴリ）と「科目Bのキーワード」「教科書の章」の対応表
 //
-// 午後Ⅰの頻出度は、この表を使って afternoonProblems の keywords から集計する。
+// 科目B-1の頻出度は、この表を使って afternoonProblems の keywords から集計する。
 // キーワードを直接カテゴリIDに持たせていないのは、1つのキーワードが複数分野にまたがる
 // （例: 「冗長化」は VRRP と LB の双方が主役になる）ため。
 //
@@ -36,7 +36,7 @@ export const categoryFocus: CategoryFocus[] = [
   { categoryId: 'ipv6', afternoonKeywords: ['IPv6', 'NAT・IPv6移行'], textbookChapterId: 'ipv6' },
   { categoryId: 'proxy', afternoonKeywords: ['ゼロトラスト・SWG'], textbookChapterId: 'lb-proxy-cdn' },
   { categoryId: 'network-mgmt', afternoonKeywords: ['運用管理・監視'], textbookChapterId: 'operations' },
-  // 直前確認用のまとめ。午後の特定分野に対応しない
+  // 直前確認用のまとめ。科目Bの特定分野に対応しない
   { categoryId: 'protocol-review', afternoonKeywords: [], textbookChapterId: 'tcp-udp-port' },
   { categoryId: 'iot', afternoonKeywords: ['IoT'] },
 ]

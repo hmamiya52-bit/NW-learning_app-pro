@@ -117,8 +117,8 @@ const MENU_CARDS: MenuCard[] = [
   },
   {
     to: '/afternoon',
-    title: '午後問題演習補助',
-    desktopTitle: '午後問題演習補助ツール',
+    title: '科目B演習補助',
+    desktopTitle: '科目B演習補助ツール',
     description: '問題一覧・過去問トラッカー',
     iconBg: 'bg-indigo-50',
     icon: <IconClipboard className="w-6 h-6 text-indigo-600" />,
@@ -137,7 +137,7 @@ const OTHER_CARDS: MenuCard[] = [
   {
     to: '/analysis',
     title: '分野別 弱点分析',
-    description: '午後Ⅰ頻出×正答率で優先度',
+    description: '科目B-1頻出×正答率で優先度',
     iconBg: 'bg-orange-50',
     icon: <Target className="w-6 h-6 text-orange-600" />,
   },

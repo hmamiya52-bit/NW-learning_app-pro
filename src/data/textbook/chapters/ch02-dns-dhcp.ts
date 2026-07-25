@@ -257,11 +257,11 @@ export const ch02DnsDhcp: TextbookChapter = {
       ],
     },
     {
-      heading: '午後問題では「どの準備でつまずいたか」を切り分ける',
+      heading: '科目Bでは「どの準備でつまずいたか」を切り分ける',
       blocks: [
         {
           kind: 'text',
-          text: 'ネスペ午後では、DNSとDHCPは「つながらない」の切り分けでよく問われます。どの準備で止まっているのかを見分けるのが第一歩です。',
+          text: 'ネスペ科目Bでは、DNSとDHCPは「つながらない」の切り分けでよく問われます。どの準備で止まっているのかを見分けるのが第一歩です。',
         },
         {
           kind: 'callout',

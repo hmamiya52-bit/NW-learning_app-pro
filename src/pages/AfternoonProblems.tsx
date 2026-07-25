@@ -696,7 +696,7 @@ export default function AfternoonProblems() {
         {/* Header */}
         <section>
           <div className="rounded-xl bg-indigo-700 text-white px-4 py-3 shadow-md">
-            <h1 className="text-base font-black leading-snug">午後問題演習補助ツール</h1>
+            <h1 className="text-base font-black leading-snug">科目B演習補助ツール</h1>
             <p className="text-xs text-indigo-200 mt-0.5 whitespace-nowrap">
               H25〜R7 全{totalProblems}問（午後Ⅰ / 午後Ⅱ）
               <span className="mx-1.5 opacity-50">|</span>
@@ -811,7 +811,7 @@ export default function AfternoonProblems() {
           問題をタップで、記録・解答欄・公式解答・PDFを確認
         </p>
 
-        {/* 午後Ⅰ テーブル */}
+        {/* 科目B-1 テーブル */}
         <ProblemTable
           section="G1"
           rows={g1Filtered}
@@ -824,7 +824,7 @@ export default function AfternoonProblems() {
           onPlanChange={handlePlanChange}
         />
 
-        {/* 午後Ⅱ テーブル */}
+        {/* 科目B-2 テーブル */}
         <ProblemTable
           section="G2"
           rows={g2Filtered}

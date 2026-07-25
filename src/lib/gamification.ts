@@ -153,7 +153,7 @@ function countMasteredCategories(threshold: number): number {
   return count
 }
 
-/** 午後問題関連バッジの判定材料を集約 */
+/** 科目B関連バッジの判定材料を集約 */
 function computeAfternoonStats() {
   const records = loadRecords()
   const total = records.length
@@ -200,7 +200,7 @@ function checkBadges(
   const masterCategoryCount = countMasteredCategories(0.8)
   const totalCategories = categories.length
 
-  // 午後問題演習統計
+  // 科目B演習統計
   const afternoonStats = computeAfternoonStats()
 
   for (const badge of BADGES) {
@@ -238,7 +238,7 @@ function checkBadges(
       case 'category-1': unlocked = masterCategoryCount >= 1; break
       case 'category-2': unlocked = masterCategoryCount >= 7; break
       case 'category-4': unlocked = masterCategoryCount >= totalCategories; break
-      // 午後問題演習
+      // 科目B演習
       case 'afternoon-1': unlocked = afternoonStats.total >= 3; break
       case 'afternoon-2': unlocked = afternoonStats.total >= 30; break
       case 'afternoon-3': unlocked = afternoonStats.g1Over40 >= 10; break
@@ -335,7 +335,7 @@ export function recordGamificationAnswer(event: AnswerEvent): AnswerGamification
 }
 
 /**
- * 午後問題演習の結果に応じて XP を付与し、関連バッジを判定する。
+ * 科目B演習の結果に応じて XP を付与し、関連バッジを判定する。
  * @returns 付与した XP、解放されたバッジ、レベル情報
  */
 export function recordAfternoonXp(section: 'G1' | 'G2', score: number): AfternoonGamificationResult {
@@ -360,7 +360,7 @@ export function recordAfternoonXp(section: 'G1' | 'G2', score: number): Afternoo
     xp: state.xp + xp,
   }
 
-  // バッジ判定（午後系を含む全バッジを評価）
+  // バッジ判定（科目B系を含む全バッジを評価）
   const newBadges = checkBadges(newState, alreadyUnlocked)
   if (newBadges.length > 0) {
     newState.unlockedBadgeIds = [

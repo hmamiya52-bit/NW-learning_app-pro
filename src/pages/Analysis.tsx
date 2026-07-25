@@ -6,7 +6,7 @@ import { buildCategoryAnalysis, priorityReason, type CategoryAnalysis } from '..
 // 部品
 // ----------------------------------------------------------------
 
-/** 午後Ⅰ出題数のバー（最大 7問 を全幅とする） */
+/** 科目B-1 出題数のバー（最大 7問 を全幅とする） */
 function FrequencyBar({ count, max }: { count: number; max: number }) {
   const pct = max > 0 ? (count / max) * 100 : 0
   return (
@@ -15,7 +15,7 @@ function FrequencyBar({ count, max }: { count: number; max: number }) {
         <div className="h-full rounded-full bg-indigo-500" style={{ width: `${pct}%` }} />
       </div>
       <span className="text-[10px] text-slate-500 tabular-nums whitespace-nowrap">
-        午後Ⅰ {count}問
+        科目B-1 {count}問
       </span>
     </div>
   )
@@ -117,7 +117,7 @@ export default function Analysis() {
 
   const maxG1 = useMemo(() => Math.max(1, ...rows.map((r) => r.g1Count)), [rows])
 
-  // 午後Ⅰでの出題実績がある分野＝優先度ランキングの対象
+  // 科目B-1 での出題実績がある分野＝優先度ランキングの対象
   const ranked = rows.filter((r) => r.g1Count > 0)
   const others = rows.filter((r) => r.g1Count === 0)
 
@@ -146,7 +146,7 @@ export default function Analysis() {
         {/* 概要 */}
         <div className="bg-white rounded-xl border border-slate-200 px-4 py-3 space-y-2">
           <p className="text-[11px] text-slate-500 leading-relaxed">
-            午後Ⅰでの出題数と、あなたの正答率から復習の優先度を出しています。
+            科目B-1での出題数と、あなたの正答率から復習の優先度を出しています。
             <span className="font-bold text-slate-700">よく出るのに正答率が低い分野</span>ほど上位です。
           </p>
           <div className="flex items-center gap-4 pt-1 border-t border-slate-100">
@@ -169,7 +169,7 @@ export default function Analysis() {
           <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
             <p className="text-[11px] text-amber-800 leading-relaxed">
               まだ問題を解いていないため、正答率は反映されていません。
-              現在は午後Ⅰでの出題数の多い順に並んでいます。
+              現在は科目B-1での出題数の多い順に並んでいます。
             </p>
           </div>
         )}
@@ -197,7 +197,7 @@ export default function Analysis() {
         )}
 
         <p className="text-[10px] text-slate-400 leading-relaxed px-1">
-          午後Ⅰの出題数は、このアプリに収録している過去問（H25〜R7）のキーワードから集計しています。
+          科目B-1（旧 午後Ⅰ）の出題数は、このアプリに収録している過去問（H25〜R7）のキーワードから集計しています。
         </p>
 
       </div>

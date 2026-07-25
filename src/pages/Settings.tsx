@@ -84,7 +84,7 @@ export default function Settings() {
               <StatCell label="総合正答率" value={`${overallRate}%`} highlight />
               <StatCell label="学習済みカテゴリ" value={`${completedCategories} / ${categories.length}`} />
               <StatCell label="セッション数" value={`${sessions.length} 回`} />
-              <StatCell label="午後問題演習回数" value={`${afternoonRecords.length} 回`} />
+              <StatCell label="科目B演習回数" value={`${afternoonRecords.length} 回`} />
             </div>
           </div>
         </section>

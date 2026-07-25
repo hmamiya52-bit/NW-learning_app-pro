@@ -1,7 +1,7 @@
 import type { PacketFlowFigure, RecordTableFigure, TextbookChapter, Topology } from '../types'
 
 // 第9章 セキュリティ境界・ファイアウォール・DMZ。第8章で外とつながった次は「誰を通し誰を止めるか」。
-// FWの許可条件（5つの情報＝第3章）→ ステートフル → DMZ。ネスペ午後の最重要構造＝境界。
+// FWの許可条件（5つの情報＝第3章）→ ステートフル → DMZ。ネスペ科目Bの最重要構造＝境界。
 // 三層トポロジ（内部/DMZ/外部）を章全体で使い回し、節ごとに通す/止める通信を旅させる。
 
 // 章全体で共有する三層構成図（三方向FW）。上=外部・下=内部。列は zone 初出順に 左=DMZ・右=内部LAN。
@@ -281,12 +281,12 @@ const dmzFigure: PacketFlowFigure = {
   ],
 }
 
-// §5 通信可否の根拠表（午後の道具）。可否を強調、通信を見出しに。
+// §5 通信可否の根拠表（科目Bの道具）。可否を強調、通信を見出しに。
 const reachabilityFigure: RecordTableFigure = {
   kind: 'record-table',
   id: 'ch9-reachability',
-  title: '通信可否の読み方（午後の道具）',
-  caption: '午後の[[blue:通信可否]]は、まず[[blue:向き]]を見て、根拠のルールを探します。',
+  title: '通信可否の読み方（科目Bの道具）',
+  caption: '科目Bの[[blue:通信可否]]は、まず[[blue:向き]]を見て、根拠のルールを探します。',
   takeaway: '[[green:可]]は根拠ルール、[[red:不可]]は既定の拒否。[[blue:理由]]まで言えると得点になります。',
   rowHeader: true,
   emphasizeKey: 'ok',
@@ -308,7 +308,7 @@ export const ch09SecurityFwDmz: TextbookChapter = {
   order: 9,
   title: 'セキュリティ境界・ファイアウォール・DMZ',
   summary:
-    'ファイアウォールの許可ルールとデフォルトdeny、行きを覚えて戻りを通すステートフル、公開サーバを隔離するDMZまで、ネスペ午後で最も問われる「境界」を、三層の構成図で読み解きます。',
+    'ファイアウォールの許可ルールとデフォルトdeny、行きを覚えて戻りを通すステートフル、公開サーバを隔離するDMZまで、ネスペ科目Bで最も問われる「境界」を、三層の構成図で読み解きます。',
   status: 'published',
   estimatedMinutes: 18,
   intro: [
@@ -318,7 +318,7 @@ export const ch09SecurityFwDmz: TextbookChapter = {
     },
     {
       kind: 'text',
-      text: 'そこで境界に置くのが[[blue:ファイアウォール（FW）]]。「[[blue:誰を通し、誰を止めるか]]」を見張る関所です。この章では、FWが許可を決める[[blue:ルール]]（第3章の[[blue:通信を見分ける情報]]が効きます）、行きを覚えて戻りを通す[[blue:ステートフル]]、公開サーバを隔離する[[blue:DMZ]]と、ネスペ午後で最も問われる[[blue:境界]]を読み解きます。',
+      text: 'そこで境界に置くのが[[blue:ファイアウォール（FW）]]。「[[blue:誰を通し、誰を止めるか]]」を見張る関所です。この章では、FWが許可を決める[[blue:ルール]]（第3章の[[blue:通信を見分ける情報]]が効きます）、行きを覚えて戻りを通す[[blue:ステートフル]]、公開サーバを隔離する[[blue:DMZ]]と、ネスペ科目Bで最も問われる[[blue:境界]]を読み解きます。',
     },
   ],
   sections: [
@@ -363,7 +363,7 @@ export const ch09SecurityFwDmz: TextbookChapter = {
           kind: 'callout',
           tone: 'tip',
           title: '上から順・最後は拒否',
-          body: 'ルールは上から順に照合し、[[blue:最初に一致した行]]で決まります。一致が無ければ最後の[[red:デフォルトdeny]]。午後では「どのルールで通ったか／なぜ止まったか」を、根拠づけて答えます。',
+          body: 'ルールは上から順に照合し、[[blue:最初に一致した行]]で決まります。一致が無ければ最後の[[red:デフォルトdeny]]。科目Bでは「どのルールで通ったか／なぜ止まったか」を、根拠づけて答えます。',
         },
       ],
     },
@@ -408,11 +408,11 @@ export const ch09SecurityFwDmz: TextbookChapter = {
       ],
     },
     {
-      heading: '午後は「通信可否の根拠」を問う',
+      heading: '科目Bは「通信可否の根拠」を問う',
       blocks: [
         {
           kind: 'text',
-          text: '午後問題では、構成図とFWのルールを見て「この通信は通るか、通らないか」を[[blue:根拠つき]]で答えさせます。ネスペ午後で最も多い問われ方の一つです。',
+          text: '科目Bでは、構成図とFWのルールを見て「この通信は通るか、通らないか」を[[blue:根拠つき]]で答えさせます。ネスペ科目Bで最も多い問われ方の一つです。',
         },
         {
           kind: 'text',

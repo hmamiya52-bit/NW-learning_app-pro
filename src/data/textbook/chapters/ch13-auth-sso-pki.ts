@@ -233,7 +233,7 @@ export const ch13AuthSsoPki: TextbookChapter = {
         { kind: 'figure', figure: authAuthzTable },
         {
           kind: 'text',
-          text: '順番も決まっています。誰か分からない相手に権限は選べないので、必ず[[blue:認証]]が先、[[violet:認可]]が後。午後の記述でも、この2語の使い分けが問われます。',
+          text: '順番も決まっています。誰か分からない相手に権限は選べないので、必ず[[blue:認証]]が先、[[violet:認可]]が後。科目Bの記述でも、この2語の使い分けが問われます。',
         },
         {
           kind: 'callout',
@@ -317,11 +317,11 @@ export const ch13AuthSsoPki: TextbookChapter = {
       ],
     },
     {
-      heading: '午後は認証の流れと証明書の管理を問う',
+      heading: '科目Bは認証の流れと証明書の管理を問う',
       blocks: [
         {
           kind: 'text',
-          text: '午後の認証問題は、[[blue:誰が・どこを経て・どこへ問い合わせるか]]の流れを、構成図の上で追わせるのが定番です。RADIUSなら、取り次ぐ機器と認証サーバの位置を図から読み取り、通信の順番を答えます。',
+          text: '科目Bの認証問題は、[[blue:誰が・どこを経て・どこへ問い合わせるか]]の流れを、構成図の上で追わせるのが定番です。RADIUSなら、取り次ぐ機器と認証サーバの位置を図から読み取り、通信の順番を答えます。',
         },
         {
           kind: 'check',

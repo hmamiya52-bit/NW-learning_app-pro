@@ -15,7 +15,7 @@ const SCREENSHOT_GUIDES: ScreenshotGuide[] = [
     alt: 'トップページの学習メニューとカテゴリ一覧',
     points: [
       'カテゴリ一覧から分野別の問題演習を開始します。',
-      '学習メニューからノート、コラム、午後問題演習補助へ移動できます。',
+      '学習メニューからノート、コラム、科目B演習補助へ移動できます。',
       '学習履歴で最近の取り組みを確認できます。',
     ],
   },
@@ -42,19 +42,19 @@ const SCREENSHOT_GUIDES: ScreenshotGuide[] = [
     ],
   },
   {
-    title: '午後問題演習補助',
+    title: '科目B演習補助',
     image: '/how-to-use/afternoon-desktop.png',
-    alt: '午後問題演習補助の問題一覧',
+    alt: '科目B演習補助の問題一覧',
     points: [
       '年度、問、テーマ、最高点、実施日を一覧で確認します。',
       '行を選ぶと、点数記録や解答欄モードへ進めます。',
-      '午後問題は点数の推移を見ながら周回します。',
+      '科目Bの問題は点数の推移を見ながら周回します。',
     ],
   },
   {
-    title: '午後問題の解答欄モード',
+    title: '科目Bの解答欄モード',
     image: '/how-to-use/afternoon-answer-mode.png',
-    alt: '午後問題の解答欄モードで答え合わせしている画面',
+    alt: '科目Bの解答欄モードで答え合わせしている画面',
     points: [
       '解答欄に自分の答えを入力し、すぐに答え合わせできます。',
       '○、△、×で自己採点すると、推定スコアが表示されます。',
@@ -134,7 +134,7 @@ export default function HowToUse() {
               アプリの使い方
             </h1>
             <p className="mt-3 text-sm leading-relaxed text-slate-600 sm:text-base">
-              このアプリは、ネットワークスペシャリスト試験の知識整理、問題演習、午後問題の記録・計画を一元的に行うための学習アプリです。ここでは、各機能の画面と使い方について説明します。ご自身の学習状況に合わせて各機能を使い分けてください。
+              このアプリは、ネットワークスペシャリスト試験の知識整理、問題演習、科目Bの記録・計画を一元的に行うための学習アプリです。ここでは、各機能の画面と使い方について説明します。ご自身の学習状況に合わせて各機能を使い分けてください。
             </p>
           </div>
         </div>
@@ -157,7 +157,7 @@ export default function HowToUse() {
               <p className="mt-1 text-sm leading-relaxed text-slate-600">4択から始め、慣れたら記述モードで確認します。</p>
             </div>
             <div>
-              <p className="text-sm font-bold text-slate-900">午後問題を伸ばしたい</p>
+              <p className="text-sm font-bold text-slate-900">科目Bを伸ばしたい</p>
               <p className="mt-1 text-sm leading-relaxed text-slate-600">解答欄モードで書き、点数記録で周回状況を残します。</p>
             </div>
           </div>

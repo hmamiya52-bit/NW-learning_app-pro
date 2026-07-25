@@ -108,7 +108,7 @@ const wanTable: RecordTableFigure = {
   ],
 }
 
-// §4 午後: トンネルの外側と内側（record-table 再利用）。
+// §4 科目B: トンネルの外側と内側（record-table 再利用）。
 const insideOutsideTable: RecordTableFigure = {
   kind: 'record-table',
   id: 'ch12-inout',
@@ -208,11 +208,11 @@ export const ch12VpnWanSdwan: TextbookChapter = {
       ],
     },
     {
-      heading: '午後は暗号区間と両端を問う',
+      heading: '科目Bは暗号区間と両端を問う',
       blocks: [
         {
           kind: 'text',
-          text: '午後では、VPNの[[blue:トンネルの両端]]（どのルータからどのルータまでか）、[[blue:暗号化される区間]]、そして送信元・あて先が外側と内側でどうなるかが問われます。ここで効くのが、外側と内側の区別です。',
+          text: '科目Bでは、VPNの[[blue:トンネルの両端]]（どのルータからどのルータまでか）、[[blue:暗号化される区間]]、そして送信元・あて先が外側と内側でどうなるかが問われます。ここで効くのが、外側と内側の区別です。',
         },
         { kind: 'figure', figure: insideOutsideTable },
         {

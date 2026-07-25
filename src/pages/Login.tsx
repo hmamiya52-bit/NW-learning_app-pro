@@ -232,9 +232,9 @@ export default function Login() {
               <span>こんな方におすすめ</span>
             </h2>
             <ul className="text-[12px] text-slate-600 leading-relaxed space-y-1 list-disc ml-5">
-              <li>ネスペ午後対策の基礎固めをしたい方</li>
+              <li>ネスペ科目B対策の基礎固めをしたい方</li>
               <li>スキマ時間でネットワークの重要キーワードを反復したい方</li>
-              <li>午後問題の学習進捗管理を一元化したい方</li>
+              <li>科目Bの学習進捗管理を一元化したい方</li>
             </ul>
           </section>
 
@@ -260,7 +260,7 @@ export default function Login() {
                 </span>
                 <span className="flex-1 min-w-0">
                   <strong className="text-slate-800">問題演習</strong>：
-                  4 択／記述の 2 モード。午後問題を解くための基礎知識を固めることが可能。
+                  4 択／記述の 2 モード。科目Bを解くための基礎知識を固めることが可能。
                 </span>
               </li>
               <li className="flex items-start gap-2.5">
@@ -268,8 +268,8 @@ export default function Login() {
                   <IconAfternoon className="w-4 h-4 text-indigo-600" />
                 </span>
                 <span className="flex-1 min-w-0">
-                  <strong className="text-slate-800">午後問題演習補助</strong>：
-                  午後問演習の学習計画、採点、記録を効率的に行えるようにサポート。
+                  <strong className="text-slate-800">科目B演習補助</strong>：
+                  科目B演習の学習計画、採点、記録を効率的に行えるようにサポート。
                 </span>
               </li>
             </ul>

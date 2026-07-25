@@ -395,7 +395,7 @@ export default function DeviceSync() {
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-sm">
                 <Info label="XP更新" value={`${result.newEventCount}件`} />
-                <Info label="午後記録" value={`${result.addedAfternoonRecordCount}件`} />
+                <Info label="科目B記録" value={`${result.addedAfternoonRecordCount}件`} />
                 <Info label="追加XP" value={`${result.addedXp.toLocaleString()} XP`} />
                 <Info label="勲章" value={`${result.addedBadgeCount}個`} />
               </div>
@@ -506,13 +506,13 @@ function UsageGuide({
             <div className="rounded-lg bg-white border border-blue-100 px-3 py-2">
               <h2 className="font-bold text-slate-900 mb-1">同期される記録</h2>
               <p className="text-xs leading-relaxed">
-                問題の正解記録、午後問題の点数記録、日別XP、経験値、勲章
+                問題の正解記録、科目Bの点数記録、日別XP、経験値、勲章
               </p>
             </div>
             <div className="rounded-lg bg-white border border-blue-100 px-3 py-2">
               <h2 className="font-bold text-slate-900 mb-1">同期しない記録</h2>
               <p className="text-xs leading-relaxed">
-                ノート理解度、午後問題の次回計画日、午後問題の解答欄、ログイン状態、画面の開閉状態
+                ノート理解度、科目Bの次回計画日、科目Bの解答欄、ログイン状態、画面の開閉状態
               </p>
             </div>
           </div>
@@ -757,7 +757,7 @@ function GeneratedSyncData({
       <div className="grid grid-cols-5 gap-1.5 sm:gap-2 text-sm">
         <Info label="イベント" value={`${summary.eventCount}件`} />
         <Info label="問題記録" value={`${summary.answerRecordCount}件`} />
-        <Info label="午後記録" value={`${summary.afternoonRecordCount}件`} />
+        <Info label="科目B記録" value={`${summary.afternoonRecordCount}件`} />
         <Info label="日別XP" value={`${summary.dailyXpDayCount}日`} />
         <Info label="XP" value={`${summary.xpTotalInPayload.toLocaleString()}`} />
       </div>

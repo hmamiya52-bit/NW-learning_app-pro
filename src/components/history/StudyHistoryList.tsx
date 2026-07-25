@@ -24,7 +24,7 @@ function buildSummaryText(day: DaySummary): string {
   const badgeCount = day.events.filter(e => e.type === 'badge-unlock').length
   const noteCount = day.events.filter(e => e.type === 'note-check').length
   if (totalQs > 0) parts.push(`クイズ${totalQs}問`)
-  if (afternoonCount > 0) parts.push(`午後${afternoonCount}回`)
+  if (afternoonCount > 0) parts.push(`科目B${afternoonCount}回`)
   if (badgeCount > 0) parts.push(`バッジ${badgeCount}個`)
   if (noteCount > 0) parts.push(`ノート${noteCount}項目`)
   if ((day.syncedOnlyXp ?? 0) > 0) parts.push(`同期XP +${day.syncedOnlyXp}XP`)

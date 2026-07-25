@@ -220,11 +220,11 @@ export const ch17VirtualizationCloud: TextbookChapter = {
       ],
     },
     {
-      heading: '午後はクラウド接続とオーバーレイを問う',
+      heading: '科目Bはクラウド接続とオーバーレイを問う',
       blocks: [
         {
           kind: 'text',
-          text: '午後では、拠点と[[blue:クラウドの接続]]、[[violet:オーバーレイ]]（VXLAN）で何がどう運ばれるか、[[emerald:VPC]]と拠点のアドレス設計が問われます。とくに、VXLANで運ばれるとき「外側のIPは出入口どうし、中身は元のフレーム」という二重の構造を読み解けるかが要点です。',
+          text: '科目Bでは、拠点と[[blue:クラウドの接続]]、[[violet:オーバーレイ]]（VXLAN）で何がどう運ばれるか、[[emerald:VPC]]と拠点のアドレス設計が問われます。とくに、VXLANで運ばれるとき「外側のIPは出入口どうし、中身は元のフレーム」という二重の構造を読み解けるかが要点です。',
         },
         {
           kind: 'check',

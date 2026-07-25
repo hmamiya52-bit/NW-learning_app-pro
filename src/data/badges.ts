@@ -13,7 +13,7 @@ export type BadgeCategory =
   | 'coverage'    // 踏破率
   | 'mastery'     // 習熟
   | 'category'    // カテゴリ制覇
-  | 'afternoon'   // 午後問題演習
+  | 'afternoon'   // 科目B演習
   | 'complete'    // コンプリート
 
 export interface BadgeDefinition {
@@ -370,74 +370,74 @@ export const BADGES: BadgeDefinition[] = [
     hideConditionUntilUnlock: true,
   },
 
-  // ── 📝 午後問題演習 (5枚 / 取得前は条件を「？？？」表示) ────────────────────────────────────────
+  // ── 📝 科目B演習 (5枚 / 取得前は条件を「？？？」表示) ────────────────────────────────────────
   {
     id: 'afternoon-1',
     name: '勇猛果敢',
-    description: '午後問題演習を3回実施',
+    description: '科目B演習を3回実施',
     category: 'afternoon',
     iconName: 'Flame',
     gradient: 'from-teal-400 to-cyan-600',
     shadowColor: 'shadow-teal-500/50',
     tier: 'bronze',
     xpBonus: 300,
-    condition: '午後問題演習を3回実施',
+    condition: '科目B演習を3回実施',
     conditionValue: 3,
     hideConditionUntilUnlock: true,
   },
   {
     id: 'afternoon-2',
     name: '不撓不屈',
-    description: '午後問題演習を30回実施',
+    description: '科目B演習を30回実施',
     category: 'afternoon',
     iconName: 'BookMarked',
     gradient: 'from-teal-500 to-emerald-700',
     shadowColor: 'shadow-teal-600/60',
     tier: 'silver',
     xpBonus: 1000,
-    condition: '午後問題演習を30回実施',
+    condition: '科目B演習を30回実施',
     conditionValue: 30,
     hideConditionUntilUnlock: true,
   },
   {
     id: 'afternoon-3',
     name: '天衣無縫',
-    description: '午後Ⅰで40点以上を10回取得',
+    description: '科目B-1で40点以上を10回取得',
     category: 'afternoon',
     iconName: 'Star',
     gradient: 'from-blue-400 to-indigo-600',
     shadowColor: 'shadow-blue-500/60',
     tier: 'gold',
     xpBonus: 1500,
-    condition: '午後Ⅰで40点以上を10回取得',
+    condition: '科目B-1で40点以上を10回取得',
     conditionValue: 10,
     hideConditionUntilUnlock: true,
   },
   {
     id: 'afternoon-4',
     name: '気炎万丈',
-    description: '午後Ⅱで80点以上を5回取得',
+    description: '科目B-2で80点以上を5回取得',
     category: 'afternoon',
     iconName: 'Trophy',
     gradient: 'from-purple-400 to-fuchsia-600',
     shadowColor: 'shadow-purple-500/60',
     tier: 'gold',
     xpBonus: 2000,
-    condition: '午後Ⅱで80点以上を5回取得',
+    condition: '科目B-2で80点以上を5回取得',
     conditionValue: 5,
     hideConditionUntilUnlock: true,
   },
   {
     id: 'afternoon-5',
     name: '万里一空',
-    description: '全午後問題で6割以上を取得（午後Ⅰ30点・午後Ⅱ60点）',
+    description: '科目B全問で6割以上を取得（科目B-1は30点・科目B-2は60点）',
     category: 'afternoon',
     iconName: 'Crown',
     gradient: 'from-amber-300 via-orange-400 to-rose-500',
     shadowColor: 'shadow-orange-500/70',
     tier: 'legendary',
     xpBonus: 4000,
-    condition: '全午後問題で6割以上を取得（午後Ⅰ30点・午後Ⅱ60点）',
+    condition: '科目B全問で6割以上を取得（科目B-1は30点・科目B-2は60点）',
     conditionValue: 0,
     hideConditionUntilUnlock: true,
   },
@@ -467,7 +467,7 @@ export const BADGE_CATEGORY_LABELS: Record<BadgeCategory, string> = {
   coverage: '踏破率',
   mastery: '習熟',
   category: 'カテゴリ制覇',
-  afternoon: '午後問題演習',
+  afternoon: '科目B演習',
   complete: 'コンプリート',
 }
 

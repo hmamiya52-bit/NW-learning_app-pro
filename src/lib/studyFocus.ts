@@ -1,7 +1,7 @@
 // 分野別の弱点分析
 //
-// 「午後Ⅰでよく出るのに、自分の正答率が低い分野」を優先度として算出する。
-// 午後Ⅰの出題数は内蔵過去問（afternoonProblems）のキーワードから集計するため、
+// 「科目B-1でよく出るのに、自分の正答率が低い分野」を優先度として算出する。
+// 科目B-1の出題数は内蔵過去問（afternoonProblems）のキーワードから集計するため、
 // 過去問データを追加すれば頻出度も自動で更新される。
 
 import { categories } from '../data/categories'
@@ -14,9 +14,9 @@ import type { UserProgress } from '../types'
 export interface CategoryAnalysis {
   categoryId: string
   name: string
-  /** 午後Ⅰでの出題数 */
+  /** 科目B-1での出題数 */
   g1Count: number
-  /** 午後Ⅰ＋午後Ⅱの出題数 */
+  /** 科目B-1＋科目B-2の出題数 */
   totalCount: number
   /** アプリ内の問題数 */
   questionCount: number
@@ -29,7 +29,7 @@ export interface CategoryAnalysis {
   textbookChapterId?: string
 }
 
-/** キーワードのいずれかを含む午後問題を数える */
+/** キーワードのいずれかを含む科目Bの問題を数える */
 function countProblems(keywords: string[], section?: 'G1'): number {
   if (keywords.length === 0) return 0
   return afternoonProblems.filter(
@@ -71,15 +71,15 @@ export function buildCategoryAnalysis(
     }
   })
 
-  // 優先度降順。同点なら午後Ⅰ出題数が多い方を先に
+  // 優先度降順。同点なら科目B-1の出題数が多い方を先に
   return rows.sort((a, b) => b.priority - a.priority || b.g1Count - a.g1Count)
 }
 
 /** その分野を優先すべき理由を短く説明する */
 export function priorityReason(row: CategoryAnalysis): string {
-  if (row.g1Count === 0) return '午後Ⅰでの出題実績なし'
-  if (row.rate === null) return `午後Ⅰで${row.g1Count}問出題。まだ未挑戦`
-  if (row.rate < 60) return `午後Ⅰで${row.g1Count}問出題。正答率が低い`
-  if (row.rate < 80) return `午後Ⅰで${row.g1Count}問出題。あと一歩`
-  return `午後Ⅰで${row.g1Count}問出題。よくできている`
+  if (row.g1Count === 0) return '科目B-1での出題実績なし'
+  if (row.rate === null) return `科目B-1で${row.g1Count}問出題。まだ未挑戦`
+  if (row.rate < 60) return `科目B-1で${row.g1Count}問出題。正答率が低い`
+  if (row.rate < 80) return `科目B-1で${row.g1Count}問出題。あと一歩`
+  return `科目B-1で${row.g1Count}問出題。よくできている`
 }

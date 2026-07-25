@@ -136,7 +136,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'ランダム出題', to: '/quiz?mode=random', icon: <IconShuffle /> },
   { label: '弱点克服', to: '/quiz?mode=weakness', icon: <IconChart /> },
   { label: '問題検索', to: '/search', icon: <IconSearch /> },
-  { label: '午後問題演習', to: '/afternoon', icon: <IconAfternoon /> },
+  { label: '科目B演習', to: '/afternoon', icon: <IconAfternoon /> },
   { label: 'プロトコル一覧', to: '/protocols', icon: <IconList /> },
   { label: '勲章コレクション', to: '/badges', icon: <IconMedal /> },
   { label: 'PC・スマホ同期', to: '/sync', icon: <IconSync /> },

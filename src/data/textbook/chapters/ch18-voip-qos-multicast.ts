@@ -217,11 +217,11 @@ export const ch18VoipQosMulticast: TextbookChapter = {
       ],
     },
     {
-      heading: '午後はQoS設計とマルチキャストを問う',
+      heading: '科目BはQoS設計とマルチキャストを問う',
       blocks: [
         {
           kind: 'text',
-          text: '午後では、VoIPの[[blue:遅延や帯域]]の見積もり、混雑時の[[blue:QoS設計]]（何を優先するか）、マルチキャストの[[blue:参加（IGMP）]]と配信範囲が問われます。音声はUDPで送り直しがきかないぶん、遅延やゆらぎを抑える設計が要点です。',
+          text: '科目Bでは、VoIPの[[blue:遅延や帯域]]の見積もり、混雑時の[[blue:QoS設計]]（何を優先するか）、マルチキャストの[[blue:参加（IGMP）]]と配信範囲が問われます。音声はUDPで送り直しがきかないぶん、遅延やゆらぎを抑える設計が要点です。',
         },
         {
           kind: 'check',

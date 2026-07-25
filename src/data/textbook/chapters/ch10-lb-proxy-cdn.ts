@@ -256,6 +256,116 @@ const cdnFigure: PacketFlowFigure = {
   ],
 }
 
+// §4 ローカルブレイクアウト（graph triangle）。支社ルータ／インターネット／本社の出口の三角形で、
+// 「本社経由の2辺」と「直接の1辺」を同じ図の中で比べる（第7章OSPFの回り道と近道の再演）。
+// クラウドサービスは inet の葉。三角形の葉は1つの幹に1台まで（2台目の枝線が1台目の箱を貫くため）。
+const breakoutTopology: Topology = {
+  layout: 'graph',
+  leafIds: ['saas'],
+  edgeLabels: [
+    { a: 'brrt', b: 'hq', label: '本社経由' },
+    { a: 'brrt', b: 'inet', label: '直接' },
+    { a: 'hq', b: 'inet', label: '' },
+  ],
+  zones: [
+    { id: 'br', label: '支社', tone: 'emerald' },
+    { id: 'cl', label: 'クラウド', tone: 'violet' },
+  ],
+  nodes: [
+    { id: 'brrt', label: '支社ルータ', role: 'router', sub: '外側 203.0.113.5' },
+    { id: 'inet', label: 'インターネット', role: 'internet' },
+    { id: 'hq', label: '本社の出口', role: 'proxy', sub: 'フォワードプロキシ' },
+    { id: 'pc', label: '支社PC', role: 'pc', zoneId: 'br', sub: '192.168.20.10' },
+    { id: 'saas', label: 'クラウドサービス', role: 'cloud', zoneId: 'cl' },
+  ],
+  links: [
+    { a: 'pc', b: 'brrt' },
+    { a: 'brrt', b: 'hq' },
+    { a: 'hq', b: 'inet' },
+    { a: 'brrt', b: 'inet' },
+    { a: 'inet', b: 'saas' },
+  ],
+}
+
+const breakoutFigure: PacketFlowFigure = {
+  kind: 'packet-flow',
+  id: 'ch10-breakout',
+  title: '本社を経由するか、拠点から直接出るか',
+  caption: '同じクラウドサービスへ、[[amber:本社経由]]と[[green:直接]]の2通りで行ってみます。',
+  takeaway: '拠点から直接出すと経路が短くなり、[[amber:本社の回線]]も空きます。そのぶん、検査をどこでするかを決め直す必要があります。',
+  topology: breakoutTopology,
+  hideHeaders: true,
+  steps: [
+    {
+      focus: { type: 'link', a: 'pc', b: 'brrt' },
+      packetLabel: '',
+      headers: { l2: '', l3: '' },
+      explanation: '支社のPCがクラウドのサービスへ。まず支社ルータへ渡します。',
+    },
+    {
+      focus: { type: 'link', a: 'brrt', b: 'hq' },
+      packetLabel: '',
+      headers: { l2: '', l3: '' },
+      explanation: '従来は社外への出口が本社の1か所。いったん本社へ運びます。',
+    },
+    {
+      focus: { type: 'link', a: 'hq', b: 'inet' },
+      packetLabel: '',
+      headers: { l2: '', l3: '' },
+      explanation: '本社のプロキシで検査を受けてから、インターネットへ出ます。',
+    },
+    {
+      focus: { type: 'link', a: 'inet', b: 'saas' },
+      packetLabel: '',
+      headers: { l2: '', l3: '' },
+      explanation: 'クラウドへ到達。遠回りのぶん遅く、本社の回線も混みます。',
+    },
+    {
+      focus: { type: 'link', a: 'brrt', b: 'inet' },
+      packetLabel: '',
+      headers: { l2: '', l3: '' },
+      explanation: 'ここからが変更後。支社から直接インターネットへ出ます。',
+    },
+    {
+      focus: { type: 'link', a: 'inet', b: 'saas' },
+      packetLabel: '',
+      headers: { l2: '', l3: '' },
+      explanation: '同じサービスへ近道で到達。本社の回線も空きます。',
+    },
+  ],
+}
+
+// §4 検査の置き場所の対比。SWG＝クラウドに置いたフォワードプロキシ、という位置づけを表で確定させる。
+const breakoutCompareFigure: RecordTableFigure = {
+  kind: 'record-table',
+  id: 'ch10-breakout-compare',
+  title: '通信の検査をどこでするか',
+  caption: '出口を拠点に分散すると、[[blue:検査の置き場所]]も一緒に動きます。',
+  takeaway: '[[blue:SWG]]は、社内に置いていた検査をクラウドで引き受ける代理。出口が分散しても、検査は1つの方針でそろえられます。',
+  rowHeader: true,
+  emphasizeKey: 'check',
+  columns: [
+    { key: 'way', label: '出し方' },
+    { key: 'route', label: '通信の経路' },
+    { key: 'check', label: '検査する場所' },
+    { key: 'good', label: '向く場面' },
+  ],
+  rows: [
+    {
+      way: '本社の出口に集める',
+      route: '拠点 → 本社 → インターネット',
+      check: '本社のフォワードプロキシ',
+      good: '出口を1か所で管理したい',
+    },
+    {
+      way: 'ローカルブレイクアウト',
+      route: '拠点 → インターネット',
+      check: 'クラウドのSWG',
+      good: 'クラウド利用が多く本社の回線を空けたい',
+    },
+  ],
+}
+
 export const ch10LbProxyCdn: TextbookChapter = {
   id: 'lb-proxy-cdn',
   order: 10,
@@ -263,7 +373,7 @@ export const ch10LbProxyCdn: TextbookChapter = {
   summary:
     '代表IP（VIP）で受けて複数サーバへ分散するロードバランサ、通信を代理するリバース／フォワードプロキシ、利用者の近くから配信するCDNまで、公開サーバへのアクセス集中を捌く仕組みを、第9章の境界の上に重ねて理解します。',
   status: 'published',
-  estimatedMinutes: 16,
+  estimatedMinutes: 18,
   intro: [
     {
       kind: 'text',
@@ -335,6 +445,31 @@ export const ch10LbProxyCdn: TextbookChapter = {
       ],
     },
     {
+      heading: '拠点から直接クラウドへ出る',
+      blocks: [
+        {
+          kind: 'text',
+          text: '前の節のフォワードプロキシは、社内の出口を1か所にまとめる置き方でした。拠点が増え、社員の使うサービスがクラウドに移ると、この形が苦しくなります。拠点から出る通信を全部いったん本社へ運んでから外へ出すため、[[amber:遠回り]]になり、[[amber:本社の回線]]に集中するからです。',
+        },
+        {
+          kind: 'text',
+          text: 'そこで、クラウド向けの通信だけは拠点から[[green:直接インターネットへ]]出します。これが[[green:ローカルブレイクアウト]]。第7章のOSPFで見た「回り道と近道」が、そのまま出口の設計にも出てきます。',
+        },
+        { kind: 'figure', figure: breakoutFigure },
+        {
+          kind: 'text',
+          text: 'ただし直接出すと、本社のプロキシを通りません。検査の抜け道を作らないために、検査の役目もクラウド側へ移します。それが[[blue:SWG]]（セキュアWebゲートウェイ）で、いわば[[blue:クラウドに置いたフォワードプロキシ]]です。',
+        },
+        { kind: 'figure', figure: breakoutCompareFigure },
+        {
+          kind: 'callout',
+          tone: 'info',
+          title: '「社内なら安全」が崩れていく',
+          body: '拠点やテレワークから直接クラウドへ出る形が増えると、「社内は安全・社外は危険」と境界だけで線を引く前提が弱くなります。そこで、どこから来た通信でも[[blue:そのつど確かめてから通す]]という考え方が[[blue:ゼロトラスト]]。第13章の認証と、この章の代理・検査が、その土台になります。SWGやこうした機能をまとめてクラウドで提供する形を[[blue:SASE]]と呼びますが、名前だけ押さえれば十分です。',
+        },
+      ],
+    },
+    {
       heading: '近くから配信するCDN',
       blocks: [
         {
@@ -356,6 +491,10 @@ export const ch10LbProxyCdn: TextbookChapter = {
         {
           kind: 'text',
           text: '科目Bでは、LBの[[blue:VIPと戻り経路]]、TLSを[[blue:どこで終端]]するか（LBやリバースプロキシ）、[[blue:リバースとフォワードの区別]]がよく問われます。構成図で「利用者から見えるのはどれか」を追うのがコツです。',
+        },
+        {
+          kind: 'text',
+          text: '出口の設計もよく問われます。近年は「拠点の通信を本社へ集めると遅い・混む」という課題から、[[green:ローカルブレイクアウト]]と[[blue:SWG]]を導入する筋書きが繰り返し出ています。ここでも見るのは、[[blue:通信がどの経路を通り、どこで検査を受けるか]]の2点です。',
         },
         {
           kind: 'check',
@@ -381,6 +520,7 @@ export const ch10LbProxyCdn: TextbookChapter = {
     '[[blue:L4]]はアドレスとポートで単純・高速、[[blue:L7]]はURLなど中身まで見て賢く振り分け。[[blue:TLS終端]]はL7の役目です。',
     '[[blue:リバースプロキシ]]はサーバ側の代理（外から受ける）、[[blue:フォワードプロキシ]]はクライアント側の代理（外へ出る）。立ち位置が逆です。',
     '[[blue:CDN]]は利用者の近くのエッジにキャッシュし、近くから配信。距離とオリジンの負荷を減らします。',
+    '拠点から直接クラウドへ出すのが[[green:ローカルブレイクアウト]]。経路は短くなり、検査は[[blue:SWG]]としてクラウド側へ移ります。',
   ],
   checks: [
     {
@@ -394,6 +534,10 @@ export const ch10LbProxyCdn: TextbookChapter = {
     {
       question: 'リバースプロキシとフォワードプロキシの、いちばんの違いは何か。',
       answer: 'どちら側の代理か、です。リバースはサーバ側の代理で外からの通信を受け、フォワードはクライアント側の代理で社内から外への通信を扱います。',
+    },
+    {
+      question: '支社のクラウド向け通信を、本社を経由せず支社から直接インターネットへ出すと、何がよくなり、何が新しい課題になるか。',
+      answer: '経路が短くなって遅延が減り、本社の回線の混雑もやわらぎます（ローカルブレイクアウト）。一方で本社のプロキシを通らなくなるため、検査の抜け道ができます。その検査をクラウド側で引き受けるのがSWGです。',
     },
   ],
 }

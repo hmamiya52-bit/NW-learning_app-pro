@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { BookOpenText, CheckCircle2, ChevronRight, Clock3, Construction, Sparkles } from 'lucide-react'
+import { BookOpenText, CheckCircle2, ChevronRight, Clock3, Construction } from 'lucide-react'
 import { textbookChapters, type TextbookChapter } from '../data/textbook'
 import { getTextbookReadState } from '../lib/textbookReadState'
 
@@ -113,22 +113,13 @@ export default function Textbook() {
           </div>
         </header>
 
-        <section className="mb-5 rounded-lg border border-blue-100 bg-blue-50 px-4 py-3">
-          <div className="flex gap-3">
-            <Sparkles className="mt-0.5 h-5 w-5 flex-shrink-0 text-blue-600" aria-hidden="true" />
-            <div className="min-w-0">
-              <h2 className="text-sm font-black text-blue-900">全20章が公開済みです。第1章から順に読むと、構成図が少しずつ育っていきます。</h2>
-            </div>
-          </div>
-        </section>
-
         <section aria-labelledby="chapter-list-heading">
           <div className="mb-3 flex items-end justify-between gap-3">
             <div>
               <h2 id="chapter-list-heading" className="text-xs font-bold uppercase tracking-wider text-slate-500">
                 章一覧
               </h2>
-              <p className="mt-1 text-xs text-slate-400">初学者向けの読み物です。第1章から順に読む前提で作られています。</p>
+              <p className="mt-1 text-xs text-slate-400">初学者向けの読み物です。</p>
             </div>
           </div>
 

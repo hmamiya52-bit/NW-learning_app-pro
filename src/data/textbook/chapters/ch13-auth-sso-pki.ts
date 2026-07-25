@@ -283,8 +283,8 @@ export const ch13AuthSsoPki: TextbookChapter = {
         {
           kind: 'callout',
           tone: 'info',
-          title: 'SAMLとOIDCは、名前だけで十分',
-          body: 'SSOを実現する代表的な方式が[[blue:SAML]]と[[blue:OIDC]]。ネスペでは仕組みの深掘りまでは問われないので、「SSOを実現する方式の名前」と押さえれば十分です。',
+          title: 'SAMLは「認証する係」と「使わせる係」を分ける',
+          body: 'SSOを実現する代表的な方式が[[blue:SAML]]です。登場人物は2つ。利用者を認証して通行証を発行する[[blue:IdP]]と、その通行証を信じてサービスを使わせる[[blue:SP]]。上の図の認証サーバがIdP、サービスA・BがSPにあたります。パスワードを預かるのはIdPだけで、SPへは渡りません。この認証の役目をクラウドのサービスとして借りる形が[[blue:IDaaS]]です。似た仕組みに[[blue:OIDC]]、社内のWindows環境では[[blue:Kerberos]]が使われますが、こちらは名前だけで十分です。',
         },
       ],
     },

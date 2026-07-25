@@ -94,6 +94,43 @@ const ssidVlanTable: RecordTableFigure = {
   ],
 }
 
+// §1 周波数帯の対比。届く範囲と速さのトレードオフに絞る（変調方式などには踏み込まない）。
+const bandTable: RecordTableFigure = {
+  kind: 'record-table',
+  id: 'ch14-band',
+  title: '電波の周波数帯の使い分け',
+  caption: '同じ無線LANでも、使う[[blue:帯]]で届き方と速さが変わります。',
+  takeaway: '[[amber:2.4GHz]]は遠くまで届くかわりに混みやすく、[[blue:5GHz]]・[[green:6GHz]]は速いかわりに届く範囲が狭め。この裏返しの関係が設計の勘どころです。',
+  rowHeader: true,
+  emphasizeKey: 'reach',
+  columns: [
+    { key: 'band', label: '周波数帯' },
+    { key: 'reach', label: '届く範囲' },
+    { key: 'speed', label: '速さ' },
+    { key: 'note', label: '混み具合' },
+  ],
+  rows: [
+    {
+      band: '2.4GHz',
+      reach: '広い。壁などの障害物にも比較的強い',
+      speed: '遅め',
+      note: '使えるチャネルが少なく、電子レンジなどとも混信しやすい',
+    },
+    {
+      band: '5GHz',
+      reach: '狭め。障害物に弱い',
+      speed: '速い',
+      note: 'チャネルが多く混みにくい。一部は気象レーダーを避けて動く',
+    },
+    {
+      band: '6GHz',
+      reach: 'さらに狭め',
+      speed: '速い',
+      note: '新しい帯で、いまのところ最も空いている',
+    },
+  ],
+}
+
 // §2 隠れ端末（radio-range・新設）。円＝電波の届く範囲。空間の問題なので文章でなく図で見せる。
 const hiddenNodeFigure: RadioRangeFigure = {
   kind: 'radio-range',
@@ -255,7 +292,7 @@ export const ch14WirelessLan: TextbookChapter = {
   summary:
     '電波と有線を橋渡しするAPとWLC、SSIDとVLANの対応づけ、衝突を検出できないからこそ送る前に避けるCSMA/CA、第13章のRADIUSが本格稼働するIEEE802.1X認証、そして移動しても切れないローミングまで、ケーブルのないLANを支える仕組みを一望します。',
   status: 'published',
-  estimatedMinutes: 18,
+  estimatedMinutes: 19,
   intro: [
     {
       kind: 'text',
@@ -284,6 +321,17 @@ export const ch14WirelessLan: TextbookChapter = {
           text: '無線のネットワークには[[blue:SSID]]という名前を付けます。スマホのWi-Fi設定で並ぶ、あの一覧の名前です。そしてAPの中で、SSIDは[[blue:VLAN]]（第5章）に対応づけられます。無線を有線側の設計に載せる、いちばんの要です。',
         },
         { kind: 'figure', figure: ssidVlanTable },
+        {
+          kind: 'text',
+          text: 'APが出す電波には、使う[[blue:周波数帯]]の違いもあります。遠くまで届く帯と、速いけれど届く範囲が狭い帯があり、どちらを使うかで置き方が変わります。',
+        },
+        { kind: 'figure', figure: bandTable },
+        {
+          kind: 'callout',
+          tone: 'info',
+          title: '規格の世代とWi-Fi 6',
+          body: '無線LANの規格はIEEE802.11の a・b・g・n・ac・ax と進んできました。読みにくいので、いまは世代番号で呼びます。[[blue:11n＝Wi-Fi 4]]、[[blue:11ac＝Wi-Fi 5]]、[[blue:11ax＝Wi-Fi 6]]。6GHz帯まで使えるものを[[blue:Wi-Fi 6E]]と呼びます。3つの帯を同時に出せるAPは[[blue:トライバンド]]。科目Bでは「11axはWi-Fi 6」の対応と、帯ごとの性質を押さえれば十分です。',
+        },
       ],
     },
     {

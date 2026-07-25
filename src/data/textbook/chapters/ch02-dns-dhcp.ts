@@ -176,7 +176,7 @@ export const ch02DnsDhcp: TextbookChapter = {
   title: '名前解決とアドレス配布（DNS・DHCP）',
   summary: '名前からIPを引くDNSと、IP・GW・DNSを配るDHCPで、通信を始める前の準備を理解します。',
   status: 'published',
-  estimatedMinutes: 15,
+  estimatedMinutes: 16,
   intro: [
     {
       kind: 'text',
@@ -219,6 +219,12 @@ export const ch02DnsDhcp: TextbookChapter = {
         {
           kind: 'text',
           text: 'ここで受け取るのは、IPアドレスだけではありません。[[blue:サブネットマスク]]（自分のネットワークの範囲を表す数。詳しくは第6章）、[[blue:デフォルトゲートウェイ]]、[[blue:DNSサーバ]]の場所まで、まとめて受け取ります。第1章で「PCに設定済み」としたデフォルトゲートウェイは、ここで配られていたのです。',
+        },
+        {
+          kind: 'callout',
+          tone: 'info',
+          title: 'セグメントが増えても、DHCPサーバは1台で足りる',
+          body: '最初の呼びかけは全員あて（ブロードキャスト）でした。ブロードキャストはルータを越えないので、素直に考えるとセグメントごとにDHCPサーバが要ることになります。そこで、ルータやL3スイッチがその呼びかけを受け取り、DHCPサーバへ代わりに転送します。これが[[blue:DHCPリレーエージェント]]。第6章でネットワークがいくつにも分かれたあとも、配る係は1台のままで足ります。',
         },
       ],
     },

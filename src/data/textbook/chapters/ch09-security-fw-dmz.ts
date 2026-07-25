@@ -303,6 +303,29 @@ const reachabilityFigure: RecordTableFigure = {
   ],
 }
 
+// §5 FW／IDS／IPS／WAF の守備範囲。「どこを見るか」と「止めるか」の2軸だけで並べる。
+const guardTable: RecordTableFigure = {
+  kind: 'record-table',
+  id: 'ch9-guards',
+  title: 'FW・IDS・IPS・WAFの守備範囲',
+  caption: '同じ「守る機器」でも、[[blue:見る場所]]と[[blue:できること]]が違います。',
+  takeaway: '[[blue:FW]]はアドレスとポートで通す/止める、[[blue:WAF]]はWebの中身で判断。[[blue:IDS]]は知らせるだけ、[[blue:IPS]]は止めます。',
+  rowHeader: true,
+  emphasizeKey: 'act',
+  columns: [
+    { key: 'kind', label: '機器' },
+    { key: 'see', label: '見るもの' },
+    { key: 'act', label: 'できること' },
+    { key: 'where', label: '置き場所' },
+  ],
+  rows: [
+    { kind: 'FW', see: '送信元／あて先のIPとポート', act: '許可と拒否', where: '内部・DMZ・外部の境界' },
+    { kind: 'IDS', see: '通信の中身の特徴', act: '検知して管理者へ知らせる', where: '監視したい区間' },
+    { kind: 'IPS', see: '通信の中身の特徴', act: '検知してその場で遮断する', where: '通信が通る経路の上' },
+    { kind: 'WAF', see: 'HTTPの中身（URLや入力値）', act: 'Webへの攻撃を遮断する', where: '公開Webサーバの前（DMZ）' },
+  ],
+}
+
 export const ch09SecurityFwDmz: TextbookChapter = {
   id: 'security-fw-dmz',
   order: 9,
@@ -310,7 +333,7 @@ export const ch09SecurityFwDmz: TextbookChapter = {
   summary:
     'ファイアウォールの許可ルールとデフォルトdeny、行きを覚えて戻りを通すステートフル、公開サーバを隔離するDMZまで、ネスペ科目Bで最も問われる「境界」を、三層の構成図で読み解きます。',
   status: 'published',
-  estimatedMinutes: 18,
+  estimatedMinutes: 20,
   intro: [
     {
       kind: 'text',
@@ -404,6 +427,26 @@ export const ch09SecurityFwDmz: TextbookChapter = {
           tone: 'tip',
           title: 'DMZは名前どおりの緩衝地帯',
           body: '[[amber:DMZ]]（非武装地帯）は、外部と内部のあいだの[[blue:緩衝地帯]]。公開に必要な通信だけを外から受け、内部とは切り離します。なお最近は、通信の中身まで見る[[blue:次世代FW（NGFW）]]や、機能を1台にまとめた[[blue:UTM]]もあります。名前だけ押さえれば十分です。',
+        },
+      ],
+    },
+    {
+      heading: '中身まで見る機器を足す',
+      blocks: [
+        {
+          kind: 'text',
+          text: 'FWが見ているのは、送信元・あて先・ポートまででした。ところが公開Webサーバの443番は、そもそも[[green:許可した穴]]です。その許可した穴を通って攻撃が来たら、FWには止められません。',
+        },
+        {
+          kind: 'text',
+          text: 'そこで、通信の[[blue:中身]]まで見る機器を足します。おかしな中身を見つけて知らせるのが[[blue:IDS]]、見つけてその場で止めるのが[[blue:IPS]]。とくにWebへの攻撃に絞って中身を読むのが[[blue:WAF]]で、公開Webサーバの前に置きます。',
+        },
+        { kind: 'figure', figure: guardTable },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '「どこを見るか」で並べて覚える',
+          body: '[[blue:FW]]はアドレスとポート、[[blue:IDS／IPS]]は通信の中身の特徴、[[blue:WAF]]はHTTPの中身。層が上がるほど細かく見られる代わりに、負荷も高くなります。IDSとIPSの違いは[[blue:止めるかどうか]]の一点だけ。科目Bでは、この対応がそのまま答えになる設問が出ます。',
         },
       ],
     },

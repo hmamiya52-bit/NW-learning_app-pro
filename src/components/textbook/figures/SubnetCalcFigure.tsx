@@ -105,7 +105,9 @@ export default function SubnetCalcFigure({ figure }: { figure: SubnetCalcFigureD
         </div>
       </dl>
 
-      <p aria-live="polite" className="mt-2 flex h-10 items-start text-sm leading-relaxed text-slate-700">{step.note}</p>
+      {/* 説明文は他図と同じ h-12（text-sm の2行ぶん）。h-10 では2行が収まらず、
+          はみ出した2行目がステッパーに重なっていた。 */}
+      <p aria-live="polite" className="mt-2 flex h-12 items-start text-sm leading-relaxed text-slate-700">{step.note}</p>
 
       <div className="mt-2">
         <StepperControls index={index} count={count} onPrev={prev} onNext={next} onSelect={setIndex} />

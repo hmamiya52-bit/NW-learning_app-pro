@@ -121,37 +121,69 @@ export default function GraphTopology({ topology, focus, blockedLink, verdict, b
       style={{ width: '100%', maxWidth: 360, height: 'auto', display: 'block', margin: '0 auto' }}
       role="img"
     >
-      {/* トランク（幹どうしの線・ツリー時） */}
-      {trunk && (
-        <>
-          <line x1={trunk.x1} y1={trunk.y} x2={trunk.x2} y2={trunk.y} stroke={LINE_TRUNK} strokeWidth={2.5} />
-          {trunkLabel && (
-            <text x={(trunk.x1 + trunk.x2) / 2} y={trunk.y - 7} textAnchor="middle" fontSize="10" fill="#64748b">
-              {trunkLabel}
-            </text>
-          )}
-        </>
-      )}
+      {/* トランク（幹どうしの線・ツリー時）。focus で強調＋進行方向の矢印、blockedLink で赤破線＋✕。 */}
+      {trunk &&
+        (() => {
+          const focused = isLinkFocused(trunk.a, trunk.b)
+          const isBlocked = !!blockedLink && samePair(blockedLink.a, blockedLink.b, trunk.a, trunk.b)
+          const reversed = focus.type === 'link' && focus.a === trunk.b
+          const [ax1, ax2] = reversed ? [trunk.x2, trunk.x1] : [trunk.x1, trunk.x2]
+          return (
+            <>
+              <line
+                x1={trunk.x1}
+                y1={trunk.y}
+                x2={trunk.x2}
+                y2={trunk.y}
+                stroke={isBlocked ? LINE_BLOCK : focused ? LINE_ACTIVE : LINE_TRUNK}
+                strokeWidth={focused || isBlocked ? 3.4 : 2.5}
+                strokeDasharray={isBlocked ? '7 5' : undefined}
+              />
+              {focused && !isBlocked && <ArrowOnSeg x1={ax1} y1={trunk.y} x2={ax2} y2={trunk.y} color={LINE_ACTIVE} />}
+              {isBlocked && (
+                <text x={(trunk.x1 + trunk.x2) / 2} y={trunk.y + 6} textAnchor="middle" fontSize="18" fontWeight="700" fill={LINE_BLOCK}>
+                  ✕
+                </text>
+              )}
+              {trunkLabel && (
+                <text
+                  x={(trunk.x1 + trunk.x2) / 2}
+                  y={trunk.y - 7}
+                  textAnchor="middle"
+                  fontSize="10"
+                  fontWeight={focused ? 700 : 400}
+                  fill={focused ? '#185fa5' : '#64748b'}
+                >
+                  {trunkLabel}
+                </text>
+              )}
+            </>
+          )
+        })()}
 
       {/* 枝（スイッチ／ルータ／FW→端末の線）＋進行方向の矢印・遮断✕ */}
       {leafSegs.map((seg, i) => {
-        const focused = isLinkFocused(seg.from, seg.to)
+        // tree の2つ目以降の葉は from が前の葉になるため、論理リンク（幹—葉）の指定でも一致させる。
+        const segIs = (a: string, b: string) =>
+          samePair(a, b, seg.from, seg.to) || (!!seg.owner && samePair(a, b, seg.owner, seg.to))
+        const focused = focus.type === 'link' && segIs(focus.a, focus.b)
         // 停止したペアノード（VRRPの故障ルータ）につながる枝は、両方まとめて遮断表示にする。
         const touchesDownPair =
           !!pairIds &&
           ((downNodes?.includes(seg.from) && pairIds.includes(seg.from)) ||
             (downNodes?.includes(seg.to) && pairIds.includes(seg.to)))
-        const isBlocked =
-          (!!blockedLink && samePair(blockedLink.a, blockedLink.b, seg.from, seg.to)) || touchesDownPair
+        const isBlocked = (!!blockedLink && segIs(blockedLink.a, blockedLink.b)) || touchesDownPair
         // 無線で接続する葉へ入る枝は破線（有線との区別。第14章 端末—AP間）。遮断の破線（太・赤）とは別物。
         const isWireless = !!topology.wirelessLeafIds?.includes(seg.to)
         const vertical = Math.abs(seg.x1 - seg.x2) < 6
-        const down = seg.y2 >= seg.y1
         const mx = (seg.x1 + seg.x2) / 2
         const my = (seg.y1 + seg.y2) / 2
         // 斜めの枝（三方向FWでFW→端末など）は、進行方向に沿った角度付き矢印。
         const fa = focus.type === 'link' ? pos.get(focus.a) : undefined
         const fb = focus.type === 'link' ? pos.get(focus.b) : undefined
+        // 縦の枝の矢印は、線の描画順ではなく「a→b の進行方向」で向ける
+        // （上段の葉へ向かう上りを下向き矢印で描いていた誤りの修正）。
+        const down = fa && fb ? fa.y <= fb.y : seg.y2 >= seg.y1
         return (
           <g key={`seg${i}`}>
             <line
@@ -551,9 +583,11 @@ interface SpineEdge {
 interface Layout {
   nodes: TopoNode[]
   pos: Map<string, Pos>
-  trunk: { x1: number; x2: number; y: number } | null
+  trunk: { a: string; b: string; x1: number; x2: number; y: number } | null
   trunkLabel: string | null
-  leafSegs: { from: string; to: string; x1: number; y1: number; x2: number; y2: number }[]
+  // owner: tree で葉を数珠つなぎに描くときの「本来ぶら下がる幹」。論理リンク（幹—葉）指定でも
+  // focus・blockedLink が一致するようにする（2つ目以降の葉は from が前の葉になるため）。
+  leafSegs: { from: string; to: string; owner?: string; x1: number; y1: number; x2: number; y2: number }[]
   loop: { a: string; b: string; leftPath: string; rightPath: string; xLeft: number; xRight: number; yMid: number } | null
   spineEdges: SpineEdge[]
   zoneLabels: { x: number; y: number; text: string; color: string }[]
@@ -707,7 +741,7 @@ function buildLayout(topology: Topology): Layout {
     leavesOf(s.id).forEach((lf, k) => {
       const y = swY + SW_H / 2 + 30 + k * (LEAF_H + 20) + LEAF_H / 2
       pos.set(lf.id, { x, y, w: LEAF_W, h: LEAF_H })
-      leafSegs.push({ from: prevId, to: lf.id, x1: x, y1: prevBottom, x2: x, y2: y - LEAF_H / 2 })
+      leafSegs.push({ from: prevId, to: lf.id, owner: s.id, x1: x, y1: prevBottom, x2: x, y2: y - LEAF_H / 2 })
       prevBottom = y + LEAF_H / 2
       prevId = lf.id
       maxBottom = Math.max(maxBottom, y + LEAF_H / 2)
@@ -718,7 +752,7 @@ function buildLayout(topology: Topology): Layout {
   if (spine.length >= 2) {
     const p0 = pos.get(spine[0].id)!
     const p1 = pos.get(spine[1].id)!
-    trunk = { x1: p0.x + p0.w / 2, x2: p1.x - p1.w / 2, y: swY }
+    trunk = { a: spine[0].id, b: spine[1].id, x1: p0.x + p0.w / 2, x2: p1.x - p1.w / 2, y: swY }
   }
 
   // 幹どうしの線のラベル。edgeLabels があればそれを優先（'' で非表示）、無ければ従来どおり「トランク」。

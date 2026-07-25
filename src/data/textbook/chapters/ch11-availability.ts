@@ -95,7 +95,7 @@ const vrrpFigure: PacketFlowFigure = {
       pairActive: 'r1',
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: '出口のルータを2台に増やします。ふだんは稼働側のルータ1が、仮想IP 192.168.10.1 を受け持ちます。',
+      explanation: '出口のルータを2台にします。稼働側のルータ1が仮想IP 192.168.10.1 を受け持ちます。',
     },
     {
       focus: { type: 'link', a: 'pc', b: 'r1' },

@@ -48,7 +48,7 @@ const addrFigure: Ipv6AddressFigure = {
     },
     {
       mode: 'compressed',
-      explanation: '各グループの先頭の0は省略。0だけのグループが続くところは::にまとめます。ただし::は1か所だけです。',
+      explanation: '先頭の0は省略。0だけのグループが続くところは::にまとめます（1か所のみ）。',
     },
     {
       mode: 'structure',

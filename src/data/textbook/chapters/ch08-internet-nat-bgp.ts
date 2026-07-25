@@ -404,7 +404,7 @@ export const ch08InternetNatBgp: TextbookChapter = {
         { kind: 'figure', figure: ipTypeFigure },
         {
           kind: 'text',
-          text: 'ポイントは、プライベートIPが「どの組織でも同じ番号を使ってよい」こと。世界中に 192.168.10.10 は無数にあるので、この住所のままインターネットに出ても、応答は帰ってこられません。',
+          text: 'ポイントは、プライベートIPが「どの組織でも同じ番号を使ってよい」こと。世界中に 192.168.10.10 は無数にあるので、この住所のままインターネットに出ても、応答は返ってこられません。',
         },
         {
           kind: 'callout',
@@ -477,7 +477,7 @@ export const ch08InternetNatBgp: TextbookChapter = {
         { kind: 'figure', figure: natDirectionFigure },
         {
           kind: 'text',
-          text: '外から公開サーバあての通信（静的NATの出番）では、[[blue:戻り経路]]、つまり応答がどの経路で・どの住所で帰るかも問われます。公開サーバの置き場所（DMZ）とあわせて、第9章で完成させます。',
+          text: '外から公開サーバあての通信（静的NATの出番）では、[[blue:戻り経路]]、つまり応答がどの経路で・どの住所で返るかも問われます。公開サーバの置き場所（DMZ）とあわせて、第9章で完成させます。',
         },
         {
           kind: 'check',

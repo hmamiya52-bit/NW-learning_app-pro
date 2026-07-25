@@ -54,16 +54,22 @@ const apFigure: PacketFlowFigure = {
       explanation: 'もう1つの新顔WLC。多数のAPの設定や電波を、まとめて管理する役です。',
     },
     {
-      focus: { type: 'link', a: 'ap', b: 'nb' },
+      focus: { type: 'link', a: 'nb', b: 'ap' },
       packetLabel: '',
       headers: { l2: '', l3: '' },
       explanation: 'ノートPCの通信は、電波でAPへ。破線の区間だけが無線です。',
     },
     {
-      focus: { type: 'link', a: 'l2sw', b: 'ap' },
+      focus: { type: 'link', a: 'ap', b: 'l2sw' },
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: 'APで有線に乗り、トランクでL2SWへ。上の有線LANは、今までと同じ世界です。',
+      explanation: 'APで有線に乗り換え、トランクでL2SWへ上がります。',
+    },
+    {
+      focus: { type: 'link', a: 'l2sw', b: 'r' },
+      packetLabel: '',
+      headers: { l2: '', l3: '' },
+      explanation: 'そのままルータへ。ここから先は、第1章と変わらない有線の道のり。',
     },
   ],
 }
@@ -212,7 +218,7 @@ const roamFigure: PacketFlowFigure = {
   hideHeaders: true,
   steps: [
     {
-      focus: { type: 'link', a: 'ap1', b: 'nb' },
+      focus: { type: 'link', a: 'nb', b: 'ap1' },
       pairActive: 'ap1',
       packetLabel: '',
       headers: { l2: '', l3: '' },
@@ -226,14 +232,14 @@ const roamFigure: PacketFlowFigure = {
       explanation: '利用者がノートPCを持って移動。AP1の電波がだんだん弱くなります。',
     },
     {
-      focus: { type: 'link', a: 'ap2', b: 'nb' },
+      focus: { type: 'link', a: 'nb', b: 'ap2' },
       pairActive: 'ap2',
       packetLabel: '',
       headers: { l2: '', l3: '' },
       explanation: 'AP2の電波が強い場所へ。接続先がAP2に切り替わります。これがローミングです。',
     },
     {
-      focus: { type: 'link', a: 'l2sw', b: 'ap2' },
+      focus: { type: 'link', a: 'ap2', b: 'l2sw' },
       pairActive: 'ap2',
       packetLabel: '',
       headers: { l2: '', l3: '' },

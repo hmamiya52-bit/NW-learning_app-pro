@@ -161,7 +161,7 @@ export const ch19Operations: TextbookChapter = {
   order: 19,
   title: '運用監視・障害切り分け',
   summary:
-    'できあがったネットワークを、止めずに動かし続けるのが運用です。この章では、機器の状態・ログ・通信量を集めて異常に気づく監視と、障害の原因を順序立てて絞り込む切り分けの段取りを扱います。第1章の層分けと第7章のICMP・TTLが、ここで現場の道具になります。',
+    'できあがったネットワークを、止めずに動かし続けるのが運用です。機器の状態・ログ・通信量を集めて異常に気づく監視と、障害の原因を順序立てて絞り込む切り分けの段取り。第1章の層分けと第7章のICMP・TTLが、ここで現場の道具になります。',
   status: 'published',
   estimatedMinutes: 15,
   intro: [
@@ -171,7 +171,7 @@ export const ch19Operations: TextbookChapter = {
     },
     {
       kind: 'text',
-      text: '構成図の差分は、内部LANに加わる[[rose:監視サーバ]]の1台だけ。代わりにこの章では、これまで登場した全機器が「監視される側」としてそろって顔を出します。',
+      text: '構成図の差分は、内部LANに加わる[[rose:監視サーバ]]の1台だけ。代わりに、これまで登場した全機器が「監視される側」としてそろって顔を出します。',
     },
   ],
   sections: [
@@ -191,11 +191,11 @@ export const ch19Operations: TextbookChapter = {
           kind: 'callout',
           tone: 'info',
           title: 'MIBは「測れる項目」の台帳',
-          body: 'SNMPで取得できる項目（CPU使用率、ポートの状態など）の一覧が[[blue:MIB]]です。細部まで問われることは少ないので、名前だけ押さえれば十分です。',
+          body: 'SNMPで取得できる項目（CPU使用率、ポートの状態など）の一覧が[[blue:MIB]]です。細部まで問われることは少ないので、名前だけ知っていれば足ります。',
         },
         {
           kind: 'text',
-          text: 'ただし、SNMPで分かるのは主に「いまの数値」です。そこを、ログを集める[[violet:syslog]]と、通信量を集める[[emerald:フロー]]（NetFlow／sFlow）が補います。3つの違いを表で整理します。',
+          text: 'ただし、SNMPで分かるのは主に「いまの数値」です。そこを、ログを集める[[violet:syslog]]と、通信量を集める[[emerald:フロー]]（NetFlow／sFlow）が補います。3つの違いは次のとおりです。',
         },
         { kind: 'figure', figure: pillarsTable },
       ],

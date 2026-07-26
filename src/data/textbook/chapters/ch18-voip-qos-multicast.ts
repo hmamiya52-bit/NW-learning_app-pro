@@ -145,7 +145,7 @@ export const ch18VoipQosMulticast: TextbookChapter = {
   order: 18,
   title: 'VoIP・QoS・マルチキャスト',
   summary:
-    '音声や映像は、遅れやゆらぎに弱く、取りこぼしは許容するという、これまでのデータ通信とは違う性質を持ちます。この章では、音声をRTP/UDPで運びSIPで呼び出すVoIP、混雑時に大事な通信を優先するQoS、同じデータを参加者だけへ一斉に配るマルチキャストを扱います。第3章のUDPが、ここで生きてきます。',
+    '音声や映像は、遅れやゆらぎに弱く、取りこぼしは許容するという、これまでのデータ通信とは違う性質を持ちます。音声をRTP/UDPで運びSIPで呼び出すVoIP、混雑時に大事な通信を優先するQoS、同じデータを参加者だけへ一斉に配るマルチキャスト。第3章のUDPが、ここで生きてきます。',
   status: 'published',
   estimatedMinutes: 15,
   intro: [
@@ -155,7 +155,7 @@ export const ch18VoipQosMulticast: TextbookChapter = {
     },
     {
       kind: 'text',
-      text: '順に、IP電話の[[blue:VoIP]]、混雑時の[[blue:QoS]]、一斉配信の[[blue:マルチキャスト]]を見ていきます。構成図の内部LANには、新しく[[emerald:IP電話]]が加わります。',
+      text: 'IP電話の[[blue:VoIP]]、混雑時の[[blue:QoS]]、一斉配信の[[blue:マルチキャスト]]が順に出てきます。構成図の内部LANには、新しく[[emerald:IP電話]]が加わります。',
     },
   ],
   sections: [
@@ -211,7 +211,7 @@ export const ch18VoipQosMulticast: TextbookChapter = {
           kind: 'callout',
           tone: 'info',
           title: '参加の申し込みはIGMP',
-          body: 'どの端末がどのグループに参加するかは、[[blue:IGMP]]という仕組みで申し込みます。この参加と脱退の管理があるからこそ、配信を必要な端末にだけ絞れます。申し込みを受けたルータどうしが「どこに参加者がいるか」を伝え合って配信の枝を作るのが[[blue:PIM]]で、こちらは名前と役割の分担だけ押さえれば十分です。ユニキャスト・ブロードキャストとの違いを、次の表で整理します。',
+          body: 'どの端末がどのグループに参加するかは、[[blue:IGMP]]という仕組みで申し込みます。この参加と脱退の管理があるからこそ、配信を必要な端末にだけ絞れます。申し込みを受けたルータどうしが「どこに参加者がいるか」を伝え合って配信の枝を作るのが[[blue:PIM]]で、こちらは名前と役割の分担だけ分かれば足ります。ユニキャスト・ブロードキャストとの違いは、次の表のとおりです。',
         },
         { kind: 'figure', figure: castTable },
       ],

@@ -32,7 +32,7 @@ const spofFigure: PacketFlowFigure = {
   id: 'ch11-spof',
   title: '1台の故障で全体が止まる単一障害点',
   caption: '機器を1台[[red:止める]]と、その先がまとめて届かなくなる様子です。',
-  takeaway: 'そこが1個だと全体が止まる箇所が[[red:単一障害点（SPOF）]]。これを1つずつ無くすのがこの章です。',
+  takeaway: 'そこが1個だと全体が止まる箇所が[[red:単一障害点（SPOF）]]。これを1つずつ無くしていくのが冗長化です。',
   topology: spofTopology,
   hideHeaders: true,
   steps: [
@@ -242,7 +242,7 @@ export const ch11Availability: TextbookChapter = {
   order: 11,
   title: '冗長化・可用性・更改作業',
   summary:
-    '1台壊れたら止まる構成を、二重化で止まらなくします。単一障害点（SPOF）を無くすVRRP（仮想IPをアクティブ／スタンバイで引き継ぐ）、リンクを束ねるLAG、そして冗長があるから止めずに機器を入れ替えられる無停止更改を扱います。',
+    '1台壊れたら止まる構成を、二重化で止まらなくします。単一障害点（SPOF）を無くすVRRP（仮想IPをアクティブ／スタンバイで引き継ぐ）、リンクを束ねるLAG、そして冗長があるから止めずに機器を入れ替えられる無停止更改。どれも「1か所の故障で全部を止めない」ための備えです。',
   status: 'published',
   estimatedMinutes: 20,
   intro: [
@@ -252,7 +252,7 @@ export const ch11Availability: TextbookChapter = {
     },
     {
       kind: 'text',
-      text: 'この章では「1台壊れたら止まる」構成を、[[blue:二重化]]して「止まらない」にします。機器を冗長ペアにする[[blue:VRRP]]、リンクを束ねる[[blue:LAG]]、そして止めずに機器を入れ替える[[blue:無停止更改]]を、順に見ていきます。',
+      text: '「1台壊れたら止まる」構成を、[[blue:二重化]]して「止まらない」に変えていきます。機器を冗長ペアにする[[blue:VRRP]]、リンクを束ねる[[blue:LAG]]、そして止めずに機器を入れ替える[[blue:無停止更改]]が、その手立てです。',
     },
   ],
   sections: [
@@ -292,7 +292,7 @@ export const ch11Availability: TextbookChapter = {
           kind: 'callout',
           tone: 'tip',
           title: '端末のGWは「仮想IP」のまま',
-          body: '端末のデフォルトゲートウェイは、故障しても[[blue:仮想IPのまま]]。設定を変えずにすみます。第1章で設定した「デフォルトゲートウェイ＝外への出口」の正体が、この[[blue:中身が切替わる仮想IP]]です。似た仕組みに[[blue:HSRP]]もあります。名前だけ押さえれば十分です。',
+          body: '端末のデフォルトゲートウェイは、故障しても[[blue:仮想IPのまま]]。設定を変えずにすみます。第1章で設定した「デフォルトゲートウェイ＝外への出口」の正体が、この[[blue:中身が切替わる仮想IP]]です。似た仕組みに[[blue:HSRP]]もあります。名前だけ知っていれば足ります。',
         },
         {
           kind: 'text',
@@ -392,7 +392,7 @@ export const ch11Availability: TextbookChapter = {
         },
         {
           kind: 'text',
-          text: '離れた拠点を安全につなぐ[[blue:VPN・WAN]]は第12章、「誰が・何をしてよいか」を確かめる[[blue:認証・PKI]]は第13章で扱います。止まらない構成の考え方は、その土台になります。',
+          text: '離れた拠点を安全につなぐ[[blue:VPN・WAN]]は第12章、「誰が・何をしてよいか」を確かめる[[blue:認証・PKI]]は第13章です。止まらない構成の考え方は、その土台になります。',
         },
       ],
     },

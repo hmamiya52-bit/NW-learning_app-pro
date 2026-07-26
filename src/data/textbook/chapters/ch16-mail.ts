@@ -82,7 +82,7 @@ const mapFigure: PacketFlowFigure = {
       focus: { type: 'node', id: 'peer' },
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: '相手メールサーバが受信箱に保存します。取り出す仕組みは次の節で扱います。',
+      explanation: '相手メールサーバが受信箱に保存します。取り出す仕組みは次の節です。',
     },
   ],
 }
@@ -183,7 +183,7 @@ export const ch16Mail: TextbookChapter = {
     },
     {
       kind: 'text',
-      text: 'そのため、メールには「[[blue:送る]]」と「[[blue:受け取る]]」で別々の仕組みがあります。この章では、送信の[[blue:SMTP]]、受信の[[blue:IMAP／POP]]、そして差出人のなりすましを防ぐ[[blue:SPF・DKIM・DMARC]]を追います。第2章のDNS、第9章のDMZが、そろって効いてきます。',
+      text: 'そのため、メールには「[[blue:送る]]」と「[[blue:受け取る]]」で別々の仕組みがあります。送信の[[blue:SMTP]]、受信の[[blue:IMAP／POP]]、そして差出人のなりすましを防ぐ[[blue:SPF・DKIM・DMARC]]。第2章のDNS、第9章のDMZが、そろって効いてきます。',
     },
   ],
   sections: [
@@ -219,7 +219,7 @@ export const ch16Mail: TextbookChapter = {
           kind: 'callout',
           tone: 'tip',
           title: 'ポート番号と暗号化',
-          body: 'SMTPはサーバ間の配送に[[amber:25番]]、利用者のPCからの送信に[[amber:587番]]を使います。配送の途中も、第4章の[[blue:TLS]]で暗号化できます（STARTTLSという名前だけ押さえれば十分です）。',
+          body: 'SMTPはサーバ間の配送に[[amber:25番]]、利用者のPCからの送信に[[amber:587番]]を使います。配送の途中も、第4章の[[blue:TLS]]で暗号化できます（STARTTLSという名前だけで足ります）。',
         },
       ],
     },

@@ -71,7 +71,7 @@ const webFlowFigure: PacketFlowFigure = {
   kind: 'packet-flow',
   id: 'ch1-web',
   title: 'PCからWebサーバへ届くまで',
-  caption: 'いま説明している区間が青く光ります。下の表（封筒のあて名）で、区間ごとに何が変わり何が変わらないかを見比べてください。',
+  caption: 'いま説明している区間が青く光ります。ヘッダ表（封筒のあて名）に、区間ごとに何が変わり何が変わらないかが出ます。',
   takeaway: '区間ごとに変わる[[green:あて先MAC]]、最後まで変わらない[[blue:あて先IP]]。ルータは[[blue:あて先IP]]で道を選び、次の区間用に[[green:MAC]]を付け替えます。',
   topology: webTopology,
   steps: [

@@ -193,7 +193,7 @@ export const ch12VpnWanSdwan: TextbookChapter = {
   order: 12,
   title: '拠点間接続・VPN・WAN・SD-WAN',
   summary:
-    '離れた本社と支社を安全につなぐIPsec VPN、つまり元のパケットを暗号化して新しいIPで包む二重のトンネルを軸に、拠点間をつなぐWAN回線の種類と、複数回線を束ねて使い分けるSD-WANを理解します。第1章のカプセル化が「パケットをパケットで包む」として効きます。',
+    '離れた本社と支社を安全につなぐのがIPsec VPNで、元のパケットを暗号化して新しいIPで包む二重のトンネルです。拠点間をつなぐWAN回線の種類と、複数回線を束ねて使い分けるSD-WANまで。第1章のカプセル化が「パケットをパケットで包む」として効いてきます。',
   status: 'published',
   estimatedMinutes: 20,
   intro: [
@@ -203,7 +203,7 @@ export const ch12VpnWanSdwan: TextbookChapter = {
     },
     {
       kind: 'text',
-      text: '拠点ごとに専用線を引くのは高くつきます。そこで、安いインターネットを経由しながら安全につなぐのが[[blue:VPN]]。この章では、拠点間を暗号トンネルでつなぐ[[blue:IPsec VPN]]、回線の種類（[[blue:WAN]]）、複数回線を束ねる[[blue:SD-WAN]]を扱います。',
+      text: '拠点ごとに専用線を引くのは高くつきます。そこで、安いインターネットを経由しながら安全につなぐのが[[blue:VPN]]。拠点間を暗号トンネルでつなぐ[[blue:IPsec VPN]]、回線の種類（[[blue:WAN]]）、複数回線を束ねる[[blue:SD-WAN]]。ここからは、社内と社内を結ぶ話です。',
     },
   ],
   sections: [
@@ -243,7 +243,7 @@ export const ch12VpnWanSdwan: TextbookChapter = {
           kind: 'callout',
           tone: 'tip',
           title: 'トンネルの中は、もう1枚IPがある',
-          body: '外から見えるのは[[violet:外側のIP]]（本社ルータ→支社ルータ）だけ。中身の[[blue:元のIP]]（本社PC→支社PC）は暗号化され、途中では読めません。この「外側と内側」の区別が、この章でいちばん問われるところです。',
+          body: '外から見えるのは[[violet:外側のIP]]（本社ルータ→支社ルータ）だけ。中身の[[blue:元のIP]]（本社PC→支社PC）は暗号化され、途中では読めません。この「外側と内側」の区別が、いちばん問われるところです。',
         },
       ],
     },
@@ -267,7 +267,7 @@ export const ch12VpnWanSdwan: TextbookChapter = {
           kind: 'callout',
           tone: 'info',
           title: '取り決めのことをSAと呼ぶ',
-          body: 'IKEが決めた取り決め（方式と鍵の組）を[[blue:SA]]（Security Association）と呼びます。順番は2段階で、まず打ち合わせ用の[[blue:IKE SA]]を作り、その安全な通路を使って、実際にデータを守る[[blue:Child SA]]を作ります。「打ち合わせ用の通路を先に作り、その中で本番の取り決めをする」と押さえておけば、科目Bで名前が出てきても迷いません。',
+          body: 'IKEが決めた取り決め（方式と鍵の組）を[[blue:SA]]（Security Association）と呼びます。順番は2段階で、まず打ち合わせ用の[[blue:IKE SA]]を作り、その安全な通路を使って、実際にデータを守る[[blue:Child SA]]を作ります。「打ち合わせ用の通路を先に作り、その中で本番の取り決めをする」と分かっていれば、科目Bで名前が出てきても迷いません。',
         },
       ],
     },
@@ -321,7 +321,7 @@ export const ch12VpnWanSdwan: TextbookChapter = {
         { kind: 'figure', figure: insideOutsideTable },
         {
           kind: 'text',
-          text: 'トンネルはFW（第9章）の内側から張ることが多く、[[blue:VPNの通信をFWで許可]]する設定もあわせて問われます。戻りの通信が同じトンネルを逆向きに通る点も、あわせて押さえます。',
+          text: 'トンネルはFW（第9章）の内側から張ることが多く、[[blue:VPNの通信をFWで許可]]する設定もあわせて問われます。戻りの通信が同じトンネルを逆向きに通る点も、よく狙われます。',
         },
         {
           kind: 'check',
@@ -337,7 +337,7 @@ export const ch12VpnWanSdwan: TextbookChapter = {
         },
         {
           kind: 'text',
-          text: '物理を意識しない論理ネットワークをさらに広げる[[blue:VXLAN]]（クラウドとの接続）は第17章で扱います。「包んで運ぶ」という考え方は、そこでも土台になります。',
+          text: '物理を意識しない論理ネットワークをさらに広げる[[blue:VXLAN]]（クラウドとの接続）は第17章です。「包んで運ぶ」という考え方は、そこでも土台になります。',
         },
       ],
     },

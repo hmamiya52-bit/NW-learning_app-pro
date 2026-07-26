@@ -358,7 +358,7 @@ export const ch20AfternoonReading: TextbookChapter = {
     },
     {
       kind: 'text',
-      text: 'この章では、まず図の[[blue:読む順]]を型として身につけ、次に[[blue:2本の通信]]で各章の知識をつなぎ、最後に[[blue:答案の組み立て]]へ落とし込みます。',
+      text: 'まず図の[[blue:読む順]]を型として身につけ、次に[[blue:2本の通信]]で各章の知識がつながり、最後は[[blue:答案の組み立て]]へ。この3段で仕上がります。',
     },
     {
       kind: 'callout',
@@ -474,7 +474,7 @@ export const ch20AfternoonReading: TextbookChapter = {
         { kind: 'figure', figure: answerTable },
         {
           kind: 'text',
-          text: 'タイプが分かったら、あとは共通の段取りです。書き始める前の手順を、時系列で押さえます。',
+          text: 'タイプが分かったら、あとは共通の段取りです。書き始める前の手順は、時系列で決まっています。',
         },
         { kind: 'figure', figure: answerStepsTimeline },
         {

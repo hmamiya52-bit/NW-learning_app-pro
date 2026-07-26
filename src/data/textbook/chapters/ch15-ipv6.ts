@@ -125,7 +125,7 @@ export const ch15Ipv6: TextbookChapter = {
   order: 15,
   title: 'IPv6',
   summary:
-    'IPv4の枯渇をNATで持ちこたえてきた世界への根本解決が、アドレスを128ビットに増やしたIPv6です。16進8グループの表記と::の省略ルール、前半・後半の構造、ARPの仕事を引き継ぐNDP、DHCPなしの自動設定SLAAC、そして現実的な移行方法のデュアルスタックまでを読み解きます。',
+    'IPv4の枯渇をNATで持ちこたえてきた世界への根本解決が、アドレスを128ビットに増やしたIPv6です。16進8グループの表記と::の省略ルール、前半・後半の構造、ARPの仕事を引き継ぐNDP、DHCPなしの自動設定SLAAC、そして現実的な移行方法のデュアルスタック。長さは4倍でも、住所として使う考え方はIPv4と変わりません。',
   status: 'published',
   estimatedMinutes: 12,
   intro: [
@@ -135,7 +135,7 @@ export const ch15Ipv6: TextbookChapter = {
     },
     {
       kind: 'text',
-      text: 'この章で扱うのはその先、アドレスそのものを増やした[[green:IPv6]]です。長いアドレスの読み方、ARPに代わる[[green:NDP]]、DHCPなしの自動設定[[green:SLAAC]]、そして現実的な移行のかたち（[[blue:デュアルスタック]]）まで。見た目は大きく変わりますが、発想の芯は今までと同じです。',
+      text: 'その先にあるのが、アドレスそのものを増やした[[green:IPv6]]です。長いアドレスの読み方、ARPに代わる[[green:NDP]]、DHCPなしの自動設定[[green:SLAAC]]、そして現実的な移行のかたち（[[blue:デュアルスタック]]）まで。見た目は大きく変わりますが、発想の芯は今までと同じです。',
     },
   ],
   sections: [
@@ -144,12 +144,12 @@ export const ch15Ipv6: TextbookChapter = {
       blocks: [
         {
           kind: 'text',
-          text: 'まず、IPv4との違いを一望します。ポイントは、枯渇という同じ問題への[[blue:答え方の違い]]。表に出てくる見慣れない「::」の読み方は、すぐ次の図で解決します。',
+          text: 'まず、IPv4との違いです。ポイントは、枯渇という同じ問題への[[blue:答え方の違い]]。表に出てくる見慣れない「::」の読み方は、すぐ次の図で解決します。',
         },
         { kind: 'figure', figure: v4v6Table },
         {
           kind: 'text',
-          text: '次に、あの長いアドレスの読み方です。内部LANのPCに [[green:2001:db8:10:1::10]] というIPv6アドレスが付いたとして、フル表記から順に見ていきます。',
+          text: '次に、あの長いアドレスの読み方です。内部LANのPCに [[green:2001:db8:10:1::10]] というIPv6アドレスが付いたとして、フル表記から順に短くしていきます。',
         },
         { kind: 'figure', figure: addrFigure },
         {
@@ -205,7 +205,7 @@ export const ch15Ipv6: TextbookChapter = {
       blocks: [
         {
           kind: 'text',
-          text: 'IPv6の科目Bは、①[[green:表記]]（::の省略と展開）、②[[blue:移行構成]]（デュアルスタックの読み取り）、③[[blue:ARP↔NDP]]の対応、の3点が定番です。まずは表記の手を動かしましょう。',
+          text: 'IPv6の科目Bは、①[[green:表記]]（::の省略と展開）、②[[blue:移行構成]]（デュアルスタックの読み取り）、③[[blue:ARP↔NDP]]の対応、の3点が定番です。なかでも表記は、手を動かすと早く身につきます。',
         },
         {
           kind: 'check',
@@ -220,7 +220,7 @@ export const ch15Ipv6: TextbookChapter = {
         },
         {
           kind: 'text',
-          text: 'もう1つ、IPv6だけの端末とIPv4だけの相手をつなぐ変換の仕組みとして[[blue:NAT64]]という名前があります。移行期の道具として、名前だけ押さえておけば大丈夫です。',
+          text: 'もう1つ、IPv6だけの端末とIPv4だけの相手をつなぐ変換の仕組みとして[[blue:NAT64]]という名前があります。移行期の道具として、名前だけ知っていれば大丈夫です。',
         },
       ],
     },

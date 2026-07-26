@@ -241,7 +241,7 @@ export const ch13AuthSsoPki: TextbookChapter = {
   order: 13,
   title: '認証・認可・SSO・PKI',
   summary:
-    '「あなたは誰か」を確かめる認証と、「何をしてよいか」を決める認可の区別を出発点に、認証を一元管理するRADIUS、一度の認証で複数のサービスを使うSSO、署名の連鎖で証明書の本物を保証するPKIを理解します。第4章のサーバ証明書の「なぜ信じられるか」に、ここで答えます。',
+    '「あなたは誰か」を確かめる認証と、「何をしてよいか」を決める認可は別ものです。認証を一元管理するRADIUS、一度の認証で複数のサービスを使うSSO、署名の連鎖で証明書の本物を保証するPKI。第4章のサーバ証明書の「なぜ信じられるか」に、ここで答えが出ます。',
   status: 'published',
   estimatedMinutes: 20,
   intro: [
@@ -251,7 +251,7 @@ export const ch13AuthSsoPki: TextbookChapter = {
     },
     {
       kind: 'text',
-      text: 'この章では、「誰か」を確かめる[[blue:認証]]と「何をしてよいか」を決める[[violet:認可]]の区別から始め、認証を一元化する[[blue:RADIUS]]、一度の認証で複数サービスを使う[[blue:SSO]]、証明書の信頼を支える[[blue:PKI]]まで、ネットワークの「確かめる仕組み」をまとめて整理します。',
+      text: '「誰か」を確かめる[[blue:認証]]と「何をしてよいか」を決める[[violet:認可]]の区別から始まり、認証を一元化する[[blue:RADIUS]]、一度の認証で複数サービスを使う[[blue:SSO]]、証明書の信頼を支える[[blue:PKI]]へ。ネットワークの「確かめる仕組み」が、ここでひとまとまりになります。',
     },
   ],
   sections: [
@@ -316,7 +316,7 @@ export const ch13AuthSsoPki: TextbookChapter = {
           kind: 'callout',
           tone: 'info',
           title: 'SAMLは「認証する係」と「使わせる係」を分ける',
-          body: 'SSOを実現する代表的な方式が[[blue:SAML]]です。登場人物は2つ。利用者を認証して通行証を発行する[[blue:IdP]]と、その通行証を信じてサービスを使わせる[[blue:SP]]。上の図の認証サーバがIdP、サービスA・BがSPにあたります。パスワードを預かるのはIdPだけで、SPへは渡りません。この認証の役目をクラウドのサービスとして借りる形が[[blue:IDaaS]]です。似た仕組みに[[blue:OIDC]]、社内のWindows環境では[[blue:Kerberos]]が使われますが、こちらは名前だけで十分です。',
+          body: 'SSOを実現する代表的な方式が[[blue:SAML]]です。登場人物は2つ。利用者を認証して通行証を発行する[[blue:IdP]]と、その通行証を信じてサービスを使わせる[[blue:SP]]。図の認証サーバがIdP、サービスA・BがSPにあたります。パスワードを預かるのはIdPだけで、SPへは渡りません。この認証の役目をクラウドのサービスとして借りる形が[[blue:IDaaS]]です。似た仕組みに[[blue:OIDC]]、社内のWindows環境では[[blue:Kerberos]]が使われますが、こちらは名前だけで十分です。',
         },
       ],
     },

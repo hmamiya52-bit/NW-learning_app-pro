@@ -290,13 +290,13 @@ export const ch14WirelessLan: TextbookChapter = {
   order: 14,
   title: '無線LAN',
   summary:
-    '電波と有線を橋渡しするAPとWLC、SSIDとVLANの対応づけ、衝突を検出できないからこそ送る前に避けるCSMA/CA、第13章のRADIUSが本格稼働するIEEE802.1X認証、そして移動しても切れないローミングまで、ケーブルのないLANを支える仕組みを一望します。',
+    '電波と有線を橋渡しするAPとWLC、SSIDとVLANの対応づけ、衝突を検出できないからこそ送る前に避けるCSMA/CA、第13章のRADIUSが本格稼働するIEEE802.1X認証、そして移動しても切れないローミング。ケーブルのないLANは、これらで支えられています。',
   status: 'published',
   estimatedMinutes: 19,
   intro: [
     {
       kind: 'text',
-      text: 'ここまでの構成図は、すべて[[blue:ケーブル]]の世界でした。この章で登場するのは[[blue:電波]]。配線がないだけ、と思いきや、電波は壁を越えて誰にでも届き、同時に話せるのは1人だけ。前提がまるで違います。',
+      text: 'ここまでの構成図は、すべて[[blue:ケーブル]]の世界でした。ここで登場するのは[[blue:電波]]。配線がないだけ、と思いきや、電波は壁を越えて誰にでも届き、同時に話せるのは1人だけ。前提がまるで違います。',
     },
     {
       kind: 'text',
@@ -330,7 +330,7 @@ export const ch14WirelessLan: TextbookChapter = {
           kind: 'callout',
           tone: 'info',
           title: '規格の世代とWi-Fi 6',
-          body: '無線LANの規格はIEEE802.11の a・b・g・n・ac・ax と進んできました。読みにくいので、いまは世代番号で呼びます。[[blue:11n＝Wi-Fi 4]]、[[blue:11ac＝Wi-Fi 5]]、[[blue:11ax＝Wi-Fi 6]]。6GHz帯まで使えるものを[[blue:Wi-Fi 6E]]と呼びます。3つの帯を同時に出せるAPは[[blue:トライバンド]]。科目Bでは「11axはWi-Fi 6」の対応と、帯ごとの性質を押さえれば十分です。',
+          body: '無線LANの規格はIEEE802.11の a・b・g・n・ac・ax と進んできました。読みにくいので、いまは世代番号で呼びます。[[blue:11n＝Wi-Fi 4]]、[[blue:11ac＝Wi-Fi 5]]、[[blue:11ax＝Wi-Fi 6]]。6GHz帯まで使えるものを[[blue:Wi-Fi 6E]]と呼びます。3つの帯を同時に出せるAPは[[blue:トライバンド]]。科目Bでは「11axはWi-Fi 6」の対応と、帯ごとの性質が分かれば足ります。',
         },
       ],
     },

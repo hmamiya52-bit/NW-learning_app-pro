@@ -54,7 +54,7 @@ const mapFigure: PacketFlowFigure = {
       focus: { type: 'node', id: 'dhcp' },
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: '2台目がDHCPサーバ。住所ひとそろいを配る係。2台の働きを、この章で順に見ていきます。',
+      explanation: '2台目がDHCPサーバ。IPアドレスを含む住所ひとそろいを配る係です。',
     },
     {
       focus: { type: 'link', a: 'l2sw', b: 'dns' },
@@ -175,7 +175,7 @@ export const ch02DnsDhcp: TextbookChapter = {
   order: 2,
   title: '名前解決とアドレス配布（DNS・DHCP）',
   summary:
-    '通信を始めるには、自分の住所と相手の住所の両方が分かっていなければなりません。この章では、住所ひとそろいを配ってもらうDHCPと、名前からあて先のIPを調べるDNSを扱います。',
+    '通信を始めるには、自分の住所と相手の住所の両方が分かっていなければなりません。自分の住所はDHCPが配り、相手の住所は名前からDNSが調べます。第1章の通信が始まる前に、裏で済んでいた2つの下ごしらえです。',
   status: 'published',
   estimatedMinutes: 16,
   intro: [
@@ -185,7 +185,7 @@ export const ch02DnsDhcp: TextbookChapter = {
     },
     {
       kind: 'text',
-      text: 'ひとつは[[blue:自分の住所]]。PCが自分のIPアドレスをどうやって持つのか。もうひとつは[[blue:相手の住所]]で、「www.example.com」のような名前から、相手のIPアドレスをどう調べるのか。この章で、その出発前を埋めます。',
+      text: 'ひとつは[[blue:自分の住所]]。PCが自分のIPアドレスをどうやって持つのか。もうひとつは[[blue:相手の住所]]で、「www.example.com」のような名前から、相手のIPアドレスをどう調べるのか。第1章では省いていた、この出発前が埋まります。',
     },
   ],
   sections: [
@@ -194,7 +194,7 @@ export const ch02DnsDhcp: TextbookChapter = {
       blocks: [
         {
           kind: 'text',
-          text: 'まず構成図から。第1章の最小構成に、この章の主役である[[blue:名前を調べるDNSサーバ]]と[[blue:住所を配るDHCPサーバ]]が内部LANに加わります。',
+          text: '第1章の最小構成に、[[blue:名前を調べるDNSサーバ]]と[[blue:住所を配るDHCPサーバ]]が内部LANに加わります。まずは、その2台の居場所からです。',
         },
         { kind: 'figure', figure: mapFigure },
       ],

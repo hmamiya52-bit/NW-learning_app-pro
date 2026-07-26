@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef } from 'react'
-import { ArrowDown, ArrowRight, ArrowUp } from 'lucide-react'
+import { ArrowDown, ArrowUp } from 'lucide-react'
 import type { EncapFigure as EncapFigureData } from '../../../data/textbook/types'
 import FigureFrame from './FigureFrame'
 import StepperControls from './StepperControls'
@@ -109,13 +109,16 @@ function Nest({
           </span>
         )}
       </div>
+      {/* ヘッダ／トレーラの枠は縮められるようにする（flex-shrink-0 だと、入れ子が深いときに
+          合計幅がパネルを超えて枠からはみ出す。実測: 375pxでパネル261pxに対し中身293px）。
+          幅が足りなければラベルが折り返して、横方向に収まる。 */}
       <div className="flex flex-row items-stretch gap-1">
-        <div className={`flex flex-shrink-0 items-center justify-center rounded-md border ${t.border} bg-white px-1 py-1 text-center text-[9px] font-black leading-tight ${t.text}`}>
+        <div className={`flex min-w-0 items-center justify-center rounded-md border ${t.border} bg-white px-1 py-1 text-center text-[9px] font-black leading-tight ${t.text}`}>
           {lv.header}
         </div>
         {inner}
         {lv.trailer && (
-          <div className={`flex flex-shrink-0 items-center justify-center rounded-md border ${t.border} bg-white px-1 py-1 text-center text-[9px] font-black leading-tight ${t.text}`}>
+          <div className={`flex min-w-0 items-center justify-center rounded-md border ${t.border} bg-white px-1 py-1 text-center text-[9px] font-black leading-tight ${t.text}`}>
             {lv.trailer}
           </div>
         )}
@@ -132,7 +135,6 @@ function Panel({
   labelTone,
   highlightIdx,
   highlightStyle,
-  narrow,
 }: {
   levels: Level[]
   depth: number
@@ -141,12 +143,11 @@ function Panel({
   labelTone: string
   highlightIdx: number
   highlightStyle: 'add' | 'remove' | null
-  narrow: boolean
 }) {
   const n = levels.length
   const startIdx = n - depth
   return (
-    <div className={`min-w-0 ${narrow ? 'w-full' : 'flex-1'}`}>
+    <div className="w-full min-w-0">
       <div className={`mb-1 text-[10px] font-black ${labelTone}`}>{label}</div>
       {depth === 0 ? (
         <div className="mx-auto max-w-[180px]">
@@ -180,8 +181,6 @@ export default function EncapFigure({ figure }: { figure: EncapFigureData }) {
     el.animate([{ opacity: 0.5 }, { opacity: 1 }], { duration: 280, easing: 'ease' })
   }, [index])
 
-  const Arrow = narrow ? ArrowDown : ArrowRight
-
   return (
     <FigureFrame title={figure.title} caption={figure.caption} takeaway={figure.takeaway}>
       {/* 送受信フェーズ */}
@@ -194,8 +193,10 @@ export default function EncapFigure({ figure }: { figure: EncapFigureData }) {
         {isSend ? '送信側：包んでいく（カプセル化）' : '受信側：外していく（デカプセル化）'}
       </div>
 
-      <div className={`flex ${narrow ? 'h-[348px]' : 'h-[196px]'} items-center rounded-lg border border-slate-200 bg-slate-50/60 p-2.5`}>
-        <div ref={stageRef} key={index} className={`flex w-full items-center justify-center gap-2 ${narrow ? 'flex-col' : 'flex-row'}`}>
+      {/* 前→後は常に上下2段。左右分割にすると各段の幅が半分になり、4段の入れ子（Ethernet⊃IP⊃TCP⊃データ＋FCS）が
+          収まらずに枠からはみ出す（実測: 図幅694pxで32pxはみ出し）。全幅を使えるよう縦に並べる。 */}
+      <div className={`flex ${narrow ? 'h-[348px]' : 'h-[300px]'} items-center rounded-lg border border-slate-200 bg-slate-50/60 p-2.5`}>
+        <div ref={stageRef} key={index} className="flex w-full flex-col items-center justify-center gap-2">
           <Panel
             levels={figure.levels}
             depth={step.beforeDepth}
@@ -204,10 +205,9 @@ export default function EncapFigure({ figure }: { figure: EncapFigureData }) {
             labelTone="text-slate-400"
             highlightIdx={beforeHl}
             highlightStyle={hlStyle}
-            narrow={narrow}
           />
-          <div className={`flex flex-shrink-0 items-center gap-1 ${narrow ? 'flex-row' : 'flex-col'} ${isSend ? 'text-violet-700' : 'text-rose-700'}`}>
-            <Arrow className="h-4 w-4" aria-hidden="true" />
+          <div className={`flex flex-shrink-0 flex-row items-center gap-1 ${isSend ? 'text-violet-700' : 'text-rose-700'}`}>
+            <ArrowDown className="h-4 w-4" aria-hidden="true" />
             <span className="whitespace-nowrap rounded bg-white px-1.5 py-0.5 text-[10px] font-black shadow-sm">{step.action}</span>
           </div>
           <Panel
@@ -218,7 +218,6 @@ export default function EncapFigure({ figure }: { figure: EncapFigureData }) {
             labelTone={isSend ? 'text-violet-700' : 'text-emerald-700'}
             highlightIdx={afterHl}
             highlightStyle={hlStyle}
-            narrow={narrow}
           />
         </div>
       </div>

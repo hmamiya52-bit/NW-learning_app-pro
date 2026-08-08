@@ -42,34 +42,28 @@ const apFigure: PacketFlowFigure = {
   hideHeaders: true,
   steps: [
     {
-      focus: { type: 'node', id: 'ap' },
-      packetLabel: '',
-      headers: { l2: '', l3: '' },
-      explanation: '新顔のAP。電波と有線を変換する、無線LANの出入口です。',
-    },
-    {
-      focus: { type: 'node', id: 'wlc' },
-      packetLabel: '',
-      headers: { l2: '', l3: '' },
-      explanation: 'もう1つの新顔WLC。多数のAPの設定や電波を、まとめて管理する役です。',
-    },
-    {
       focus: { type: 'link', a: 'nb', b: 'ap' },
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: 'ノートPCの通信は、電波でAPへ。破線の区間だけが無線です。',
+      explanation: 'ノートPCの通信は電波で新顔のAPへ。破線の区間だけが無線です。',
     },
     {
       focus: { type: 'link', a: 'ap', b: 'l2sw' },
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: 'APで有線に乗り換え、トランクでL2SWへ上がります。',
+      explanation: 'APが電波を有線に変換し、トランクでL2SWへ上がります。',
     },
     {
       focus: { type: 'link', a: 'l2sw', b: 'r' },
       packetLabel: '',
       headers: { l2: '', l3: '' },
       explanation: 'そのままルータへ。ここから先は、第1章と変わらない有線の道のり。',
+    },
+    {
+      focus: { type: 'link', a: 'l2sw', b: 'wlc' },
+      packetLabel: '',
+      headers: { l2: '', l3: '' },
+      explanation: 'もう1つの新顔WLC。多数のAPの設定を、この線でまとめて配ります。',
     },
   ],
 }

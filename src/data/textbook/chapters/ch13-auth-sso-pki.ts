@@ -66,12 +66,6 @@ const mapFigure: PacketFlowFigure = {
   hideHeaders: true,
   steps: [
     {
-      focus: { type: 'node', id: 'auth' },
-      packetLabel: '',
-      headers: { l2: '', l3: '' },
-      explanation: '内部LANの新顔が認証サーバ（RADIUS）。DNS・DHCPと並ぶ、係のサーバの1台です。',
-    },
-    {
       focus: { type: 'node', id: 'pc' },
       verdict: 'block',
       packetLabel: '',
@@ -82,7 +76,7 @@ const mapFigure: PacketFlowFigure = {
       focus: { type: 'link', a: 'l2sw', b: 'auth' },
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: 'L2SWが利用者の情報をこの線の先へ問い合わせ、可否の応答を待ちます。',
+      explanation: 'L2SWが利用者の情報を、新顔の認証サーバ（RADIUS）へ問い合わせます。',
     },
     {
       focus: { type: 'node', id: 'pc' },

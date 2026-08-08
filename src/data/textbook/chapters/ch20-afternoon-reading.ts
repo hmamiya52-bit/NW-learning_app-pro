@@ -126,6 +126,7 @@ const journeyFigure: PacketFlowFigure = {
   steps: [
     {
       focus: { type: 'node', id: 'extpc' },
+      bubbles: ['宛先 203.0.113.2'],
       packetLabel: '',
       headers: { l2: '', l3: '' },
       explanation: '社外の利用者がサイト名でアクセス。まずDNSであて先IPを解決します（第2章）。',
@@ -145,10 +146,11 @@ const journeyFigure: PacketFlowFigure = {
       explanation: 'インターネットを越えて自社の境界へ。ISP間の経路はBGPの世界（第8章）。',
     },
     {
-      focus: { type: 'node', id: 'br' },
+      // 変換したうえでFWへ渡すところまでを1歩に（br—fw の区間が旅から抜けていた）。
+      focus: { type: 'link', a: 'br', b: 'fw' },
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: '境界ルータがあて先をグローバルIPからVIPへ変換します（第9章の静的NAT）。',
+      explanation: '境界ルータがあて先をグローバルIPからVIPへ変換し、FWへ（第9章の静的NAT）。',
     },
     {
       focus: { type: 'node', id: 'fw' },
@@ -192,10 +194,10 @@ const siteJourneyFigure: PacketFlowFigure = {
   hideHeaders: true,
   steps: [
     {
-      focus: { type: 'node', id: 'pc' },
+      focus: { type: 'link', a: 'pc', b: 'sw' },
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: '支社のPC 192.168.20.10 あて。別ネットワークなので、まずGWへ（第1・6章）。',
+      explanation: '支社のPC 192.168.20.10 あて。別ネットワークなので、まずGWへ（第6章）。',
     },
     {
       focus: { type: 'link', a: 'sw', b: 'fw' },
@@ -204,10 +206,11 @@ const siteJourneyFigure: PacketFlowFigure = {
       explanation: 'L2SWを経てFWへ。ここまでは社内のいつもの道のりです。',
     },
     {
-      focus: { type: 'node', id: 'fw' },
+      // 許可したうえで境界ルータへ渡すところまでを1歩に（fw—br の区間が旅から抜けていた）。
+      focus: { type: 'link', a: 'fw', b: 'br' },
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: '拠点間も社内どうしの通信として、FWのルールで許可されます（第9章）。',
+      explanation: '拠点間も社内どうしの通信としてFWが許可し、境界ルータへ（第9章）。',
     },
     {
       focus: { type: 'node', id: 'br' },

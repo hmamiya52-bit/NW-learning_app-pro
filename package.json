@@ -8,6 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "lint:notes": "node scripts/lint-note-red.mjs",
+    "lint:figures": "node scripts/lint-figure-motion.mjs",
     "preview": "vite preview"
   },
   "dependencies": {

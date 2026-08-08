@@ -39,28 +39,28 @@ const overviewFigure: PacketFlowFigure = {
   kind: 'packet-flow',
   id: 'ch8-overview',
   title: 'インターネットとの境界が加わった全体図',
-  caption: '[[blue:上が社外・下が社内]]。第7章までの構成の上に、境界ルータとインターネットが加わりました。',
+  caption: '[[blue:上が社外・下が社内]]。3つの出発点から外へ出て、道が[[blue:1本に集まる]]までを追います。',
   takeaway: '社内から外へ出る通信は、どこ発でも最後は[[blue:境界ルータ]]を通る構造。R1のデフォルトルートの行き先もここ。',
   topology: overviewTopology,
   hideHeaders: true,
   steps: [
     {
-      focus: { type: 'node', id: 'r1' },
+      focus: { type: 'link', a: 'pc', b: 'r1' },
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: '第7章までの世界。R1とR2が3つのセグメントを結んでいます。',
-    },
-    {
-      focus: { type: 'node', id: 'br' },
-      packetLabel: '',
-      headers: { l2: '', l3: '' },
-      explanation: '今回加わったのが境界ルータ。これまでの構成の、いちばん上に載ります。',
+      explanation: '内部LANのPCから外のサイトへ。まずはR1に渡します。',
     },
     {
       focus: { type: 'link', a: 'fl2pc', b: 'r1' },
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: '別フロアのPCから外へ出てみます。まずR1へ渡します。',
+      explanation: '別フロアのPCから出ても、最初に向かう先は同じR1です。',
+    },
+    {
+      focus: { type: 'link', a: 'r2', b: 'r1' },
+      packetLabel: '',
+      headers: { l2: '', l3: '' },
+      explanation: 'サーバLANから外へ出るときも、R2を経てR1に集まります。',
     },
     {
       focus: { type: 'link', a: 'r1', b: 'br' },
@@ -75,10 +75,11 @@ const overviewFigure: PacketFlowFigure = {
       explanation: '境界ルータの外側はグローバルIP。この先は世界で通じる住所だけ。',
     },
     {
-      focus: { type: 'node', id: 'inet' },
+      focus: { type: 'link', a: 'br', b: 'inet' },
+      blockedLink: { a: 'br', b: 'inet' },
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: 'その先がインターネット。雲の中身は、この章の後半で開きます。',
+      explanation: '出発点が3つでも外へ出る道は1本。ここが切れると全員が出られません。',
     },
   ],
 }
@@ -275,6 +276,7 @@ const bgpFigure: PacketFlowFigure = {
     },
     {
       focus: { type: 'node', id: 'ispa' },
+      bubbles: ['宛先 相手の組織'],
       packetLabel: '',
       headers: { l2: '', l3: '' },
       explanation: 'ASはネットワークのかたまり。どこへ届くかを、AS同士がBGPで教え合います。',

@@ -42,22 +42,16 @@ const watchFigure: PacketFlowFigure = {
   hideHeaders: true,
   steps: [
     {
-      focus: { type: 'node', id: 'mon' },
-      packetLabel: '',
-      headers: { l2: '', l3: '' },
-      explanation: '内部LANに監視サーバが加わり、全機器の状態をここに集めます。',
-    },
-    {
       focus: { type: 'link', a: 'mon', b: 'sw' },
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: '監視サーバが定期的にL2SWへ状態を尋ねます。これがポーリング。',
+      explanation: '内部LANに加わった監視サーバが、L2SWへ状態を尋ねます（ポーリング）。',
     },
     {
       focus: { type: 'link', a: 'fw', b: 'br' },
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: '境界ルータのような遠くの機器にも尋ね、応答で使用率などを集めます。',
+      explanation: 'さらに遠くの境界ルータにも尋ね、応答で使用率などを集めます。',
     },
     {
       focus: { type: 'node', id: 'br' },

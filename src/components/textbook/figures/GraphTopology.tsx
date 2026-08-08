@@ -105,9 +105,11 @@ function ArrowOnSeg({ x1, y1, x2, y2, color }: { x1: number; y1: number; x2: num
 }
 
 // パケットが進む区間の幾何。直線（幹・枝・ルータ間・LAG）と2次ベジェ（ループの弧）の2種。
-type Travel =
-  | { kind: 'line'; x1: number; y1: number; x2: number; y2: number }
-  | { kind: 'quad'; x1: number; y1: number; cx: number; cy: number; x2: number; y2: number }
+// t0/t1 は進む範囲の既定値の上書き（トンネルの帯だけ端から端まで＝帯の中の文言を避けるため）。
+type Travel = ({ kind: 'line'; x1: number; y1: number; x2: number; y2: number } | { kind: 'quad'; x1: number; y1: number; cx: number; cy: number; x2: number; y2: number }) & {
+  t0?: number
+  t1?: number
+}
 
 // 封筒はノードに重ならないよう区間の 14%〜86% だけを進む（両端はノードの箱に接する）。
 const TRAVEL_FROM = 0.14
@@ -128,7 +130,9 @@ function travelPoint(t: Travel, u: number) {
 // （同じ要素に両方を書くと CSS 側が属性を上書きしてしまうため、入れ子にして分ける）。
 function TravelingPacket({ travel }: { travel: Travel }) {
   const ref = useRef<SVGGElement>(null)
-  const end = travelPoint(travel, TRAVEL_TO)
+  const t0 = travel.t0 ?? TRAVEL_FROM
+  const t1 = travel.t1 ?? TRAVEL_TO
+  const end = travelPoint(travel, t1)
 
   useEffect(() => {
     const el = ref.current
@@ -136,7 +140,7 @@ function TravelingPacket({ travel }: { travel: Travel }) {
     // 弧は直線で結ぶと内側を横切ってしまうので、曲線上を標本化して追わせる。
     const n = travel.kind === 'quad' ? 14 : 1
     const frames = Array.from({ length: n + 1 }, (_, i) => {
-      const p = travelPoint(travel, TRAVEL_FROM + ((TRAVEL_TO - TRAVEL_FROM) * i) / n)
+      const p = travelPoint(travel, t0 + ((t1 - t0) * i) / n)
       return {
         transform: `translate(${p.x - end.x}px, ${p.y - end.y}px)`,
         opacity: i === 0 ? 0.45 : 1,
@@ -144,7 +148,7 @@ function TravelingPacket({ travel }: { travel: Travel }) {
     })
     const anim = el.animate(frames, { duration: TRAVEL_MS, easing: 'ease-in-out' })
     return () => anim.cancel()
-  }, [travel, end.x, end.y])
+  }, [travel, t0, t1, end.x, end.y])
 
   return (
     <g transform={`translate(${end.x}, ${end.y})`}>
@@ -178,7 +182,7 @@ function orient(seg: { x1: number; y1: number; x2: number; y2: number }, from?: 
 function activeTravel(layout: Layout, focus: PacketStep['focus'], blockedLink?: { a: string; b: string }): Travel | null {
   if (focus.type !== 'link') return null
   const { a, b } = focus
-  const { pos, trunk, leafSegs, spineEdges, loop, bundle } = layout
+  const { pos, trunk, leafSegs, spineEdges, loop, bundle, tunnel } = layout
   const isBlocked = (x: string, y: string) => !!blockedLink && samePair(blockedLink.a, blockedLink.b, x, y)
   const from = pos.get(a)
 
@@ -216,6 +220,19 @@ function activeTravel(layout: Layout, focus: PacketStep['focus'], blockedLink?: 
     // 1本故障（✕は links[0]）のときは生きている2本目を通す＝「束ねてあるので通信は続く」。
     const ln = isBlocked(bundle.a, bundle.b) ? bundle.links[1] : bundle.links[0]
     return ln ? orient(ln, from) : null
+  }
+
+  // トンネルの帯を渡る（第12章IPsec・第17章VXLAN）。帯の中心線を通す＝「包まれたまま帯を進む」。
+  // 帯は両ルータのちょうど間なので端から端まで（t0/t1）進ませる。既定の86%で止めると
+  // 帯の中の文言（VXLANで包む 等）に静止位置がかかる。
+  if (tunnel && samePair(a, b, tunnel.a, tunnel.b)) {
+    if (isBlocked(tunnel.a, tunnel.b)) return null
+    const cy = tunnel.band.y + tunnel.band.h / 2
+    return {
+      ...orient({ x1: tunnel.band.x, y1: cy, x2: tunnel.band.x + tunnel.band.w, y2: cy }, from),
+      t0: 0,
+      t1: 1,
+    }
   }
 
   return null
@@ -264,18 +281,6 @@ export default function GraphTopology({ topology, focus, blockedLink, verdict, b
               {isBlocked && (
                 <text x={(trunk.x1 + trunk.x2) / 2} y={trunk.y + 6} textAnchor="middle" fontSize="18" fontWeight="700" fill={LINE_BLOCK}>
                   ✕
-                </text>
-              )}
-              {trunkLabel && (
-                <text
-                  x={(trunk.x1 + trunk.x2) / 2}
-                  y={trunk.y - 7}
-                  textAnchor="middle"
-                  fontSize="10"
-                  fontWeight={focused ? 700 : 400}
-                  fill={focused ? '#185fa5' : '#64748b'}
-                >
-                  {trunkLabel}
                 </text>
               )}
             </>
@@ -356,20 +361,6 @@ export default function GraphTopology({ topology, focus, blockedLink, verdict, b
                 ✕
               </text>
             )}
-            {e.label &&
-              e.lines.map((ln, k) => (
-                <text
-                  key={k}
-                  x={e.lx}
-                  y={e.ly + k * 12}
-                  textAnchor={e.lanchor}
-                  fontSize="10"
-                  fontWeight={focused ? 700 : 400}
-                  fill={focused ? '#185fa5' : '#64748b'}
-                >
-                  {ln}
-                </text>
-              ))}
           </g>
         )
       })}
@@ -521,8 +512,41 @@ export default function GraphTopology({ topology, focus, blockedLink, verdict, b
           )
         })()}
 
-      {/* 区間を進む封筒。ノード・セグメント名チップ・各種チップより先に描く＝ラベルを覆わず、下をくぐる。 */}
+      {/* 区間を進む封筒。ノード・ラベル・各種チップより先に描く＝ラベルを覆わず、下をくぐる。 */}
       {travel && <TravelingPacket travel={travel} />}
+
+      {/* 線に添えるラベル（トランク・コスト等）。封筒より後に描くので、封筒に覆われない。 */}
+      {trunk && trunkLabel && (
+        <text
+          x={(trunk.x1 + trunk.x2) / 2}
+          y={trunk.y - 7}
+          textAnchor="middle"
+          fontSize="10"
+          fontWeight={isLinkFocused(trunk.a, trunk.b) ? 700 : 400}
+          fill={isLinkFocused(trunk.a, trunk.b) ? '#185fa5' : '#64748b'}
+        >
+          {trunkLabel}
+        </text>
+      )}
+      {spineEdges.map((e, i) =>
+        e.label ? (
+          <g key={`sl${i}`}>
+            {e.lines.map((ln, k) => (
+              <text
+                key={k}
+                x={e.lx}
+                y={e.ly + k * 12}
+                textAnchor={e.lanchor}
+                fontSize="10"
+                fontWeight={isLinkFocused(e.a, e.b) ? 700 : 400}
+                fill={isLinkFocused(e.a, e.b) ? '#185fa5' : '#64748b'}
+              >
+                {ln}
+              </text>
+            ))}
+          </g>
+        ) : null,
+      )}
 
       {/* セグメント名ラベル（縦積みレイアウトで端末の上に表示・白チップで線と重ねない） */}
       {zoneLabels.map((z, i) => {

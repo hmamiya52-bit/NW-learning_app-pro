@@ -1,9 +1,10 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import type { PacketStep, Topology, TopoNode } from '../../../data/textbook/types'
 
 // links を実際に使う構成図描画。スイッチ／ルータ＝幹、PC等＝枝（スイッチの下/上に縦積み）。
 // 冗長リンク（同じ2ノード間の2本）は縦並びスイッチ＋曲線2本のループで描く。
-// 動きは「アクティブな線・アークの強調＋進行方向の矢印」で表す（ノードを覆う吹き出しは使わない）。
+// 動きは「アクティブな線・アークの強調＋進行方向の矢印＋区間を進む封筒」で表す
+// （ノードを覆う吹き出しは使わない。封筒はノードより先に描くので、ノードの下をくぐる）。
 
 const SPINE_ROLES = new Set(['switch', 'router', 'firewall', 'internet', 'cloud', 'lb', 'proxy', 'ap'])
 
@@ -103,6 +104,123 @@ function ArrowOnSeg({ x1, y1, x2, y2, color }: { x1: number; y1: number; x2: num
   return <polygon points={`${tip} ${b1} ${b2}`} fill={color} />
 }
 
+// パケットが進む区間の幾何。直線（幹・枝・ルータ間・LAG）と2次ベジェ（ループの弧）の2種。
+type Travel =
+  | { kind: 'line'; x1: number; y1: number; x2: number; y2: number }
+  | { kind: 'quad'; x1: number; y1: number; cx: number; cy: number; x2: number; y2: number }
+
+// 封筒はノードに重ならないよう区間の 14%〜86% だけを進む（両端はノードの箱に接する）。
+const TRAVEL_FROM = 0.14
+const TRAVEL_TO = 0.86
+const TRAVEL_MS = 700
+
+function travelPoint(t: Travel, u: number) {
+  if (t.kind === 'line') return { x: t.x1 + (t.x2 - t.x1) * u, y: t.y1 + (t.y2 - t.y1) * u }
+  const m = 1 - u
+  return {
+    x: m * m * t.x1 + 2 * m * u * t.cx + u * u * t.x2,
+    y: m * m * t.y1 + 2 * m * u * t.cy + u * u * t.y2,
+  }
+}
+
+// 1区間ぶんを進む封筒マーク（有限アニメ・1回きり）。無限アニメは使わない（スクショが止まる）。
+// 外側 g に到達位置を SVG transform で置き、内側 g を CSS transform で動かす
+// （同じ要素に両方を書くと CSS 側が属性を上書きしてしまうため、入れ子にして分ける）。
+function TravelingPacket({ travel }: { travel: Travel }) {
+  const ref = useRef<SVGGElement>(null)
+  const end = travelPoint(travel, TRAVEL_TO)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    // 弧は直線で結ぶと内側を横切ってしまうので、曲線上を標本化して追わせる。
+    const n = travel.kind === 'quad' ? 14 : 1
+    const frames = Array.from({ length: n + 1 }, (_, i) => {
+      const p = travelPoint(travel, TRAVEL_FROM + ((TRAVEL_TO - TRAVEL_FROM) * i) / n)
+      return {
+        transform: `translate(${p.x - end.x}px, ${p.y - end.y}px)`,
+        opacity: i === 0 ? 0.45 : 1,
+      }
+    })
+    const anim = el.animate(frames, { duration: TRAVEL_MS, easing: 'ease-in-out' })
+    return () => anim.cancel()
+  }, [travel, end.x, end.y])
+
+  return (
+    <g transform={`translate(${end.x}, ${end.y})`}>
+      <g ref={ref}>
+        <circle r={8.6} fill="#ffffff" stroke="#93c5fd" strokeWidth={1.2} />
+        <rect x={-5.4} y={-3.8} width={10.8} height={7.6} rx={1.4} fill="#eff6ff" stroke="#1d4ed8" strokeWidth={1.2} />
+        <path
+          d="M -5.4 -3.4 L 0 0.7 L 5.4 -3.4"
+          fill="none"
+          stroke="#1d4ed8"
+          strokeWidth={1.2}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </g>
+    </g>
+  )
+}
+
+// 線分の向きを「送信元ノードに近いほうが始点」に揃える（線の描画順ではなく focus の a→b に従う）。
+function orient(seg: { x1: number; y1: number; x2: number; y2: number }, from?: Pos): Travel {
+  if (!from) return { kind: 'line', ...seg }
+  const d1 = Math.hypot(seg.x1 - from.x, seg.y1 - from.y)
+  const d2 = Math.hypot(seg.x2 - from.x, seg.y2 - from.y)
+  return d1 <= d2
+    ? { kind: 'line', x1: seg.x1, y1: seg.y1, x2: seg.x2, y2: seg.y2 }
+    : { kind: 'line', x1: seg.x2, y1: seg.y2, x2: seg.x1, y2: seg.y1 }
+}
+
+// このステップでパケットが進む区間を求める。機器内の処理（focus=node）と遮断中の区間では動かさない。
+function activeTravel(layout: Layout, focus: PacketStep['focus'], blockedLink?: { a: string; b: string }): Travel | null {
+  if (focus.type !== 'link') return null
+  const { a, b } = focus
+  const { pos, trunk, leafSegs, spineEdges, loop, bundle } = layout
+  const isBlocked = (x: string, y: string) => !!blockedLink && samePair(blockedLink.a, blockedLink.b, x, y)
+  const from = pos.get(a)
+
+  if (trunk && samePair(a, b, trunk.a, trunk.b)) {
+    return isBlocked(trunk.a, trunk.b) ? null : orient({ x1: trunk.x1, y1: trunk.y, x2: trunk.x2, y2: trunk.y }, from)
+  }
+
+  // 枝。tree は葉を数珠つなぎに描くため、論理リンク（幹—葉）の指定でも owner で一致させる。
+  const seg = leafSegs.find((s) => samePair(a, b, s.from, s.to) || (!!s.owner && samePair(a, b, s.owner, s.to)))
+  if (seg) {
+    const blocked = isBlocked(seg.from, seg.to) || (!!seg.owner && isBlocked(seg.owner, seg.to))
+    return blocked ? null : orient(seg, from)
+  }
+
+  const edge = spineEdges.find((e) => samePair(a, b, e.a, e.b))
+  if (edge) return isBlocked(edge.a, edge.b) ? null : orient(edge, from)
+
+  if (loop && samePair(a, b, loop.a, loop.b)) {
+    // a→b は左の弧（下り）、b→a は右の弧（上り）＝描画側の loopFwd / loopRev と対応。
+    const fwd = a === loop.a
+    // 遮断されるのは右の弧だけ。左の弧は生きているので封筒は流す（STPの「片方だけ通る」）。
+    if (!fwd && isBlocked(loop.a, loop.b)) return null
+    return {
+      kind: 'quad',
+      x1: loop.cx,
+      y1: fwd ? loop.topY : loop.botY,
+      cx: fwd ? loop.cxL : loop.cxR,
+      cy: loop.yMid,
+      x2: loop.cx,
+      y2: fwd ? loop.botY : loop.topY,
+    }
+  }
+
+  if (bundle && samePair(a, b, bundle.a, bundle.b)) {
+    // 1本故障（✕は links[0]）のときは生きている2本目を通す＝「束ねてあるので通信は続く」。
+    const ln = isBlocked(bundle.a, bundle.b) ? bundle.links[1] : bundle.links[0]
+    return ln ? orient(ln, from) : null
+  }
+
+  return null
+}
+
 export default function GraphTopology({ topology, focus, blockedLink, verdict, bubbles, downNodes, pairActive }: Props) {
   const layout = useMemo(() => buildLayout(topology), [topology])
   const { nodes, pos, trunk, leafSegs, loop, spineEdges, zoneLabels, toneOf, height, trunkLabel, pairIds, vipPill, bundle, tunnel } = layout
@@ -114,6 +232,9 @@ export default function GraphTopology({ topology, focus, blockedLink, verdict, b
   const loopFwd = loop && focus.type === 'link' && focus.a === loop.a && focus.b === loop.b
   const loopRev = loop && focus.type === 'link' && focus.a === loop.b && focus.b === loop.a
   const blocked = !!blockedLink && loop && samePair(blockedLink.a, blockedLink.b, loop.a, loop.b)
+
+  // 進む区間（focus と layout から一意に決まる）。step が変わると新しい参照になり、封筒が再生される。
+  const travel = useMemo(() => activeTravel(layout, focus, blockedLink), [layout, focus, blockedLink])
 
   return (
     <svg
@@ -400,6 +521,9 @@ export default function GraphTopology({ topology, focus, blockedLink, verdict, b
           )
         })()}
 
+      {/* 区間を進む封筒。ノード・セグメント名チップ・各種チップより先に描く＝ラベルを覆わず、下をくぐる。 */}
+      {travel && <TravelingPacket travel={travel} />}
+
       {/* セグメント名ラベル（縦積みレイアウトで端末の上に表示・白チップで線と重ねない） */}
       {zoneLabels.map((z, i) => {
         const w = z.text.length * 9 + 6
@@ -588,7 +712,21 @@ interface Layout {
   // owner: tree で葉を数珠つなぎに描くときの「本来ぶら下がる幹」。論理リンク（幹—葉）指定でも
   // focus・blockedLink が一致するようにする（2つ目以降の葉は from が前の葉になるため）。
   leafSegs: { from: string; to: string; owner?: string; x1: number; y1: number; x2: number; y2: number }[]
-  loop: { a: string; b: string; leftPath: string; rightPath: string; xLeft: number; xRight: number; yMid: number } | null
+  // cx/topY/botY/cxL/cxR は封筒を弧に沿って進ませるための制御点（leftPath/rightPath と同じ2次ベジェ）。
+  loop: {
+    a: string
+    b: string
+    leftPath: string
+    rightPath: string
+    xLeft: number
+    xRight: number
+    yMid: number
+    cx: number
+    topY: number
+    botY: number
+    cxL: number
+    cxR: number
+  } | null
   spineEdges: SpineEdge[]
   zoneLabels: { x: number; y: number; text: string; color: string }[]
   toneOf: (n: TopoNode) => string
@@ -711,6 +849,11 @@ function buildLayout(topology: Topology): Layout {
       xLeft: cx - bulge * 0.92,
       xRight: cx + bulge * 0.92,
       yMid,
+      cx,
+      topY,
+      botY,
+      cxL: cx - bulge,
+      cxR: cx + bulge,
     }
     const minTop = Math.min(...[...pos.values()].map((p) => p.y - p.h / 2))
     const offset = minTop < 12 ? 12 - minTop : 0
@@ -723,6 +866,8 @@ function buildLayout(topology: Topology): Layout {
       loop.leftPath = shiftPathY(loop.leftPath, offset)
       loop.rightPath = shiftPathY(loop.rightPath, offset)
       loop.yMid += offset
+      loop.topY += offset
+      loop.botY += offset
     }
     const maxBot = Math.max(...[...pos.values()].map((p) => p.y + p.h / 2))
     return { nodes, pos, trunk: null, trunkLabel: null, leafSegs, loop, spineEdges: [], zoneLabels: [], toneOf, height: maxBot + 14 }

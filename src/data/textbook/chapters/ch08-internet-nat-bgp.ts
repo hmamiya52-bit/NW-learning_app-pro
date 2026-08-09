@@ -450,7 +450,7 @@ export const ch08InternetNatBgp: TextbookChapter = {
         },
         {
           kind: 'text',
-          text: 'AS同士は、「このネットワークあてなら、うちを通れば届く」という経路情報を[[blue:BGP]]で教え合います。第7章のOSPFが社内の地図を作ったように、BGPは世界の地図を作る仕組み。自社はというと、境界ルータを契約ISPのASにつなぎ、外あてを全部任せるだけです。',
+          text: 'AS同士は、「このネットワークあてなら、うちを通れば届く」という経路情報を[[blue:BGP]]（Border Gateway Protocol）で教え合います。名前のBorderは、ASとASの境目のこと。第7章のOSPFが社内の地図を作ったように、BGPは世界の地図を作る仕組み。自社はというと、境界ルータを契約ISPのASにつなぎ、外あてを全部任せるだけです。',
         },
         { kind: 'figure', figure: bgpFigure },
         {

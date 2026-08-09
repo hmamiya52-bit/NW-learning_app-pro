@@ -285,7 +285,7 @@ export const ch11Availability: TextbookChapter = {
         },
         {
           kind: 'text',
-          text: 'そこで使うのが[[blue:VRRP]]です。2台で[[blue:仮想IP（VIP）]]という共通のIPを1つ持ち合い、稼働側がその仮想IPを受け持ちます。端末は、この[[blue:仮想IP]]をデフォルトゲートウェイに設定します。',
+          text: 'そこで使うのが[[blue:VRRP]]（Virtual Router Redundancy Protocol）です。名前のとおり、仮想のルータを立てて冗長にする仕組み。2台で[[blue:仮想IP（VIP）]]という共通のIPを1つ持ち合い、稼働側がその仮想IPを受け持ちます。端末は、この[[blue:仮想IP]]をデフォルトゲートウェイに設定します。第10章のVIPと同じ略語ですが、あちらは複数のサーバを代表する入口、こちらは2台のルータが引き継ぐ出口です。',
         },
         { kind: 'figure', figure: vrrpFigure },
         {

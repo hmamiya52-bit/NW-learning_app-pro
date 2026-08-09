@@ -352,7 +352,7 @@ export const ch07Routing: TextbookChapter = {
       blocks: [
         {
           kind: 'text',
-          text: '2つ目は、ルータどうしが経路情報を交換し、構成の変化に自動で追従する[[blue:ダイナミックルーティング]]。その代表が[[blue:OSPF]]です。',
+          text: '2つ目は、ルータどうしが経路情報を交換し、構成の変化に自動で追従する[[blue:ダイナミックルーティング]]。その代表が[[blue:OSPF]]（Open Shortest Path First）です。名前のとおり、最短の経路を優先して選びます。',
         },
         {
           kind: 'text',
@@ -424,7 +424,7 @@ export const ch07Routing: TextbookChapter = {
           kind: 'callout',
           tone: 'info',
           title: 'TTLと、ping・traceroute',
-          body: 'ルータを1台越えるたび、パケットのTTL（生存時間）が1ずつ減り、0になると破棄されます。経路がループしても、無限に回り続けないための仕組みです。到達確認のping、経路を1ホップずつ調べるtracerouteは、ICMPという仕組みを使います。障害切り分けでの使い方は第19章です。社外（インターネット）との経路交換を担うBGPは第8章です。',
+          body: 'ルータを1台越えるたび、パケットのTTL（生存時間）が1ずつ減り、0になると破棄されます。経路がループしても、無限に回り続けないための仕組みです。第2章のDNSにもTTLが出ましたが、あちらは答えを覚えておく秒数。同じ名前でも数える対象が違います。到達確認のping、経路を1ホップずつ調べるtracerouteは、ICMPという仕組みを使います。障害切り分けでの使い方は第19章です。社外（インターネット）との経路交換を担うBGPは第8章です。',
         },
         {
           kind: 'check',

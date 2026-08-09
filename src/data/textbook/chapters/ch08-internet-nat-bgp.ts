@@ -504,7 +504,7 @@ export const ch08InternetNatBgp: TextbookChapter = {
   ],
   checks: [
     {
-      question: 'プライベートIPの3つの範囲は？',
+      question: 'プライベートIPの3つの範囲は何か。',
       answer: '10.0.0.0/8・172.16.0.0/12・192.168.0.0/16。',
     },
     {

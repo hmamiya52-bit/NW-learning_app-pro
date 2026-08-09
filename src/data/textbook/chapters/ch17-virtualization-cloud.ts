@@ -204,7 +204,7 @@ export const ch17VirtualizationCloud: TextbookChapter = {
       blocks: [
         {
           kind: 'text',
-          text: 'ネットワークが大きくなると、機器を1台ずつ設定するのは大変です。そこで、通信の[[blue:制御]]（どの経路へ送るかを決めること）と[[blue:転送]]（実際にパケットを送ること）を分け、制御を1か所に集める考え方が[[blue:SDN]]（Software Defined Networking）です。',
+          text: 'ネットワークが大きくなると、機器を1台ずつ設定するのは大変です。そこで、通信の[[blue:制御]]（どの経路へ送るかを決めること）と[[blue:転送]]（実際にパケットを送ること）を分けます。制御を1か所に集めるこの考え方が[[blue:SDN]]（Software Defined Networking）です。',
         },
         {
           kind: 'text',

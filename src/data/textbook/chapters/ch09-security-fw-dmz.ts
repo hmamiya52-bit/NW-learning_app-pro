@@ -319,7 +319,7 @@ const guardTable: RecordTableFigure = {
     { key: 'where', label: '置き場所' },
   ],
   rows: [
-    { kind: 'FW', see: '送信元／あて先のIPとポート', act: '許可と拒否', where: '内部・DMZ・外部の境界' },
+    { kind: 'FW', see: '送信元／宛先のIPとポート', act: '許可と拒否', where: '内部・DMZ・外部の境界' },
     { kind: 'IDS', see: '通信の中身の特徴', act: '検知して管理者へ知らせる', where: '監視したい区間' },
     { kind: 'IPS', see: '通信の中身の特徴', act: '検知してその場で遮断する', where: '通信が通る経路の上' },
     { kind: 'WAF', see: 'HTTPの中身（URLや入力値）', act: 'Webへの攻撃を遮断する', where: '公開Webサーバの前（DMZ）' },
@@ -498,7 +498,7 @@ export const ch09SecurityFwDmz: TextbookChapter = {
     },
     {
       question: '公開Webサーバを内部LANではなくDMZに置くのは、なぜか。',
-      answer: '万一乗っ取られても、DMZ→内部の通信をFWが遮断するため、内部への被害の波及を防げるためです。',
+      answer: '万一乗っ取られても、DMZ→内部の通信をFWが遮断するので、内部への被害の波及を防げるからです。',
     },
   ],
 }

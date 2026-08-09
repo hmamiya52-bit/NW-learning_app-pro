@@ -70,7 +70,7 @@ const panoramaFigure: TimelineFigure = {
   kind: 'timeline',
   id: 'ch4-panorama',
   title: 'URLを開いてからページが返るまで',
-  caption: '第1部の全段。1本のWebアクセスに、1〜4章のすべてが乗っています。',
+  caption: '第1部の全段階。1本のWebアクセスに、1〜4章のすべてが乗っています。',
   takeaway: 'ばらばらの仕組みが、ぜんぶ「1本のWebアクセス」につながります。',
   items: [
     { badge: 'DHCP', label: '自分の住所の取得', detail: '第2章', tone: 'emerald' },
@@ -188,7 +188,7 @@ export const ch04WebTlsHttp: TextbookChapter = {
     },
     {
       kind: 'text',
-      text: '下からTCP（第3章）、その上にTLS、いちばん内側にHTTP。第1章のOSIでいう上位の層へ、ここで戻ってきます。「URLを開いてページが返るまで」が、ここでひとつながりになります。',
+      text: '下からTCP（第3章）、その上にTLS、いちばん上がHTTP。第1章のOSIでいう上位の層へ、ここで戻ってきます。「URLを開いてページが返るまで」が、ここでひとつながりになります。',
     },
   ],
   sections: [
@@ -269,7 +269,7 @@ export const ch04WebTlsHttp: TextbookChapter = {
           kind: 'callout',
           tone: 'info',
           title: '接続の数が減ると、境界の機器も楽になる',
-          body: '接続がまとまることは、通信を1本ずつ数えている機器にも効きます。第8章に出てくる[[blue:NAPT]]の変換表は、通信1本につき1行を使います。接続の数が減れば、その行の数も減ります。科目Bでは「HTTP/2にすると何が減るか」という形で問われるので、[[blue:接続の数]]という答えを持っておくと迷いません。',
+          body: '接続がまとまると、通信を1本ずつ数えている機器にも効いてきます。第8章に出てくる[[blue:NAPT]]の変換表は、通信1本につき1行を使います。接続の数が減れば、その行の数も減ります。科目Bでは「HTTP/2にすると何が減るか」という形で問われるので、[[blue:接続の数]]という答えを持っておくと迷いません。',
         },
         {
           kind: 'callout',
@@ -325,7 +325,7 @@ export const ch04WebTlsHttp: TextbookChapter = {
     'HTTPは要求（GET）と応答（200）の1往復が基本。HTTPSでも中身は同じHTTP。',
     '要求の種類は[[amber:メソッド]]（GET・POST）、応答の結果は[[blue:ステータスコード]]（200・404・500）。HTTPは1回ごとに完結（ステートレス）。',
     '[[blue:HTTP/2]]は1本の接続に複数のやり取りを[[green:相乗り]]させます（多重化）。順番待ちが消え、張る[[blue:接続の数]]が減ります。',
-    '第1部で、URLを開いてページが返るまでの全段がひとつにつながりました。[[green:DHCP→DNS→ARP→TCP→TLS→HTTP]]。',
+    '第1部で、URLを開いてページが返るまでの全段階がひとつにつながりました。[[green:DHCP→DNS→ARP→TCP→TLS→HTTP]]。',
   ],
   checks: [
     {
@@ -333,7 +333,7 @@ export const ch04WebTlsHttp: TextbookChapter = {
       answer: '張るTCP接続の数が減ります。1本の接続に複数のやり取りを相乗りさせるためです。接続を1本ずつ数えている境界の機器（第8章のNAPT変換表など）の負担も、あわせて軽くなります。',
     },
     {
-      question: 'HTTPSの中身を、下の層から順に並べると？',
+      question: 'HTTPSの中身を、下の層から順に並べるとどうなるか。',
       answer: 'TCP → TLS → HTTP。TLSのトンネルの中を、同じHTTPが流れます。',
     },
     {

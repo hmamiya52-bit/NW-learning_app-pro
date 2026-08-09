@@ -4,7 +4,9 @@ import type { PacketFlowFigure, SequenceFigure, TextbookChapter, TimelineFigure,
 
 // 構成図の差分: 内部LANに DNSサーバ・DHCPサーバを追加（topology ramp）。
 // tree レイアウト（L2SW・ルータ=幹、端末・サーバ=枝）。幹どうしの線のラベルは無し（edgeLabels ''）。
-// DNSを葉の先頭に置き、L2SW—DNSの枝を focus link で光らせる（第13章で確立した方式）。
+// 葉は数珠つなぎに描かれるため、幹—葉の focus は「その葉に接する区間」に出る（反対端は前の葉）。
+// 旅の主役=PCを先頭に、続けて DHCP・DNS と並べることで、封筒の着地が
+// ①PC→L2SW ②DHCP→PC ③（PC側から）→DNS と、各ステップの説明どおりになる。順序を入れ替えないこと。
 const mapTopology: Topology = {
   layout: 'graph',
   edgeLabels: [{ a: 'l2sw', b: 'r', label: '' }],
@@ -15,9 +17,9 @@ const mapTopology: Topology = {
   nodes: [
     { id: 'l2sw', label: 'L2SW', role: 'switch', zoneId: 'lan', sub: '内部LAN' },
     { id: 'r', label: 'ルータ', role: 'router', sub: 'デフォルトGW' },
-    { id: 'dns', label: 'DNSサーバ', role: 'dns', zoneId: 'lan', sub: '192.168.10.53' },
     { id: 'pc', label: 'PC', role: 'pc', zoneId: 'lan', sub: '192.168.10.10' },
     { id: 'dhcp', label: 'DHCPサーバ', role: 'server', zoneId: 'lan', sub: '192.168.10.67' },
+    { id: 'dns', label: 'DNSサーバ', role: 'dns', zoneId: 'lan', sub: '192.168.10.53' },
     { id: 'web', label: 'Webサーバ', role: 'server', zoneId: 'srv', sub: '172.16.0.20' },
   ],
   links: [
@@ -54,7 +56,7 @@ const mapFigure: PacketFlowFigure = {
       focus: { type: 'link', a: 'l2sw', b: 'dns' },
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: '住所を得たPCは、次にWebサーバの名前をDNSサーバへ尋ねます。',
+      explanation: '住所を得たPCは、この線の先のDNSサーバへ相手の名前を尋ねます。',
     },
     {
       focus: { type: 'link', a: 'l2sw', b: 'r' },
@@ -200,7 +202,7 @@ export const ch02DnsDhcp: TextbookChapter = {
       blocks: [
         {
           kind: 'text',
-          text: '第1章の最小構成に、[[blue:名前を調べるDNSサーバ]]と[[blue:住所を配るDHCPサーバ]]が内部LANに加わります。まずは、その2台の居場所からです。',
+          text: '第1章の最小構成に、[[blue:名前を調べるDNSサーバ]]と[[blue:住所を配るDHCPサーバ]]が内部LANに加わります。まずは、この2台がPCの通信の前に何をしているのかを追います。',
         },
         { kind: 'figure', figure: mapFigure },
       ],

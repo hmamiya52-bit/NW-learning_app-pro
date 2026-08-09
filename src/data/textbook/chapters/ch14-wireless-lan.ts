@@ -45,7 +45,7 @@ const apFigure: PacketFlowFigure = {
       focus: { type: 'link', a: 'nb', b: 'ap' },
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: 'ノートPCの通信は電波で新顔のAPへ。破線の区間だけが無線です。',
+      explanation: 'ノートPCの通信は、電波でAPへ。破線の区間だけが無線です。',
     },
     {
       focus: { type: 'link', a: 'ap', b: 'l2sw' },
@@ -63,7 +63,7 @@ const apFigure: PacketFlowFigure = {
       focus: { type: 'link', a: 'l2sw', b: 'wlc' },
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: 'もう1つの新顔WLC。多数のAPの設定を、この線でまとめて配ります。',
+      explanation: 'APの設定は、この線を通ってWLCとやり取りします。',
     },
   ],
 }

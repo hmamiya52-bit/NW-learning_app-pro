@@ -76,7 +76,7 @@ const mapFigure: PacketFlowFigure = {
       focus: { type: 'link', a: 'l2sw', b: 'auth' },
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: 'L2SWが利用者の情報を、新顔の認証サーバ（RADIUS）へ問い合わせます。',
+      explanation: 'L2SWが利用者の情報を認証サーバへ問い合わせ、可否の応答を待ちます。',
     },
     {
       focus: { type: 'node', id: 'pc' },

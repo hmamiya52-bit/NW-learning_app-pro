@@ -60,7 +60,48 @@ function classify(fig, step) {
   return marks.length ? marks.join('+') : null
 }
 
+// tree（graph の既定レイアウト）は葉を数珠つなぎに描くため、幹—葉の focus は「その葉に接する区間」に出る。
+// 2つ目以降の葉を focus すると、封筒の反対端は幹ではなく1つ前の葉になる。誤りとは限らないので警告にはせず、
+// 「封筒が実際にどこへ進むか」を並べて、説明文と合っているかを人が確かめられるようにする。
+const SPINE_ROLES = new Set(['switch', 'router', 'firewall', 'internet', 'cloud', 'lb', 'proxy', 'ap'])
+
+function treeLeafHops(fig) {
+  const topo = fig.topology
+  if (topo.layout !== 'graph') return []
+  if (topo.stack || topo.pair || topo.bundle || topo.tunnel || topo.tiers) return []
+  // 同じ2ノード間に2本＝ループ配置
+  const seen = new Set()
+  for (const l of topo.links) {
+    const key = [l.a, l.b].sort().join('|')
+    if (seen.has(key)) return []
+    seen.add(key)
+  }
+  const forcedLeaf = new Set(topo.leafIds ?? [])
+  const isSpine = (n) => SPINE_ROLES.has(n.role) && !forcedLeaf.has(n.id)
+  const byId = new Map(topo.nodes.map((n) => [n.id, n]))
+  const leavesOf = (spineId) =>
+    topo.nodes.filter((n) => !isSpine(n) && topo.links.some((l) => (l.a === spineId && l.b === n.id) || (l.b === spineId && l.a === n.id)))
+
+  const hops = []
+  fig.steps.forEach((step, i) => {
+    if (step.focus.type !== 'link') return
+    for (const [x, y] of [
+      [step.focus.a, step.focus.b],
+      [step.focus.b, step.focus.a],
+    ]) {
+      const sp = byId.get(x)
+      const lf = byId.get(y)
+      if (!sp || !lf || !isSpine(sp) || isSpine(lf)) continue
+      const leaves = leavesOf(sp.id)
+      const idx = leaves.findIndex((n) => n.id === lf.id)
+      if (idx > 0) hops.push({ step: i + 1, leaf: lf.label, neighbor: leaves[idx - 1].label, spine: sp.label, ex: step.explanation })
+    }
+  })
+  return hops
+}
+
 const findings = []
+const hops = []
 let totalSteps = 0
 for (const { ch, fig } of figures) {
   fig.steps.forEach((step, i) => {
@@ -69,6 +110,7 @@ for (const { ch, fig } of figures) {
     const allowed = ALLOW[fig.id]?.steps.includes(i + 1)
     findings.push({ ch: ch.order, id: fig.id, step: i + 1, node: step.focus.id, ex: step.explanation, allowed })
   })
+  for (const h of treeLeafHops(fig)) hops.push({ ch: ch.order, id: fig.id, ...h })
 }
 
 const news = findings.filter((f) => !f.allowed)
@@ -98,6 +140,16 @@ if (findings.length - news.length > 0) {
   console.log('')
   console.log('■ レビュー済みの例外')
   for (const [id, v] of Object.entries(ALLOW)) console.log(`  ${id} 第${v.steps.join('・')}歩 — ${v.why}`)
+}
+
+if (hops.length) {
+  console.log('')
+  console.log('■ 目視で確かめる歩 — tree の2つ目以降の葉（封筒は幹まで届かない）')
+  for (const h of hops) {
+    console.log(`  第${h.ch}章 ${h.id} 第${h.step}歩: 封筒は ${h.leaf} ↔ ${h.neighbor} を進みます（幹の${h.spine}には接しません）`)
+    console.log(`    ${h.ex}`)
+  }
+  console.log('  説明文と着地が食い違うなら、葉の並び（nodes 配列の順）を入れ替える。')
 }
 
 process.exit(news.length ? 1 : 0)

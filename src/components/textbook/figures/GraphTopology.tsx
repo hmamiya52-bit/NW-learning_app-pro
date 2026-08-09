@@ -168,6 +168,25 @@ function TravelingPacket({ travel }: { travel: Travel }) {
   )
 }
 
+// ゾーン名の白チップは葉のすぐ上に置かれるので、下向きの枝では封筒の静止位置がチップの下に隠れる
+// （実測で7か所・被覆52〜76%）。チップに掛からない範囲でいちばん先まで進む位置へ静止させる。
+function avoidZoneChips(travel: Travel, zoneLabels: Layout['zoneLabels']): Travel {
+  if (travel.t1 !== undefined || zoneLabels.length === 0) return travel
+  const R = 9.4
+  const chips = zoneLabels.map((z) => {
+    const w = z.text.length * 9 + 6
+    return { x1: z.x - w / 2, y1: z.y - 10, x2: z.x + w / 2, y2: z.y + 3 }
+  })
+  const clear = (u: number) => {
+    const p = travelPoint(travel, u)
+    return !chips.some((c) => p.x + R > c.x1 && p.x - R < c.x2 && p.y + R > c.y1 && p.y - R < c.y2)
+  }
+  if (clear(TRAVEL_TO)) return travel
+  // 手前で止めるぶん移動量が減るので、出発点は機器の縁（t0=0）まで戻して動きを確保する。
+  for (let t = TRAVEL_TO - 0.03; t >= 0.22; t -= 0.03) if (clear(t)) return { ...travel, t0: 0, t1: t }
+  return travel
+}
+
 // 線分の向きを「送信元ノードに近いほうが始点」に揃える（線の描画順ではなく focus の a→b に従う）。
 function orient(seg: { x1: number; y1: number; x2: number; y2: number }, from?: Pos): Travel {
   if (!from) return { kind: 'line', ...seg }
@@ -251,7 +270,10 @@ export default function GraphTopology({ topology, focus, blockedLink, verdict, b
   const blocked = !!blockedLink && loop && samePair(blockedLink.a, blockedLink.b, loop.a, loop.b)
 
   // 進む区間（focus と layout から一意に決まる）。step が変わると新しい参照になり、封筒が再生される。
-  const travel = useMemo(() => activeTravel(layout, focus, blockedLink), [layout, focus, blockedLink])
+  const travel = useMemo(() => {
+    const t = activeTravel(layout, focus, blockedLink)
+    return t && avoidZoneChips(t, layout.zoneLabels)
+  }, [layout, focus, blockedLink])
 
   return (
     <svg
@@ -356,11 +378,28 @@ export default function GraphTopology({ topology, focus, blockedLink, verdict, b
               strokeDasharray={isBlocked ? '7 5' : undefined}
             />
             {focused && !isBlocked && <ArrowOnSeg x1={ax1} y1={ay1} x2={ax2} y2={ay2} color={LINE_ACTIVE} />}
-            {isBlocked && (
-              <text x={(e.x1 + e.x2) / 2} y={(e.y1 + e.y2) / 2 + 6} textAnchor="middle" fontSize="18" fontWeight="700" fill={LINE_BLOCK}>
-                ✕
-              </text>
-            )}
+            {isBlocked &&
+              (() => {
+                // ✕は辺の中点。コストラベルが同じ辺に添うので、ラベルのある側と反対へ直角にずらす
+                // （第7章OSPF・第8章BGPで「✕」と「1G・コスト10」「BGP」が重なっていた）。
+                const mx = (e.x1 + e.x2) / 2
+                const my = (e.y1 + e.y2) / 2
+                let cx = mx
+                let cy = my
+                if (e.label) {
+                  const len = Math.hypot(e.x2 - e.x1, e.y2 - e.y1) || 1
+                  const px = -(e.y2 - e.y1) / len
+                  const py = (e.x2 - e.x1) / len
+                  const s = (e.lx - mx) * px + (e.ly - my) * py > 0 ? -1 : 1
+                  cx = mx + px * 12 * s
+                  cy = my + py * 12 * s
+                }
+                return (
+                  <text x={cx} y={cy + 6} textAnchor="middle" fontSize="18" fontWeight="700" fill={LINE_BLOCK}>
+                    ✕
+                  </text>
+                )
+              })()}
           </g>
         )
       })}

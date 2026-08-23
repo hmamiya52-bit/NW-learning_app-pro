@@ -4,6 +4,7 @@ import GraphTopology from './GraphTopology'
 import StepperControls from './StepperControls'
 import TopologyView from './TopologyView'
 import { TONE } from './figureTokens'
+import StepExplanation from './StepExplanation'
 import { useStepper } from './useStepper'
 
 const STATUS_CHIP: Record<LayerStatus, { text: string; cls: string }> = {
@@ -117,7 +118,7 @@ export default function PacketFlowFigure({ figure }: { figure: PacketFlowFigureD
         </div>
       )}
 
-      <p aria-live="polite" className="mt-2 flex h-12 items-start text-sm leading-relaxed text-slate-700">{step.explanation}</p>
+      <StepExplanation texts={figure.steps.map((s) => s.explanation)} index={index} className="mt-2 min-h-12" textClassName="text-sm leading-relaxed text-slate-700" />
 
       <div className="mt-2">
         <StepperControls index={index} count={count} onPrev={prev} onNext={next} onSelect={setIndex} />

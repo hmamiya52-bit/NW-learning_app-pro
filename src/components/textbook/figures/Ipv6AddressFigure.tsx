@@ -1,6 +1,7 @@
 import type { Ipv6AddressFigure as Ipv6AddressFigureData } from '../../../data/textbook/types'
 import FigureFrame from './FigureFrame'
 import StepperControls from './StepperControls'
+import StepExplanation from './StepExplanation'
 import { useStepper } from './useStepper'
 
 // IPv6アドレスの構造。8グループを4×2段（上段=前半64ビット・下段=後半64ビット）で固定表示し、
@@ -78,7 +79,7 @@ export default function Ipv6AddressFigure({ figure }: { figure: Ipv6AddressFigur
         </p>
       </div>
 
-      <p aria-live="polite" className="mt-2 flex h-12 items-start text-sm leading-relaxed text-slate-700">{step.explanation}</p>
+      <StepExplanation texts={figure.steps.map((s) => s.explanation)} index={index} className="mt-2 min-h-12" textClassName="text-sm leading-relaxed text-slate-700" />
 
       <div className="mt-2">
         <StepperControls index={index} count={count} onPrev={prev} onNext={next} onSelect={setIndex} />

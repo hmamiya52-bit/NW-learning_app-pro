@@ -5,6 +5,7 @@ import FigureFrame from './FigureFrame'
 import StepperControls from './StepperControls'
 import { TONE } from './figureTokens'
 import { useIsNarrow } from './useIsNarrow'
+import StepExplanation from './StepExplanation'
 import { useStepper } from './useStepper'
 
 type Level = EncapFigureData['levels'][number]
@@ -222,7 +223,7 @@ export default function EncapFigure({ figure }: { figure: EncapFigureData }) {
         </div>
       </div>
 
-      <p aria-live="polite" className="mt-3 flex h-10 items-start overflow-hidden text-xs leading-relaxed text-slate-600">{step.desc}</p>
+      <StepExplanation texts={steps.map((s) => s.desc)} index={index} className="mt-3 min-h-10" textClassName="text-xs leading-relaxed text-slate-600" />
 
       <div className="mt-2">
         <StepperControls index={index} count={count} onPrev={prev} onNext={next} onSelect={setIndex} />

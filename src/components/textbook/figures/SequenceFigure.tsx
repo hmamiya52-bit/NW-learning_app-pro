@@ -2,6 +2,7 @@ import type { SequenceFigure as SequenceFigureData } from '../../../data/textboo
 import FigureFrame from './FigureFrame'
 import StepperControls from './StepperControls'
 import { ROLE_ICON, ROLE_TONE, TONE } from './figureTokens'
+import StepExplanation from './StepExplanation'
 import { useStepper } from './useStepper'
 
 type Actor = SequenceFigureData['actors'][number]
@@ -106,7 +107,7 @@ export default function SequenceFigure({ figure }: { figure: SequenceFigureData 
         </div>
       </div>
 
-      <p aria-live="polite" className="mt-2 flex h-12 items-start text-sm leading-relaxed text-slate-700">{messages[index].note}</p>
+      <StepExplanation texts={messages.map((m) => m.note ?? '')} index={index} className="mt-2 min-h-12" textClassName="text-sm leading-relaxed text-slate-700" />
 
       <div className="mt-2">
         <StepperControls index={index} count={count} onPrev={prev} onNext={next} onSelect={setIndex} />

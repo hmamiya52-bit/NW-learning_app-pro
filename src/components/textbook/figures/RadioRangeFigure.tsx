@@ -1,6 +1,7 @@
 import type { RadioRangeFigure as RadioRangeFigureData } from '../../../data/textbook/types'
 import FigureFrame from './FigureFrame'
 import StepperControls from './StepperControls'
+import StepExplanation from './StepExplanation'
 import { useStepper } from './useStepper'
 
 // 電波の届く範囲を円で描く固定構図（第14章 隠れ端末）。
@@ -74,7 +75,7 @@ export default function RadioRangeFigure({ figure }: { figure: RadioRangeFigureD
         </svg>
       </div>
 
-      <p aria-live="polite" className="mt-2 flex h-12 items-start text-sm leading-relaxed text-slate-700">{step.explanation}</p>
+      <StepExplanation texts={figure.steps.map((s) => s.explanation)} index={index} className="mt-2 min-h-12" textClassName="text-sm leading-relaxed text-slate-700" />
 
       <div className="mt-2">
         <StepperControls index={index} count={count} onPrev={prev} onNext={next} onSelect={setIndex} />

@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import type { PriorityQueueFigure as PriorityQueueFigureData } from '../../../data/textbook/types'
 import FigureFrame from './FigureFrame'
 import StepperControls from './StepperControls'
+import StepExplanation from './StepExplanation'
 import { useStepper } from './useStepper'
 
 // QoS 優先制御（第18章）。待ち行列から、音声（優先）を先に送り出す様子を「動き」で見せる。
@@ -75,7 +76,7 @@ export default function PriorityQueueFigure({ figure }: { figure: PriorityQueueF
         </div>
       </div>
 
-      <p aria-live="polite" className="mt-3 flex h-12 items-start text-sm leading-relaxed text-slate-700">{figure.steps[index].explanation}</p>
+      <StepExplanation texts={figure.steps.map((s) => s.explanation)} index={index} className="mt-3 min-h-12" textClassName="text-sm leading-relaxed text-slate-700" />
 
       <div className="mt-2">
         <StepperControls index={index} count={count} onPrev={prev} onNext={next} onSelect={setIndex} />

@@ -3,6 +3,7 @@ import { Box, Network, Server } from 'lucide-react'
 import type { VmHostFigure as VmHostFigureData } from '../../../data/textbook/types'
 import FigureFrame from './FigureFrame'
 import StepperControls from './StepperControls'
+import StepExplanation from './StepExplanation'
 import { useStepper } from './useStepper'
 
 // サーバ仮想化の入れ子（第17章）。1台の物理サーバの中で複数のVMが動き、仮想スイッチでつながる構造を見せる。
@@ -97,7 +98,7 @@ export default function VmHostFigure({ figure }: { figure: VmHostFigureData }) {
         </div>
       </div>
 
-      <p aria-live="polite" className="mt-3 flex h-12 items-start text-sm leading-relaxed text-slate-700">{step.explanation}</p>
+      <StepExplanation texts={figure.steps.map((s) => s.explanation)} index={index} className="mt-3 min-h-12" textClassName="text-sm leading-relaxed text-slate-700" />
 
       <div className="mt-2">
         <StepperControls index={index} count={count} onPrev={prev} onNext={next} onSelect={setIndex} />

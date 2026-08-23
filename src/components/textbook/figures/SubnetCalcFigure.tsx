@@ -1,6 +1,7 @@
 import type { SubnetCalcFigure as SubnetCalcFigureData } from '../../../data/textbook/types'
 import FigureFrame from './FigureFrame'
 import StepperControls from './StepperControls'
+import StepExplanation from './StepExplanation'
 import { useStepper } from './useStepper'
 
 // IPの「ネットワーク部（緑）／ホスト部（グレー）」をビットで色分け。
@@ -105,9 +106,7 @@ export default function SubnetCalcFigure({ figure }: { figure: SubnetCalcFigureD
         </div>
       </dl>
 
-      {/* 説明文は他図と同じ h-12（text-sm の2行ぶん）。h-10 では2行が収まらず、
-          はみ出した2行目がステッパーに重なっていた。 */}
-      <p aria-live="polite" className="mt-2 flex h-12 items-start text-sm leading-relaxed text-slate-700">{step.note}</p>
+      <StepExplanation texts={figure.steps.map((s) => s.note)} index={index} className="mt-2 min-h-12" textClassName="text-sm leading-relaxed text-slate-700" />
 
       <div className="mt-2">
         <StepperControls index={index} count={count} onPrev={prev} onNext={next} onSelect={setIndex} />

@@ -50,21 +50,23 @@ const lbFigure: PacketFlowFigure = {
     },
     {
       focus: { type: 'node', id: 'lb' },
+      bubbles: ['宛先 172.16.0.20'],
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: 'FWを抜けた通信を、LBがVIP 172.16.0.10で受け止めます。',
+      explanation: 'LBがVIPで受け止め、あて先を空いているWebサーバ1へ書き換えます。',
     },
     {
       focus: { type: 'link', a: 'lb', b: 'web1' },
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: '1つ目のリクエストはWebサーバ1（172.16.0.20）へ取り次ぎます。',
+      explanation: '書き換えられた通信が、DMZのWebサーバ1へ届きます。',
     },
     {
       focus: { type: 'link', a: 'lb', b: 'web2' },
+      bubbles: ['宛先 172.16.0.21'],
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: '次はWebサーバ2（172.16.0.21）へ。こうして負荷を複数台に分散します。',
+      explanation: '次のリクエストはWebサーバ2へ。こうして負荷を複数台に分散します。',
     },
     {
       focus: { type: 'node', id: 'lb' },

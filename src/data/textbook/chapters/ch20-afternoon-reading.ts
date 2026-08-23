@@ -148,6 +148,7 @@ const journeyFigure: PacketFlowFigure = {
     {
       // 変換したうえでFWへ渡すところまでを1歩に（br—fw の区間が旅から抜けていた）。
       focus: { type: 'link', a: 'br', b: 'fw' },
+      bubbles: ['宛先 172.16.0.10'],
       packetLabel: '',
       headers: { l2: '', l3: '' },
       explanation: '境界ルータがあて先をグローバルIPからVIPへ変換し、FWへ（第9章の静的NAT）。',
@@ -167,6 +168,7 @@ const journeyFigure: PacketFlowFigure = {
     },
     {
       focus: { type: 'node', id: 'lb' },
+      bubbles: ['宛先 172.16.0.20'],
       packetLabel: '',
       headers: { l2: '', l3: '' },
       explanation: 'LBがVIPで受け、空いているWebサーバ1へ振り分けます。',
@@ -208,12 +210,14 @@ const siteJourneyFigure: PacketFlowFigure = {
     {
       // 許可したうえで境界ルータへ渡すところまでを1歩に（fw—br の区間が旅から抜けていた）。
       focus: { type: 'link', a: 'fw', b: 'br' },
+      bubbles: ['宛先 192.168.20.10'],
       packetLabel: '',
       headers: { l2: '', l3: '' },
       explanation: '拠点間も社内どうしの通信としてFWが許可し、境界ルータへ（第9章）。',
     },
     {
       focus: { type: 'node', id: 'br' },
+      bubbles: ['外側 203.0.113.5', '中身 192.168.20.10'],
       packetLabel: '',
       headers: { l2: '', l3: '' },
       explanation: '境界ルータが丸ごとトンネルに包みます。あて先はプライベートのまま（第12章）。',
@@ -227,6 +231,7 @@ const siteJourneyFigure: PacketFlowFigure = {
     },
     {
       focus: { type: 'link', a: 'inet', b: 'site2' },
+      bubbles: ['宛先 192.168.20.10'],
       packetLabel: '',
       headers: { l2: '', l3: '' },
       explanation: '支社ルータがトンネルを開き、中身が支社のPCへ。2つの拠点がひとつながりです。',

@@ -71,10 +71,10 @@ const readingFigure: PacketFlowFigure = {
       explanation: '読み方②経路。通信が通る線を、機器から機器へ順にたどります（第7章）。',
     },
     {
-      focus: { type: 'node', id: 'webz' },
+      focus: { type: 'link', a: 'fw', b: 'webz' },
       packetLabel: '',
       headers: { l2: '', l3: '' },
-      explanation: '読み方③許可。外から入れる行き先は、FWが許すDMZの公開側だけ（第9章）。',
+      explanation: '読み方③許可。外から入れるのは、FWが許すDMZの公開側への1本だけ（第9章）。',
     },
     {
       focus: { type: 'node', id: 'br' },

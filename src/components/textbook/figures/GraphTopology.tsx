@@ -88,10 +88,25 @@ function ArrowUp({ x, y, color }: { x: number; y: number; color: string }) {
 }
 
 // 任意方向の線分上に進行方向の矢印（55%地点）。三角形のルータ間リンクで使う。
-function ArrowOnSeg({ x1, y1, x2, y2, color }: { x1: number; y1: number; x2: number; y2: number; color: string }) {
+// 進行方向の矢印。位置と向きは「進む向き」の2点（枝ではノード中心どうし）から決める。
+// `seg` を渡すと、実際に描かれている線分の中に収まるよう位置をクランプする。stack の中間段の
+// 枝は幹と葉の間が16pxしかなく、ノード中心の55%地点だと矢印が線の外＝葉の箱の下に潜るため。
+function ArrowOnSeg({
+  x1,
+  y1,
+  x2,
+  y2,
+  seg,
+  color,
+}: {
+  x1: number
+  y1: number
+  x2: number
+  y2: number
+  seg?: { x1: number; y1: number; x2: number; y2: number }
+  color: string
+}) {
   const t = 0.55
-  const cx = x1 + (x2 - x1) * t
-  const cy = y1 + (y2 - y1) * t
   const len = Math.hypot(x2 - x1, y2 - y1) || 1
   const ux = (x2 - x1) / len
   const uy = (y2 - y1) / len
@@ -99,6 +114,16 @@ function ArrowOnSeg({ x1, y1, x2, y2, color }: { x1: number; y1: number; x2: num
   const py = ux
   const h = 7
   const w = 5
+  let cx = x1 + (x2 - x1) * t
+  let cy = y1 + (y2 - y1) * t
+  if (seg) {
+    const loX = Math.min(seg.x1, seg.x2) + Math.abs(ux) * h
+    const hiX = Math.max(seg.x1, seg.x2) - Math.abs(ux) * h
+    const loY = Math.min(seg.y1, seg.y2) + Math.abs(uy) * h
+    const hiY = Math.max(seg.y1, seg.y2) - Math.abs(uy) * h
+    if (loX <= hiX) cx = Math.min(Math.max(cx, loX), hiX)
+    if (loY <= hiY) cy = Math.min(Math.max(cy, loY), hiY)
+  }
   const tip = `${cx + ux * h},${cy + uy * h}`
   const b1 = `${cx - ux * h + px * w},${cy - uy * h + py * w}`
   const b2 = `${cx - ux * h - px * w},${cy - uy * h - py * w}`
@@ -357,7 +382,7 @@ export default function GraphTopology({ topology, focus, blockedLink, verdict, b
               (vertical ? (
                 down ? <ArrowDown x={mx} y={my} color={LINE_ACTIVE} /> : <ArrowUp x={mx} y={my} color={LINE_ACTIVE} />
               ) : fa && fb ? (
-                <ArrowOnSeg x1={fa.x} y1={fa.y} x2={fb.x} y2={fb.y} color={LINE_ACTIVE} />
+                <ArrowOnSeg x1={fa.x} y1={fa.y} x2={fb.x} y2={fb.y} seg={seg} color={LINE_ACTIVE} />
               ) : null)}
           </g>
         )

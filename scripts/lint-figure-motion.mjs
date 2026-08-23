@@ -6,11 +6,18 @@
 // どれも無いノードステップ＝「場所を光らせるだけ」で、図解仕様 §3.6 が差し戻し対象と定める
 // 「場所紹介だけの構成図ツアー」になっている。
 //
-// ALLOW に載せた例外は「機器の中の処理そのものが要点」で、図の制約（吹き出しは図の上半分しか
-// 置けない・全体図では verdict チップが葉と衝突する）から見た目を変えられないもの。2026-08-08 レビュー済み。
+// ALLOW に載せた例外は「機器の中の処理そのものが要点」で見た目を変えないもの、および図の制約で
+// 変えられないもの。**吹き出しが図の上半分しか置けない制約は v2.26 で解消済み**なので、それを理由に
+// していた3歩は次のコンテンツ改訂で外す。verdict チップと葉の衝突は未解消。2026-08-23 見直し。
+//
+// あわせて graph 図の**吹き出し・判定チップが他の要素を覆っていないか**を、実際の描画結果
+// （SSRで出したSVG）から検査する。以前は吹き出しの y を一律クランプして重なりを避けていたが、
+// v2.26 で実際の障害物との当たり判定に変えたため、その結果を機械で確かめられるようにした。
 //
 // 使い方: npm run lint:figures
 
+import React from 'react'
+import { renderToStaticMarkup } from 'react-dom/server'
 import { createServer } from 'vite'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -20,10 +27,10 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 // 例外: 「その機器の中で起きること」が要点で、図では色以上の変化を出せないステップ。
 const ALLOW = {
   'ch10-cdn': { steps: [6], why: 'キャッシュヒット＝エッジの中の出来事が要点。往復しないことは前後の歩で見える' },
-  'ch10-lb': { steps: [3], why: 'LBがVIPで受ける beat。LBは図の下半分（y=264）で吹き出しのアンカーが効かない' },
+  'ch10-lb': { steps: [3], why: 'LBがVIPで受ける beat。v2.26でアンカーの制約は外れた（実測で左脇は空き）＝次のコンテンツ改訂で吹き出しを入れる' },
   'ch16-map': { steps: [3, 7], why: 'メールはいったん預かって送り直す（store and forward）こと自体が章の要点' },
-  'ch20-journey': { steps: [7], why: 'LBの振り分け。LBは図の下半分（y=356）で吹き出しのアンカーが効かない' },
-  'ch20-site-journey': { steps: [4], why: '境界ルータが丸ごと包む＝カプセル化が要点。境界ルータは y=196 で吹き出し不可' },
+  'ch20-journey': { steps: [7], why: 'LBの振り分け。v2.26でアンカーの制約は外れた（実測で左脇は空き）＝次のコンテンツ改訂で吹き出しを入れる' },
+  'ch20-site-journey': { steps: [4], why: '境界ルータが丸ごと包む＝カプセル化が要点。v2.26でアンカーの制約は外れた＝次のコンテンツ改訂で「包む前後」を吹き出しで出せる' },
   'ch20-reading': { steps: [1, 3], why: '読み方の型を示す図で、通信を流す図ではない。全体図では verdict チップが中段の葉と衝突する' },
 }
 
@@ -36,6 +43,7 @@ const server = await createServer({
   server: { middlewareMode: true },
 })
 const { textbookChapters } = await server.ssrLoadModule('/src/data/textbook/index.ts')
+const { default: GraphTopology } = await server.ssrLoadModule('/src/components/textbook/figures/GraphTopology.tsx')
 await server.close()
 
 const figures = []
@@ -100,6 +108,53 @@ function treeLeafHops(fig) {
   return hops
 }
 
+// 吹き出し・判定チップが覆ってはいけない要素（描画結果の data-el で見分ける）。
+const COVERABLE = new Set(['node', 'zone', 'vip', 'pair-chip', 'bundle'])
+const RECT_RE = /<rect data-el="([^"]+)"[^>]*?x="([-\d.]+)" y="([-\d.]+)" width="([\d.]+)" height="([\d.]+)"/g
+
+function rectsOf(fig, step, stepIndex) {
+  const html = renderToStaticMarkup(
+    React.createElement(GraphTopology, {
+      topology: fig.topology,
+      focus: step.focus,
+      packetLabel: step.packetLabel ?? '',
+      stepKey: stepIndex,
+      blockedLink: step.blockedLink,
+      verdict: step.verdict,
+      bubbles: step.bubbles,
+      downNodes: step.downNodes,
+      pairActive: step.pairActive,
+    }),
+  )
+  const vb = /viewBox="0 0 (\d+) ([\d.]+)"/.exec(html)
+  const out = []
+  for (const m of html.matchAll(RECT_RE)) {
+    out.push({ el: m[1], x: +m[2], y: +m[3], w: +m[4], h: +m[5] })
+  }
+  return { rects: out, vw: vb ? +vb[1] : 320, vh: vb ? +vb[2] : 0 }
+}
+
+const overlap = (a, b) =>
+  a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h
+
+const overlaps = []
+for (const { ch, fig } of figures) {
+  if (fig.topology?.layout !== 'graph') continue
+  fig.steps.forEach((step, i) => {
+    const { rects, vw, vh } = rectsOf(fig, step, i)
+    const movable = rects.filter((r) => r.el === 'bubble' || r.el === 'verdict')
+    const fixed = rects.filter((r) => COVERABLE.has(r.el))
+    for (const m of movable) {
+      for (const f of fixed) {
+        if (overlap(m, f)) overlaps.push({ ch: ch.order, id: fig.id, step: i + 1, kind: m.el, over: f.el, m, f })
+      }
+      if (m.x < 0 || m.y < 0 || m.x + m.w > vw || m.y + m.h > vh) {
+        overlaps.push({ ch: ch.order, id: fig.id, step: i + 1, kind: m.el, over: 'viewBox外', m, f: { x: 0, y: 0, w: vw, h: vh } })
+      }
+    }
+  })
+}
+
 const findings = []
 const hops = []
 let totalSteps = 0
@@ -142,6 +197,20 @@ if (findings.length - news.length > 0) {
   for (const [id, v] of Object.entries(ALLOW)) console.log(`  ${id} 第${v.steps.join('・')}歩 — ${v.why}`)
 }
 
+if (overlaps.length) {
+  console.log('')
+  console.log('■ 要対応 — 吹き出し／判定チップが他の要素を覆っている')
+  for (const o of overlaps) {
+    console.log(`  第${o.ch}章 ${o.id} 第${o.step}歩: ${o.kind} が ${o.over} に重なる`)
+    console.log(`    ${o.kind} x${o.m.x} y${o.m.y} ${o.m.w}×${o.m.h} / ${o.over} x${o.f.x} y${o.f.y} ${o.f.w}×${o.f.h}`)
+  }
+  console.log('  対処: 覆ってはいけない要素なら graphBubbleLayout.ts の obstaclesOf に足す。')
+  console.log('        置き場所が無い図なら、その歩は吹き出し／チップを使わない設計にする。')
+} else {
+  console.log('')
+  console.log(`■ 吹き出し・判定チップの重なり0（graph図を全歩レンダリングして確認）`)
+}
+
 if (hops.length) {
   console.log('')
   console.log('■ 目視で確かめる歩 — tree の2つ目以降の葉（封筒は幹まで届かない）')
@@ -152,4 +221,4 @@ if (hops.length) {
   console.log('  説明文と着地が食い違うなら、葉の並び（nodes 配列の順）を入れ替える。')
 }
 
-process.exit(news.length ? 1 : 0)
+process.exit(news.length || overlaps.length ? 1 : 0)

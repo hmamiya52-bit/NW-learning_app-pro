@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef } from 'react'
+import { bubbleRects, obstaclesOf } from './graphBubbleLayout'
 import type { PacketStep, Topology, TopoNode } from '../../../data/textbook/types'
 
 // links を実際に使う構成図描画。スイッチ／ルータ＝幹、PC等＝枝（スイッチの下/上に縦積み）。
@@ -275,6 +276,9 @@ export default function GraphTopology({ topology, focus, blockedLink, verdict, b
     return t && avoidZoneChips(t, layout.zoneLabels)
   }, [layout, focus, blockedLink])
 
+  // 吹き出しが覆ってはいけない要素。レイアウトが同じなら歩が変わっても不変。
+  const obstacles = useMemo(() => obstaclesOf(layout), [layout])
+
   return (
     <svg
       viewBox={`0 0 ${W} ${height}`}
@@ -438,6 +442,7 @@ export default function GraphTopology({ topology, focus, blockedLink, verdict, b
           return (
             <g>
               <rect
+                data-el="bundle"
                 x={bundle.bracket.x}
                 y={bundle.bracket.y}
                 width={bundle.bracket.w}
@@ -592,7 +597,7 @@ export default function GraphTopology({ topology, focus, blockedLink, verdict, b
         const w = z.text.length * 9 + 6
         return (
           <g key={`zl${i}`}>
-            <rect x={z.x - w / 2} y={z.y - 10} width={w} height={13} rx={3} fill="#ffffff" />
+            <rect data-el="zone" x={z.x - w / 2} y={z.y - 10} width={w} height={13} rx={3} fill="#ffffff" />
             <text x={z.x} y={z.y} textAnchor="middle" fontSize="10" fontWeight="700" fill={z.color}>
               {z.text}
             </text>
@@ -613,6 +618,7 @@ export default function GraphTopology({ topology, focus, blockedLink, verdict, b
         return (
           <g key={n.id}>
             <rect
+              data-el="node"
               x={p.x - p.w / 2}
               y={p.y - p.h / 2}
               width={p.w}
@@ -637,7 +643,7 @@ export default function GraphTopology({ topology, focus, blockedLink, verdict, b
       {/* 仮想IP（VRRPのVIP）ピル。ペアと端末の間に固定表示（PCのGW＝この仮想IP）。 */}
       {vipPill && (
         <g>
-          <rect x={vipPill.x - 40} y={vipPill.y - 15} width={80} height={30} rx={6} fill="#ffffff" stroke="#60a5fa" strokeWidth={1.4} />
+          <rect data-el="vip" x={vipPill.x - 40} y={vipPill.y - 15} width={80} height={30} rx={6} fill="#ffffff" stroke="#60a5fa" strokeWidth={1.4} />
           <text x={vipPill.x} y={vipPill.y - 3} textAnchor="middle" fontSize="9" fontWeight="800" fill="#3b82f6">
             仮想IP
           </text>
@@ -662,7 +668,7 @@ export default function GraphTopology({ topology, focus, blockedLink, verdict, b
         const cyp = p.y + p.h / 2 + 12
         return (
           <g key={`st${id}`}>
-            <rect x={p.x - 22} y={cyp - 8} width={44} height={16} rx={8} fill={st.fill} stroke={st.stroke} strokeWidth={1} />
+            <rect data-el="pair-chip" x={p.x - 22} y={cyp - 8} width={44} height={16} rx={8} fill={st.fill} stroke={st.stroke} strokeWidth={1} />
             <text x={p.x} y={cyp + 4} textAnchor="middle" fontSize="10" fontWeight="800" fill={st.text}>
               {st.t}
             </text>
@@ -684,7 +690,7 @@ export default function GraphTopology({ topology, focus, blockedLink, verdict, b
           const chipY = p.y - ch / 2
           return (
             <g>
-              <rect x={chipX} y={chipY} width={cw} height={ch} rx={10} fill={v.fill} stroke={v.stroke} strokeWidth={1.4} />
+              <rect data-el="verdict" x={chipX} y={chipY} width={cw} height={ch} rx={10} fill={v.fill} stroke={v.stroke} strokeWidth={1.4} />
               <text x={chipX + cw / 2} y={chipY + 14} textAnchor="middle" fontSize="11" fontWeight="700" fill={v.text}>
                 {v.label}
               </text>
@@ -694,54 +700,31 @@ export default function GraphTopology({ topology, focus, blockedLink, verdict, b
 
       {/* パケットの宛先/送信元の吹き出し（graph図・中央縦spine向け）。アクティブ対象の左脇に固定し、
           ノード列（左端）に食い込ませない＝ノード非被覆。右脇は verdict チップ専用。 */}
-      {!tunnel &&
-        bubbles &&
-        bubbles.length > 0 &&
+      {bubbles &&
         (() => {
-          let anchorY: number
-          let rightEdge: number
-          if (focus.type === 'node') {
-            const p = pos.get(focus.id)
-            if (!p) return null
-            anchorY = p.y
-            rightEdge = p.x - p.w / 2 - 6
-          } else {
-            const pa = pos.get(focus.a)
-            const pb = pos.get(focus.b)
-            if (!pa || !pb) return null
-            anchorY = (pa.y + pb.y) / 2
-            rightEdge = (pa.x + pb.x) / 2 - 8
-          }
-          rightEdge = Math.min(rightEdge, W / 2 - SW_W / 2 - 6)
-          anchorY = Math.max(44, Math.min(172, anchorY))
-          const BH = 28
-          const GAP = 4
-          const n = bubbles.length
-          const totalH = n * BH + (n - 1) * GAP
-          const top = Math.max(14, Math.min(height - 14 - totalH, anchorY - totalH / 2))
+          const placed = bubbleRects(layout, obstacles, focus, bubbles)
+          if (!placed) return null
+          const { rightEdge, rects } = placed
           return bubbles.map((label, i) => {
             const m = label.match(/^(送信元|宛先) (.+)$/)
-            const value = m ? m[2] : label
-            const bw = Math.min(120, Math.max(70, Math.round(value.length * 5.8) + 16))
-            const x = Math.max(4, rightEdge - bw)
-            const by = top + i * (BH + GAP)
-            const cy = by + BH / 2
-            const midX = (x + rightEdge) / 2
+            const r = rects[i]
+            const cy = r.y + r.h / 2
+            const midX = r.x + r.w / 2
             return (
               <g key={`bub${i}`}>
                 <polygon points={`${rightEdge},${cy - 6} ${rightEdge},${cy + 6} ${rightEdge + 6},${cy}`} fill="#60a5fa" />
-                <rect x={x} y={by} width={rightEdge - x} height={BH} rx={6} fill="#ffffff" stroke="#60a5fa" strokeWidth={1.4} />
+                <rect data-el="bubble" x={r.x} y={r.y} width={r.w} height={r.h} rx={6} fill="#ffffff" stroke="#60a5fa" strokeWidth={1.4} />
                 {m ? (
                   <>
-                    <text x={midX} y={by + 11} textAnchor="middle" fontSize="9" fontWeight="800" fill="#3b82f6">
+                    <text x={midX} y={r.y + 11} textAnchor="middle" fontSize="9" fontWeight="800" fill="#3b82f6">
                       {m[1]}
                     </text>
-                    <text x={midX} y={by + 23} textAnchor="middle" fontSize="10" fontWeight="800" fill="#1d4ed8">
+                    <text x={midX} y={r.y + 23} textAnchor="middle" fontSize="10" fontWeight="800" fill="#1d4ed8">
                       {m[2]}
                     </text>
                   </>
                 ) : (
-                  <text x={midX} y={by + 18} textAnchor="middle" fontSize="10" fontWeight="800" fill="#1d4ed8">
+                  <text x={midX} y={r.y + 18} textAnchor="middle" fontSize="10" fontWeight="800" fill="#1d4ed8">
                     {label}
                   </text>
                 )}

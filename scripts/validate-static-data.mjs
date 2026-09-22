@@ -251,6 +251,9 @@ for (const [id, figures] of Object.entries(afternoon1ExamFigures)) {
   for (const fig of figures) {
     if (fig.kind === 'exam') usedFigureIds.add(fig.figureId)
   }
+  for (const [label, text] of walkStrings(figures, 'examFigures')) {
+    checkMarkup(id, label, text)
+  }
 }
 
 for (const figId of AFTERNOON1_FIGURE_IDS) {
@@ -281,8 +284,14 @@ for (const [id, texts] of Object.entries(afternoon1QuestionTexts)) {
     if (seen.has(t.rowKey)) fail(id, `公式設問文の rowKey が重複しています: ${t.rowKey}`)
     seen.add(t.rowKey)
     if (!t.text) fail(id, `${t.rowKey}: 設問文が空です`)
+    if (!t.heading) fail(id, `${t.rowKey}: heading がありません`)
     // 原文転記なので強調マークアップは入れない
-    if (/==|__/.test(t.text)) fail(id, `${t.rowKey}: 公式設問文に強調マークアップは入れません`)
+    for (const field of ['heading', 'lead', 'text']) {
+      if (t[field] && /==|__/.test(t[field])) {
+        fail(id, `${t.rowKey}: 公式設問文（${field}）に強調マークアップは入れません`)
+      }
+    }
+    if (/＝/.test(t.text)) fail(id, `${t.rowKey}: 設問文に全角の ＝ が入っています`)
   }
 }
 

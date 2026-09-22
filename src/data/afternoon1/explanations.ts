@@ -113,7 +113,10 @@ export interface Afternoon1DetailedExplanation {
   solvingTips?: string[]
 }
 
-/** 1問分の解説（officialAnswers の 1 OfficialAnswerSet に対応） */
+/**
+ * 1問分の解説（officialAnswers の 1 OfficialAnswerSet に対応）。
+ * 試験問題の図表そのものは「解く側の材料」なので examFigures.ts に分けてある。
+ */
 export interface Afternoon1Explanation {
   /** officialAnswers.id と一致（例 'R6-G1-1'） */
   id: string
@@ -121,11 +124,6 @@ export interface Afternoon1Explanation {
   overview: string
   /** 行ごとの解説（officialAnswers.answers と rowKey で 1:1） */
   rows: Afternoon1RowExplanation[]
-  /**
-   * 試験問題の図表（自作 SVG での再現）。
-   * 解く側の材料なので解答欄にも詳細解説にも出す。detail.figures（解説用の比較表）とは別。
-   */
-  examFigures?: Afternoon1Figure[]
   /** 詳細解説（任意） */
   detail?: Afternoon1DetailedExplanation
 }

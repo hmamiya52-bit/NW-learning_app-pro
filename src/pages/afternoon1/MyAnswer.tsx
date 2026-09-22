@@ -14,6 +14,7 @@ import {
   getAfternoon1QuestionTexts,
   type Afternoon1QuestionText,
 } from '../../data/afternoon1/questionTexts'
+import { getAfternoon1ExamFigures } from '../../data/afternoon1/examFigures'
 import { MarkupText } from '../../components/afternoon1/MarkupText'
 import { Afternoon1FigureView } from '../../components/afternoon1/AfternoonFigure'
 import ScratchMemo from '../../components/afternoon1/ScratchMemo'
@@ -436,7 +437,7 @@ function Afternoon1MyAnswerContent({
     return map
   }, [explanation])
   const questionTexts = useMemo(() => (id ? getAfternoon1QuestionTexts(id) : {}), [id])
-  const examFigures = explanation?.examFigures ?? []
+  const examFigures = useMemo(() => (id ? getAfternoon1ExamFigures(id) : []), [id])
   const allFiguresOpen = examFigures.length > 0 && examFigures.every((_, i) => openFigures.has(i))
 
   useEffect(() => {
@@ -624,7 +625,7 @@ function Afternoon1MyAnswerContent({
                     {fig.title}
                   </summary>
                   <div className="px-1 pb-1">
-                    <Afternoon1FigureView figure={fig} />
+                    <Afternoon1FigureView figure={fig} hideCaption />
                   </div>
                 </details>
               ))}

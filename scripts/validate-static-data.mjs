@@ -35,6 +35,7 @@ const { officialAnswers } = await load('src/data/officialAnswers.ts')
 const { scoringMap } = await load('src/data/scoringMap.ts')
 const { afternoon1Explanations, makeRowKey } = await load('src/data/afternoon1/explanations.ts')
 const { afternoon1QuestionTexts } = await load('src/data/afternoon1/questionTexts/index.ts')
+const { afternoon1ExamFigures } = await load('src/data/afternoon1/examFigures.ts')
 const { AFTERNOON1_FIGURE_IDS } = await load('src/data/afternoon1/figureIds.ts')
 
 // ─────────────────────────────────────────────
@@ -145,6 +146,27 @@ function checkMarkup(id, label, text) {
 // 4. 解説（afternoon1Explanations）
 // ─────────────────────────────────────────────
 const figureIds = new Set(AFTERNOON1_FIGURE_IDS)
+
+/** 図表の共通検査（参照先が figureIds.ts にあるか／比較表は観点列＋3列まで） */
+function checkFigures(id, figures) {
+  for (const fig of figures) {
+    if (fig.kind === 'exam') {
+      if (!figureIds.has(fig.figureId)) {
+        fail(id, `図表 figureId「${fig.figureId}」が figureIds.ts にありません`)
+      }
+      if (!fig.title) fail(id, `図表「${fig.figureId}」に title がありません`)
+    } else if (fig.kind === 'compare') {
+      if (fig.columns.length > 4) {
+        fail(id, `比較表「${fig.title}」の列が ${fig.columns.length} 列（観点列＋3列まで）`)
+      }
+      for (const row of fig.rows) {
+        if (row.cells.length !== fig.columns.length - 1) {
+          fail(id, `比較表「${fig.title}」の行「${row.label}」のセル数が列見出しと合いません`)
+        }
+      }
+    }
+  }
+}
 const explanationIds = Object.keys(afternoon1Explanations)
 
 for (const [id, exp] of Object.entries(afternoon1Explanations)) {
@@ -205,28 +227,35 @@ for (const [id, exp] of Object.entries(afternoon1Explanations)) {
     }
   }
 
-  // 4-4. 図表の参照先が figureIds.ts にあるか／比較表は3列まで
-  const allFigures = [...(exp.examFigures ?? []), ...(exp.detail?.figures ?? [])]
-  for (const fig of allFigures) {
-    if (fig.kind === 'exam') {
-      if (!figureIds.has(fig.figureId)) {
-        fail(id, `図表 figureId「${fig.figureId}」が figureIds.ts にありません`)
-      }
-    } else if (fig.kind === 'compare') {
-      if (fig.columns.length > 4) {
-        fail(id, `比較表「${fig.title}」の列が ${fig.columns.length} 列（観点列＋3列まで）`)
-      }
-      for (const row of fig.rows) {
-        if (row.cells.length !== fig.columns.length - 1) {
-          fail(id, `比較表「${fig.title}」の行「${row.label}」のセル数が列見出しと合いません`)
-        }
-      }
-    }
-  }
+  // 4-4. 解説側の図表（比較表）
+  checkFigures(id, exp.detail?.figures ?? [])
 
   // 4-5. マークアップ
   for (const [label, text] of walkStrings(exp, 'explanation')) {
     checkMarkup(id, label, text)
+  }
+}
+
+// ─────────────────────────────────────────────
+// 4-6. 試験図表（examFigures）
+//      参照先の id が登録済みか／未使用の id が残っていないかを見る。
+// ─────────────────────────────────────────────
+const usedFigureIds = new Set()
+
+for (const [id, figures] of Object.entries(afternoon1ExamFigures)) {
+  if (!officialAnswers.some((a) => a.id === id)) {
+    fail(id, '対応する公式解答データ（officialAnswers）がありません')
+    continue
+  }
+  checkFigures(id, figures)
+  for (const fig of figures) {
+    if (fig.kind === 'exam') usedFigureIds.add(fig.figureId)
+  }
+}
+
+for (const figId of AFTERNOON1_FIGURE_IDS) {
+  if (!usedFigureIds.has(figId)) {
+    note(`図表 id「${figId}」がどの問題からも参照されていません`)
   }
 }
 
@@ -275,7 +304,7 @@ console.log('='.repeat(64))
 console.log(`公式解答データ: ${officialAnswers.length} 問`)
 console.log(`解説投入済み  : ${explanationIds.length} 問${explanationIds.length ? `（${explanationIds.join(', ')}）` : ''}`)
 console.log(`設問文転記済み: ${Object.keys(afternoon1QuestionTexts).length} 問`)
-console.log(`図表 id       : ${AFTERNOON1_FIGURE_IDS.length} 件`)
+console.log(`図表 id       : ${AFTERNOON1_FIGURE_IDS.length} 件（参照 ${usedFigureIds.size} 件）`)
 console.log('')
 
 if (notes.length > 0) {

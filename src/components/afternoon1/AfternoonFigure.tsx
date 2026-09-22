@@ -62,15 +62,26 @@ function CompareTable({
   )
 }
 
-/** 図表1つを描画（比較表 or 試験図の再現） */
-export function Afternoon1FigureView({ figure }: { figure: Afternoon1Figure }) {
+/**
+ * 図表1つを描画（比較表 or 試験図の再現）。
+ * hideCaption は、呼び出し側の折り畳み見出しが既に図題を出している場合に使う。
+ */
+export function Afternoon1FigureView({
+  figure,
+  hideCaption = false,
+}: {
+  figure: Afternoon1Figure
+  hideCaption?: boolean
+}) {
   const ExamFigure = figure.kind === 'exam' ? EXAM_FIGURES[figure.figureId] : undefined
 
   return (
     <figure className="rounded-lg border border-slate-200 bg-white px-3 py-3">
-      <figcaption className="text-[12px] font-black text-indigo-800 mb-2">
-        {figure.title}
-      </figcaption>
+      {!hideCaption && (
+        <figcaption className="text-[12px] font-black text-indigo-800 mb-2">
+          {figure.title}
+        </figcaption>
+      )}
 
       {figure.kind === 'compare' ? (
         <CompareTable

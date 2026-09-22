@@ -2,6 +2,7 @@ import { useParams, Link } from 'react-router-dom'
 import { officialAnswers } from '../../data/officialAnswers'
 import { afternoonProblems } from '../../data/afternoonProblems'
 import { getAfternoon1Explanation } from '../../data/afternoon1/explanations'
+import { getAfternoon1ExamFigures } from '../../data/afternoon1/examFigures'
 import { MarkupText } from '../../components/afternoon1/MarkupText'
 import { Afternoon1FigureView } from '../../components/afternoon1/AfternoonFigure'
 
@@ -19,7 +20,7 @@ export default function Afternoon1ExplanationDetail() {
   const problem = answerSet ? afternoonProblems.find((p) => p.id === answerSet.id) : undefined
   const explanation = id ? getAfternoon1Explanation(id) : undefined
   const detail = explanation?.detail
-  const examFigures = explanation?.examFigures ?? []
+  const examFigures = id ? getAfternoon1ExamFigures(id) : []
 
   if (!answerSet || !id) {
     return (

@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "lint:notes": "node scripts/lint-note-red.mjs",
     "lint:figures": "node scripts/lint-figure-motion.mjs",
+    "validate-data": "node scripts/validate-static-data.mjs",
     "preview": "vite preview"
   },
   "dependencies": {

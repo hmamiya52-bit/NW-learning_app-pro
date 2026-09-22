@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { BookOpenText, Target } from 'lucide-react'
+import { BookOpenText, ScrollText, Target } from 'lucide-react'
 import { categories } from '../data/categories'
 import { questions } from '../data/questions'
 import { getAllProgress, getAnswerRecords, getQuestionMastery } from '../lib/storage'
@@ -154,6 +154,13 @@ const OTHER_CARDS: MenuCard[] = [
     description: '学習データを合流',
     iconBg: 'bg-blue-50',
     icon: <IconSync className="w-6 h-6 text-blue-700" />,
+  },
+  {
+    to: '/afternoon1/R6-G1-1',
+    title: '午後解説（開発中）',
+    description: '',
+    iconBg: 'bg-teal-50',
+    icon: <ScrollText className="w-6 h-6 text-teal-600" />,
   },
 ]
 

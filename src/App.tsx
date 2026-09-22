@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { Suspense, lazy } from 'react'
+import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom'
 import Layout from './components/Layout'
 import Home from './pages/Home'
 import Quiz from './pages/Quiz'
@@ -20,6 +21,16 @@ import Analysis from './pages/Analysis'
 import Login from './pages/Login'
 import AuthGuard from './auth/AuthGuard'
 import DeviceSync from './pages/DeviceSync'
+
+// 午後解説（開発中）。既存の /afternoon 動線とは独立した別ルート。
+// 解説データと自作 SVG 図が重いので、この動線に入ったときだけ読み込む。
+const Afternoon1Entry = lazy(() => import('./pages/afternoon1/Entry'))
+const Afternoon1MyAnswer = lazy(() => import('./pages/afternoon1/MyAnswer'))
+const Afternoon1ExplanationDetail = lazy(() => import('./pages/afternoon1/ExplanationDetail'))
+
+function Afternoon1Fallback() {
+  return <div className="px-4 py-10 text-center text-sm text-slate-400">読み込み中…</div>
+}
 
 export default function App() {
   return (
@@ -61,6 +72,18 @@ export default function App() {
           <Route path="/afternoon/answers" element={<Navigate to="/afternoon" replace />} />
           <Route path="/afternoon/answers/:id" element={<AfternoonAnswerDetail />} />
           <Route path="/afternoon/answers/:id/myAnswer" element={<AfternoonMyAnswer />} />
+          {/* 午後解説（開発中）— 既存 /afternoon には触れない独立ルート */}
+          <Route
+            element={
+              <Suspense fallback={<Afternoon1Fallback />}>
+                <Outlet />
+              </Suspense>
+            }
+          >
+            <Route path="/afternoon1/:id" element={<Afternoon1Entry />} />
+            <Route path="/afternoon1/:id/answer" element={<Afternoon1MyAnswer />} />
+            <Route path="/afternoon1/:id/explanation" element={<Afternoon1ExplanationDetail />} />
+          </Route>
           <Route path="/column" element={<Column />} />
           <Route path="/how-to-use" element={<HowToUse />} />
           <Route path="/history" element={<ActivityHistory />} />

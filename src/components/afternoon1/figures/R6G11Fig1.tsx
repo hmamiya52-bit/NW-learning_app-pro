@@ -34,14 +34,14 @@ export default function R6G11Fig1() {
             x={21}
             y={seg.y + 12}
             width={54}
-            height={27}
+            height={30}
             rx={2}
             fill={TONE.amber.fill}
             stroke={TONE.amber.stroke}
             strokeWidth={1.2}
           />
-          <Box x={16} y={seg.y + 7} w={54} h={27} tone="amber" lines={seg.label} size={9} />
-          <Cap x={80} y={seg.y + 36} text="⋰" size={9} color={MUTED} />
+          <Box x={16} y={seg.y + 7} w={54} h={30} tone="amber" lines={seg.label} size={9} />
+          <Cap x={80} y={seg.y + 38} text="⋰" size={9} color={MUTED} />
 
           {/* 配信サーバ ── L2SW（原図どおり2本） */}
           <Wire x1={70} y1={seg.y + 14} x2={118} y2={seg.y + 19} />
@@ -81,7 +81,7 @@ export default function R6G11Fig1() {
       <Cap x={32} y={310} text="：セグメント" />
       <Cap x={104} y={310} text="L2SW：レイヤー2スイッチ" />
       <Cap x={8} y={326} text="LB：ロードバランサー" />
-      <Cap x={110} y={326} text="ISP：インターネットサービスプロバイダ" />
+      <Cap x={122} y={326} text="ISP：インターネットサービスプロバイダ" />
     </FigSvg>
   )
 }

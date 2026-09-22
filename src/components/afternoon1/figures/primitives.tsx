@@ -1,4 +1,4 @@
-import { TONE, FRAME, LINE, MUTED, SEGMENT } from './tokens'
+import { TONE, FONT_SCALE, FRAME, LINE, MUTED, SEGMENT } from './tokens'
 import type { ToneName } from './tokens'
 
 /** 試験図の描画部品。定数とフックは tokens.ts にある（Fast Refresh のため分離）。 */
@@ -8,9 +8,19 @@ import type { ToneName } from './tokens'
  *
  * ただし上限を付けないと、デスクトップ（図の枠が 640px 前後）で viewBox 幅 340 が
  * 1.9 倍に拡大され、図の文字（9前後）が本文（12-13px）より大きくなって釣り合わない。
- * 1.3 倍で頭打ちにして、図の文字がおよそ 11-12px に収まるようにする。
+ * 1.2 倍で頭打ちにして、図の文字がおよそ 11-12px に収まるようにする（FONT_SCALE と対で調整する）。
  */
-const MAX_SCALE = 1.3
+const MAX_SCALE = 1.2
+
+/**
+ * 文字を箱・楕円の中央に置くための、ベースラインの下げ量（フォントサイズ比）。
+ * 文字の視覚的な中心はベースラインより上にあるので、その差の半分だけ下げる。
+ * 0.36 だと上に寄りすぎて、2行ラベルが箱の上辺に触っていた（実測から 0.44）。
+ */
+const BASELINE = 0.44
+
+/** 囲み（DashFrame / SolidFrame）のラベルの既定サイズ。ラベル位置の計算にも使う */
+const LABEL_SIZE = 8.5
 
 export function FigSvg({
   w,
@@ -87,13 +97,15 @@ export function Box({
 }) {
   const t = TONE[tone]
   const cx = x + w / 2
-  const startY = y + h / 2 + size * 0.36 - ((lines.length - 1) * (size + 2.5)) / 2
+  const fs = size * FONT_SCALE
+  const lh = fs + 2.5
+  const startY = y + h / 2 + fs * BASELINE - ((lines.length - 1) * lh) / 2
   return (
     <g>
       <rect x={x} y={y} width={w} height={h} rx={rx} fill={t.fill} stroke={t.stroke} strokeWidth={1.2} />
-      <text x={cx} y={startY} textAnchor="middle" fontSize={size} fontWeight={700} fill={t.text}>
+      <text x={cx} y={startY} textAnchor="middle" fontSize={fs} fontWeight={700} fill={t.text}>
         {lines.map((ln, i) => (
-          <tspan key={i} x={cx} dy={i === 0 ? 0 : size + 2.5}>
+          <tspan key={i} x={cx} dy={i === 0 ? 0 : lh}>
             {ln}
           </tspan>
         ))}
@@ -123,7 +135,9 @@ export function Ell({
   rotate?: number
 }) {
   const t = TONE[tone]
-  const startY = cy + size * 0.36 - ((lines.length - 1) * (size + 2.5)) / 2
+  const fs = size * FONT_SCALE
+  const lh = fs + 2.5
+  const startY = cy + fs * BASELINE - ((lines.length - 1) * lh) / 2
   return (
     <g>
       <ellipse cx={cx} cy={cy} rx={rx} ry={ry} fill={t.fill} stroke={t.stroke} strokeWidth={1.2} />
@@ -131,13 +145,13 @@ export function Ell({
         x={cx}
         y={startY}
         textAnchor="middle"
-        fontSize={size}
+        fontSize={fs}
         fontWeight={700}
         fill={t.text}
         transform={rotate ? `rotate(${rotate} ${cx} ${cy})` : undefined}
       >
         {lines.map((ln, i) => (
-          <tspan key={i} x={cx} dy={i === 0 ? 0 : size + 2.5}>
+          <tspan key={i} x={cx} dy={i === 0 ? 0 : lh}>
             {ln}
           </tspan>
         ))}
@@ -217,7 +231,14 @@ export function Cap({
   bold?: boolean
 }) {
   return (
-    <text x={x} y={y} textAnchor={anchor} fontSize={size} fill={color} fontWeight={bold ? 700 : 400}>
+    <text
+      x={x}
+      y={y}
+      textAnchor={anchor}
+      fontSize={size * FONT_SCALE}
+      fill={color}
+      fontWeight={bold ? 700 : 400}
+    >
       {text}
     </text>
   )
@@ -256,7 +277,7 @@ export function DashFrame({
       {label && (
         <Cap
           x={labelAnchor === 'end' ? x + w - 5 : x + 5}
-          y={y + 11}
+          y={y + 3 + LABEL_SIZE * FONT_SCALE * 1.12}
           text={label}
           anchor={labelAnchor}
           color={color}
@@ -289,7 +310,7 @@ export function SolidFrame({
       {label && (
         <Cap
           x={labelAnchor === 'end' ? x + w - 6 : x + 6}
-          y={y + 12}
+          y={y + 4 + LABEL_SIZE * FONT_SCALE * 1.12}
           text={label}
           anchor={labelAnchor}
           color={FRAME}

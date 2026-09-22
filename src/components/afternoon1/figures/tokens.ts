@@ -28,6 +28,17 @@ export const FLOW = '#a855f7'
 export const PEER = '#f59e0b'
 export const MUTED = '#64748b'
 
+/**
+ * 図中の文字の倍率。
+ *
+ * 座標（箱の大きさ・線の位置）を触らずに、図の文字だけを一括で大きくするための1本のつまみ。
+ * 個々の図が渡す size は「図の中での大小関係」を表し、実際の描画は size * FONT_SCALE になる。
+ *
+ * 上げすぎると箱から文字がはみ出す。変えたら 4 図すべてで、
+ * text の bbox が親の箱と viewBox に収まっているか確かめること。
+ */
+export const FONT_SCALE = 1.2
+
 /** 同一ページに複数の図が並ぶので、marker の id は図ごとに一意にする */
 export function useFigureId(prefix: string) {
   return `${prefix}-${useId().replace(/:/g, '')}`

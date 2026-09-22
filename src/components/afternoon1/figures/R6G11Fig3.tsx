@@ -43,11 +43,11 @@ export default function R6G11Fig3() {
 
       {/* ── 実線：装置どうしの接続 ───────────────────────── */}
       {/* DDoS検知サーバ ── L2SW */}
-      <Wire x1={96} y1={32} x2={150} y2={31} />
+      <Wire x1={96} y1={36} x2={150} y2={35} />
 
       {/* L2SW ── 各BGPルータ */}
       {BGP_Y.map((y, i) => (
-        <Wire key={`l2-${i}`} x1={172} y1={42} x2={BGP_X} y2={y + 8} />
+        <Wire key={`l2-${i}`} x1={172} y1={46} x2={BGP_X} y2={y + 8} />
       ))}
 
       {/* LB11〜13 ── FW1 ／ LB21〜23 ── FW2 */}
@@ -81,7 +81,7 @@ export default function R6G11Fig3() {
             [FLOW_DROP_X[i], y + 6],
             [FLOW_DROP_X[i], FLOW_LANE_Y[i]],
             [FLOW_RISE_X[i], FLOW_LANE_Y[i]],
-            [FLOW_RISE_X[i], 46],
+            [FLOW_RISE_X[i], 50],
           ]}
           color={FLOW}
           dash="4 3"
@@ -90,8 +90,8 @@ export default function R6G11Fig3() {
       ))}
 
       {/* ── ノード ───────────────────────────────────── */}
-      <Box x={8} y={20} w={88} h={24} tone="rose" lines={['DDoS検知サーバ']} size={8.5} />
-      <Box x={150} y={20} w={44} h={22} tone="emerald" lines={['L2SW']} size={9} />
+      <Box x={8} y={24} w={88} h={24} tone="rose" lines={['DDoS検知サーバ']} size={8.5} />
+      <Box x={150} y={24} w={44} h={22} tone="emerald" lines={['L2SW']} size={9} />
 
       {LB_LEFT.map((y, i) => (
         <Box key={`bl-${i}`} x={8} y={y} w={42} h={20} tone="blue" lines={[`LB1${i + 1}`]} size={8.5} />

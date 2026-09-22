@@ -14,6 +14,13 @@ export const AFTERNOON1_FIGURE_IDS = [
   'R6-G1-1-tab1', // 表1 ゲームファイルの配信に利用するIPアドレスとポート番号
   'R6-G1-1-fig2', // 図2 BGP anycast 方式によるE社の経路広告イメージ
   'R6-G1-1-fig3', // 図3 E社POPの概要（抜粋）
+
+  // ─── R6 午後Ⅰ 問2（SD-WAN による拠点接続）─────────────────
+  'R6-G1-2-fig1', // 図1 G社の現行ネットワーク構成（抜粋）
+  'R6-G1-2-tab1', // 表1 本社のルータ2に届く支店Vの経路情報
+  'R6-G1-2-tab2', // 表2 各拠点のIPアドレスとAS番号一覧
+  'R6-G1-2-fig2', // 図2 G社のSD-WAN装置導入後のネットワーク構成（抜粋）
+  'R6-G1-2-fig3', // 図3 SD-WAN装置間のIPsecトンネルの構成
 ] as const
 
 export type Afternoon1FigureId = (typeof AFTERNOON1_FIGURE_IDS)[number]

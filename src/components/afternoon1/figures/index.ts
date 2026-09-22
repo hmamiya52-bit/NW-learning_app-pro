@@ -4,6 +4,11 @@ import R6G11Fig1 from './R6G11Fig1'
 import R6G11Tab1 from './R6G11Tab1'
 import R6G11Fig2 from './R6G11Fig2'
 import R6G11Fig3 from './R6G11Fig3'
+import R6G12Fig1 from './R6G12Fig1'
+import R6G12Tab1 from './R6G12Tab1'
+import R6G12Tab2 from './R6G12Tab2'
+import R6G12Fig2 from './R6G12Fig2'
+import R6G12Fig3 from './R6G12Fig3'
 
 /**
  * 試験図の描画コンポーネント登録簿。
@@ -27,4 +32,9 @@ export const EXAM_FIGURES: Record<Afternoon1FigureId, ComponentType> = {
   'R6-G1-1-tab1': R6G11Tab1,
   'R6-G1-1-fig2': R6G11Fig2,
   'R6-G1-1-fig3': R6G11Fig3,
+  'R6-G1-2-fig1': R6G12Fig1,
+  'R6-G1-2-tab1': R6G12Tab1,
+  'R6-G1-2-tab2': R6G12Tab2,
+  'R6-G1-2-fig2': R6G12Fig2,
+  'R6-G1-2-fig3': R6G12Fig3,
 }

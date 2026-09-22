@@ -77,7 +77,7 @@ export default function Afternoon1ExplanationDetail() {
               rel="noopener noreferrer"
               className="text-xs font-bold text-slate-600 border border-slate-300 rounded-lg px-3 py-1.5 hover:bg-slate-50 transition-colors"
             >
-              問題PDF
+              問題文PDFを開く
             </a>
           )}
           <Link
@@ -110,10 +110,6 @@ export default function Afternoon1ExplanationDetail() {
                 <span className="inline-block w-1.5 h-4 bg-teal-500 rounded-full" />
                 問題文の解説
               </h2>
-              <p className="text-[11px] text-slate-400 mb-3 leading-relaxed">
-                本文そのものは問題 PDF で読んでください。ここでは本文のセクション構成に沿って、
-                どこが設問の根拠になるかを解きほぐします。
-              </p>
               <div className="space-y-4">
                 {detail.problemSections.map((sec, i) => (
                   <div key={i} className={i > 0 ? 'pt-3 border-t border-slate-100' : ''}>

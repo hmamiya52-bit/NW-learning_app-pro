@@ -3,7 +3,15 @@ import type { ToneName } from './tokens'
 
 /** 試験図の描画部品。定数とフックは tokens.ts にある（Fast Refresh のため分離）。 */
 
-/** 図の外枠。width 100% で伸縮し、モバイルでも横スクロールを出さない */
+/**
+ * 図の外枠。width 100% で伸縮し、モバイルでも横スクロールを出さない。
+ *
+ * ただし上限を付けないと、デスクトップ（図の枠が 640px 前後）で viewBox 幅 340 が
+ * 1.9 倍に拡大され、図の文字（9前後）が本文（12-13px）より大きくなって釣り合わない。
+ * 1.3 倍で頭打ちにして、図の文字がおよそ 11-12px に収まるようにする。
+ */
+const MAX_SCALE = 1.3
+
 export function FigSvg({
   w,
   h,
@@ -19,7 +27,12 @@ export function FigSvg({
     <svg
       viewBox={`0 0 ${w} ${h}`}
       width="100%"
-      style={{ height: 'auto', display: 'block' }}
+      style={{
+        height: 'auto',
+        display: 'block',
+        maxWidth: Math.round(w * MAX_SCALE),
+        margin: '0 auto',
+      }}
       preserveAspectRatio="xMidYMid meet"
       role="img"
       aria-label={title}

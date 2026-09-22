@@ -20,7 +20,7 @@ const TD = 'border border-slate-300 px-1.5 py-1 text-center align-middle whitesp
 export default function R6G11Tab1() {
   return (
     <div className="overflow-x-auto">
-      <table className="border-collapse text-[10px] mx-auto" style={{ minWidth: 430 }}>
+      <table className="border-collapse text-[11px] mx-auto" style={{ minWidth: 430 }}>
         <thead>
           <tr>
             <th rowSpan={2} className={`${TH} bg-slate-100 text-slate-700`}>

@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { MarkupText } from './MarkupText'
 import { EXAM_FIGURES } from './figures'
 import type { Afternoon1Figure } from '../../data/afternoon1/explanations'
@@ -69,18 +70,44 @@ function CompareTable({
 export function Afternoon1FigureView({
   figure,
   hideCaption = false,
+  allowPoints = true,
 }: {
   figure: Afternoon1Figure
   hideCaption?: boolean
+  /**
+   * 読みどころを開けるようにするか。
+   * 読みどころは設問の答えに触れるので、解答欄では答え合わせに入るまで false にする。
+   */
+  allowPoints?: boolean
 }) {
+  const [openPoints, setOpenPoints] = useState(false)
+
   const ExamFigure = figure.kind === 'exam' ? EXAM_FIGURES[figure.figureId] : undefined
+  const points = figure.kind === 'exam' ? figure.points : undefined
+  const hasPoints = allowPoints && !!points && points.length > 0
 
   return (
     <figure className="rounded-lg border border-slate-200 bg-white px-3 py-3">
-      {!hideCaption && (
-        <figcaption className="text-[12px] font-black text-indigo-800 mb-2">
-          {figure.title}
-        </figcaption>
+      {(!hideCaption || hasPoints) && (
+        <div className="flex items-start justify-between gap-2 mb-2">
+          {hideCaption ? (
+            <span />
+          ) : (
+            <figcaption className="text-[12px] font-black text-indigo-800 leading-snug">
+              {figure.title}
+            </figcaption>
+          )}
+          {hasPoints && (
+            <button
+              type="button"
+              onClick={() => setOpenPoints((v) => !v)}
+              aria-expanded={openPoints}
+              className="flex-shrink-0 text-[11px] font-bold text-teal-700 border border-teal-200 bg-white rounded px-2 py-0.5 hover:bg-teal-50 transition-colors"
+            >
+              {openPoints ? '読みどころを閉じる' : '読みどころ'}
+            </button>
+          )}
+        </div>
       )}
 
       {figure.kind === 'compare' ? (
@@ -101,6 +128,19 @@ export function Afternoon1FigureView({
         <p className="text-[11px] text-slate-500 leading-relaxed mt-2">
           <MarkupText text={figure.note} />
         </p>
+      )}
+
+      {hasPoints && openPoints && (
+        <ul className="mt-2 rounded border border-teal-200 bg-teal-50/60 px-2.5 py-2 space-y-1.5">
+          {points.map((p, i) => (
+            <li key={i} className="flex gap-1.5 text-[11.5px] leading-relaxed text-slate-700">
+              <span className="flex-shrink-0 text-teal-500 font-black">・</span>
+              <span>
+                <MarkupText text={p} />
+              </span>
+            </li>
+          ))}
+        </ul>
       )}
     </figure>
   )

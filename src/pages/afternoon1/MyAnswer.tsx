@@ -625,7 +625,7 @@ function Afternoon1MyAnswerContent({
                     {fig.title}
                   </summary>
                   <div className="px-1 pb-1">
-                    <Afternoon1FigureView figure={fig} hideCaption />
+                    <Afternoon1FigureView figure={fig} hideCaption allowPoints={checkMode} />
                   </div>
                 </details>
               ))}

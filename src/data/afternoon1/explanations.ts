@@ -95,8 +95,14 @@ export type Afternoon1Figure =
       title: string
       /** 描画コンポーネントの id */
       figureId: Afternoon1FigureId
-      /** 補足（図の下に小さく表示。MarkupText 可） */
+      /** 補足（図の下に小さく表示。MarkupText 可）。原図の注記をそのまま置く */
       note?: string
+      /**
+       * この図の読みどころ（2-3件。40-80字目安。MarkupText 可）。
+       * 図のどこに注目すれば設問が解けるかを書く。
+       * 解答に触れるので、解答欄では答え合わせに入ってからでないと開けない。
+       */
+      points?: string[]
     }
 
 /** 詳細解説（深掘りページ用。任意。未投入なら詳細ページは「準備中」） */

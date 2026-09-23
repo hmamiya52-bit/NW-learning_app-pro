@@ -16,7 +16,10 @@ import {
 } from '../../data/afternoon1/questionTexts'
 import { getAfternoon1ExamFigures } from '../../data/afternoon1/examFigures'
 import { MarkupText } from '../../components/afternoon1/MarkupText'
-import { Afternoon1FigureView } from '../../components/afternoon1/AfternoonFigure'
+import {
+  Afternoon1FigureColorKey,
+  Afternoon1FigureView,
+} from '../../components/afternoon1/AfternoonFigure'
 import ScratchMemo from '../../components/afternoon1/ScratchMemo'
 
 // ----------------------------------------------------------------
@@ -603,6 +606,9 @@ function Afternoon1MyAnswerContent({
               >
                 {allFiguresOpen ? 'すべて閉じる' : 'すべて開く'}
               </button>
+            </div>
+            <div className="mb-2">
+              <Afternoon1FigureColorKey />
             </div>
             <div className="space-y-2">
               {examFigures.map((fig, i) => (

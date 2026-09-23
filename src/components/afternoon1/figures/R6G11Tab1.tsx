@@ -6,7 +6,12 @@
  *
  * 設問1(2)イ「本文中の イ に入れる適切なセグメントを，表1中から選んで答えよ」が
  * 「所属セグメント」列を参照する。
+ *
+ * 見出しの色は図と同じ規則で付ける（LB は装置なので device の青、配信サーバは host の橙）。
+ * 解説を開いたときは、HTTPS と HTTP の変わり目になる2つのポート列を赤で強調する。
  */
+
+import type { ExamFigureProps } from './tokens'
 
 const ROWS = [
   { content: 'ゲームα', url: 'https://alpha.example.net/', segment: '172.21.1.0/24' },
@@ -17,7 +22,11 @@ const ROWS = [
 const TH = 'border border-slate-300 px-1.5 py-1 font-bold text-center align-middle whitespace-nowrap'
 const TD = 'border border-slate-300 px-1.5 py-1 text-center align-middle whitespace-nowrap'
 
-export default function R6G11Tab1() {
+/** 解説を開いたときに、その行・列が説明の対象だと示す */
+const MARK = 'bg-red-50 text-red-700 font-bold ring-2 ring-inset ring-red-500'
+
+export default function R6G11Tab1({ highlight = false }: ExamFigureProps) {
+  const port = highlight ? MARK : 'text-slate-700'
   return (
     <div className="overflow-x-auto">
       <table className="border-collapse text-[11px] mx-auto" style={{ minWidth: 430 }}>
@@ -51,9 +60,9 @@ export default function R6G11Tab1() {
               </th>
               <td className={`${TD} text-slate-700 font-mono`}>{r.url}</td>
               <td className={`${TD} text-slate-700 font-mono`}>203.x.11.21</td>
-              <td className={`${TD} text-slate-700 font-mono`}>443</td>
+              <td className={`${TD} ${port} font-mono`}>443</td>
               <td className={`${TD} text-slate-700 font-mono`}>{r.segment}</td>
-              <td className={`${TD} text-slate-700 font-mono`}>80</td>
+              <td className={`${TD} ${port} font-mono`}>80</td>
             </tr>
           ))}
         </tbody>

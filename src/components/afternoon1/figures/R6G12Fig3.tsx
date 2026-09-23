@@ -1,5 +1,6 @@
-import { Box, Cap, FigSvg, Wire } from './primitives'
-import { MUTED } from './tokens'
+import { Box, Callout, Cap, FigSvg, Ring, Route, Wire } from './primitives'
+import { MARK, MUTED } from './tokens'
+import type { ExamFigureProps } from './tokens'
 
 /**
  * 図3 J さんが考えた SD-WAN 装置間の IPsec トンネルの構成 — R6 午後Ⅰ 問2
@@ -15,6 +16,8 @@ import { MUTED } from './tokens'
  * TE の名前の付き方: TE ＋［0＝L社VPN／1＝インターネット］＋［自装置番号］＋［対向装置番号］。
  * 設問5 は「本社(装置2)→支店V(装置3)」の経路上の TE を答えるので、
  * TE023 と TE032（通常時）／TE123 と TE132（L 社 VPN 障害時）が読み取れることが要る。
+ * 解説を開いたときは、この装置2 ⇔ 装置3 の1本だけを両面でなぞり、
+ * 対応する TE 名の文字色も赤にする（文字を隠さずに「ここを見ろ」と言える）。
  */
 
 type Pane = {
@@ -41,7 +44,7 @@ const NODES = [
 const BOX_W = 100
 const BOX_H = 38
 
-export default function R6G12Fig3() {
+export default function R6G12Fig3({ highlight = false }: ExamFigureProps) {
   const te = (via: 0 | 1, self: number, peer: number) => `TE${via}${self}${peer}`
 
   return (
@@ -70,6 +73,21 @@ export default function R6G12Fig3() {
             {/* 2 — 4（斜め） */}
             <Wire x1={R} y1={T + BOX_H - 6} x2={L + BOX_W} y2={B + 6} dash={pane.dash} />
 
+            {/* ── 強調：装置2 ⇔ 装置3 の1本（箱より先に描く）── */}
+            {highlight && (
+              <g>
+                <Route
+                  points={[
+                    [R + 70, T + BOX_H],
+                    [R + 70, B],
+                  ]}
+                  dash={pane.dash ? '8 5' : undefined}
+                />
+                <Ring x={R} y={T} w={BOX_W} h={BOX_H} />
+                <Ring x={R} y={B} w={BOX_W} h={BOX_H} />
+              </g>
+            )}
+
             {/* ── TE 名（線の端に添える）──────────────── */}
             <Cap x={L + BOX_W + 4} y={mid(T) - 4} text={te(pane.via, 1, 2)} size={7} />
             <Cap x={R - 4} y={mid(T) - 4} text={te(pane.via, 2, 1)} anchor="end" size={7} />
@@ -77,8 +95,24 @@ export default function R6G12Fig3() {
             <Cap x={R - 4} y={mid(B) - 4} text={te(pane.via, 3, 4)} anchor="end" size={7} />
             <Cap x={L + 34} y={T + BOX_H + 14} text={te(pane.via, 1, 4)} size={7} />
             <Cap x={L + 34} y={B - 6} text={te(pane.via, 4, 1)} size={7} />
-            <Cap x={R + 66} y={T + BOX_H + 14} text={te(pane.via, 2, 3)} anchor="end" size={7} />
-            <Cap x={R + 66} y={B - 6} text={te(pane.via, 3, 2)} anchor="end" size={7} />
+            <Cap
+              x={R + 66}
+              y={T + BOX_H + 14}
+              text={te(pane.via, 2, 3)}
+              anchor="end"
+              size={7}
+              color={highlight ? MARK : undefined}
+              bold={highlight}
+            />
+            <Cap
+              x={R + 66}
+              y={B - 6}
+              text={te(pane.via, 3, 2)}
+              anchor="end"
+              size={7}
+              color={highlight ? MARK : undefined}
+              bold={highlight}
+            />
             <Cap x={L + BOX_W + 10} y={T + BOX_H + 16} text={te(pane.via, 1, 3)} size={7} />
             <Cap x={R - 10} y={B + 2} text={te(pane.via, 3, 1)} anchor="end" size={7} />
             <Cap x={R - 10} y={T + BOX_H + 16} text={te(pane.via, 2, 4)} anchor="end" size={7} />
@@ -92,7 +126,7 @@ export default function R6G12Fig3() {
                 y={t + nd.dy}
                 w={BOX_W}
                 h={BOX_H}
-                tone="violet"
+                tone="device"
                 lines={[`SD-WAN装置${nd.n}`, nd.site]}
                 size={7.5}
               />
@@ -100,6 +134,16 @@ export default function R6G12Fig3() {
           </g>
         )
       })}
+
+      {/* ── 強調の文字（2つの面のあいだの空き帯に置く）── */}
+      {highlight && (
+        <Callout
+          x={70}
+          y={214}
+          w={200}
+          lines={['本社は装置2、支店Vは装置3', '通常時 TE023・TE032／障害時 TE123・TE132']}
+        />
+      )}
 
       {/* ── 凡例 ─────────────────────────────────────── */}
       <Wire x1={6} y1={456} x2={40} y2={456} />

@@ -1,4 +1,15 @@
-import { TONE, FONT_SCALE, FRAME, LINE, MUTED, SEGMENT } from './tokens'
+import {
+  TONE,
+  FONT_SCALE,
+  FRAME,
+  LINE,
+  MARK,
+  MARK_FILL,
+  MARK_TEXT,
+  MUTED,
+  SEGMENT,
+  estimateWidth,
+} from './tokens'
 import type { ToneName } from './tokens'
 
 /** 試験図の描画部品。定数とフックは tokens.ts にある（Fast Refresh のため分離）。 */
@@ -81,7 +92,7 @@ export function Box({
   y,
   w,
   h,
-  tone = 'white',
+  tone,
   lines,
   size = 9,
   rx = 2,
@@ -90,7 +101,8 @@ export function Box({
   y: number
   w: number
   h: number
-  tone?: ToneName
+  /** 役割で選ぶ。見た目の好みで選ばない（tokens.ts の TONE を読むこと） */
+  tone: ToneName
   lines: string[]
   size?: number
   rx?: number
@@ -120,7 +132,7 @@ export function Ell({
   cy,
   rx,
   ry,
-  tone = 'white',
+  tone,
   lines,
   size = 9,
   rotate,
@@ -129,7 +141,8 @@ export function Ell({
   cy: number
   rx: number
   ry: number
-  tone?: ToneName
+  /** 役割で選ぶ。見た目の好みで選ばない（tokens.ts の TONE を読むこと） */
+  tone: ToneName
   lines: string[]
   size?: number
   rotate?: number
@@ -321,7 +334,200 @@ export function SolidFrame({
   )
 }
 
-/** 図の下に置く凡例の行 */
-export function LegendRow({ children }: { children: React.ReactNode }) {
-  return <g>{children}</g>
+/* ────────────────────────────────────────────────────────────────
+ * 強調（解説を開いたときだけ重ねる書き込み）
+ *
+ * 原則: **図がもともと持っている文字を絶対に隠さない**。
+ *   - Route と Ring はノードより先に描く。箱・楕円が後から上に乗るので、
+ *     中の文字に重なりようがない
+ *   - RouteTag と Callout は文字を持つので、空いている場所にしか置けない。
+ *     置いたら §5.4 の実測で、既存の text の bbox と重なっていないことを確かめる
+ * ──────────────────────────────────────────────────────────────── */
+
+/**
+ * 強調したい経路。**ノードより先に**描くこと（後からノードが上に乗り、ラベルを隠さない）。
+ * 既存の細い接続線の上をなぞる形になる。
+ */
+export function Route({
+  points,
+  width = 4,
+  dash,
+  soft = false,
+}: {
+  points: [number, number][]
+  width?: number
+  dash?: string
+  /** 対比のために「こちらではない方」を描くとき。細く薄くする */
+  soft?: boolean
+}) {
+  return (
+    <polyline
+      points={points.map(([x, y]) => `${x},${y}`).join(' ')}
+      fill="none"
+      stroke={MARK}
+      strokeWidth={soft ? width * 0.6 : width}
+      strokeDasharray={dash}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      opacity={soft ? 0.45 : 0.85}
+    />
+  )
+}
+
+/** 箱を囲む強調の輪。**箱より先に**描く（箱が上に乗るので中の文字は無傷） */
+export function Ring({
+  x,
+  y,
+  w,
+  h,
+  rx = 2,
+  pad = 3.5,
+}: {
+  x: number
+  y: number
+  w: number
+  h: number
+  rx?: number
+  pad?: number
+}) {
+  return (
+    <rect
+      x={x - pad}
+      y={y - pad}
+      width={w + pad * 2}
+      height={h + pad * 2}
+      rx={rx + pad}
+      fill={MARK_FILL}
+      stroke={MARK}
+      strokeWidth={1.6}
+    />
+  )
+}
+
+/** 楕円を囲む強調の輪。**楕円より先に**描く */
+export function RingEll({
+  cx,
+  cy,
+  rx,
+  ry,
+  pad = 3.5,
+}: {
+  cx: number
+  cy: number
+  rx: number
+  ry: number
+  pad?: number
+}) {
+  return (
+    <ellipse
+      cx={cx}
+      cy={cy}
+      rx={rx + pad}
+      ry={ry + pad}
+      fill={MARK_FILL}
+      stroke={MARK}
+      strokeWidth={1.6}
+    />
+  )
+}
+
+/**
+ * 経路の上に置く小さな札。線だけを隠すので、図中の文字には触れない。
+ * cx・cy は札の中心。w を省くと文字数から見積もる（全角1.0em／半角0.55em）。
+ */
+export function RouteTag({
+  cx,
+  cy,
+  text,
+  size = 7.5,
+  w,
+}: {
+  cx: number
+  cy: number
+  text: string
+  size?: number
+  w?: number
+}) {
+  const fs = size * FONT_SCALE
+  const width = w ?? estimateWidth(text, fs) + 7
+  const height = fs + 6
+  return (
+    <g>
+      <rect
+        x={cx - width / 2}
+        y={cy - height / 2}
+        width={width}
+        height={height}
+        rx={height / 2}
+        fill={MARK_FILL}
+        stroke={MARK}
+        strokeWidth={1}
+      />
+      <text
+        x={cx}
+        y={cy + fs * 0.36}
+        textAnchor="middle"
+        fontSize={fs}
+        fontWeight={700}
+        fill={MARK_TEXT}
+      >
+        {text}
+      </text>
+    </g>
+  )
+}
+
+/**
+ * 吹き出し。x・y は左上。**空いている場所にしか置かないこと**（図中の文字を隠さない）。
+ * leader は吹き出しから対象へ引く線で、最後の点に小さな丸が付く。
+ */
+export function Callout({
+  x,
+  y,
+  w,
+  lines,
+  size = 7.5,
+  leader,
+}: {
+  x: number
+  y: number
+  w: number
+  lines: string[]
+  size?: number
+  leader?: [number, number][]
+}) {
+  const fs = size * FONT_SCALE
+  const lh = fs + 2.8
+  const h = lines.length * lh + 7
+  const tip = leader?.[leader.length - 1]
+  return (
+    <g>
+      {leader && leader.length >= 2 && (
+        <polyline
+          points={leader.map(([px, py]) => `${px},${py}`).join(' ')}
+          fill="none"
+          stroke={MARK}
+          strokeWidth={1.1}
+        />
+      )}
+      <rect
+        x={x}
+        y={y}
+        width={w}
+        height={h}
+        rx={3}
+        fill={MARK_FILL}
+        stroke={MARK}
+        strokeWidth={1.2}
+      />
+      <text x={x + 5} y={y + 5 + fs} fontSize={fs} fontWeight={700} fill={MARK_TEXT}>
+        {lines.map((ln, i) => (
+          <tspan key={i} x={x + 5} dy={i === 0 ? 0 : lh}>
+            {ln}
+          </tspan>
+        ))}
+      </text>
+      {tip && <circle cx={tip[0]} cy={tip[1]} r={2} fill={MARK} />}
+    </g>
+  )
 }

@@ -4,7 +4,10 @@ import { afternoonProblems } from '../../data/afternoonProblems'
 import { getAfternoon1Explanation } from '../../data/afternoon1/explanations'
 import { getAfternoon1ExamFigures } from '../../data/afternoon1/examFigures'
 import { MarkupText } from '../../components/afternoon1/MarkupText'
-import { Afternoon1FigureView } from '../../components/afternoon1/AfternoonFigure'
+import {
+  Afternoon1FigureColorKey,
+  Afternoon1FigureView,
+} from '../../components/afternoon1/AfternoonFigure'
 
 /**
  * 午後Ⅰ 詳細解説ページ（/afternoon1/:id/explanation）
@@ -129,6 +132,9 @@ export default function Afternoon1ExplanationDetail() {
                   <span className="inline-block w-1.5 h-4 bg-teal-500 rounded-full" />
                   問題中の図表
                 </h2>
+                <div className="mb-3">
+                  <Afternoon1FigureColorKey />
+                </div>
                 <div className="space-y-3">
                   {examFigures.map((fig, i) => (
                     <Afternoon1FigureView key={i} figure={fig} />

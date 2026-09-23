@@ -3,7 +3,12 @@
  *
  * 設問2(2)で c〜f を埋めさせる表。
  * AS 番号の列は、原図どおりデータセンターと DMZ が1つのセル（rowspan）になっている。
+ *
+ * 見出しに色は付けない（色は「装置かホストか外部か」を表すために取ってある）。
+ * 解説を開いたときだけ、1つにまとまっている c のセルを赤で強調する。
  */
+
+import type { ExamFigureProps } from './tokens'
 
 const TH = 'border border-slate-300 px-2 py-1 font-bold text-center align-middle whitespace-nowrap'
 const TD = 'border border-slate-300 px-2 py-1 align-middle whitespace-nowrap'
@@ -22,7 +27,10 @@ const ROWS = [
   { nw: '支店W', ip: '10.4.0.0/16', as: 'f' },
 ]
 
-export default function R6G12Tab2() {
+/** 解説を開いたときに、その行・列が説明の対象だと示す */
+const MARK = 'bg-red-50 ring-2 ring-inset ring-red-500'
+
+export default function R6G12Tab2({ highlight = false }: ExamFigureProps) {
   return (
     <div className="overflow-x-auto">
       <table className="border-collapse text-[11px] mx-auto" style={{ minWidth: 330 }}>
@@ -30,14 +38,14 @@ export default function R6G12Tab2() {
           <tr>
             <th className={`${TH} bg-slate-100 text-slate-700`}>ネットワーク</th>
             <th className={`${TH} bg-slate-100 text-slate-700`}>IP アドレス</th>
-            <th className={`${TH} bg-blue-50 text-blue-800`}>AS 番号</th>
+            <th className={`${TH} bg-slate-100 text-slate-700`}>AS 番号</th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <td className={`${TD} text-slate-700`}>データセンター</td>
             <td className={`${TD} text-slate-700 font-mono`}>10.1.0.0/16</td>
-            <td rowSpan={2} className={`${TD} text-center`}>
+            <td rowSpan={2} className={`${TD} text-center ${highlight ? MARK : ''}`}>
               <Blank label="c" />
             </td>
           </tr>

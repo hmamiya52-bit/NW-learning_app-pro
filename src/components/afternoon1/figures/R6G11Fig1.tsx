@@ -1,5 +1,6 @@
-import { Box, Cap, DashFrame, Ell, FigSvg, SolidFrame, Wire } from './primitives'
+import { Box, Callout, Cap, DashFrame, Ell, FigSvg, Ring, Route, RouteTag, SolidFrame, Wire } from './primitives'
 import { MUTED, SEGMENT, TONE } from './tokens'
+import type { ExamFigureProps } from './tokens'
 
 /**
  * 図1 D社データセンターの構成（抜粋）— R6 午後Ⅰ 問1
@@ -10,6 +11,9 @@ import { MUTED, SEGMENT, TONE } from './tokens'
  *
  * 設問1(3)「必ず入っていなければならない装置を一つだけ選び，図1中の字句で答えよ」が
  * この図の字句（LB／ルータ／L2SW／α配信サーバ／ISP）を参照する。
+ *
+ * 解説を開いたとき（highlight）は、ゲーム端末から α 配信サーバまでの道筋をなぞり、
+ * HTTPS と HTTP の変わり目が LB であることを示す。
  */
 
 const SEG = [
@@ -18,7 +22,7 @@ const SEG = [
   { label: ['γ配信', 'サーバ'], y: 156 },
 ]
 
-export default function R6G11Fig1() {
+export default function R6G11Fig1({ highlight = false }: ExamFigureProps) {
   return (
     <FigSvg w={340} h={336} title="図1 D社データセンターの構成（抜粋）">
       {/* D社データセンター */}
@@ -29,25 +33,11 @@ export default function R6G11Fig1() {
           {/* セグメント（破線） */}
           <DashFrame x={9} y={seg.y} w={168} h={50} />
 
-          {/* 配信サーバ（原図どおり複数台を重ね書きで表す） */}
-          <rect
-            x={21}
-            y={seg.y + 12}
-            width={54}
-            height={30}
-            rx={2}
-            fill={TONE.amber.fill}
-            stroke={TONE.amber.stroke}
-            strokeWidth={1.2}
-          />
-          <Box x={16} y={seg.y + 7} w={54} h={30} tone="amber" lines={seg.label} size={9} />
           <Cap x={80} y={seg.y + 38} text="⋰" size={9} color={MUTED} />
 
           {/* 配信サーバ ── L2SW（原図どおり2本） */}
           <Wire x1={70} y1={seg.y + 14} x2={118} y2={seg.y + 19} />
           <Wire x1={75} y1={seg.y + 28} x2={118} y2={seg.y + 28} />
-
-          <Box x={118} y={seg.y + 13} w={44} h={22} tone="emerald" lines={['L2SW']} size={9} />
         </g>
       ))}
 
@@ -56,16 +46,61 @@ export default function R6G11Fig1() {
       <Wire x1={162} y1={120} x2={196} y2={121} />
       <Wire x1={162} y1={180} x2={196} y2={128} />
 
-      <Box x={196} y={108} w={46} h={26} tone="blue" lines={['LB']} size={10} />
-
-      {/* LB ── ルータ */}
+      {/* LB ── ルータ ──（データセンターの外へ）── ISP */}
       <Wire x1={219} y1={134} x2={219} y2={176} />
-      <Box x={195} y={176} w={48} h={26} tone="sky" lines={['ルータ']} size={9} />
-
-      {/* ルータ ──（データセンターの外へ）── ISP ── インターネット */}
       <Wire x1={219} y1={202} x2={219} y2={258} />
-      <Ell cx={120} cy={272} rx={76} ry={20} tone="slate" lines={['インターネット']} size={9} />
-      <Ell cx={219} cy={272} rx={24} ry={14} tone="slate" lines={['ISP']} size={9} />
+
+      {/* ── 強調：ゲーム端末 → α配信サーバ の道筋（ノードより先に描く）── */}
+      {highlight && (
+        <g>
+          {/* ISP → ルータ → LB：ここまでが HTTPS */}
+          <Route points={[[219, 286], [219, 121]]} />
+          {/* LB → L2SW → α配信サーバ：ここから HTTP */}
+          <Route points={[[219, 121], [196, 114], [162, 60], [118, 64], [68, 64]]} />
+          <Ring x={196} y={108} w={46} h={26} />
+        </g>
+      )}
+
+      {/* ── ノード（強調より後に描くので、中の文字は隠れない）── */}
+      {SEG.map((seg, i) => (
+        <g key={i}>
+          {/* 配信サーバ（原図どおり複数台を重ね書きで表す） */}
+          <rect
+            x={21}
+            y={seg.y + 12}
+            width={54}
+            height={30}
+            rx={2}
+            fill={TONE.host.fill}
+            stroke={TONE.host.stroke}
+            strokeWidth={1.2}
+          />
+          <Box x={16} y={seg.y + 7} w={54} h={30} tone="host" lines={seg.label} size={9} />
+          <Box x={118} y={seg.y + 13} w={44} h={22} tone="device" lines={['L2SW']} size={9} />
+        </g>
+      ))}
+      <Box x={196} y={108} w={46} h={26} tone="device" lines={['LB']} size={10} />
+      <Box x={195} y={176} w={48} h={26} tone="device" lines={['ルータ']} size={9} />
+      <Ell cx={120} cy={272} rx={76} ry={20} tone="outside" lines={['インターネット']} size={9} />
+      <Ell cx={219} cy={272} rx={24} ry={14} tone="outside" lines={['ISP']} size={9} />
+
+      {/* ── 強調の文字（空いている場所にだけ置く。実測で重なりなしを確認済み）── */}
+      {highlight && (
+        <g>
+          <RouteTag cx={219} cy={232} text="HTTPS" />
+          <RouteTag cx={105} cy={63} text="HTTP" />
+          <Callout
+            x={262}
+            y={100}
+            w={76}
+            lines={['HTTPS を終端', 'サーバ証明書は', 'ここに置く']}
+            leader={[
+              [262, 120],
+              [244, 121],
+            ]}
+          />
+        </g>
+      )}
 
       {/* 凡例 */}
       <rect

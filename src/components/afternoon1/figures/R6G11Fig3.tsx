@@ -1,5 +1,6 @@
-import { ArrowDefs, Box, Cap, Ell, FigSvg, Poly, SolidFrame, Wire } from './primitives'
-import { FLOW, MUTED, useFigureId } from './tokens'
+import { ArrowDefs, Box, Callout, Cap, Ell, FigSvg, Poly, Ring, Route, SolidFrame, Wire } from './primitives'
+import { LOGICAL, MUTED, useFigureId } from './tokens'
+import type { ExamFigureProps } from './tokens'
 
 /**
  * 図3 E 社 POP の概要（抜粋）— R6 午後Ⅰ 問1
@@ -14,6 +15,7 @@ import { FLOW, MUTED, useFigureId } from './tokens'
  * 設問3(1)は「インターネット → BGP ルータ1 → …→ LB11」の攻撃経路上で、
  * FW1 で止めるのと BGP ルータで止めるのとの違いを問うので、
  * BGP ルータ1 と LB11・FW1 の位置関係が読み取れることが要る。
+ * 解説を開いたときは、この攻撃の道筋そのものを赤くなぞり、入口と標的に吹き出しを付ける。
  */
 
 const BGP_Y = [100, 146, 192, 238] // BGPルータ1〜4 の箱の上端
@@ -28,7 +30,7 @@ const FLOW_DROP_X = [184, 178, 172, 166] // BGPルータ側で下りる縦の位
 const FLOW_LANE_Y = [58, 68, 78, 88] // 左へ渡る横のレーン
 const FLOW_RISE_X = [84, 66, 48, 30] // DDoS検知サーバへ上がる縦の位置
 
-export default function R6G11Fig3() {
+export default function R6G11Fig3({ highlight = false }: ExamFigureProps) {
   const fid = useFigureId('r6g11f3')
   const flowArrow = `url(#${fid}-arrow-0)`
 
@@ -36,7 +38,7 @@ export default function R6G11Fig3() {
 
   return (
     <FigSvg w={340} h={338} title="図3 E 社 POP の概要（抜粋）">
-      <ArrowDefs figureId={fid} colors={[FLOW]} />
+      <ArrowDefs figureId={fid} colors={[LOGICAL]} />
 
       {/* E社POP */}
       <SolidFrame x={2} y={4} w={250} h={292} label="E社POP" />
@@ -83,27 +85,47 @@ export default function R6G11Fig3() {
             [FLOW_RISE_X[i], FLOW_LANE_Y[i]],
             [FLOW_RISE_X[i], 50],
           ]}
-          color={FLOW}
+          color={LOGICAL}
           dash="4 3"
           markerEnd={flowArrow}
         />
       ))}
 
+      {/* ── 強調：攻撃パケットの道筋（ノードより先に描くので、ラベルは隠れない）── */}
+      {highlight && (
+        <g>
+          <Route
+            points={[
+              [302, 116],
+              [192, 116],
+              [156, 195],
+              [112, 188],
+              [104, 150],
+              [64, 138],
+              [50, 118],
+              [29, 118],
+            ]}
+          />
+          <Ring x={BGP_X} y={BGP_Y[0]} w={BGP_W} h={BGP_H} />
+          <Ring x={8} y={LB_LEFT[0]} w={42} h={20} />
+        </g>
+      )}
+
       {/* ── ノード ───────────────────────────────────── */}
-      <Box x={8} y={24} w={88} h={24} tone="rose" lines={['DDoS検知サーバ']} size={8.5} />
-      <Box x={150} y={24} w={44} h={22} tone="emerald" lines={['L2SW']} size={9} />
+      <Box x={8} y={24} w={88} h={24} tone="host" lines={['DDoS検知サーバ']} size={8.5} />
+      <Box x={150} y={24} w={44} h={22} tone="device" lines={['L2SW']} size={9} />
 
       {LB_LEFT.map((y, i) => (
-        <Box key={`bl-${i}`} x={8} y={y} w={42} h={20} tone="blue" lines={[`LB1${i + 1}`]} size={8.5} />
+        <Box key={`bl-${i}`} x={8} y={y} w={42} h={20} tone="device" lines={[`LB1${i + 1}`]} size={8.5} />
       ))}
-      <Box x={64} y={132} w={40} h={24} tone="rose" lines={['FW1']} size={9} />
+      <Box x={64} y={132} w={40} h={24} tone="device" lines={['FW1']} size={9} />
 
       {LB_RIGHT.map((y, i) => (
-        <Box key={`br-${i}`} x={8} y={y} w={42} h={20} tone="blue" lines={[`LB2${i + 1}`]} size={8.5} />
+        <Box key={`br-${i}`} x={8} y={y} w={42} h={20} tone="device" lines={[`LB2${i + 1}`]} size={8.5} />
       ))}
-      <Box x={64} y={234} w={40} h={24} tone="rose" lines={['FW2']} size={9} />
+      <Box x={64} y={234} w={40} h={24} tone="device" lines={['FW2']} size={9} />
 
-      <Box x={112} y={182} w={44} h={26} tone="sky" lines={['ルータ']} size={9} />
+      <Box x={112} y={182} w={44} h={26} tone="device" lines={['ルータ']} size={9} />
 
       {BGP_Y.map((y, i) => (
         <Box
@@ -112,7 +134,7 @@ export default function R6G11Fig3() {
           y={y}
           w={BGP_W}
           h={BGP_H}
-          tone="violet"
+          tone="device"
           lines={['BGP', `ルータ${i + 1}`]}
           size={8.5}
         />
@@ -124,7 +146,7 @@ export default function R6G11Fig3() {
         cy={185}
         rx={24}
         ry={100}
-        tone="slate"
+        tone="outside"
         lines={['インターネット']}
         size={9}
         rotate={-90}
@@ -136,11 +158,37 @@ export default function R6G11Fig3() {
           cy={cy(i)}
           rx={22}
           ry={13}
-          tone="slate"
+          tone="outside"
           lines={['ISP']}
           size={8.5}
         />
       ))}
+
+      {/* ── 強調の文字（空いている場所にだけ置く）── */}
+      {highlight && (
+        <g>
+          <Callout
+            x={112}
+            y={112}
+            w={58}
+            lines={['攻撃の入口']}
+            leader={[
+              [170, 121],
+              [188, 116],
+            ]}
+          />
+          <Callout
+            x={62}
+            y={104}
+            w={48}
+            lines={['攻撃対象']}
+            leader={[
+              [62, 113],
+              [55, 116],
+            ]}
+          />
+        </g>
+      )}
 
       {/* ── 凡例 ─────────────────────────────────────── */}
       <Poly
@@ -148,7 +196,7 @@ export default function R6G11Fig3() {
           [44, 314],
           [8, 314],
         ]}
-        color={FLOW}
+        color={LOGICAL}
         dash="4 3"
         markerEnd={flowArrow}
       />

@@ -1,10 +1,12 @@
 import type { Afternoon1QuestionText, Afternoon1QuestionTextSet } from './types'
+import { r4 } from './r4'
 import { r6 } from './r6'
 
 export type { Afternoon1QuestionText, Afternoon1QuestionTextSet } from './types'
 
 /** 問題 id → 公式設問文の配列（年度ファイルを結合） */
 export const afternoon1QuestionTexts: Afternoon1QuestionTextSet = {
+  ...r4,
   ...r6,
 }
 

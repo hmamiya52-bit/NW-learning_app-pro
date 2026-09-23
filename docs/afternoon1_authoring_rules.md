@@ -17,7 +17,8 @@
 - **記録を持たない。** XP・バッジ・演習記録・答案スナップショットは作らない。
   `src/lib/tracker.ts` / `gamification.ts` / `activityLog.ts` は **import すらしない**。
   書きかけの答案だけ `nwsp:a1:draft:<id>` に置く。`src/lib/sync/adapters.ts` の `KEYS` には登録しない。
-- セッション開始時に `git pull origin main`、終わったら commit & push。
+- セッション開始時に `git pull origin main`。
+  **解説を作ったとき・直したときは毎回 commit して push する**（§9。ためない）。
   コミット prefix は Conventional Commits（`feat(afternoon1): ...`）。`git add` は明示パス指定。
 
 ---
@@ -444,6 +445,18 @@ grep -rn "tracker\|gamification\|activityLog" src/pages/afternoon1 src/component
 - 赤／ネイビーの描き分け・コンソールエラー0
 - **既存 `/afternoon` が従来どおり動くこと**（非干渉の実機確認）
 
+### push のタイミング（ユーザ指示・2026-09-23）
+
+**解説を作ったとき・直したときは毎回 commit して push する。**複数問ぶんや複数の修正を
+ためてから一度に push しない。ユーザはデプロイ版で動作確認するので、
+push していない変更は確認できない。
+
+- 1問ぶん書き終えたら push。1問の中で設問文・図表・行解説・詳細解説を分けて進める場合も、
+  区切りごとに push してよい
+- 指摘を受けて直したら、**その修正だけで push**（次の作業とまとめない）
+- push の前に上の品質ゲートと非干渉チェックは必ず通す
+- **ユーザの確認を待たずに push してよい**
+
 ---
 
 ## 10. つまずいた所（実際に踏んだもの）
@@ -484,7 +497,7 @@ grep -rn "tracker\|gamification\|activityLog" src/pages/afternoon1 src/component
 - [ ] `npm run build` / `npm run validate-data` / `npm run lint`（§9）
 - [ ] 非干渉チェック（§9）
 - [ ] 実機確認（375px と通常幅・既存 `/afternoon` も）
-- [ ] commit `feat(afternoon1): ...` → push
+- [ ] commit `feat(afternoon1): ...` → **push（毎回。ためない）**
 
 ---
 
@@ -495,6 +508,7 @@ grep -rn "tracker\|gamification\|activityLog" src/pages/afternoon1 src/component
 | 問題 | 設問文 | 図表 | 行解説 | 詳細解説 |
 |---|---|---|---|---|
 | R6-G1-1 コンテンツ配信ネットワーク | 11行 | 4点 | 11件 | ○ |
+| R6-G1-2 SD-WANによる拠点接続 | 20行 | 5点 | 20件 | ○ |
 
 G2（午後Ⅱ）は型だけ用意してあり、データは未投入。
 

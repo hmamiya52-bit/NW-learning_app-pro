@@ -21,6 +21,12 @@ export const AFTERNOON1_FIGURE_IDS = [
   'R6-G1-2-tab2', // 表2 各拠点のIPアドレスとAS番号一覧
   'R6-G1-2-fig2', // 図2 G社のSD-WAN装置導入後のネットワーク構成（抜粋）
   'R6-G1-2-fig3', // 図3 SD-WAN装置間のIPsecトンネルの構成
+
+  // ─── R6 午後Ⅰ 問3（ローカルブレイクアウトによる負荷軽減）─────
+  'R6-G1-3-fig1', // 図1 現在のA社のネットワーク構成（抜粋）
+  'R6-G1-3-fig2', // 図2 A社のVPNを構成するIPパケット構造
+  'R6-G1-3-fig3', // 図3 各支社のPCから、C社SaaS宛てとその他インターネット宛ての通信の流れ
+  'R6-G1-3-fig4', // 図4 Bさんが作成した大阪支社のUTMのPACファイル
 ] as const
 
 export type Afternoon1FigureId = (typeof AFTERNOON1_FIGURE_IDS)[number]

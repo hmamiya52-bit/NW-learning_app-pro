@@ -96,6 +96,7 @@ export function Box({
   lines,
   size = 9,
   rx = 2,
+  dash,
 }: {
   x: number
   y: number
@@ -106,6 +107,8 @@ export function Box({
   lines: string[]
   size?: number
   rx?: number
+  /** 破線の枠にする。装置ではなく「装置がもつ機能」を表す箱に使う（原図に合わせる） */
+  dash?: string
 }) {
   const t = TONE[tone]
   const cx = x + w / 2
@@ -114,7 +117,17 @@ export function Box({
   const startY = y + h / 2 + fs * BASELINE - ((lines.length - 1) * lh) / 2
   return (
     <g>
-      <rect x={x} y={y} width={w} height={h} rx={rx} fill={t.fill} stroke={t.stroke} strokeWidth={1.2} />
+      <rect
+        x={x}
+        y={y}
+        width={w}
+        height={h}
+        rx={rx}
+        fill={t.fill}
+        stroke={t.stroke}
+        strokeWidth={1.2}
+        strokeDasharray={dash}
+      />
       <text x={cx} y={startY} textAnchor="middle" fontSize={fs} fontWeight={700} fill={t.text}>
         {lines.map((ln, i) => (
           <tspan key={i} x={cx} dy={i === 0 ? 0 : lh}>
@@ -309,6 +322,7 @@ export function SolidFrame({
   h,
   label,
   labelAnchor = 'start',
+  fill = 'none',
 }: {
   x: number
   y: number
@@ -316,10 +330,12 @@ export function SolidFrame({
   h: number
   label?: string
   labelAnchor?: 'start' | 'end'
+  /** 後ろに重ね描きした枠の線を隠したいときだけ白で塗る（原図の「複数拠点」の表現） */
+  fill?: string
 }) {
   return (
     <g>
-      <rect x={x} y={y} width={w} height={h} fill="none" stroke={FRAME} strokeWidth={1.3} />
+      <rect x={x} y={y} width={w} height={h} fill={fill} stroke={FRAME} strokeWidth={1.3} />
       {label && (
         <Cap
           x={labelAnchor === 'end' ? x + w - 6 : x + 6}
@@ -369,6 +385,38 @@ export function Route({
       strokeDasharray={dash}
       strokeLinecap="round"
       strokeLinejoin="round"
+      opacity={soft ? 0.45 : 0.85}
+    />
+  )
+}
+
+/**
+ * 範囲を示す帯（「ここからここまで」）。経路ではないので、
+ * §5.4 の検査5（経路が実在の線の上を通っているか）の対象外だと分かるよう data-role を付ける。
+ */
+export function RangeBar({
+  x1,
+  x2,
+  y,
+  soft = false,
+  tick = 6,
+}: {
+  x1: number
+  x2: number
+  y: number
+  /** 対比のために「こちらではない方」を描くとき */
+  soft?: boolean
+  /** 両端の縦棒の長さ */
+  tick?: number
+}) {
+  return (
+    <polyline
+      data-role="range"
+      points={`${x1},${y + tick} ${x1},${y} ${x2},${y} ${x2},${y + tick}`}
+      fill="none"
+      stroke={MARK}
+      strokeWidth={soft ? 1.8 : 3}
+      strokeLinecap="round"
       opacity={soft ? 0.45 : 0.85}
     />
   )

@@ -24,7 +24,9 @@ export default function Afternoon1Entry() {
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#f8fafc' }}>
         <div className="text-center space-y-3">
           <p className="text-slate-500">問題が見つかりません</p>
-          <Link to="/" className="text-teal-600 text-sm hover:underline">← ホームに戻る</Link>
+          <Link to="/afternoon1" className="text-teal-600 text-sm hover:underline">
+            ← 問題一覧に戻る
+          </Link>
         </div>
       </div>
     )
@@ -56,10 +58,10 @@ export default function Afternoon1Entry() {
               <h1 className="text-sm font-black leading-snug">{problem?.title ?? '午後解説'}</h1>
             </div>
             <Link
-              to="/"
+              to="/afternoon1"
               className="text-[11px] text-teal-300 hover:text-white transition-colors flex-shrink-0 mt-0.5"
             >
-              ← 戻る
+              ← 一覧
             </Link>
           </div>
         </section>
@@ -143,10 +145,10 @@ export default function Afternoon1Entry() {
         {/* 公式解答例の既存ページ（参考） */}
         <div className="flex justify-center pt-2">
           <Link
-            to="/"
+            to="/afternoon1"
             className="text-xs text-slate-400 hover:text-teal-600 border border-slate-200 rounded-lg px-4 py-2 hover:border-teal-300 transition-colors"
           >
-            ← ホームへ戻る
+            ← 問題一覧へ戻る
           </Link>
         </div>
 

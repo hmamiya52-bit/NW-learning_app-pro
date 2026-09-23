@@ -156,7 +156,7 @@ const OTHER_CARDS: MenuCard[] = [
     icon: <IconSync className="w-6 h-6 text-blue-700" />,
   },
   {
-    to: '/afternoon1/R6-G1-1',
+    to: '/afternoon1',
     title: '午後解説（開発中）',
     description: '',
     iconBg: 'bg-teal-50',

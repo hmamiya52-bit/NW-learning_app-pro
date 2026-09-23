@@ -24,6 +24,7 @@ import DeviceSync from './pages/DeviceSync'
 
 // 午後解説（開発中）。既存の /afternoon 動線とは独立した別ルート。
 // 解説データと自作 SVG 図が重いので、この動線に入ったときだけ読み込む。
+const Afternoon1ProblemList = lazy(() => import('./pages/afternoon1/ProblemList'))
 const Afternoon1Entry = lazy(() => import('./pages/afternoon1/Entry'))
 const Afternoon1MyAnswer = lazy(() => import('./pages/afternoon1/MyAnswer'))
 const Afternoon1ExplanationDetail = lazy(() => import('./pages/afternoon1/ExplanationDetail'))
@@ -80,6 +81,7 @@ export default function App() {
               </Suspense>
             }
           >
+            <Route path="/afternoon1" element={<Afternoon1ProblemList />} />
             <Route path="/afternoon1/:id" element={<Afternoon1Entry />} />
             <Route path="/afternoon1/:id/answer" element={<Afternoon1MyAnswer />} />
             <Route path="/afternoon1/:id/explanation" element={<Afternoon1ExplanationDetail />} />

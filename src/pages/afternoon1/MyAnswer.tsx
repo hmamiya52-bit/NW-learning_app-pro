@@ -468,8 +468,8 @@ function Afternoon1MyAnswerContent({
       >
         <div className="text-center space-y-3">
           <p className="text-slate-500">問題が見つかりません</p>
-          <Link to="/" className="text-teal-600 text-sm hover:underline">
-            ← ホームに戻る
+          <Link to="/afternoon1" className="text-teal-600 text-sm hover:underline">
+            ← 問題一覧に戻る
           </Link>
         </div>
       </div>

@@ -61,9 +61,9 @@ export default function H26G11Fig1({ highlight = false }: ExamFigureProps) {
       <DashFrame x={188} y={412} w={122} h={76} color={SEGMENT} />
       {BRANCHES.map((b) => (
         <g key={b.name}>
-          <SolidFrame x={b.x} y={266} w={70} h={62} />
-          <DashFrame x={b.x + 4} y={280} w={62} h={20} color={SEGMENT} />
-          <DashFrame x={b.x + 4} y={303} w={62} h={20} color={SEGMENT} />
+          <SolidFrame x={b.x} y={266} w={70} h={66} />
+          <DashFrame x={b.x + 4} y={280} w={62} h={23} color={SEGMENT} />
+          <DashFrame x={b.x + 4} y={306} w={62} h={23} color={SEGMENT} />
         </g>
       ))}
 
@@ -132,14 +132,14 @@ export default function H26G11Fig1({ highlight = false }: ExamFigureProps) {
       <Cap x={157} y={38} text="10.0.1.0/24" color={SEGMENT} anchor="end" size={7} />
       <Cap x={177} y={38} text="動画系セグメント" color={SEGMENT} bold />
       <Cap x={325} y={38} text="10.0.2.0/24" color={SEGMENT} anchor="end" size={7} />
-      <Box x={18} y={46} w={34} h={16} tone="host" lines={['FS']} size={7.5} />
-      <Box x={58} y={46} w={48} h={16} tone="host" lines={['業務サーバ']} size={6.5} />
+      <Box x={18} y={46} w={34} h={17} tone="host" lines={['FS']} size={7.5} />
+      <Box x={58} y={46} w={48} h={17} tone="host" lines={['業務サーバ']} size={6.5} />
       <Box x={60} y={72} w={42} h={16} tone="device" lines={['L2SW']} size={7} />
-      <Box x={180} y={46} w={48} h={16} tone="host" lines={['動画サーバ']} size={6.5} />
+      <Box x={180} y={46} w={48} h={17} tone="host" lines={['動画サーバ']} size={6.5} />
       <Cap x={236} y={58} text="…" anchor="middle" color={MUTED} />
-      <Box x={244} y={46} w={48} h={16} tone="host" lines={['動画サーバ']} size={6.5} />
+      <Box x={244} y={46} w={48} h={17} tone="host" lines={['動画サーバ']} size={6.5} />
       <Box x={232} y={72} w={42} h={16} tone="device" lines={['L2SW']} size={7} />
-      <Box x={68} y={102} w={40} h={15} tone="device" lines={['WAS']} size={7} />
+      <Box x={68} y={102} w={40} h={16} tone="device" lines={['WAS']} size={7} />
       <Box x={66} y={130} w={46} h={18} tone="device" lines={['ルータ1']} size={7} />
       <Box x={228} y={130} w={46} h={18} tone="device" lines={['ルータ2']} size={7} />
       <Cap x={92} y={128} text="p1" color={MUTED} size={6} />
@@ -160,9 +160,9 @@ export default function H26G11Fig1({ highlight = false }: ExamFigureProps) {
         <g key={`n-${b.name}`}>
           <Cap x={b.x + 4} y={277} text={b.name} color={MUTED} bold size={7} />
           <Cap x={b.x + 8} y={289} text="業務系セグメント" color={SEGMENT} size={5.5} />
-          <Cap x={b.x + 8} y={297} text={b.biz} color={SEGMENT} size={5.5} />
-          <Cap x={b.x + 8} y={312} text="動画系セグメント" color={SEGMENT} size={5.5} />
-          <Cap x={b.x + 8} y={320} text={b.mov} color={SEGMENT} size={5.5} />
+          <Cap x={b.x + 8} y={299} text={b.biz} color={SEGMENT} size={5.5} />
+          <Cap x={b.x + 8} y={315} text="動画系セグメント" color={SEGMENT} size={5.5} />
+          <Cap x={b.x + 8} y={325} text={b.mov} color={SEGMENT} size={5.5} />
         </g>
       ))}
 
@@ -174,26 +174,26 @@ export default function H26G11Fig1({ highlight = false }: ExamFigureProps) {
       <Cap x={116} y={362} text="p8" color={MUTED} size={6} />
       <Cap x={224} y={362} text="p9" anchor="end" color={MUTED} size={6} />
       <Cap x={170} y={378} text="cost 10" anchor="middle" color={MUTED} size={6.5} />
-      <Box x={68} y={392} w={40} h={15} tone="device" lines={['WAS']} size={7} />
+      <Box x={68} y={392} w={40} h={16} tone="device" lines={['WAS']} size={7} />
       <Cap x={92} y={390} text="p6" color={MUTED} size={6} />
       <Cap x={35} y={426} text="業務系セグメント" color={SEGMENT} bold />
-      <Cap x={35} y={438} text="10.1.1.0/24" color={SEGMENT} size={7} />
+      <Cap x={35} y={440} text="10.1.1.0/24" color={SEGMENT} size={7} />
       <Cap x={193} y={426} text="動画系セグメント" color={SEGMENT} bold />
-      <Cap x={193} y={438} text="10.1.2.0/24" color={SEGMENT} size={7} />
+      <Cap x={193} y={440} text="10.1.2.0/24" color={SEGMENT} size={7} />
       <Box x={76} y={446} w={42} h={16} tone="device" lines={['L2SW']} size={7} />
-      <Box x={38} y={470} w={32} h={15} tone="host" lines={['PC']} size={7} />
+      <Box x={38} y={470} w={32} h={16} tone="host" lines={['PC']} size={7} />
       <Cap x={76} y={480} text="…" anchor="middle" color={MUTED} />
-      <Box x={82} y={470} w={32} h={15} tone="host" lines={['PC']} size={7} />
+      <Box x={82} y={470} w={32} h={16} tone="host" lines={['PC']} size={7} />
       <Box x={228} y={446} w={42} h={16} tone="device" lines={['L2SW']} size={7} />
-      <Box x={196} y={470} w={32} h={15} tone="host" lines={['PC']} size={7} />
+      <Box x={196} y={470} w={32} h={16} tone="host" lines={['PC']} size={7} />
       <Cap x={234} y={480} text="…" anchor="middle" color={MUTED} />
-      <Box x={240} y={470} w={32} h={15} tone="host" lines={['PC']} size={7} />
+      <Box x={240} y={470} w={32} h={16} tone="host" lines={['PC']} size={7} />
 
       {/* ── 強調の文字（本部の L2SW とルータのあいだの空き帯に置く）── */}
       {highlight && (
         <Callout
           x={116}
-          y={98}
+          y={95}
           w={118}
           lines={['通常時の動画データは', 'ルータ2→ルータ4 を通る']}
           leader={[

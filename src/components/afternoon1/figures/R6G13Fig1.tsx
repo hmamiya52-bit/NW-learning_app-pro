@@ -64,7 +64,7 @@ export default function R6G13Fig1({ highlight = false }: ExamFigureProps) {
       />
       <Cap x={50} y={395} text="：IPsec トンネル" color={MUTED} />
       <Cap x={8} y={415} text="L2SW：レイヤー2スイッチ" color={MUTED} />
-      <Cap x={130} y={415} text="L3SW：レイヤー3スイッチ" color={MUTED} />
+      <Cap x={140} y={415} text="L3SW：レイヤー3スイッチ" color={MUTED} />
       <Cap x={8} y={433} text="UTM：統合脅威管理装置" color={MUTED} />
     </FigSvg>
   )

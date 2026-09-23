@@ -109,7 +109,7 @@ export default function R4G12Fig1({ highlight = false }: ExamFigureProps) {
       <Box x={112} y={96} w={48} h={20} tone="device" lines={['L3SW']} size={7.5} />
       <Box x={18} y={126} w={44} h={18} tone="device" lines={['L2SW']} size={7.5} />
       <Box x={84} y={126} w={44} h={18} tone="device" lines={['L2SW']} size={7.5} />
-      <Box x={176} y={120} w={58} h={26} tone="device" lines={['IPsec', 'ルータ']} size={7.5} />
+      <Box x={176} y={119} w={58} h={28} tone="device" lines={['IPsec', 'ルータ']} size={7.5} />
       {/* サーバと PC は原図どおり重ね書きで複数台を表す */}
       <rect x={20} y={168} width={46} height={18} rx={2} fill={TONE.host.fill} stroke={TONE.host.stroke} strokeWidth={1.2} />
       <Box x={14} y={162} w={46} h={18} tone="host" lines={['サーバ']} size={7.5} />
@@ -118,7 +118,7 @@ export default function R4G12Fig1({ highlight = false }: ExamFigureProps) {
       <Box x={82} y={162} w={42} h={18} tone="host" lines={['PC']} size={7.5} />
       <Cap x={132} y={166} text="⋰" size={8} color={MUTED} />
 
-      <Box x={176} y={248} w={58} h={26} tone="device" lines={['IPsec', 'ルータ']} size={7.5} />
+      <Box x={176} y={247} w={58} h={28} tone="device" lines={['IPsec', 'ルータ']} size={7.5} />
       <Box x={98} y={252} w={44} h={18} tone="device" lines={['L2SW']} size={7.5} />
       <rect x={102} y={298} width={42} height={18} rx={2} fill={TONE.host.fill} stroke={TONE.host.stroke} strokeWidth={1.2} />
       <Box x={96} y={292} w={42} h={18} tone="host" lines={['PC']} size={7.5} />
@@ -143,9 +143,9 @@ export default function R4G12Fig1({ highlight = false }: ExamFigureProps) {
 
       {/* ── 凡例 ─────────────────────────────────────── */}
       <Cap x={6} y={346} text="FW：ファイアウォール" color={MUTED} />
-      <Cap x={116} y={346} text="L2SW：レイヤ2スイッチ" color={MUTED} />
+      <Cap x={128} y={346} text="L2SW：レイヤ2スイッチ" color={MUTED} />
       <Cap x={6} y={364} text="L3SW：レイヤ3スイッチ" color={MUTED} />
-      <Cap x={116} y={364} text="IPsecルータ：IPsec VPN ルータ" color={MUTED} />
+      <Cap x={128} y={364} text="IPsecルータ：IPsec VPN ルータ" color={MUTED} />
       <Wire x1={8} y1={378} x2={44} y2={378} color={LOGICAL} width={1.6} dash="5 3" />
       <Cap x={50} y={381} text="：IPsec VPN（インターネット経由）" color={MUTED} />
     </FigSvg>

@@ -36,15 +36,15 @@ export default function R6G11Fig1({ highlight = false }: ExamFigureProps) {
           <Cap x={80} y={seg.y + 38} text="⋰" size={9} color={MUTED} />
 
           {/* 配信サーバ ── L2SW（原図どおり2本） */}
-          <Wire x1={70} y1={seg.y + 14} x2={118} y2={seg.y + 19} />
-          <Wire x1={75} y1={seg.y + 28} x2={118} y2={seg.y + 28} />
+          <Wire x1={70} y1={seg.y + 14} x2={130} y2={seg.y + 19} />
+          <Wire x1={75} y1={seg.y + 28} x2={130} y2={seg.y + 28} />
         </g>
       ))}
 
       {/* L2SW ── LB */}
-      <Wire x1={162} y1={60} x2={196} y2={114} />
-      <Wire x1={162} y1={120} x2={196} y2={121} />
-      <Wire x1={162} y1={180} x2={196} y2={128} />
+      <Wire x1={172} y1={60} x2={196} y2={114} />
+      <Wire x1={172} y1={120} x2={196} y2={121} />
+      <Wire x1={172} y1={180} x2={196} y2={128} />
 
       {/* LB ── ルータ ──（データセンターの外へ）── ISP */}
       <Wire x1={219} y1={134} x2={219} y2={176} />
@@ -56,7 +56,7 @@ export default function R6G11Fig1({ highlight = false }: ExamFigureProps) {
           {/* ISP → ルータ → LB：ここまでが HTTPS */}
           <Route points={[[219, 286], [219, 121]]} />
           {/* LB → L2SW → α配信サーバ：ここから HTTP */}
-          <Route points={[[219, 121], [196, 114], [162, 60], [118, 64], [68, 64]]} />
+          <Route points={[[219, 121], [196, 114], [172, 60], [130, 64], [68, 64]]} />
           <Ring x={196} y={108} w={46} h={26} />
         </g>
       )}
@@ -69,14 +69,14 @@ export default function R6G11Fig1({ highlight = false }: ExamFigureProps) {
             x={21}
             y={seg.y + 12}
             width={54}
-            height={30}
+            height={33}
             rx={2}
             fill={TONE.host.fill}
             stroke={TONE.host.stroke}
             strokeWidth={1.2}
           />
-          <Box x={16} y={seg.y + 7} w={54} h={30} tone="host" lines={seg.label} size={9} />
-          <Box x={118} y={seg.y + 13} w={44} h={22} tone="device" lines={['L2SW']} size={9} />
+          <Box x={16} y={seg.y + 7} w={54} h={33} tone="host" lines={seg.label} size={9} />
+          <Box x={130} y={seg.y + 13} w={42} h={22} tone="device" lines={['L2SW']} size={9} />
         </g>
       ))}
       <Box x={196} y={108} w={46} h={26} tone="device" lines={['LB']} size={10} />
@@ -88,7 +88,7 @@ export default function R6G11Fig1({ highlight = false }: ExamFigureProps) {
       {highlight && (
         <g>
           <RouteTag cx={219} cy={232} text="HTTPS" />
-          <RouteTag cx={105} cy={63} text="HTTP" />
+          <RouteTag cx={110} cy={64} text="HTTP" />
           <Callout
             x={262}
             y={100}

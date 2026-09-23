@@ -68,8 +68,8 @@ function OriginalPacket({ x, y, w }: { x: number; y: number; w: number }) {
   return (
     <g>
       <Field x={x} y={y} w={w} h={14} lines={['元の IP パケット']} size={6} />
-      <Field x={x} y={y + 14} w={half} h={20} lines={['元の', 'IPヘッダー']} size={5.5} />
-      <Field x={x + half} y={y + 14} w={half} h={20} lines={['元の', 'IPペイロード']} size={5.5} />
+      <Field x={x} y={y + 14} w={half} h={22} lines={['元の', 'IPヘッダー']} size={5.5} />
+      <Field x={x + half} y={y + 14} w={half} h={22} lines={['元の', 'IPペイロード']} size={5.5} />
     </g>
   )
 }
@@ -78,17 +78,17 @@ export default function R6G13Fig2({ highlight = false }: ExamFigureProps) {
   return (
     <FigSvg w={340} h={160} title="図2 A 社の VPN を構成する IP パケット構造">
       {/* (1) IP-IP でカプセル化したパケット */}
-      <Cap x={5} y={10} text="(1) 元の IP パケットを IP-IP でカプセル化した IP パケット" size={7} />
-      <Field x={5} y={16} w={70} h={34} lines={['IP', 'ヘッダー']} />
+      <Cap x={5} y={11} text="(1) 元の IP パケットを IP-IP でカプセル化した IP パケット" size={7} />
+      <Field x={5} y={16} w={70} h={36} lines={['IP', 'ヘッダー']} />
       <OriginalPacket x={75} y={16} w={180} />
 
       {/* (2) さらに IPsec で暗号化したパケット */}
       <Cap x={5} y={66} text="(2) (1)の IP パケットを更に IPsec で暗号化した IP パケット" size={7} />
-      <Field x={5} y={72} w={52} h={34} lines={['IP', 'ヘッダー']} />
-      <Field x={57} y={72} w={48} h={34} lines={['ESP', 'ヘッダー']} />
+      <Field x={5} y={72} w={52} h={36} lines={['IP', 'ヘッダー']} />
+      <Field x={57} y={72} w={48} h={36} lines={['ESP', 'ヘッダー']} />
       <OriginalPacket x={105} y={72} w={122} />
-      <Field x={227} y={72} w={52} h={34} lines={['ESP', 'トレーラ']} />
-      <Field x={279} y={72} w={56} h={34} lines={['ESP', '認証データ']} />
+      <Field x={227} y={72} w={52} h={36} lines={['ESP', 'トレーラ']} />
+      <Field x={279} y={72} w={56} h={36} lines={['ESP', '認証データ']} />
 
       {/* ── 強調：暗号化される範囲の対比 ── */}
       {highlight && (

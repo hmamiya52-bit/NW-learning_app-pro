@@ -481,7 +481,11 @@ export function RingEll({
 
 /**
  * 経路の上に置く小さな札。線だけを隠すので、図中の文字には触れない。
- * cx・cy は札の中心。w を省くと文字数から見積もる（全角1.0em／半角0.55em）。
+ * cx・cy は札の中心。w を省くと文字から見積もる（estimateWidth ＋左右5ずつ）。
+ *
+ * 高さは fs+8 で、文字は箱と同じ BASELINE で上下の中央に置く。
+ * fs+6 だと Meiryo UI の文字の箱（1行でおよそ 1.38em）が札の上辺から 0.3px ほどしか離れず、
+ * §5.4 の検査2 に掛かっていた。左右の5は、両端の丸みに文字の角が掛からないための幅。
  */
 export function RouteTag({
   cx,
@@ -497,8 +501,8 @@ export function RouteTag({
   w?: number
 }) {
   const fs = size * FONT_SCALE
-  const width = w ?? estimateWidth(text, fs) + 7
-  const height = fs + 6
+  const width = w ?? estimateWidth(text, fs) + 10
+  const height = fs + 8
   return (
     <g>
       <rect
@@ -513,7 +517,7 @@ export function RouteTag({
       />
       <text
         x={cx}
-        y={cy + fs * 0.36}
+        y={cy + fs * BASELINE}
         textAnchor="middle"
         fontSize={fs}
         fontWeight={700}

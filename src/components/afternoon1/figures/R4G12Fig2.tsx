@@ -126,8 +126,8 @@ export default function R4G12Fig2({ highlight = false }: ExamFigureProps) {
       <Ell cx={262} cy={62} rx={72} ry={15} tone="outside" lines={['P社営業支援サービス']} size={7.5} />
       <Ell cx={170} cy={112} rx={164} ry={26} tone="outside" lines={['インターネット']} size={9} />
 
-      <Box x={46} y={196} w={58} h={24} tone="device" lines={['新IPsec', 'ルータ']} size={7} />
-      <Box x={158} y={196} w={58} h={24} tone="device" lines={['新IPsec', 'ルータ']} size={7} />
+      <Box x={46} y={196} w={58} h={27} tone="device" lines={['新IPsec', 'ルータ']} size={7} />
+      <Box x={158} y={196} w={58} h={27} tone="device" lines={['新IPsec', 'ルータ']} size={7} />
       <Box x={52} y={240} w={40} h={18} tone="host" lines={['PC']} size={7.5} />
       <Box x={164} y={240} w={40} h={18} tone="host" lines={['PC']} size={7.5} />
       <Box x={268} y={240} w={40} h={18} tone="host" lines={['TPC']} size={7.5} />
@@ -162,7 +162,7 @@ export default function R4G12Fig2({ highlight = false }: ExamFigureProps) {
         color={MUTED}
         size={8}
       />
-      <Cap x={50} y={331} text="利用する際に発生する通信の流れ" color={MUTED} size={8} />
+      <Cap x={50} y={332} text="利用する際に発生する通信の流れ" color={MUTED} size={8} />
       <Wire x1={8} y1={347} x2={44} y2={347} color={MUTED} width={1} dash="1.5 2.5" />
       <Cap x={50} y={350} text="：インターネットとの接続" color={MUTED} size={8} />
     </FigSvg>

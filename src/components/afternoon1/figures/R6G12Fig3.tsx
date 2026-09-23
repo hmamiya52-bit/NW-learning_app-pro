@@ -138,9 +138,9 @@ export default function R6G12Fig3({ highlight = false }: ExamFigureProps) {
       {/* ── 強調の文字（2つの面のあいだの空き帯に置く）── */}
       {highlight && (
         <Callout
-          x={70}
+          x={56}
           y={214}
-          w={200}
+          w={228}
           lines={['本社は装置2、支店Vは装置3', '通常時 TE023・TE032／障害時 TE123・TE132']}
         />
       )}

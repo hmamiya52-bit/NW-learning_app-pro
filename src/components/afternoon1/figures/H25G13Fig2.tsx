@@ -1,5 +1,5 @@
-import { Box, Callout, Cap, DashFrame, FigSvg, RangeBar, Ring, Route, SolidFrame, Wire } from './primitives'
-import { FONT_SCALE, MARK, MARK_FILL, MARK_TEXT, MUTED, SEGMENT } from './tokens'
+import { Box, Callout, Cap, DashFrame, FigSvg, RangeBar, Ring, Route, RouteTag, SolidFrame, Wire } from './primitives'
+import { FONT_SCALE, MARK, MARK_TEXT, MUTED, SEGMENT } from './tokens'
 import type { ExamFigureProps } from './tokens'
 
 /**
@@ -67,40 +67,6 @@ function Field({
   )
 }
 
-/**
- * 範囲の帯に添える札。共通の RouteTag（高さ fs+6）だと、Meiryo UI の文字の箱（約 1.38em）が
- * 札の上辺から 0.3px しか離れないので、この図では高さを 2 足して文字を上下の中央に置く。
- * 共通部品を変えると既存の図の札まで大きさが変わるため、ここだけで持つ。
- */
-function BitTag({ cx, cy, text, w }: { cx: number; cy: number; text: string; w: number }) {
-  const fs = 7.5 * FONT_SCALE
-  const h = fs + 8
-  return (
-    <g>
-      <rect
-        x={cx - w / 2}
-        y={cy - h / 2}
-        width={w}
-        height={h}
-        rx={h / 2}
-        fill={MARK_FILL}
-        stroke={MARK}
-        strokeWidth={1}
-      />
-      <text
-        x={cx}
-        y={cy + fs * 0.415}
-        textAnchor="middle"
-        fontSize={fs}
-        fontWeight={700}
-        fill={MARK_TEXT}
-      >
-        {text}
-      </text>
-    </g>
-  )
-}
-
 /** マスの定義: [左端 x, 幅, 文字] */
 type Cell = [number, number, string[]]
 
@@ -110,9 +76,9 @@ const ET: string[] = ['Ether Type/', 'Length']
 const FRAME1: Cell[] = [
   [42, 24, ['DA']],
   [66, 24, ['SA']],
-  [90, 58, ET],
-  [148, 34, ['DATA']],
-  [182, 24, ['FCS']],
+  [90, 60, ET],
+  [150, 34, ['DATA']],
+  [184, 24, ['FCS']],
 ]
 /** ②: 顧客の VLAN タグ（TPID｜TCI）が SA の後ろに入る */
 const FRAME2: Cell[] = [
@@ -120,9 +86,9 @@ const FRAME2: Cell[] = [
   [66, 24, ['SA']],
   [90, 34, ['TPID']],
   [124, 26, ['TCI']],
-  [150, 58, ET],
-  [208, 34, ['DATA']],
-  [242, 24, ['FCS']],
+  [150, 60, ET],
+  [210, 34, ['DATA']],
+  [244, 24, ['FCS']],
 ]
 /** ③: SA の後ろに網掛け（設問で伏せた所）が入る */
 const FRAME3: Cell[] = [
@@ -130,9 +96,9 @@ const FRAME3: Cell[] = [
   [66, 24, ['SA']],
   [152, 34, ['TPID']],
   [186, 26, ['TCI']],
-  [212, 58, ET],
-  [270, 34, ['DATA']],
-  [304, 24, ['FCS']],
+  [212, 60, ET],
+  [272, 34, ['DATA']],
+  [306, 24, ['FCS']],
 ]
 /**
  * 網掛けの幅。解説を開いたときに解答の TPID と TCI を半分ずつに書き込むので、
@@ -148,22 +114,22 @@ const ROW3_Y = 160
 /** フィールドの境目どうしを結ぶ破線（上の行の下辺 x → 下の行の上辺 x） */
 const LINKS_12: [number, number][] = [
   [90, 150],
-  [148, 208],
-  [182, 242],
+  [150, 210],
+  [184, 244],
 ]
 const LINKS_23: [number, number][] = [
   [90, 152],
   [124, 186],
   [150, 212],
-  [208, 270],
-  [242, 304],
+  [210, 272],
+  [244, 306],
 ]
 
 function RowLabel({ y, num }: { y: number; num: string }) {
   return (
     <g>
       <Cap x={2} y={y + 10} text={`${num}の`} size={7} color={TEXT} bold />
-      <Cap x={2} y={y + 22.5} text="フレーム" size={7} color={TEXT} bold />
+      <Cap x={2} y={y + 23} text="フレーム" size={7} color={TEXT} bold />
     </g>
   )
 }
@@ -270,7 +236,7 @@ export default function H25G13Fig2({ highlight = false }: ExamFigureProps) {
             </text>
           </g>
           <RangeBar x1={90} x2={150} y={100} />
-          <BitTag cx={120} cy={100} text="32 ビット" w={50} />
+          <RouteTag cx={120} cy={100} text="32 ビット" w={50} />
           <Callout
             x={6}
             y={198}

@@ -64,8 +64,8 @@ export default function R6G12Fig1({ highlight = false }: ExamFigureProps) {
       {/* インターネット ── FW */}
       <Wire x1={140} y1={28} x2={175} y2={52} />
       {/* DMZ 内 */}
-      <Wire x1={84} y1={61} x2={158} y2={60} />
-      <Wire x1={63} y1={70} x2={53} y2={80} />
+      <Wire x1={86} y1={61} x2={158} y2={60} />
+      <Wire x1={65} y1={70} x2={53} y2={80} />
       {/* FW ── L3SW1 ── ルータ1 */}
       <Wire x1={175} y1={70} x2={175} y2={88} />
       <Wire x1={198} y1={97} x2={206} y2={97} />
@@ -102,8 +102,9 @@ export default function R6G12Fig1({ highlight = false }: ExamFigureProps) {
               [240, 97],
               [175, 97],
               [175, 61],
-              [84, 61],
-              [63, 70],
+              [86, 61],
+              [65, 70],
+              [53, 80],
               [53, 88],
             ]}
           />
@@ -116,7 +117,7 @@ export default function R6G12Fig1({ highlight = false }: ExamFigureProps) {
       {/* ── ノード（強調より後に描くので、中の文字は隠れない）── */}
       <Cap x={292} y={64} text="L社 MPLS VPN" anchor="middle" color={TONE.outside.text} bold />
       <Ell cx={140} cy={16} rx={54} ry={12} tone="outside" lines={['インターネット']} size={8} />
-      <Box x={42} y={52} w={42} h={18} tone="device" lines={['L2SW']} size={7.5} />
+      <Box x={44} y={52} w={42} h={18} tone="device" lines={['L2SW']} size={7.5} />
       <Box x={20} y={80} w={66} h={18} tone="host" lines={['プロキシサーバ']} size={7} />
       <Box x={158} y={52} w={34} h={18} tone="device" lines={['FW']} size={7.5} />
       <Box x={152} y={88} w={46} h={18} tone="device" lines={['L3SW1']} size={7.5} />
@@ -131,9 +132,9 @@ export default function R6G12Fig1({ highlight = false }: ExamFigureProps) {
         return (
           <g key={`nd-${site.n}`}>
             <Box x={18} y={cy - 9} w={42} h={18} tone="device" lines={['L2SW']} size={7.5} />
-            <Box x={16} y={cy + 16} w={28} h={14} tone="host" lines={['PC']} size={7} />
+            <Box x={16} y={cy + 14} w={28} h={16} tone="host" lines={['PC']} size={7} />
             <Cap x={52} y={cy + 26} text="…" anchor="middle" color={MUTED} />
-            <Box x={60} y={cy + 16} w={28} h={14} tone="host" lines={['PC']} size={7} />
+            <Box x={60} y={cy + 14} w={28} h={16} tone="host" lines={['PC']} size={7} />
             <Box x={126} y={cy - 9} w={46} h={18} tone="device" lines={[`L3SW${site.n}`]} size={7.5} />
             <Box x={206} y={cy - 9} w={34} h={18} tone="device" lines={[`ルータ${site.n}`]} size={7} />
           </g>
@@ -162,9 +163,9 @@ export default function R6G12Fig1({ highlight = false }: ExamFigureProps) {
 
       {/* ── 凡例 ─────────────────────────────────────── */}
       <Cap x={6} y={416} text="FW：ファイアウォール" />
-      <Cap x={112} y={416} text="L2SW：レイヤー2スイッチ" />
+      <Cap x={140} y={416} text="L2SW：レイヤー2スイッチ" />
       <Cap x={6} y={432} text="L3SW：レイヤー3スイッチ" />
-      <Cap x={124} y={432} text="PE：プロバイダエッジルータ" />
+      <Cap x={140} y={432} text="PE：プロバイダエッジルータ" />
       <Cap x={6} y={448} text="MPLS VPN：MPLS VPN サービス網" />
       <rect
         x={176}

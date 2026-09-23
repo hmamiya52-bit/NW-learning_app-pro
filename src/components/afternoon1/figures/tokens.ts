@@ -82,12 +82,21 @@ export interface ExamFigureProps {
 }
 
 /**
- * 文字の幅のざっくり見積もり（全角 1.0em／半角 0.55em）。
- * 吹き出し・札の幅決めにだけ使う。正確さは実測（§5.4）で担保する。
+ * 太字の文字の幅のざっくり見積もり（全角 1.0em／英大文字・数字 0.75em／英小文字 0.65em／
+ * 空白 0.35em／その他の半角 0.6em）。札の幅決めにだけ使う。正確さは実測（§5.4）で担保する。
+ *
+ * Meiryo UI の欧文は Verdana 系で幅が広く、太字の HTTPS は 3.6em ある。
+ * 以前の「半角 0.55em」では札の幅が足りず、HTTPS が札の両端からはみ出していた。
  */
 export function estimateWidth(text: string, fontSize: number) {
   let em = 0
-  for (const ch of text) em += ch.charCodeAt(0) < 0x80 ? 0.55 : 1
+  for (const ch of text) {
+    if (ch.charCodeAt(0) >= 0x80) em += 1
+    else if (ch === ' ') em += 0.35
+    else if (/[A-Z0-9]/.test(ch)) em += 0.75
+    else if (/[a-z]/.test(ch)) em += 0.65
+    else em += 0.6
+  }
   return em * fontSize
 }
 

@@ -161,9 +161,9 @@ export default function R6G12Fig2({ highlight = false }: ExamFigureProps) {
               size={7.5}
             />
             <Box x={64} y={Y + 32} w={40} h={16} tone="device" lines={['L2SW']} size={7} />
-            <Box x={62} y={Y + 52} w={26} h={13} tone="host" lines={['PC']} size={6.5} />
+            <Box x={62} y={Y + 50} w={26} h={16} tone="host" lines={['PC']} size={6.5} />
             <Cap x={95} y={Y + 62} text="…" anchor="middle" color={MUTED} />
-            <Box x={102} y={Y + 52} w={26} h={13} tone="host" lines={['PC']} size={6.5} />
+            <Box x={102} y={Y + 50} w={26} h={16} tone="host" lines={['PC']} size={6.5} />
             <Box x={170} y={Y + 32} w={44} h={16} tone="device" lines={[`L3SW${site.n}`]} size={7} />
             <Cap x={58} y={Y + 80} text={site.label} color={MUTED} bold />
           </g>
@@ -193,9 +193,9 @@ export default function R6G12Fig2({ highlight = false }: ExamFigureProps) {
 
       {/* ── 凡例 ─────────────────────────────────────── */}
       <Cap x={6} y={504} text="FW：ファイアウォール" />
-      <Cap x={112} y={504} text="L2SW：レイヤー2スイッチ" />
+      <Cap x={140} y={504} text="L2SW：レイヤー2スイッチ" />
       <Cap x={6} y={520} text="L3SW：レイヤー3スイッチ" />
-      <Cap x={124} y={520} text="PE：プロバイダエッジルータ" />
+      <Cap x={140} y={520} text="PE：プロバイダエッジルータ" />
       <rect
         x={6}
         y={526}

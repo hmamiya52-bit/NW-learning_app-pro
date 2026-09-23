@@ -10,7 +10,7 @@
  */
 
 export const PC_W = 24
-export const PC_H = 13
+export const PC_H = 15
 
 export const A = {
   /** インターネット（右の縦長の雲）と、その上に重なる C 社 SaaS */
@@ -20,15 +20,15 @@ export const A = {
 
   /** 東京本社 */
   hq: { x: 6, y: 44, w: 254, h: 204 },
-  dmz: { x: 12, y: 60, w: 150, h: 92 },
-  dnsContent: { x: 18, y: 81, w: 58, h: 20 },
-  dnsCache: { x: 18, y: 105, w: 58, h: 20 },
-  web: { x: 26, y: 128, w: 50, h: 20 },
+  dmz: { x: 12, y: 60, w: 150, h: 103 },
+  dnsContent: { x: 18, y: 78, w: 58, h: 26 },
+  dnsCache: { x: 18, y: 106, w: 58, h: 26 },
+  web: { x: 26, y: 134, w: 50, h: 26 },
   dmzSw: { x: 96, y: 78, w: 42, h: 18 },
-  proxy: { x: 92, y: 110, w: 52, h: 22 },
+  proxy: { x: 92, y: 108, w: 52, h: 26 },
   hqUtm: { x: 190, y: 76, w: 46, h: 20 },
   l3sw: { x: 192, y: 116, w: 42, h: 18 },
-  hqLan: { x: 30, y: 156, w: 222, h: 84 },
+  hqLan: { x: 30, y: 166, w: 222, h: 74 },
   hqSw1: { x: 56, y: 176, w: 40, h: 16 },
   hqSw2: { x: 166, y: 176, w: 40, h: 16 },
   hqPcY: 206,

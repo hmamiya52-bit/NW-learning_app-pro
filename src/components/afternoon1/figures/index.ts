@@ -1,6 +1,9 @@
 import type { ComponentType } from 'react'
 import type { Afternoon1FigureId } from '../../../data/afternoon1/figureIds'
 import type { ExamFigureProps } from './tokens'
+import H25G11Fig1 from './H25G11Fig1'
+import H25G11Fig2 from './H25G11Fig2'
+import H25G11Tab1 from './H25G11Tab1'
 import H25G13Fig1 from './H25G13Fig1'
 import H25G13Fig2 from './H25G13Fig2'
 import H25G13Fig3 from './H25G13Fig3'
@@ -45,6 +48,9 @@ import R6G13Fig4 from './R6G13Fig4'
  * ここに登録するまで型エラーになる。
  */
 export const EXAM_FIGURES: Record<Afternoon1FigureId, ComponentType<ExamFigureProps>> = {
+  'H25-G1-1-fig1': H25G11Fig1,
+  'H25-G1-1-fig2': H25G11Fig2,
+  'H25-G1-1-tab1': H25G11Tab1,
   'H25-G1-3-fig1': H25G13Fig1,
   'H25-G1-3-fig2': H25G13Fig2,
   'H25-G1-3-fig3': H25G13Fig3,

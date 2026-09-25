@@ -1128,7 +1128,7 @@ export const officialAnswers: OfficialAnswerSet[] = [
     ],
   },
 
-  // ─── H25 午後Ⅰ 問2：端末の管理強化（802.1X/RADIUS）─────────────────
+  // ─── H25 午後Ⅰ 問2：端末の管理強化（DHCP スヌーピング/DHCP リレー）──
   {
     id: 'H25-G1-2',
     year: 'H25',
@@ -1136,18 +1136,20 @@ export const officialAnswers: OfficialAnswerSet[] = [
     number: 2,
     pdfUrl: 'https://www.ipa.go.jp/shiken/mondai-kaiotu/ug65p900000027za-att/2013h25a_nw_pm1_ans.pdf',
     answers: [
-      { s: '1', t: 'ア', a: 'サプリカント' },
-      { s: '1', t: 'イ', a: 'オーセンティケータ' },
-      { s: '1', t: 'ウ', a: '認証サーバ（RADIUSサーバ）' },
-      { s: '2', q: '(1)', a: 'EAP-TLS では端末側にもクライアント証明書が必要で，証明書管理の手間が増えるから', essay: true },
-      { s: '2', q: '(2)', t: 'エ', a: 'PEAP（Protected EAP）' },
-      { s: '2', q: '(3)', a: 'TLS によるトンネルを確立し，その中で利用者 ID とパスワードによる認証を行う。', essay: true },
-      { s: '3', q: '(1)', t: 'オ', a: 'VLAN' },
-      { s: '3', q: '(2)', a: '認証結果に応じて，端末を適切な VLAN に割り当てることができるから', essay: true },
-      { s: '3', q: '(3)', a: 'RADIUS サーバから Tunnel-Pvt-Group-ID 属性で VLAN ID を返す。', essay: true },
-      { s: '4', q: '(1)', t: 'カ', a: 'MAC アドレス認証' },
-      { s: '4', q: '(2)', a: 'MAC アドレスは偽装が容易であるため，なりすましによる不正接続を防げないから', essay: true },
-      { s: '4', q: '(3)', a: 'MAC アドレス認証と 802.1X 認証を組み合わせることで，セキュリティを強化する。', essay: true },
+      { s: '1', t: 'ア', a: 'リレーエージェント' },
+      { s: '1', t: 'イ', a: 'ARP' },
+      { s: '1', t: 'ウ', a: '製造者' },
+      { s: '1', t: 'エ', a: 'ミラー' },
+      { s: '1', t: 'オ', a: 'DHCPDISCOVER' },
+      { s: '2', q: '(1)', t: 'a', a: '5' },
+      { s: '2', q: '(2)', a: 'IP アドレスの重複割当て', essay: true },
+      { s: '2', q: '(3)', a: 'PC を接続すべきポート', essay: true },
+      { s: '3', q: '(1)', t: 'b', a: '24' },
+      { s: '3', q: '(1)', t: 'c', a: '6' },
+      { s: '3', q: '(2)', t: '固定 IP アドレスの割当て', a: 'MAC アドレスに対応付けた IP アドレスを割り当てる。', essay: true },
+      { s: '3', q: '(2)', t: '暫定運用中の対処', a: 'MAC アドレスが未登録でも IP アドレスを割り当てる。', essay: true },
+      { s: '3', q: '(3)', a: 'SW1 と SW2 の間でのブロードキャストフレームの折り返し', essay: true },
+      { s: '3', q: '(4)', a: 'SW 単位に VLAN を設定し，VLAN 間経路制御と DHCP リレーを行う構成', essay: true },
     ],
   },
 

@@ -4,6 +4,7 @@ import type { ExamFigureProps } from './tokens'
 import H25G11Fig1 from './H25G11Fig1'
 import H25G11Fig2 from './H25G11Fig2'
 import H25G11Tab1 from './H25G11Tab1'
+import H25G12Fig1 from './H25G12Fig1'
 import H25G13Fig1 from './H25G13Fig1'
 import H25G13Fig2 from './H25G13Fig2'
 import H25G13Fig3 from './H25G13Fig3'
@@ -51,6 +52,7 @@ export const EXAM_FIGURES: Record<Afternoon1FigureId, ComponentType<ExamFigurePr
   'H25-G1-1-fig1': H25G11Fig1,
   'H25-G1-1-fig2': H25G11Fig2,
   'H25-G1-1-tab1': H25G11Tab1,
+  'H25-G1-2-fig1': H25G12Fig1,
   'H25-G1-3-fig1': H25G13Fig1,
   'H25-G1-3-fig2': H25G13Fig2,
   'H25-G1-3-fig3': H25G13Fig3,

@@ -274,7 +274,7 @@ export const afternoon1ExamFigures: Record<string, Afternoon1Figure[]> = {
       title: '表2 各 LB の転送データ量',
       points: [
         'LB5 の ==11== は、DMZ に出入りする2区間（10 と 1）の合計。この数え方にならって、あ・い も表1 から求める（設問3(2)）。',
-        'LB4 だけ==不足==。社内の LB は FW と Proxy の両方を振り分けるので、通る量が倍になる。LB4 に上位機種を入れるのはこのため。',
+        'LB4 だけ==不足==。社内の通信は Proxy を経由して LB4 を2回通るので、量が倍になる。LB4 に上位機種を入れるのはこのため。',
       ],
     },
   ],

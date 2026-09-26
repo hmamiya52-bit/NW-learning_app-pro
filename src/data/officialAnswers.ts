@@ -1657,7 +1657,7 @@ export const officialAnswers: OfficialAnswerSet[] = [
     ],
   },
 
-  // ─── H27 午後Ⅰ 問1：シングルサインオンの導入 ───────────────────
+  // ─── H27 午後Ⅰ 問1：シングルサインオンの導入（Cookie による SSO/DSR 方式の LB）──
   {
     id: 'H27-G1-1',
     year: 'H27',
@@ -1665,17 +1665,17 @@ export const officialAnswers: OfficialAnswerSet[] = [
     number: 1,
     pdfUrl: 'https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000gxj0-att/2015h27a_nw_pm1_ans.pdf',
     answers: [
-      { s: '1', t: 'ア', a: 'KDC（鍵配布センタ）' },
-      { s: '1', t: 'イ', a: 'TGT（チケット保証チケット）' },
-      { s: '1', t: 'ウ', a: 'サービスチケット' },
-      { s: '2', q: '(1)', a: 'クライアントは TGT を使って KDC にサービスチケットを要求し，取得したサービスチケットをサービスに提示して認証する。', essay: true },
-      { s: '2', q: '(2)', t: 'エ', a: 'LDAP' },
-      { s: '2', q: '(3)', a: 'AD のディレクトリサービスと連携し，ユーザ情報の一元管理と Kerberos 認証が実現できるから', essay: true },
-      { s: '3', q: '(1)', t: 'オ', a: 'SAML' },
-      { s: '3', q: '(2)', a: 'IdP がユーザを認証し，アサーションを発行する。SP はアサーションを検証してサービスへのアクセスを許可する。', essay: true },
-      { s: '3', q: '(3)', a: '社外のクラウドサービスにも SSO できるため，異なるドメイン間での認証連携が可能になるから', essay: true },
-      { s: '4', q: '(1)', t: 'カ', a: 'リプレイ攻撃' },
-      { s: '4', q: '(2)', a: 'チケットに有効期限を設け，使用済みチケットをサーバ側で記録して再利用を禁止する。', essay: true },
+      { s: '1', t: 'ア', a: 'リバースプロキシ' },
+      { s: '1', t: 'イ', a: 'リダイレクト' },
+      { s: '1', t: 'ウ', a: 'Set-Cookie' },
+      { s: '1', t: 'エ', a: '内部 DNS' },
+      { s: '1', t: 'オ', a: 'ループバック' },
+      { s: '2', a: '⑤' },
+      { s: '3', q: '(1)', a: 'a-sha.example.jp' },
+      { s: '3', q: '(2)', a: 'Cookie に Secure 属性を付ける。', essay: true },
+      { s: '4', q: '(1)', a: 'SYN パケットにはレイヤ 7 情報が含まれていないから', essay: true },
+      { s: '4', q: '(2)', a: 'Gratuitous ARP 又は GARP' },
+      { s: '4', q: '(3)', a: 'VIP アドレスに対する ARP リクエストに応答しないように設定する。', essay: true },
     ],
   },
 

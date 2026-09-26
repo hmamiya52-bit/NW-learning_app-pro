@@ -1,6 +1,7 @@
 import type { Afternoon1QuestionText, Afternoon1QuestionTextSet } from './types'
 import { h25 } from './h25'
 import { h26 } from './h26'
+import { h27 } from './h27'
 import { r4 } from './r4'
 import { r6 } from './r6'
 
@@ -10,6 +11,7 @@ export type { Afternoon1QuestionText, Afternoon1QuestionTextSet } from './types'
 export const afternoon1QuestionTexts: Afternoon1QuestionTextSet = {
   ...h25,
   ...h26,
+  ...h27,
   ...r4,
   ...r6,
 }

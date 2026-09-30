@@ -53,7 +53,7 @@ export const afternoonProblems: AfternoonProblem[] = [
   p(H(27), HL(27), 'heisei', 'G2', 2, '無線LANセキュリティの強化',         ['無線LAN', '認証・SSO', 'マルチキャスト'],          'https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000gxj0-att/2015h27a_nw_pm2_qs.pdf'),
 
   // ───── H28 (2016) ─────────────────────────────────────────────────
-  p(H(28), HL(28), 'heisei', 'G1', 1, 'IP電話システムの再構築',            ['VoIP・IP電話'],                                    'https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000g6fw-att/2016h28a_nw_pm1_qs.pdf'),
+  p(H(28), HL(28), 'heisei', 'G1', 1, '電子メールシステム',                ['メールセキュリティ', 'DNS'],                       'https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000g6fw-att/2016h28a_nw_pm1_qs.pdf'),
   p(H(28), HL(28), 'heisei', 'G1', 2, 'インターネット接続の見直し',        ['ルーティング', '冗長化'],                          'https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000g6fw-att/2016h28a_nw_pm1_qs.pdf'),
   p(H(28), HL(28), 'heisei', 'G1', 3, 'ネットワーク運用管理',              ['運用管理・監視'],                                  'https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000g6fw-att/2016h28a_nw_pm1_qs.pdf'),
   p(H(28), HL(28), 'heisei', 'G2', 1, '企業ネットワークの拡張',            ['ルーティング', '冗長化', 'VPN'],                   'https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000g6fw-att/2016h28a_nw_pm2_qs.pdf'),

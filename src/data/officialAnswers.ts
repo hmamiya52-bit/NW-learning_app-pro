@@ -1558,7 +1558,7 @@ export const officialAnswers: OfficialAnswerSet[] = [
     ],
   },
 
-  // ─── H28 午後Ⅰ 問2：インターネット接続の見直し ──────────────────
+  // ─── H28 午後Ⅰ 問2：モバイルネットワークの検討（無線 LAN・LTE・VPN・プロキシ）──
   {
     id: 'H28-G1-2',
     year: 'H28',
@@ -1566,17 +1566,21 @@ export const officialAnswers: OfficialAnswerSet[] = [
     number: 2,
     pdfUrl: 'https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000g6fw-att/2016h28a_nw_pm1_ans.pdf',
     answers: [
-      { s: '1', t: 'ア', a: 'AS' },
-      { s: '1', t: 'イ', a: 'eBGP' },
-      { s: '1', t: 'ウ', a: 'iBGP' },
-      { s: '2', q: '(1)', a: 'ISP-A 側の回線が断になったとき，ISP-B 側の経路に切り替えられるから', essay: true },
-      { s: '2', q: '(2)', t: 'エ', a: 'AS パス' },
-      { s: '2', q: '(3)', a: '同一 AS 内の iBGP ピアには，eBGP から受け取った経路をそのまま広告できないから', essay: true },
-      { s: '3', q: '(1)', t: 'オ', a: 'BFD' },
-      { s: '3', q: '(2)', a: 'ルータ間の物理リンクが正常でも，その先の経路に障害があるとき検出できないから', essay: true },
-      { s: '3', q: '(3)', a: 'BFD セッションが断になったことをトリガーに BGP セッションをダウンさせ，迅速にフェイルオーバする。', essay: true },
-      { s: '4', q: '(1)', a: 'ISP-A，ISP-B ともに同じ経路が広告されるため，ロードバランスが行われるから', essay: true },
-      { s: '4', q: '(2)', t: 'カ', a: 'MED（Multi-Exit Discriminator）' },
+      { s: '1', t: 'ア', a: 'AES' },
+      { s: '1', t: 'イ', a: '事前共有鍵' },
+      { s: '1', t: 'ウ', a: 'SIM カード' },
+      { s: '1', t: 'エ', a: 'APN' },
+      { s: '1', t: 'オ', a: 'NAPT' },
+      { s: '1', t: 'カ', a: 'CONNECT' },
+      { s: '2', q: '(1)', a: '定期的に送信するビーコン信号を停止する。', essay: true },
+      { s: '2', q: '(2)', a: 'SSID や MAC アドレスは暗号化できず，傍受されるから', essay: true },
+      { s: '2', q: '(3)', a: 'E' },
+      { s: '3', q: '(1)', a: 'VPN 接続の利用者 ID を停止する。', essay: true },
+      { s: '3', q: '(2)', a: 'プロキシサーバと内部 DNS サーバへの通信', essay: true },
+      { s: '4', q: '(1)', t: '機能名', a: 'プロキシ認証' },
+      { s: '4', q: '(1)', t: '設定内容', a: '営業員ごとに利用者 ID を登録する。', essay: true },
+      { s: '4', q: '(2)', t: '①', a: '接続先ホスト名' },
+      { s: '4', q: '(2)', t: '②', a: '接続先ポート番号' },
     ],
   },
 

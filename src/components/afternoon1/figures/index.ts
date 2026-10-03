@@ -47,6 +47,10 @@ import R3G11Fig1 from './R3G11Fig1'
 import R3G11Fig2 from './R3G11Fig2'
 import R3G11Fig3 from './R3G11Fig3'
 import R3G11Tab1 from './R3G11Tab1'
+import R3G12Fig1 from './R3G12Fig1'
+import R3G12Fig2 from './R3G12Fig2'
+import R3G12Tab1 from './R3G12Tab1'
+import R3G12Tab2 from './R3G12Tab2'
 import R4G12Fig1 from './R4G12Fig1'
 import R4G12Tab1 from './R4G12Tab1'
 import R4G12Tab2 from './R4G12Tab2'
@@ -132,6 +136,10 @@ export const EXAM_FIGURES: Record<Afternoon1FigureId, ComponentType<ExamFigurePr
   'R3-G1-1-fig2': R3G11Fig2,
   'R3-G1-1-fig3': R3G11Fig3,
   'R3-G1-1-tab1': R3G11Tab1,
+  'R3-G1-2-fig1': R3G12Fig1,
+  'R3-G1-2-tab1': R3G12Tab1,
+  'R3-G1-2-tab2': R3G12Tab2,
+  'R3-G1-2-fig2': R3G12Fig2,
   'R4-G1-2-fig1': R4G12Fig1,
   'R4-G1-2-tab1': R4G12Tab1,
   'R4-G1-2-tab2': R4G12Tab2,

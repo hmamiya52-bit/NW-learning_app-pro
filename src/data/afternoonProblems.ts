@@ -75,7 +75,7 @@ export const afternoonProblems: AfternoonProblem[] = [
 
   // ───── R1 (2019) ──────────────────────────────────────────────────
   p(R(1),  RL(1),  'reiwa',  'G1', 1, 'ネットワークの増強',                ['ルーティング', '冗長化'],                          'https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000dict-att/2019r01a_nw_pm1_qs.pdf'),
-  p(R(1),  RL(1),  'reiwa',  'G1', 2, 'Webシステムの構成変更',             ['セキュリティ', 'DNS', 'DHCP', 'HTTP・CDN'],        'https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000dict-att/2019r01a_nw_pm1_qs.pdf'),
+  p(R(1),  RL(1),  'reiwa',  'G1', 2, 'Webシステムの構成変更',             ['セキュリティ', 'DNS', 'HTTP・CDN'],                'https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000dict-att/2019r01a_nw_pm1_qs.pdf'),
   p(R(1),  RL(1),  'reiwa',  'G1', 3, 'LANのセキュリティ対策',             ['認証・SSO', '無線LAN', 'セキュリティ'],            'https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000dict-att/2019r01a_nw_pm1_qs.pdf'),
   p(R(1),  RL(1),  'reiwa',  'G2', 1, 'クラウドサービスへの移行',          ['VoIP・IP電話', 'クラウド'],                        'https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000dict-att/2019r01a_nw_pm2_qs.pdf'),
   p(R(1),  RL(1),  'reiwa',  'G2', 2, 'ネットワークのセキュリティ対策',    ['DNS', 'HTTP・CDN', 'セキュリティ'],                'https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000dict-att/2019r01a_nw_pm2_qs.pdf'),

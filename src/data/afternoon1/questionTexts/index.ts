@@ -4,6 +4,7 @@ import { h26 } from './h26'
 import { h27 } from './h27'
 import { h28 } from './h28'
 import { r1 } from './r1'
+import { r3 } from './r3'
 import { r4 } from './r4'
 import { r6 } from './r6'
 
@@ -16,6 +17,7 @@ export const afternoon1QuestionTexts: Afternoon1QuestionTextSet = {
   ...h27,
   ...h28,
   ...r1,
+  ...r3,
   ...r4,
   ...r6,
 }

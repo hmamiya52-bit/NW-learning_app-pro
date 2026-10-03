@@ -148,6 +148,33 @@ localStorage.setItem('__figcheck_src', 'window.__figcheck = ' + window.__figchec
 
 `true` が返ったら「実行」を貼る。幅を変えても checkMode はそのまま残る（リロードすると戻る）。
 
+## HTML の図表（表・ゾーンファイル）の横のはみ出し
+
+R1-G1-2 で追加。上の検査は SVG の図だけを見る。HTML で組んだ表や設定ファイルの図は、入れ物の `scrollWidth` が
+`clientWidth` を超えていないか（横スクロールが出ていないか）を、解説を閉じた状態と開いた状態の両方で測る
+（解説を開くと空欄の下に解答例が出て、列が広がることがある。H28-G1-1 表1）。
+
+```js
+(async () => {
+  const w = (ms) => new Promise((r) => setTimeout(r, ms));
+  const res = [];
+  for (const f of document.querySelectorAll('figure')) {
+    if (f.querySelector('svg[role=img]')) continue;
+    const box = f.querySelector('table')?.parentElement || f.querySelector('.font-mono')?.parentElement;
+    if (!box) continue;
+    const btn = [...f.querySelectorAll('button')].find((b) => /解説/.test(b.textContent));
+    const m = () => ({ sw: box.scrollWidth, cw: box.clientWidth });
+    const closed = m(); let open = null;
+    if (btn) { btn.click(); await w(150); open = m(); btn.click(); await w(150); }
+    res.push({ head: box.textContent.slice(0, 12), closed, open });
+  }
+  return res;
+})()
+```
+
+`sw` と `cw` が同じなら収まっている。表のマスの中の折り返し（語の途中で割れていないか）は、各行の高さ
+（`tr.getBoundingClientRect().height`）を見て、3行以上に折れているマスがないかで確かめる。
+
 ## 文字の幅を測る（吹き出し・箱の幅を決める前に）
 
 H28-G1-3 で追加。吹き出しや箱に入れる文言の候補を並べ、図と同じ大きさ・太さで実際の幅（viewBox の単位）を測る。

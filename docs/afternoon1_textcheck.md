@@ -2,7 +2,7 @@
 
 `docs/afternoon1_authoring_rules.md` の §6.5（basis は位置参照だけ・逐語引用しない）、§6.2（字数の目安）、
 §8（マークアップ）を、書いたあとに機械的に確かめるための Python スクリプト。
-H26-G1-3・H27-G1-1・H27-G1-2・H27-G1-3・H28-G1-1・H28-G1-2・H28-G1-3・R1-G1-1・R1-G1-2・R1-G1-3 で使ったものをそのまま残してある。**毎回書き直さず、ここから写す。**
+H26-G1-3・H27-G1-1・H27-G1-2・H27-G1-3・H28-G1-1・H28-G1-2・H28-G1-3・R1-G1-1・R1-G1-2・R1-G1-3・R3-G1-1 で使ったものをそのまま残してある。**毎回書き直さず、ここから写す。**
 （スクラッチパッドに前の問の `check_expl.py` が残っていても、古い版のことがある。H28-G1-3 では図の解説の字数を見ない版が残っていた。
 毎回この文書のコードから写し直す。）
 
@@ -78,6 +78,11 @@ R1-G1-2 は1回目に図の解説の字数4件、特徴的な句1件（「資源
 正誤表で補った語句を解説で引くと、転記メモに書き添えた訂正の注記と一致して出るが、これは残してよい。
 R1-G1-3 は1回目に字数の超過1件・不足2件（`reasoning` が60字に届かない）、特徴的な句3件（「DHCP スヌーピングを有効にする」）が出た。
 下線の文をそのまま設問の要約（`asked`）に引くと当たりやすい。「スヌーピングをかける」のように動詞を替えて直した。
+R3-G1-1 は、図表の段階で図の解説を先に測り（下の「図の解説だけを先に測る」）、90字超え3件と述語つきの一致1件（「在庫管理端末は DHCP
+クライアント」17字）を直してからコミットした。行解説と詳細解説の1回目は、字数の超過3件（`knowledge`・`pitfall`・`reasoning`）と、
+述語つきの一致が9件。機器名と助詞の並び（「運用管理サーバは、L2SW」13字・「RT が RT 管理コントローラ」13字）と、本文の箇条をなぞった要件の並べ方
+（「フリー Wi-Fi やインターネット」16字）が多かった。最長一致を直すと、陰から「DHCP クライアントである」「店舗でフリー Wi-Fi を」が出た。
+最後は節の名前・アドレス（192.168.1.0/24）・用語（L2 over IP トンネル・ブロードキャストドメイン）・図題・図の注記だけになった。
 
 ## コード
 
@@ -250,6 +255,79 @@ for k, s in strings:
 ```
 
 上のスクリプトと違い、マークアップ（`==`・`__`）を外してから比べる（強調で一致が切れて見逃すのを防ぐ）。
+
+## 図の解説だけを先に測る（段階2で）
+
+R3-G1-1 で追加。設問文と図表の段階（行解説を書く前）では、`explanations.ts` にその問のブロックがまだ無いので、
+上の2つのスクリプトは使えない（ブロックの切り出しがずれる）。図表の段階のコミットの前に、`examFigures.ts` の
+`points` と `note` だけを、字数（90字まで）・マークアップ・特徴的な句・12字以上の一致の4つで測る。
+`fig_check.py` としてスクラッチパッドに保存し、同じ引数で実行する。
+
+```python
+"""図の解説（examFigures の points・note）だけを転記メモと突き合わせる（解説の投入前に使う）。
+使い方: python fig_check.py <問題id> <転記メモ>
+"""
+import re
+import sys
+import io
+
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+PID, MEMO = sys.argv[1], sys.argv[2]
+fig = open('src/data/afternoon1/examFigures.ts', encoding='utf-8').read()
+fi = fig.find(f"'{PID}': [")
+fj = fig.find('// ───', fi)
+fblock = fig[fi:fj]
+pat = re.compile(r"(\w+):\s*'((?:[^'\\]|\\.)*)'")
+arr = re.compile(r"^\s*'((?:[^'\\]|\\.)*)',?\s*$", re.M)
+strings = [('figpoint', s) for s in arr.findall(fblock)] + pat.findall(fblock)
+memo = open(MEMO, encoding='utf-8').read()
+body = memo[:memo.find('【図1')]
+ps = body.find('特徴的な句')
+phrases = [p.strip() for p in re.split(r' / |\n', body[ps:].split('\n', 1)[1]) if p.strip()]
+norm = lambda x: re.sub(r'\s+', '', x.replace('，', '、').replace('．', '。').replace('==', '').replace('__', ''))
+nb = norm(body[:ps])
+
+print('strings:', len(strings))
+for k, s in strings:
+    plain = s.replace('==', '').replace('__', '')
+    if k == 'figpoint' and len(plain) > 90:
+        print('  long', len(plain), plain[:30])
+    for mk in ('==', '__'):
+        if s.count(mk) % 2 or s.count(mk) // 2 > 2:
+            print('  markup', mk, s[:30])
+    for p in phrases:
+        if norm(p) and norm(p) in norm(s):
+            print('  HIT', p, '|', s[:30])
+
+
+def lcs(a, b):
+    best = (0, '')
+    prev = [0] * (len(b) + 1)
+    for x in range(1, len(a) + 1):
+        cur = [0] * (len(b) + 1)
+        for y in range(1, len(b) + 1):
+            if a[x - 1] == b[y - 1] and a[x - 1] != '\0':
+                cur[y] = prev[y - 1] + 1
+                if cur[y] > best[0]:
+                    best = (cur[y], a[x - cur[y]:x])
+        prev = cur
+    return best
+
+
+for k, s in strings:
+    if k in ('title', 'figureId', 'kind'):
+        continue
+    a = norm(s)
+    while True:
+        n, sub = lcs(a, nb)
+        if n < 12:
+            break
+        print(f'  {n} {k}: {sub}')
+        a = a.replace(sub, '\0' * len(sub), 1)
+print('done')
+```
+
+`long` と `HIT` と `markup` が0件、12字以上の一致が用語・図の注記（原図の注記の転記）だけになったら、図表の段階をコミットしてよい。
 
 ## 直し方
 

@@ -147,3 +147,25 @@ localStorage.setItem('__figcheck_src', 'window.__figcheck = ' + window.__figchec
 ```
 
 `true` が返ったら「実行」を貼る。幅を変えても checkMode はそのまま残る（リロードすると戻る）。
+
+## 文字の幅を測る（吹き出し・箱の幅を決める前に）
+
+H28-G1-3 で追加。吹き出しや箱に入れる文言の候補を並べ、図と同じ大きさ・太さで実際の幅（viewBox の単位）を測る。
+`estimateWidth` の見積もりは英字・数字・全角の括弧で外れる（「MGW2 だけ（正常時）」は見積もり 80、実測 93.9）。
+吹き出しの `w` は**実測の幅＋10**、箱は余白が左右とも 1.5 を超える幅にする。
+
+```js
+(() => {
+  const svg = document.querySelector('figure svg[role=img]');
+  const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  t.setAttribute('font-size', String(7.5 * 1.2));   // size 7.5 × FONT_SCALE
+  t.setAttribute('font-weight', '700');
+  svg.appendChild(t);
+  const m = (s) => { t.textContent = s; return +t.getBBox().width.toFixed(1); };
+  const r = Object.fromEntries(['新MSV1', 'MGW2 だけ（正常時）', '正常時 MGW2 だけ'].map((s) => [s, m(s)]));
+  t.remove();
+  return r;
+})()
+```
+
+候補の配列だけを書き換えて使う。どの図の `svg` で測っても同じ値になる（文字の大きさは viewBox の単位で決まる）。

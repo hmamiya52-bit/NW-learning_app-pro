@@ -2,7 +2,9 @@
 
 `docs/afternoon1_authoring_rules.md` の §6.5（basis は位置参照だけ・逐語引用しない）、§6.2（字数の目安）、
 §8（マークアップ）を、書いたあとに機械的に確かめるための Python スクリプト。
-H26-G1-3・H27-G1-1・H27-G1-2・H27-G1-3・H28-G1-1・H28-G1-2 で使ったものをそのまま残してある。**毎回書き直さず、ここから写す。**
+H26-G1-3・H27-G1-1・H27-G1-2・H27-G1-3・H28-G1-1・H28-G1-2・H28-G1-3 で使ったものをそのまま残してある。**毎回書き直さず、ここから写す。**
+（スクラッチパッドに前の問の `check_expl.py` が残っていても、古い版のことがある。H28-G1-3 では図の解説の字数を見ない版が残っていた。
+毎回この文書のコードから写し直す。）
 
 ## 使い方
 
@@ -66,6 +68,8 @@ H28-G1-1 は英字の多い問（SMTP-AUTH・STARTTLS・アドレスブロック
 H28-G1-2 は1回目にマークアップ1件（全角の閉じ括弧「）」の後の `==` に半角空白が続いた）、字数2件、
 述語つきの12字以上の一致が十数件出た。全角の括弧で終わる語を `==` で囲むときは、閉じの後に空白を置かない
 （スクリプトの例外は半角の `)` だけ）。最後は節の名前・用語（L2TP over IPsec）・図題だけになった。
+H28-G1-3 は1回目に図の解説の字数3件と、述語つきの12字以上の一致が6件出た。直したあと、下の「すべての一致を出す」で
+用語（ステートフルインスペクション）の陰に隠れていた一致が3件見つかった。最後は節の名前・用語・解答例の引用だけになった。
 
 ## コード
 
@@ -173,6 +177,73 @@ for k, s in strings:
     if n >= 12:
         print(f'  {n} {k}: {sub}')
 ```
+
+## すべての一致を出す（仕上げに1回）
+
+H28-G1-3 で追加。上のスクリプトは、1つの文字列につき一番長い一致しか出さない。一番長いものが用語だと、
+その陰の述語つきの一致が見えない。次のスクリプトは、一致を1つ見つけたら伏せ字にして探し直し、12字以上の一致を全部出す。
+解答例（`modelAnswer`）・図題（`title`）・見出し（`heading`）は、原文と同じで当然なので外してある。
+`lcs_all.py` としてスクラッチパッドに保存し、`check_expl.py` と同じ引数で実行する。
+
+```python
+"""すべての 12 字以上の一致を列挙する（1つ見つけたら伏せ字にして繰り返す）。
+使い方: python lcs_all.py <問題id> <転記メモ>
+"""
+import re
+import sys
+import io
+
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+PID, MEMO = sys.argv[1], sys.argv[2]
+src = open('src/data/afternoon1/explanations.ts', encoding='utf-8').read()
+i = src.find(f"'{PID}': {{")
+j = src.find("\n  '", i + 10)
+block = src[i:j]
+fig = open('src/data/afternoon1/examFigures.ts', encoding='utf-8').read()
+fi = fig.find(f"'{PID}': [")
+fj = fig.find('// ───', fi)
+fblock = fig[fi:fj if fj > 0 else len(fig)]
+pat = re.compile(r"(\w+):\s*'((?:[^'\\]|\\.)*)'")
+arr = re.compile(r"^\s*'((?:[^'\\]|\\.)*)',?\s*$", re.M)
+strings = pat.findall(block) + [('arr', s) for s in arr.findall(block)]
+strings += [('figpoint', s) for s in arr.findall(fblock)] + pat.findall(fblock)
+memo = open(MEMO, encoding='utf-8').read()
+body = memo[:memo.find('【図1')]
+body_text = body[:body.find('特徴的な句')]
+norm = lambda x: re.sub(r'\s+', '', x.replace('，', '、').replace('．', '。').replace('==', '').replace('__', ''))
+nb = norm(body_text)
+
+
+def lcs(a, b):
+    best = (0, '')
+    prev = [0] * (len(b) + 1)
+    for x in range(1, len(a) + 1):
+        cur = [0] * (len(b) + 1)
+        for y in range(1, len(b) + 1):
+            if a[x - 1] == b[y - 1] and a[x - 1] != '\0':
+                cur[y] = prev[y - 1] + 1
+                if cur[y] > best[0]:
+                    best = (cur[y], a[x - cur[y]:x])
+        prev = cur
+    return best
+
+
+skip = ('modelAnswer', 'title', 'heading')
+for k, s in strings:
+    if k in skip:
+        continue
+    a = norm(s)
+    while True:
+        n, sub = lcs(a, nb)
+        if n < 12:
+            break
+        print(f'  {n} {k}: {sub}')
+        a = a.replace(sub, '\0' * len(sub), 1)
+```
+
+上のスクリプトと違い、マークアップ（`==`・`__`）を外してから比べる（強調で一致が切れて見逃すのを防ぐ）。
+
+## 直し方
 
 文言を大量に直すときは、Edit ツールで1件ずつ直すか、置換の組をスクラッチパッドの Python に並べて
 `open(p, encoding='utf-8', newline='')` で読み書きする（CRLF を保つ。§10）。置換のたびに

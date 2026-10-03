@@ -41,6 +41,8 @@ import R1G12Fig1 from './R1G12Fig1'
 import R1G12Fig2 from './R1G12Fig2'
 import R1G12Tab1 from './R1G12Tab1'
 import R1G12Fig3 from './R1G12Fig3'
+import R1G13Fig1 from './R1G13Fig1'
+import R1G13Tab1 from './R1G13Tab1'
 import R4G12Fig1 from './R4G12Fig1'
 import R4G12Tab1 from './R4G12Tab1'
 import R4G12Tab2 from './R4G12Tab2'
@@ -120,6 +122,8 @@ export const EXAM_FIGURES: Record<Afternoon1FigureId, ComponentType<ExamFigurePr
   'R1-G1-2-fig2': R1G12Fig2,
   'R1-G1-2-tab1': R1G12Tab1,
   'R1-G1-2-fig3': R1G12Fig3,
+  'R1-G1-3-fig1': R1G13Fig1,
+  'R1-G1-3-tab1': R1G13Tab1,
   'R4-G1-2-fig1': R4G12Fig1,
   'R4-G1-2-tab1': R4G12Tab1,
   'R4-G1-2-tab2': R4G12Tab2,

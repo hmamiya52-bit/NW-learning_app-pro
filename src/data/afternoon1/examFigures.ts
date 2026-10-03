@@ -452,8 +452,8 @@ export const afternoon1ExamFigures: Record<string, Afternoon1Figure[]> = {
       title: '図1 現行の Web システム（抜粋）',
       note: '注記1 199.α.β.1 及び 199.α.β.2 は，グローバル IP アドレスを示す。／注記2 インターネットから Web システムへの通信について，DNS と HTTPS だけを許可するアクセス制御を，FW に設定している。原図は横一列。375px に合わせて Web システムを下の段に置き、中は FW から下りた L2SW から左へ並べた（図3 も同じ並び）。',
       points: [
-        'FW はインターネットから Web システムへの通信のうち、==DNS と HTTPS== だけを通す（注記2）。WAF を入れたら HTTPS は IP-w2 からだけに絞る（設問3(1) の前提）。',
-        'shop.asha.com の ==199.α.β.2== が Web システムの入口。構成変更後は LB がこのアドレスを持ち、WAF を外すときの A レコードの向け先になる（設問3(2)）。',
+        'FW が外から通すのは ==DNS と HTTPS== だけ（注記2）。WAF を入れたら、HTTPS は IP-w2 からだけに絞る（設問3(1) の前提）。',
+        '==199.α.β.2==（shop.asha.com）が Web システムの入口。構成変更後は LB が持ち、WAF を外すときの A レコードの向け先になる（設問3(2)）。',
       ],
     },
     {
@@ -463,7 +463,7 @@ export const afternoon1ExamFigures: Record<string, Afternoon1Figure[]> = {
       note: '注記 “waf-asha.tsha.net.” は，A 社 Web システムで WAF サービスを利用するために，T 社から割り当てられた FQDN である。',
       points: [
         'shop は CNAME で T 社の FQDN を指す。IP-w1 が変わっても T 社が自分のゾーンを直せば済み、==A 社の DNS は触らない==（設問1）。',
-        'WAF を止めるときは、この1行を ==shop IN A 199.α.β.2== に書き換えて LB へ直接向ける。$TTL が 3600 秒なので、古い答えが消えるまで最大1時間かかる（設問3(2)）。',
+        'WAF を止めるときは、この行を ==shop IN A 199.α.β.2== にして LB へ向ける。$TTL は 3600 秒で、古い答えは最大1時間残る（設問3(2)）。',
       ],
     },
     {
@@ -481,7 +481,7 @@ export const afternoon1ExamFigures: Record<string, Afternoon1Figure[]> = {
       title: '図3 構成変更後の Web システム（抜粋）',
       points: [
         'WAF を通ると、LB に届くリクエストの送信元は全部 ==IP-w2==。送信元 IP アドレスでセッションを維持すると、全員が同じ Web サーバに付く（設問2(2)）。',
-        'LB は HTTPS を終えて Web サーバへ HTTP で渡す。Cookie や XFF ヘッダを足すには中身を見る必要があり、TLS アクセラレーションで==復号を受け持つ==（設問2(3)・3(3)）。',
+        'LB で HTTPS を終え、Web サーバへは HTTP で渡す。Cookie や XFF ヘッダを足すには、LB での==復号が要る==（設問2(3)・3(3)）。',
         'WAF が止まったら、shop を LB の 199.α.β.2 へ向け直し、FW で==任意の送信元からの HTTPS==を通す（設問3(1)(2)）。',
       ],
     },

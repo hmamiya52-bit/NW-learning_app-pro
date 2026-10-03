@@ -883,7 +883,7 @@ export const officialAnswers: OfficialAnswerSet[] = [
       { s: '2', q: '(3)', t: 'd', a: 'オ' },
       { s: '3', q: '(1)', a: '2' },
       { s: '3', q: '(2)', t: 'LAN ポート 1', a: 'L3SW1 又は L3SW2' },
-      { s: '3', q: '(2)', t: 'LAN ポート 2', a: 'L3SW1，L3SW2' },
+      { s: '3', q: '(2)', t: 'LAN ポート 2', a: 'L3SW1 又は L3SW2（LAN ポート 1 と同じ L3SW）' },
       { s: '3', q: '(2)', t: 'LAN ポート 3', a: '空き' },
       { s: '3', q: '(2)', t: 'LAN ポート 4', a: '空き' },
       { s: '4', q: '(1)', t: '①', a: 'PC 管理サーバ' },

@@ -95,7 +95,7 @@ export const afternoonProblems: AfternoonProblem[] = [
   p(R(4),  RL(4),  'reiwa',  'G2', 2, '仮想化技術の導入',                  ['仮想化'],                                          'https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt80000009sgk-att/2022r04h_nw_pm2_qs.pdf'),
 
   // ───── R5 (2023) ──────────────────────────────────────────────────
-  p(R(5),  RL(5),  'reiwa',  'G1', 1, 'Webシステムの更改',                 ['HTTP・CDN', '認証・SSO'],                          'https://www.ipa.go.jp/shiken/mondai-kaiotu/ps6vr70000010d6y-att/2023r05h_nw_pm1_qs.pdf'),
+  p(R(5),  RL(5),  'reiwa',  'G1', 1, 'Webシステムの更改',                 ['HTTP・CDN'],                                       'https://www.ipa.go.jp/shiken/mondai-kaiotu/ps6vr70000010d6y-att/2023r05h_nw_pm1_qs.pdf'),
   p(R(5),  RL(5),  'reiwa',  'G1', 2, 'IPマルチキャストによる映像配信の導入', ['マルチキャスト'],                               'https://www.ipa.go.jp/shiken/mondai-kaiotu/ps6vr70000010d6y-att/2023r05h_nw_pm1_qs.pdf'),
   p(R(5),  RL(5),  'reiwa',  'G1', 3, '高速無線LANの導入',                 ['無線LAN'],                                         'https://www.ipa.go.jp/shiken/mondai-kaiotu/ps6vr70000010d6y-att/2023r05h_nw_pm1_qs.pdf'),
   p(R(5),  RL(5),  'reiwa',  'G2', 1, 'マルチクラウド利用による可用性の向上', ['DNS', 'HTTP・CDN', '冗長化', 'クラウド'],        'https://www.ipa.go.jp/shiken/mondai-kaiotu/ps6vr70000010d6y-att/2023r05h_nw_pm2_qs.pdf'),

@@ -161,13 +161,17 @@ R1-G1-2 で追加。上の検査は SVG の図だけを見る。HTML で組ん�
 ```js
 (async () => {
   const w = (ms) => new Promise((r) => setTimeout(r, ms));
+  // マスの中の行数の最大（3 以上なら、語の途中で割れていないかを見る）
+  const lines = (t) => Math.max(0, ...[...t.querySelectorAll('th,td')].map((c) => { const rg = document.createRange(); rg.selectNodeContents(c); return new Set([...rg.getClientRects()].map((x) => Math.round(x.top))).size; }));
   const res = [];
   for (const f of document.querySelectorAll('figure')) {
     if (f.querySelector('svg[role=img]')) continue;
-    const box = f.querySelector('table')?.parentElement || f.querySelector('.font-mono')?.parentElement;
+    // 幅で出し分ける表（hidden sm:table と sm:hidden の2つ）は、見えている方だけを測る
+    const tbl = [...f.querySelectorAll('table')].find((t) => t.offsetParent !== null);
+    const box = tbl?.parentElement || f.querySelector('.font-mono')?.parentElement;
     if (!box) continue;
     const btn = [...f.querySelectorAll('button')].find((b) => /解説/.test(b.textContent));
-    const m = () => ({ sw: box.scrollWidth, cw: box.clientWidth });
+    const m = () => ({ sw: box.scrollWidth, cw: box.clientWidth, maxLines: tbl ? lines(tbl) : undefined });
     const closed = m(); let open = null;
     if (btn) { btn.click(); await w(150); open = m(); btn.click(); await w(150); }
     res.push({ head: box.textContent.slice(0, 12), closed, open });
@@ -176,8 +180,12 @@ R1-G1-2 で追加。上の検査は SVG の図だけを見る。HTML で組ん�
 })()
 ```
 
-`sw` と `cw` が同じなら収まっている。表のマスの中の折り返し（語の途中で割れていないか）は、各行の高さ
-（`tr.getBoundingClientRect().height`）を見て、3行以上に折れているマスがないかで確かめる。
+`sw` と `cw` が同じなら収まっている。`maxLines` はマスの中の行数の最大で、3 以上なら、そのマスが語の途中で割れていないかを
+画面で見る（長い文の列は3行以上に折れてよい）。
+R4-G1-3 で、幅によって表を出し分ける図（図4・図5。640px 未満は欄を縦に並べた表）が入った。2つの表のうち隠れた方を
+`f.querySelector('table')` で拾うと、幅 0 どうしの比較になって素通りするので、見えている表（`offsetParent` が null でない表）だけを測るようにした。
+詳細解説ページの比較表（図解で整理）は `figure` の中に無いので、`document.querySelectorAll('table')` から見えている表を拾って、同じく `maxLines` を測る
+（比較表は §5.7 のとおり、各マス2行以内にしてきた）。
 
 ## 文字の幅を測る（吹き出し・箱の幅を決める前に）
 

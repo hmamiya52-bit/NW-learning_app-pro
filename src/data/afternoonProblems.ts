@@ -88,7 +88,7 @@ export const afternoonProblems: AfternoonProblem[] = [
   p(R(3),  RL(3),  'reiwa',  'G2', 2, 'インターネット接続環境の更改',      ['ルーティング', '冗長化', 'DNS'],                   'https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000d5ru-att/2021r03h_nw_pm2_qs.pdf'),
 
   // ───── R4 (2022) ──────────────────────────────────────────────────
-  p(R(4),  RL(4),  'reiwa',  'G1', 1, 'ネットワークの更改',                ['VPN'],                                             'https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt80000009sgk-att/2022r04h_nw_pm1_qs.pdf'),
+  p(R(4),  RL(4),  'reiwa',  'G1', 1, 'ネットワークの更改',                ['IoT', '認証・SSO', 'スイッチング'],                'https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt80000009sgk-att/2022r04h_nw_pm1_qs.pdf'),
   p(R(4),  RL(4),  'reiwa',  'G1', 2, 'セキュアゲートウェイサービスの導入', ['ゼロトラスト・SWG'],                              'https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt80000009sgk-att/2022r04h_nw_pm1_qs.pdf'),
   p(R(4),  RL(4),  'reiwa',  'G1', 3, 'シングルサインオンの導入',          ['認証・SSO'],                                       'https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt80000009sgk-att/2022r04h_nw_pm1_qs.pdf'),
   p(R(4),  RL(4),  'reiwa',  'G2', 1, 'テレワーク環境の導入',              ['仮想化', 'VPN', '冗長化'],                         'https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt80000009sgk-att/2022r04h_nw_pm2_qs.pdf'),

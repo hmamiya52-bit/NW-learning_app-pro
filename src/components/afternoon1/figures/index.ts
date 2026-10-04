@@ -66,6 +66,12 @@ import R4G13Fig2 from './R4G13Fig2'
 import R4G13Fig3 from './R4G13Fig3'
 import R4G13Fig4 from './R4G13Fig4'
 import R4G13Fig5 from './R4G13Fig5'
+import R5G11Fig1 from './R5G11Fig1'
+import R5G11Fig2 from './R5G11Fig2'
+import R5G11Fig3 from './R5G11Fig3'
+import R5G11Fig4 from './R5G11Fig4'
+import R5G11Tab1 from './R5G11Tab1'
+import R5G11Tab2 from './R5G11Tab2'
 import R6G11Fig1 from './R6G11Fig1'
 import R6G11Tab1 from './R6G11Tab1'
 import R6G11Fig2 from './R6G11Fig2'
@@ -166,6 +172,12 @@ export const EXAM_FIGURES: Record<Afternoon1FigureId, ComponentType<ExamFigurePr
   'R4-G1-3-fig3': R4G13Fig3,
   'R4-G1-3-fig4': R4G13Fig4,
   'R4-G1-3-fig5': R4G13Fig5,
+  'R5-G1-1-fig1': R5G11Fig1,
+  'R5-G1-1-fig2': R5G11Fig2,
+  'R5-G1-1-fig3': R5G11Fig3,
+  'R5-G1-1-fig4': R5G11Fig4,
+  'R5-G1-1-tab1': R5G11Tab1,
+  'R5-G1-1-tab2': R5G11Tab2,
   'R6-G1-1-fig1': R6G11Fig1,
   'R6-G1-1-tab1': R6G11Tab1,
   'R6-G1-1-fig2': R6G11Fig2,

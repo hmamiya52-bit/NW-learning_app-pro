@@ -191,6 +191,31 @@ R4-G1-3 で、幅によって表を出し分ける図（図4・図5。640px 未�
 検査2 の余白は、枠の線の太さの半分を内側から引いて測る。R5-G1-1 図3 の太枠（線の太さ 2）の空欄 d は、高さ 15 だと size 7.5 の1字との余白が 0.14 で、
 高さ 18 にして通った（線の太さ 1.2 の普通の箱なら、1行は高さ 18 で足りる）。
 
+検査2 は、文字と同じ `<g>` の rect・ellipse を親の箱として測る。R5-G1-3 で、区間の点線の楕円（(i)〜(v)）を `<svg>` の直下に置いたら、
+図の直下に置いた文字（区間の記号・凡例）が全部その楕円で測られて、86 件の誤検出になった。楕円は `<g>` に包む。傾けた楕円（`transform="rotate(...)"`）は
+検査2 が傾きを考えずに測るので、文字を楕円の中に収めたいときは置く前に計算で確かめる（`docs/afternoon1_authoring_rules.md` §5.3）。
+
+## 図を拡大して見る（線と文字のすき間を目で確かめる）
+
+R5-G1-3 で追加。Browser pane の `computer` の `zoom` は使えない（全体のスクリーンショットが返る）。細部を見たいときは、図の SVG を複製して
+画面の左上に 1000px の幅で重ねてから `screenshot` を撮る。下の方を見るときは `top` を負の値にずらす。見終えたら消す（リロードでも消える）。
+
+```js
+(() => {
+  const svg = [...document.querySelectorAll('figure svg[role=img]')][0];   // 何枚目の図か
+  const c = svg.cloneNode(true);
+  c.setAttribute('style', 'position:fixed;left:0;top:0;width:1000px;height:auto;max-width:none;background:#fff;z-index:99999');
+  c.id = '__zoomfig';
+  document.body.appendChild(c);
+  return 'ok';
+})()
+// 下の方を見る: document.getElementById('__zoomfig').style.top = '-450px'
+// 消す:         document.getElementById('__zoomfig').remove()
+```
+
+解説を開いた状態を見るときは、先に図の「解説」ボタンを押してから複製する（複製は押した時点の絵になる）。スクリーンショットは
+「page did not finish rendering」で失敗することがあるが、同じ呼び出しをもう一度送れば撮れる。
+
 ## 文字の幅を測る（吹き出し・箱の幅を決める前に）
 
 H28-G1-3 で追加。吹き出しや箱に入れる文言の候補を並べ、図と同じ大きさ・太さで実際の幅（viewBox の単位）を測る。

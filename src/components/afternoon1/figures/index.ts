@@ -40,6 +40,8 @@ import H29G11Fig2 from './H29G11Fig2'
 import H29G11Tab1 from './H29G11Tab1'
 import H29G11Tab2 from './H29G11Tab2'
 import H29G11Tab3 from './H29G11Tab3'
+import H29G12Fig1 from './H29G12Fig1'
+import H29G12Fig2 from './H29G12Fig2'
 import R1G11Fig1 from './R1G11Fig1'
 import R1G11Fig2 from './R1G11Fig2'
 import R1G12Fig1 from './R1G12Fig1'
@@ -156,6 +158,8 @@ export const EXAM_FIGURES: Record<Afternoon1FigureId, ComponentType<ExamFigurePr
   'H29-G1-1-fig2': H29G11Fig2,
   'H29-G1-1-tab2': H29G11Tab2,
   'H29-G1-1-tab3': H29G11Tab3,
+  'H29-G1-2-fig1': H29G12Fig1,
+  'H29-G1-2-fig2': H29G12Fig2,
   'R1-G1-1-fig1': R1G11Fig1,
   'R1-G1-1-fig2': R1G11Fig2,
   'R1-G1-2-fig1': R1G12Fig1,

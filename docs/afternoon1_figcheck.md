@@ -206,6 +206,12 @@ R5-G1-3 で追加。Browser pane の `computer` の `zoom` は使えない（全
 (() => {
   const svg = [...document.querySelectorAll('figure svg[role=img]')][0];   // 何枚目の図か
   const c = svg.cloneNode(true);
+  // 模様（網掛け）と矢頭の id を付け替える。付け替えないと、複製が元の図の模様を参照し、
+  // 元の図が閉じた details の中にあると模様が描かれない（H29-G1-3 で網掛けが写らなかった）
+  c.querySelectorAll('[id]').forEach((el) => {
+    const old = el.id; el.id = old + '-z';
+    c.querySelectorAll('*').forEach((n) => { for (const a of ['fill', 'marker-start', 'marker-end']) if (n.getAttribute(a) === `url(#${old})`) n.setAttribute(a, `url(#${old}-z)`); });
+  });
   c.setAttribute('style', 'position:fixed;left:0;top:0;width:1000px;height:auto;max-width:none;background:#fff;z-index:99999');
   c.id = '__zoomfig';
   document.body.appendChild(c);

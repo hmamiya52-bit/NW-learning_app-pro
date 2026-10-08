@@ -224,6 +224,31 @@ R5-G1-3 で追加。Browser pane の `computer` の `zoom` は使えない（全
 解説を開いた状態を見るときは、先に図の「解説」ボタンを押してから複製する（複製は押した時点の絵になる）。スクリーンショットは
 「page did not finish rendering」で失敗することがあるが、同じ呼び出しをもう一度送れば撮れる。
 
+解説を開いた状態と閉じた状態を何枚も見比べるときは、ボタンを押してから複製するまでを1つの関数にしておくと早い（H30-G1-1 で使った）。
+
+```js
+window.__zoom = async (idx, open, top) => {
+  const w = (ms) => new Promise((r) => setTimeout(r, ms));
+  document.getElementById('__zoomfig')?.remove();
+  const f = [...document.querySelectorAll('figure')].filter((f) => f.querySelector('svg[role=img]'))[idx];
+  const btn = [...f.querySelectorAll('button')].find((b) => /解説/.test(b.textContent));
+  const isOpen = btn && btn.textContent.includes('閉じる');
+  if (btn && open !== isOpen) { btn.click(); await w(400); }
+  const c = f.querySelector('svg[role=img]').cloneNode(true);
+  c.querySelectorAll('[id]').forEach((el) => {
+    const old = el.id; el.id = old + '-z';
+    c.querySelectorAll('*').forEach((n) => { for (const a of ['fill', 'marker-start', 'marker-end']) if (n.getAttribute(a) === `url(#${old})`) n.setAttribute(a, `url(#${old}-z)`); });
+  });
+  c.setAttribute('style', `position:fixed;left:0;top:${top}px;width:1000px;height:auto;max-width:none;background:#fff;z-index:99999`);
+  c.id = '__zoomfig';
+  document.body.appendChild(c);
+  return 'ok';
+};
+// 使い方: await window.__zoom(0, true, 0)   … 1枚目の図を、解説を開いた状態で写す（3つ目は top）
+```
+
+1000px の幅の複製は、375px の画面では左の端しか写らない。幅を 1024x800 にしてから撮り、測り直すときは 375px に戻して読み込み直す（上の「使い方」の 5）。
+
 ## 文字の幅を測る（吹き出し・箱の幅を決める前に）
 
 H28-G1-3 で追加。吹き出しや箱に入れる文言の候補を並べ、図と同じ大きさ・太さで実際の幅（viewBox の単位）を測る。

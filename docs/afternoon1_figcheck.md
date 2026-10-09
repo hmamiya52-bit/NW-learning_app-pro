@@ -249,6 +249,45 @@ window.__zoom = async (idx, open, top) => {
 
 1000px の幅の複製は、375px の画面では左の端しか写らない。幅を 1024x800 にしてから撮り、測り直すときは 375px に戻して読み込み直す（上の「使い方」の 5）。
 
+## 札と線・箱のすき間を測る（線の脇に札が多い図で）
+
+H30-G1-2 で追加。上の検査は、文字と線のすき間を測らない（文字と箱の余白・文字どうし・覆いだけ）。ポート名や VLAN の札を線の脇に置く図では、
+置く前の計算（文字の箱をフォントの大きさから見積もる）より実際の文字の箱が広く、線から 0.35 しか離れていない札があった。箱の中の文字と「⋯」を除く全部の
+`<text>` について、`line`・`polyline` の線分と、塗りのある `rect` との間合いを測り、1.5 未満を返す。白の縁取りで線の上に重ねた札（`halo: true`）は、
+その線と 0 になるのが正しいので、結果から外して読む。
+
+```js
+window.__textline = function (svg) {
+  const MARK = '#dc2626';
+  const inv = svg.getScreenCTM().inverse();
+  const toUser = (r) => { const p1 = new DOMPoint(r.left, r.top).matrixTransform(inv); const p2 = new DOMPoint(r.right, r.bottom).matrixTransform(inv); return { x1: Math.min(p1.x, p2.x), y1: Math.min(p1.y, p2.y), x2: Math.max(p1.x, p2.x), y2: Math.max(p1.y, p2.y) }; };
+  const all = [...svg.querySelectorAll('*')].filter(e => !e.closest('defs'));
+  const texts = all.filter(e => e.tagName === 'text' && ![...e.parentElement.children].some(c => (c.tagName === 'rect' || c.tagName === 'ellipse') && c !== e) && e.textContent.trim() !== '⋯').map(t => ({ s: t.textContent, halo: t.getAttribute('stroke') === '#ffffff', r: toUser(t.getBoundingClientRect()) }));
+  const segs = [];
+  for (const l of all.filter(e => (e.tagName === 'line' || e.tagName === 'polyline') && e.getAttribute('stroke') !== MARK && !e.closest('[data-role]'))) {
+    if (l.tagName === 'line') segs.push([+l.getAttribute('x1'), +l.getAttribute('y1'), +l.getAttribute('x2'), +l.getAttribute('y2')]);
+    else { const pts = l.getAttribute('points').trim().split(/\s+/).map(p => p.split(',').map(Number)); for (let i = 0; i + 1 < pts.length; i++) segs.push([...pts[i], ...pts[i + 1]]); }
+  }
+  const boxes = all.filter(e => e.tagName === 'rect' && e.getAttribute('fill') && e.getAttribute('fill') !== 'none' && e.getAttribute('stroke') !== MARK && !e.closest('[data-role]')).map(r => toUser(r.getBoundingClientRect()));
+  const dPtSeg = (px, py, [x1, y1, x2, y2]) => { const dx = x2 - x1, dy = y2 - y1, L = dx * dx + dy * dy; let t = L ? ((px - x1) * dx + (py - y1) * dy) / L : 0; t = Math.max(0, Math.min(1, t)); return Math.hypot(px - x1 - t * dx, py - y1 - t * dy); };
+  const segHitsRect = ([x1, y1, x2, y2], r) => { const n = Math.max(2, Math.ceil(Math.hypot(x2 - x1, y2 - y1) / 0.5)); for (let k = 0; k <= n; k++) { const px = x1 + (x2 - x1) * k / n, py = y1 + (y2 - y1) * k / n; if (px >= r.x1 && px <= r.x2 && py >= r.y1 && py <= r.y2) return true; } return false; };
+  const dSegRect = (s, r) => { if (segHitsRect(s, r)) return 0; const corners = [[r.x1, r.y1], [r.x2, r.y1], [r.x1, r.y2], [r.x2, r.y2]]; const ds = corners.map(([px, py]) => dPtSeg(px, py, s)); const [x1, y1, x2, y2] = s; const dr = (px, py) => Math.hypot(Math.max(r.x1 - px, 0, px - r.x2), Math.max(r.y1 - py, 0, py - r.y2)); return Math.min(...ds, dr(x1, y1), dr(x2, y2)); };
+  const near = [];
+  for (const t of texts) {
+    for (const s of segs) { const d = dSegRect(s, t.r); if (d < 1.5) near.push({ text: t.s, halo: t.halo, seg: s.map(v => +v.toFixed(1)).join(','), d: +d.toFixed(2) }); }
+    for (const b of boxes) { const gx = Math.max(b.x1 - t.r.x2, t.r.x1 - b.x2), gy = Math.max(b.y1 - t.r.y2, t.r.y1 - b.y2); const g = Math.max(gx, gy); if (g < 1.5) near.push({ text: t.s, box: [b.x1, b.y1, b.x2, b.y2].map(v => +v.toFixed(1)).join(','), gap: +g.toFixed(2) }); }
+  }
+  return near;
+};
+localStorage.setItem('__textline_src', 'window.__textline = ' + window.__textline.toString() + ';');
+'ok'
+```
+
+実行は「実行」のあとに、`[...document.querySelectorAll('figure svg[role=img]')].map(s => window.__textline(s).filter(n => !n.halo))` を貼る。
+H30-G1-2 では、375px で7件（VLAN100 の札と線が 0.35、p4・p2 の札と線が 1.28〜1.5、p4 の札と箱が 1.0）、直したあと 1024px で1件（p4 の札と線が 1.33。375px では
+通っていた）が出た。上の6つの数と同じく、**375px と 1024px の両方で 0 件**にする。塗りのある `rect` には、白で塗った囲み（重ねた拠点の手前の枠など）も入る。
+その囲みの中に置いた札は、中にあるだけで拾われる（`gap` が負になる）ので、その行は読み飛ばす。
+
 ## 文字の幅を測る（吹き出し・箱の幅を決める前に）
 
 H28-G1-3 で追加。吹き出しや箱に入れる文言の候補を並べ、図と同じ大きさ・太さで実際の幅（viewBox の単位）を測る。

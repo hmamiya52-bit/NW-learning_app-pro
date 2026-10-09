@@ -51,11 +51,8 @@ export default function Afternoon1Entry() {
                 <span className="text-[11px] font-bold rounded-full px-2 py-0.5 flex-shrink-0 bg-white text-teal-800">
                   午後Ⅰ 問{answerSet.number}
                 </span>
-                <span className="text-[11px] font-bold rounded-full px-2 py-0.5 flex-shrink-0 bg-amber-400 text-amber-900">
-                  開発中
-                </span>
               </div>
-              <h1 className="text-sm font-black leading-snug">{problem?.title ?? '午後解説'}</h1>
+              <h1 className="text-sm font-black leading-snug">{problem?.title ?? '支援砲撃Ⅰ'}</h1>
             </div>
             <Link
               to="/afternoon1"

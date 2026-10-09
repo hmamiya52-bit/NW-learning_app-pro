@@ -124,6 +124,13 @@ const MENU_CARDS: MenuCard[] = [
     icon: <IconClipboard className="w-6 h-6 text-indigo-600" />,
     desktopFull: true,
   },
+  {
+    to: '/afternoon1',
+    title: '支援砲撃Ⅰ',
+    description: '',
+    iconBg: 'bg-teal-50',
+    icon: <ScrollText className="w-6 h-6 text-teal-600" />,
+  },
 ]
 
 const OTHER_CARDS: MenuCard[] = [
@@ -154,13 +161,6 @@ const OTHER_CARDS: MenuCard[] = [
     description: '学習データを合流',
     iconBg: 'bg-blue-50',
     icon: <IconSync className="w-6 h-6 text-blue-700" />,
-  },
-  {
-    to: '/afternoon1',
-    title: '午後解説（開発中）',
-    description: '',
-    iconBg: 'bg-teal-50',
-    icon: <ScrollText className="w-6 h-6 text-teal-600" />,
   },
 ]
 

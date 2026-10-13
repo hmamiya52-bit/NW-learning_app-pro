@@ -10,6 +10,7 @@ import { r3 } from './r3'
 import { r4 } from './r4'
 import { r5 } from './r5'
 import { r6 } from './r6'
+import { r7 } from './r7'
 
 export type { Afternoon1QuestionText, Afternoon1QuestionTextSet } from './types'
 
@@ -26,6 +27,7 @@ export const afternoon1QuestionTexts: Afternoon1QuestionTextSet = {
   ...r4,
   ...r5,
   ...r6,
+  ...r7,
 }
 
 /** 指定した問題の公式設問文を rowKey 引きできる形で返す（未転記なら空） */

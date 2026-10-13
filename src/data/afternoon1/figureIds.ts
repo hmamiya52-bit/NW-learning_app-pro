@@ -178,6 +178,11 @@ export const AFTERNOON1_FIGURE_IDS = [
   'R6-G1-3-fig2', // 図2 A社のVPNを構成するIPパケット構造
   'R6-G1-3-fig3', // 図3 各支社のPCから、C社SaaS宛てとその他インターネット宛ての通信の流れ
   'R6-G1-3-fig4', // 図4 Bさんが作成した大阪支社のUTMのPACファイル
+
+  // ─── R7 午後Ⅰ 問1（ルータの更改）──────────────────────────
+  'R7-G1-1-fig1', // 図1 現在のA社NW（抜粋）
+  'R7-G1-1-tab1', // 表1 OSPFルータの各インタフェースにおけるOSPFコスト設定
+  'R7-G1-1-tab2', // 表2 Bさんが作成したR10の更改手順
 ] as const
 
 export type Afternoon1FigureId = (typeof AFTERNOON1_FIGURE_IDS)[number]

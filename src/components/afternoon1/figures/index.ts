@@ -105,6 +105,9 @@ import R6G13Fig1 from './R6G13Fig1'
 import R6G13Fig2 from './R6G13Fig2'
 import R6G13Fig3 from './R6G13Fig3'
 import R6G13Fig4 from './R6G13Fig4'
+import R7G11Fig1 from './R7G11Fig1'
+import R7G11Tab1 from './R7G11Tab1'
+import R7G11Tab2 from './R7G11Tab2'
 
 /**
  * 試験図の描画コンポーネント登録簿。
@@ -231,4 +234,7 @@ export const EXAM_FIGURES: Record<Afternoon1FigureId, ComponentType<ExamFigurePr
   'R6-G1-3-fig2': R6G13Fig2,
   'R6-G1-3-fig3': R6G13Fig3,
   'R6-G1-3-fig4': R6G13Fig4,
+  'R7-G1-1-fig1': R7G11Fig1,
+  'R7-G1-1-tab1': R7G11Tab1,
+  'R7-G1-1-tab2': R7G11Tab2,
 }

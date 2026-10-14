@@ -183,6 +183,14 @@ export const AFTERNOON1_FIGURE_IDS = [
   'R7-G1-1-fig1', // 図1 現在のA社NW（抜粋）
   'R7-G1-1-tab1', // 表1 OSPFルータの各インタフェースにおけるOSPFコスト設定
   'R7-G1-1-tab2', // 表2 Bさんが作成したR10の更改手順
+
+  // ─── R7 午後Ⅰ 問2（ネットワークの改善）─────────────────────
+  'R7-G1-2-fig1', // 図1 U校ネットワーク構成
+  'R7-G1-2-fig2', // 図2 インターネット通信量（ダウンロード）
+  'R7-G1-2-tab1', // 表1 ルータのNAT変換テーブルの状態（抜粋）
+  'R7-G1-2-fig3', // 図3 ルータのシステムログ（抜粋）
+  'R7-G1-2-fig4', // 図4 HTTPバージョンとNAPTとの関係
+  'R7-G1-2-tab2', // 表2 現在のルータのNAPT変換エントリー保持時間
 ] as const
 
 export type Afternoon1FigureId = (typeof AFTERNOON1_FIGURE_IDS)[number]

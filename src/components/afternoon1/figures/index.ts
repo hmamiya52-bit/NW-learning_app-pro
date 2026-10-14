@@ -114,6 +114,10 @@ import R7G12Tab1 from './R7G12Tab1'
 import R7G12Fig3 from './R7G12Fig3'
 import R7G12Fig4 from './R7G12Fig4'
 import R7G12Tab2 from './R7G12Tab2'
+import R7G13Fig1 from './R7G13Fig1'
+import R7G13Tab1 from './R7G13Tab1'
+import R7G13Tab2 from './R7G13Tab2'
+import R7G13Fig2 from './R7G13Fig2'
 
 /**
  * 試験図の描画コンポーネント登録簿。
@@ -249,4 +253,8 @@ export const EXAM_FIGURES: Record<Afternoon1FigureId, ComponentType<ExamFigurePr
   'R7-G1-2-fig3': R7G12Fig3,
   'R7-G1-2-fig4': R7G12Fig4,
   'R7-G1-2-tab2': R7G12Tab2,
+  'R7-G1-3-fig1': R7G13Fig1,
+  'R7-G1-3-tab1': R7G13Tab1,
+  'R7-G1-3-tab2': R7G13Tab2,
+  'R7-G1-3-fig2': R7G13Fig2,
 }

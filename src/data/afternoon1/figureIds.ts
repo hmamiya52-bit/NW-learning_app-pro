@@ -191,6 +191,12 @@ export const AFTERNOON1_FIGURE_IDS = [
   'R7-G1-2-fig3', // 図3 ルータのシステムログ（抜粋）
   'R7-G1-2-fig4', // 図4 HTTPバージョンとNAPTとの関係
   'R7-G1-2-tab2', // 表2 現在のルータのNAPT変換エントリー保持時間
+
+  // ─── R7 午後Ⅰ 問3（セキュアWebゲートウェイの導入）──────────────
+  'R7-G1-3-fig1', // 図1 現状のJ社のネットワーク構成
+  'R7-G1-3-tab1', // 表1 FWの許可ルール（抜粋）
+  'R7-G1-3-tab2', // 表2 SWGサービスのセキュリティ機能（抜粋）
+  'R7-G1-3-fig2', // 図2 SWGサービス導入時のネットワーク構成
 ] as const
 
 export type Afternoon1FigureId = (typeof AFTERNOON1_FIGURE_IDS)[number]

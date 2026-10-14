@@ -1,7 +1,8 @@
 /**
  * 表2 SWG サービスのセキュリティ機能（抜粋）— R7 午後Ⅰ 問3
  *
- * 2列の表なので HTML で組む。機能概要は長い文なので折り返し、機能名は語の切れ目（「レピュテーション|機能」など）でだけ折り返す。
+ * 2列の表なので HTML で組む。機能概要は長い文なので折り返し、機能名は 375px でだけ語の切れ目（「レピュテーション|機能」など）で
+ * 折り返す（640px 以上では機能名の列を 12em 取り、原図どおり1行にする。`<wbr>` は white-space では止まらないので列の幅で決める）。
  * 下線⑤は原図どおり下線を引く（`underline underline-offset-2`。H28-G1-3 表2 と同じ）。見出しに色は付けない。
  *
  * 解説を開いたときは、ダイレクト通信機能の行（設問3(5)。業務用サーバのアドレスを直接接続リストに入れる話）と、
@@ -36,7 +37,7 @@ export default function R7G13Tab2({ highlight = false }: ExamFigureProps) {
       <table className="border-collapse text-[11px] mx-auto w-full" style={{ maxWidth: 560 }}>
         <thead>
           <tr>
-            <th className={`${TH} whitespace-nowrap`}>機能名</th>
+            <th className={`${TH} whitespace-nowrap sm:w-[12em]`}>機能名</th>
             <th className={TH}>機能概要</th>
           </tr>
         </thead>
